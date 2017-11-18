@@ -3,7 +3,7 @@ package com.riuir.calibur.net
 
 import android.content.Context
 import com.google.gson.Gson
-import com.riuir.calibur.view.LoadingDialog
+import com.riuir.calibur.ui.widget.LoadingDialog
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import retrofit2.HttpException

@@ -1,4 +1,4 @@
-package com.riuir.calibur.view
+package com.riuir.calibur.ui.widget
 
 import android.app.Dialog
 import android.content.Context

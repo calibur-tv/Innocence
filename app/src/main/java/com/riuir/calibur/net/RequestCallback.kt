@@ -2,9 +2,7 @@ package com.riuir.calibur.net
 
 import android.content.Context
 import com.riuir.calibur.data.ResponseWrapper
-import com.riuir.calibur.net.ApiErrorModel
-import com.riuir.calibur.net.ApiErrorType
-import com.riuir.calibur.view.LoadingDialog
+import com.riuir.calibur.ui.widget.LoadingDialog
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import java.net.ConnectException
