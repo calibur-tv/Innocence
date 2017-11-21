@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/maintab_menu"
+    android:layout_width="match_parent"
+    android:layout_height="73dp"
+    android:clickable="true">
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/transprent" />
+
+    <RelativeLayout
+        android:id="@+id/maintab_dis"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="4dp">
+
+        <ImageView
+            android:id="@+id/maintab_dis_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:src="@drawable/maintab_discovery_iv" />
+
+        <TextView
+            android:id="@+id/maintab_dis_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/maintab_dis_iv"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="帖子"
+            android:textColor="@drawable/maintab_text_color"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/maintab_dis_reddot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/maintab_dis_iv"
+            android:src="@mipmap/common_new_tips"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/transprent" />
+
+    <RelativeLayout
+        android:id="@+id/maintab_circle"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="4dp">
+
+        <ImageView
+            android:id="@+id/maintab_circle_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:src="@drawable/maintab_circle_iv" />
+
+        <TextView
+            android:id="@+id/maintab_circle_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/maintab_circle_iv"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="番剧"
+            android:textColor="@drawable/maintab_text_color"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/maintab_circle_reddot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/maintab_circle_tv"
+            android:src="@mipmap/common_new_tips"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/transprent" />
+
+    <ImageView
+        android:id="@+id/maintab_add"
+        android:layout_width="73dp"
+        android:layout_height="73dp"
+        android:src="@mipmap/maintab_new_normal" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/transprent" />
+
+    <RelativeLayout
+        android:id="@+id/maintab_msg"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="4dp">
+
+        <ImageView
+            android:id="@+id/maintab_msg_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/maintab_msg_iv" />
+
+        <TextView
+            android:id="@+id/maintab_msg_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/maintab_msg_iv"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="消息"
+            android:textColor="@drawable/maintab_text_color"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/maintab_msg_reddot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/maintab_msg_tv"
+            android:src="@mipmap/common_new_tips"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/transprent" />
+
+    <RelativeLayout
+        android:id="@+id/maintab_mine"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="4dp">
+
+        <ImageView
+            android:id="@+id/maintab_mine_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/maintab_mine" />
+
+        <TextView
+            android:id="@+id/maintab_mine_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/maintab_mine_iv"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="我的"
+            android:textColor="@drawable/maintab_text_color"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/maintab_mine_reddot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/maintab_mine_tv"
+            android:src="@mipmap/common_new_tips"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/transprent" />
+
+</LinearLayout>
