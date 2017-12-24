@@ -67,6 +67,11 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     }
 
     @Override
+    protected boolean isRegisterEventBus() {
+        return true;
+    }
+
+    @Override
     protected void handler(Message msg) {
         if (msg.what == 0) {
             ToastUtils.toastShort("app launch");

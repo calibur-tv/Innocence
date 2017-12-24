@@ -18,4 +18,8 @@ public final class RCode {
         public static final int D = 0x444444;
         // other more
     }
+
+    public static final class ErrorCode {
+        public static final int ERROR_LOCAL = 1002;
+    }
 }

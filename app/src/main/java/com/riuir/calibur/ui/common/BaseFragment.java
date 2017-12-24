@@ -1,5 +1,6 @@
 package com.riuir.calibur.ui.common;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -7,8 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.riuir.calibur.net.Api;
+import com.riuir.calibur.net.NetService;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * ************************************
@@ -22,11 +27,17 @@ import butterknife.Unbinder;
 public abstract class BaseFragment extends Fragment {
     protected LayoutInflater mLayoutInflater;
     protected View rootView;
+    protected Api api;
+    protected Activity activity;
+    protected CompositeDisposable compositeDisposable = null;
     Unbinder unbinder;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activity = getActivity();
+        api = NetService.getInstance().createService();
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Nullable

@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 
 import com.riuir.calibur.data.Event;
+import com.riuir.calibur.net.Api;
+import com.riuir.calibur.net.NetService;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.EventBusUtil;
 
@@ -17,6 +19,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * ************************************
@@ -30,10 +33,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     private LayoutInflater mInflater;
     private Unbinder unbinder;
     protected static UIHandler handler = new UIHandler(Looper.getMainLooper());
+    protected Api api;
+    protected CompositeDisposable compositeDisposable = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        api = NetService.getInstance().createService();
+        compositeDisposable = new CompositeDisposable();
         ActivityUtils.setTranslucentStatus(this, true);
         setHandler();
 
