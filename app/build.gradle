@@ -32,12 +32,9 @@ dependencies {
     implementation(["io.reactivex.rxjava2:rxandroid:$rxandroid_version",
                     "io.reactivex.rxjava2:rxjava:$rxjava_version"])
 
-    implementation(["com.trello.rxlifecycle2:rxlifecycle-components:$rxlifecycle_version"])
-
     implementation 'com.alibaba:fastjson:1.1.64.android'
     // logger
     implementation "com.orhanobut:logger:$logger_version"
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
 
     // butterKnife
     implementation 'com.jakewharton:butterknife:8.8.1'
