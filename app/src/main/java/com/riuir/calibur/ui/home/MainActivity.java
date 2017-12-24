@@ -3,12 +3,15 @@ package com.riuir.calibur.ui.home;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.riuir.calibur.R;
+import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.RCode;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.widget.MainBottomBar;
+import com.riuir.calibur.utils.EventBusUtil;
+import com.riuir.calibur.utils.ToastUtils;
 
 import butterknife.BindView;
 
@@ -57,13 +60,25 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .commitAllowingStateLoss();
         maintabBottombar.init();
         maintabBottombar.setOnSingleClickListener(this);
+        //demo
         Logger.d("oninit");
-        Toast.makeText(this,"toast",Toast.LENGTH_SHORT).show();
+        handler.sendEmptyMessageDelayed(0, 200);
+        EventBusUtil.sendEvent(new Event(RCode.EventCode.A));
     }
 
     @Override
     protected void handler(Message msg) {
+        if (msg.what == 0) {
+            ToastUtils.toastShort("app launch");
+        }
+    }
 
+    @Override
+    protected void receiveEvent(Event event) {
+        super.receiveEvent(event);
+        if (event.getCode() == RCode.EventCode.A) {
+            ToastUtils.toastShort("event bus received");
+        }
     }
 
     @Override
