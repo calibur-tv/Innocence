@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@color/color_FF23ADE5"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/color_FF23ADE5">
 
     <TextView
         android:id="@+id/tv_main"
+        android:clipToPadding="true"
+        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="帖子" />
+        android:layout_height="wrap_content"
+        android:background="@color/color_FFFFFFFF"
+        android:paddingBottom="12dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="22dp"
+        android:text="帖子"
+        android:textSize="16sp"/>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
