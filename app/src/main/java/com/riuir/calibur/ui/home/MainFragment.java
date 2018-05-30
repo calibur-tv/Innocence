@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.widget.TextView;
 
 import com.riuir.calibur.R;
+import com.riuir.calibur.data.DramaListResp;
 import com.riuir.calibur.data.ResponseWrapper;
 import com.riuir.calibur.net.RxApiErrorHandleTransformer;
 import com.riuir.calibur.net.RxProgressTransformer;
@@ -19,6 +20,9 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * ************************************
@@ -53,7 +57,7 @@ public class MainFragment extends BaseFragment {
 
     private void loadData() {
         Map<String, Object> args = new HashMap<>();
-        api.dramaList(args)
+        api.getObservable(args)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(new RxApiErrorHandleTransformer<>())
@@ -78,5 +82,20 @@ public class MainFragment extends BaseFragment {
                     public void onComplete() {
                     }
                 });
+        /**
+         *
+         */
+        api.getCall(args).enqueue(new Callback<DramaListResp>() {
+            @Override
+            public void onResponse(Call<DramaListResp> call, Response<DramaListResp> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<DramaListResp> call, Throwable t) {
+
+            }
+        });
+
     }
 }

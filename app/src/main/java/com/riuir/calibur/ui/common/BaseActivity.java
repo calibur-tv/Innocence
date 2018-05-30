@@ -27,6 +27,7 @@ import io.reactivex.disposables.CompositeDisposable;
  * 日期：2017/12/24
  * 邮箱：hanbaokun@outlook.com
  * 描述：
+ *
  * ************************************
  */
 public abstract class BaseActivity extends AppCompatActivity {
@@ -39,7 +40,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //拿到NetService网络请求的Api返回对象
         api = NetService.getInstance().createService();
+
         compositeDisposable = new CompositeDisposable();
         ActivityUtils.setTranslucentStatus(this, true);
         setHandler();

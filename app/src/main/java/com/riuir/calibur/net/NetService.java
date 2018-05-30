@@ -45,8 +45,11 @@ public class NetService {
      * 创建 Retrofit
      **/
     private Retrofit retrofit = new Retrofit.Builder()
+            // 设置网络请求的Url地址
             .baseUrl(baseUrl)
+            // 设置数据解析器
             .addConverterFactory(FastJsonConverterFactory.create())
+            // 支持RxJava平台
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(client)
             .build();
@@ -55,6 +58,7 @@ public class NetService {
 
     public Api createService() {
         if (null == mApi) {
+            // 创建 网络请求接口 的实例
             Api api = retrofit.create(Api.class);
 
             mApi = api;

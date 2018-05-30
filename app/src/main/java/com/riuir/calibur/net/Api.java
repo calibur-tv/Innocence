@@ -12,8 +12,11 @@ import retrofit2.http.POST;
 public interface Api {
 
     @POST("drama/list")
-    Observable<DramaListResp> dramaList(@Body Map<String, Object> argsMap);
+    Observable<DramaListResp> getObservable(@Body Map<String, Object> argsMap);
 
     @POST("drama/list")
-    Call<DramaListResp> dramaList2(@Body Map<String, Object> argsMap);
+    Call<DramaListResp> getCall(@Body Map<String, Object> argsMap);
+
+
+
 }

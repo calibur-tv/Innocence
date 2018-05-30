@@ -36,6 +36,7 @@ public abstract class BaseFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = getActivity();
+        //拿到NetService网络请求的Api返回对象
         api = NetService.getInstance().createService();
         compositeDisposable = new CompositeDisposable();
     }
