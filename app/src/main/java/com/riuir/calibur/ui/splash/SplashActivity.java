@@ -5,9 +5,12 @@ import android.os.Message;
 import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
+import com.riuir.calibur.ui.loginAndRegister.LoginActivity;
 
 public class SplashActivity extends BaseActivity {
 
+    //预设的登录状态 默认false
+    boolean isLogin = false;
 
     @Override
     protected int getContentViewId() {
@@ -16,7 +19,11 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
-        handler.sendEmptyMessageDelayed(0,1500);
+        if (isLogin){
+            handler.sendEmptyMessageDelayed(0,1500);
+        }else {
+            handler.sendEmptyMessageDelayed(0,1500);
+        }
     }
 
     @Override
@@ -25,7 +32,11 @@ public class SplashActivity extends BaseActivity {
             case 0:
                 startActivity(MainActivity.class);
                 finish();
-                break;
+                return;
+            case 1:
+                startActivity(LoginActivity.class);
+                finish();
+                return;
         }
     }
 }

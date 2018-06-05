@@ -1,6 +1,12 @@
 package com.riuir.calibur.net;
 
 
+import android.provider.Settings;
+
+import com.riuir.calibur.app.App;
+import com.riuir.calibur.assistUtils.Installation;
+import com.riuir.calibur.utils.Constants;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -12,6 +18,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Buffer;
 
+import static com.geetest.sdk.Bind.GT3GeetestUtilsBind.md5;
+
+//阻断，需要userToken Post请求方式
 public class AuthInterceptor implements Interceptor {
 
     @Override
@@ -20,16 +29,24 @@ public class AuthInterceptor implements Interceptor {
 
         String body = bodyToString(request.body());
 
-        long time = System.currentTimeMillis() / 1000;
-        final Date now = new Date(time * 1000);
+//        long time = System.currentTimeMillis();
+//        final Date now = new Date(time * 1000);
+
+//        String constAuthToken = md5("md5_salt" + time);
+//        String ANDROID_ID = Installation.id(App.instance());
+
         Headers headers = request.headers().newBuilder()
-                .add("Content-Length", body.getBytes().length + "")
-                .add("Content-Type", "application/json;charset=utf-8")
-                .add("Date", now.toGMTString())
-                .add("timestamp", (System.currentTimeMillis() / 1000) + "")
+                .add("Authorization","Bearer "+"userTokenString")//userTokenString是用户登录之后才有的标识码，暂时无登录功能先写死
+//                .add("Content-Type", "application/json;charset=utf-8")
+//                .add("X-Auth-Timestamp", String.valueOf(time))
+//                .add("X-Auth-Token", constAuthToken)
+//                .add("X-Device-Id", ANDROID_ID)
+                .add("Accept", "application/x.api."+ Constants.API_VERSION+"+json")
                 .build();
+
         request = request.newBuilder()
                 .post(RequestBody.create(MediaType.parse("application/json;charset=utf-8"), body))
+//                .get()
                 .headers(headers)
                 .build();
 

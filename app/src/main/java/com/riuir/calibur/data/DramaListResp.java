@@ -1,5 +1,7 @@
 package com.riuir.calibur.data;
 
+import java.util.List;
+
 /**
  * ************************************
  * 作者：韩宝坤
@@ -9,4 +11,5 @@ package com.riuir.calibur.data;
  * ************************************
  */
 public class DramaListResp extends ResponseWrapper {
+
 }

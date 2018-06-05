@@ -11,7 +11,7 @@ import com.riuir.calibur.data.RCode;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.widget.MainBottomBar;
 import com.riuir.calibur.utils.EventBusUtil;
-import com.riuir.calibur.utils.ToastUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
 
 import butterknife.BindView;
 
@@ -74,7 +74,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     @Override
     protected void handler(Message msg) {
         if (msg.what == 0) {
-            ToastUtils.toastShort("app launch");
+            ToastUtils.showShort(this,"app launch");
         }
     }
 
@@ -82,7 +82,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     protected void receiveEvent(Event event) {
         super.receiveEvent(event);
         if (event.getCode() == RCode.EventCode.A) {
-            ToastUtils.toastShort("event bus received");
+            ToastUtils.showShort(this,"event bus received");
         }
     }
 

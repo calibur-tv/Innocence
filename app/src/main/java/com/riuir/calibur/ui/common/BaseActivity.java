@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.net.Api;
+
+import com.riuir.calibur.net.ApiGet;
+import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.net.NetService;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.EventBusUtil;
@@ -34,16 +36,19 @@ public abstract class BaseActivity extends AppCompatActivity {
     private LayoutInflater mInflater;
     private Unbinder unbinder;
     protected static UIHandler handler = new UIHandler(Looper.getMainLooper());
-    protected Api api;
+    protected ApiPost apiPost;
+    protected ApiGet apiGet;
     protected CompositeDisposable compositeDisposable = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //拿到NetService网络请求的Api返回对象
-        api = NetService.getInstance().createService();
+        apiPost = NetService.getInstance().createServicePost();
+        apiGet = NetService.getInstance().createServiceGet();
 
         compositeDisposable = new CompositeDisposable();
+        //状态栏透明
         ActivityUtils.setTranslucentStatus(this, true);
         setHandler();
 

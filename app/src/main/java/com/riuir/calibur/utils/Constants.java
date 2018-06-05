@@ -2,12 +2,13 @@ package com.riuir.calibur.utils;
 
 /**
  * ************************************
- * 作者：韩宝坤
- * 日期：2017/12/24
- * 邮箱：hanbaokun@outlook.com
- * 描述：
+ * 预设静态变量存储类
  * ************************************
  */
 public class Constants {
-    public static final String API_BASE_URL = "http:www.baidu.com";
+    //api总地址（前缀）
+    public static final String API_BASE_URL = "https://api.calibur.tv/";
+    //API版本号
+    public static final String API_VERSION = "v1";
+
 }

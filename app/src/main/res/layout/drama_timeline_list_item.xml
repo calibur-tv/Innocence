@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/drama_timeline_list_item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/drama_timeline_list_item_image"
+            android:layout_marginLeft="30px"
+            android:layout_marginTop="30px"
+            android:layout_marginBottom="30px"
+            android:layout_marginRight="20px"
+            android:layout_width="120px"
+            android:layout_height="160px"
+            android:scaleType="centerCrop"
+            />
+        <TextView
+            android:id="@+id/drama_timeline_list_item_name"
+            android:layout_toRightOf="@id/drama_timeline_list_item_image"
+            android:layout_marginTop="40px"
+            android:layout_width="match_parent"
+            android:layout_height="38px"
+            android:layout_marginRight="30px"
+            android:text="番剧名"
+            android:textSize="30px"
+            android:textColor="#333333"
+            />
+        <TextView
+            android:id="@+id/drama_timeline_list_item_summary"
+            android:layout_width="match_parent"
+            android:layout_height="72px"
+            android:layout_toRightOf="@id/drama_timeline_list_item_image"
+            android:layout_below="@id/drama_timeline_list_item_name"
+            android:layout_marginTop="30px"
+            android:layout_marginRight="30px"
+            android:textColor="#9B9B9B"
+            android:maxLines="2"
+            android:textSize="25px"
+            android:text="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+            />
+    </RelativeLayout>
+
+
+</RelativeLayout>

@@ -8,6 +8,9 @@ import org.json.JSONObject;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 
+/**
+ * 判断接口类型
+ */
 
 public class NetLogger implements HttpLoggingInterceptor.Logger {
 

@@ -18,9 +18,12 @@ import butterknife.BindView;
  * 描述：
  * ************************************
  */
+
+/**
+ * 我的fragment
+ */
 public class MineFragment extends BaseFragment {
-    @BindView(R.id.tv_main)
-    TextView tvMain;
+
 
     public static Fragment newInstance() {
         MineFragment mineFragment = new MineFragment();
@@ -31,11 +34,11 @@ public class MineFragment extends BaseFragment {
 
     @Override
     protected int getContentViewID() {
-        return R.layout.fragment_main;
+        return R.layout.fragment_mine;
     }
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
-        tvMain.setText("帖子");
+
     }
 }

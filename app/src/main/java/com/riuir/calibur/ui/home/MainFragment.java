@@ -1,16 +1,22 @@
 package com.riuir.calibur.ui.home;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.widget.TextView;
 
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.DramaListResp;
 import com.riuir.calibur.data.ResponseWrapper;
 import com.riuir.calibur.net.RxApiErrorHandleTransformer;
 import com.riuir.calibur.net.RxProgressTransformer;
 import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,9 +38,25 @@ import retrofit2.Response;
  * 描述：
  * ************************************
  */
+
+/**
+ * 帖子fragment
+ */
 public class MainFragment extends BaseFragment {
-    @BindView(R.id.tv_main)
+    @BindView(R.id.tv_main_card)
     TextView tvMain;
+    @BindView(R.id.main_card_pager_tab)
+    MyPagerSlidingTabStrip mainCardTab;
+    @BindView(R.id.main_card_view_pager)
+    ViewPager mainCardViewPager;
+
+    MainCardHotFragment mainCardHotFragment;
+    MainCardNewFragment mainCardNewFragment;
+
+    /**
+     * 获取当前屏幕的密度
+     */
+    private DisplayMetrics dm;
 
     public static Fragment newInstance() {
         MainFragment mainFragment = new MainFragment();
@@ -50,52 +72,83 @@ public class MainFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
+        dm = getResources().getDisplayMetrics();
         tvMain.setText("帖子");
-        //demo 网络请求
-        loadData();
-    }
 
-    private void loadData() {
-        Map<String, Object> args = new HashMap<>();
-        api.getObservable(args)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(new RxApiErrorHandleTransformer<>())
-                .compose(new RxProgressTransformer<ResponseWrapper>(activity))
-                .subscribe(new Observer<ResponseWrapper>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        compositeDisposable.add(d);
-                    }
-
-                    @Override
-                    public void onNext(ResponseWrapper responseWrapper) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
-        /**
-         *
-         */
-        api.getCall(args).enqueue(new Callback<DramaListResp>() {
-            @Override
-            public void onResponse(Call<DramaListResp> call, Response<DramaListResp> response) {
-
-            }
-
-            @Override
-            public void onFailure(Call<DramaListResp> call, Throwable t) {
-
-            }
-        });
+        setViewPager();
 
     }
+
+    private void setViewPager() {
+        mainCardViewPager.setAdapter(new MainCardPagerAdapter(getChildFragmentManager()));
+        mainCardTab.setViewPager(mainCardViewPager);
+        setMainCardTabs();
+    }
+
+    private void setMainCardTabs() {
+        // 设置Tab是自动填充满屏幕的
+        mainCardTab.setShouldExpand(true);
+        // 设置Tab的分割线是透明的
+        mainCardTab.setDividerColor(Color.TRANSPARENT);
+        mainCardTab.setBackgroundResource(R.color.color_FF23ADE5);
+        mainCardTab.setUnderlineColor(Color.TRANSPARENT);
+        //设置underLine
+        mainCardTab.setUnderlineHeight(2);
+        mainCardTab.setUnderlineColorResource(R.color.color_FF23ADE5);
+        //设置Tab Indicator的高度
+        mainCardTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
+        // 设置Tab Indicator的高度
+        mainCardTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, dm));
+        // 设置Tab标题文字的大小
+        mainCardTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16, dm));
+        //设置textclolo
+        mainCardTab.setTextColorResource(R.color.color_FFDDDDDD);
+        // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
+        mainCardTab.setSelectedTextColorResource(R.color.color_FFFFFFFF);
+        //设置滚动条圆角（这是我自定义的一个方法，同时修改了滚动条长度，使其与文字等宽）
+        mainCardTab.setRoundRadius(3);
+
+        // 取消点击Tab时的背景色
+        mainCardTab.setTabBackground(0);
+    }
+
+    public class MainCardPagerAdapter extends FragmentPagerAdapter {
+
+        public MainCardPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        private final String[] titles = { "最新", "最热" };
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles[position];
+        }
+
+        @Override
+        public int getCount() {
+            return titles.length;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    if (mainCardNewFragment == null) {
+                        mainCardNewFragment = new MainCardNewFragment();
+                    }
+                    return mainCardNewFragment;
+                case 1:
+                    if (mainCardHotFragment == null) {
+                        mainCardHotFragment = new MainCardHotFragment();
+                    }
+                    return mainCardHotFragment;
+                default:
+                    return null;
+            }
+        }
+
+    }
+
+
 }

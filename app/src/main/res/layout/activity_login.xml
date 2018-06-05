@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_FF23ADE5"
+    tools:context=".ui.loginAndRegister.LoginActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_marginTop="80dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="登录"
+            android:gravity="center"
+            android:textSize="30sp"
+            android:textColor="@color/color_FFFFFFFF"
+            />
+        <EditText
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:id="@+id/login_username_edit"
+            android:background="@drawable/bg_edittext_normal"/>
+        <EditText
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:id="@+id/login_password_edit"
+            android:background="@drawable/bg_edittext_normal"/>
+
+        <com.geetest.sdk.GT3GeetestButton
+            android:id="@+id/ll_btn_type"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="30dp"
+            android:background="@drawable/bg_login_button_normal"
+            android:text="登录"
+            android:textSize="20sp"
+            android:textColor="@color/color_FFFFFFFF"
+            />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

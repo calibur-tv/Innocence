@@ -8,7 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.riuir.calibur.net.Api;
+
+import com.riuir.calibur.net.ApiGet;
+import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.net.NetService;
 
 import butterknife.ButterKnife;
@@ -27,7 +29,8 @@ import io.reactivex.disposables.CompositeDisposable;
 public abstract class BaseFragment extends Fragment {
     protected LayoutInflater mLayoutInflater;
     protected View rootView;
-    protected Api api;
+    protected ApiPost apiPost;
+    protected ApiGet apiGet;
     protected Activity activity;
     protected CompositeDisposable compositeDisposable = null;
     Unbinder unbinder;
@@ -37,7 +40,8 @@ public abstract class BaseFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         //拿到NetService网络请求的Api返回对象
-        api = NetService.getInstance().createService();
+        apiPost = NetService.getInstance().createServicePost();
+        apiGet = NetService.getInstance().createServiceGet();
         compositeDisposable = new CompositeDisposable();
     }
 
