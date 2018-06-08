@@ -29,7 +29,7 @@ import io.reactivex.disposables.CompositeDisposable;
 public abstract class BaseFragment extends Fragment {
     protected LayoutInflater mLayoutInflater;
     protected View rootView;
-    protected ApiPost apiPost;
+    protected ApiPost apiPost,apiPostNoAuth;
     protected ApiGet apiGet;
     protected Activity activity;
     protected CompositeDisposable compositeDisposable = null;
@@ -41,6 +41,7 @@ public abstract class BaseFragment extends Fragment {
         activity = getActivity();
         //拿到NetService网络请求的Api返回对象
         apiPost = NetService.getInstance().createServicePost();
+        apiPostNoAuth = NetService.getInstance().createServicePostNoAuth();
         apiGet = NetService.getInstance().createServiceGet();
         compositeDisposable = new CompositeDisposable();
     }

@@ -1,21 +1,15 @@
 package com.riuir.calibur.net;
 
 import com.riuir.calibur.data.DramaListResp;
+import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.params.VerificationCodeBody;
 
 import java.util.Map;
 
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
-import retrofit2.http.HTTP;
-import retrofit2.http.Header;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public interface ApiPost {
 
@@ -30,9 +24,19 @@ public interface ApiPost {
 
     //注册接口
     @POST("door/register")
-    Call<DramaListResp> getCallRegister(@Body Map<String, Object> argsMa);
+    Call<Event<String>> getCallRegister(@Body Map<String, Object> argsMa);
 
+    //登录接口
+    @POST("door/login")
+    Call<Event<String>> getCallLogin(@Body Map<String, Object> argsMa);
 
+    //注册接口
+    @POST("door/reset")
+    Call<Event<String>> getCallReSetPassWord(@Body Map<String, Object> argsMa);
+
+    //发送验证码接口
+    @POST("/door/message")
+    Call<Event<String>> getGeeTestSendValidate(@Body VerificationCodeBody verificationCodeBody);
 
 
 }

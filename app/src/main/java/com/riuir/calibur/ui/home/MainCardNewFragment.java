@@ -84,18 +84,32 @@ public class MainCardNewFragment extends BaseFragment {
             public void onResponse(Call<MainCardInfo> call, Response<MainCardInfo> response) {
                 LogUtils.d("mainCard","page = "+page+",N E W = "+response.body().toString()+page);
                 page++;
-                listNew = response.body().getData();
+                if (response == null||response.body()==null||response.body().getData() == null||response.body().getData().size() == 0){
+                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        mainCardNewRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                }else {
+                    listNew = response.body().getData();
 
-                if (isFristLoad){
-                    baseListNew = response.body().getData();
-                    setListAdapter();
+                    if (isFristLoad){
+                        baseListNew = response.body().getData();
+                        setListAdapter();
+                    }
+                    if (isLoadMore){
+                        setLoadMore();
+                    }
+                    if (isRefresh){
+                        setRefresh();
+                    }
                 }
-                if (isLoadMore){
-                    setLoadMore();
-                }
-                if (isRefresh){
-                    setRefresh();
-                }
+
+
             }
 
             @Override
@@ -103,6 +117,11 @@ public class MainCardNewFragment extends BaseFragment {
                 ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                 if (isLoadMore){
                     adapter.loadMoreFail();
+                    isLoadMore = false;
+                }
+                if (isRefresh){
+                    mainCardNewRefreshLayout.setRefreshing(false);
+                    isRefresh = false;
                 }
             }
         });
@@ -166,9 +185,9 @@ public class MainCardNewFragment extends BaseFragment {
                 //item被点击，跳转页面
             }
         });
-        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+        adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 if (view.getId() == R.id.main_card_list_item_upvote_icon){
                     //点赞按钮被点击
                 }
@@ -184,7 +203,6 @@ public class MainCardNewFragment extends BaseFragment {
                 if (view.getId() == R.id.main_card_list_item_little_image_3){
                     //小图3按钮被点击
                 }
-
             }
         });
         //上拉加载监听
@@ -221,11 +239,11 @@ public class MainCardNewFragment extends BaseFragment {
             helper.setText(R.id.main_card_list_item_upvote_count, ""+item.getView_count());
             helper.setText(R.id.main_card_list_item_last_comment_count, ""+item.getComment_count());
             //为点赞按钮添加点击事件
-            helper.addOnLongClickListener(R.id.main_card_list_item_upvote_icon);
-            helper.addOnLongClickListener(R.id.main_card_list_item_big_image);
-            helper.addOnLongClickListener(R.id.main_card_list_item_little_image_1);
-            helper.addOnLongClickListener(R.id.main_card_list_item_little_image_2);
-            helper.addOnLongClickListener(R.id.main_card_list_item_little_image_3);
+            helper.addOnClickListener(R.id.main_card_list_item_upvote_icon);
+            helper.addOnClickListener(R.id.main_card_list_item_big_image);
+            helper.addOnClickListener(R.id.main_card_list_item_little_image_1);
+            helper.addOnClickListener(R.id.main_card_list_item_little_image_2);
+            helper.addOnClickListener(R.id.main_card_list_item_little_image_3);
 
             GlideUtils.loadImageView(getContext(), item.getBangumi().getAvatar(), (ImageView) helper.getView(R.id.main_card_list_item_anime_cover));
 

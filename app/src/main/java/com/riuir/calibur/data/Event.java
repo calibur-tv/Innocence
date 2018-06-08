@@ -11,6 +11,7 @@ package com.riuir.calibur.data;
 public class Event<T> {
     private int code;
     private T data;
+    private String message = "";
 
     public Event(int code) {
         this.code = code;
@@ -35,5 +36,22 @@ public class Event<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "code=" + code +
+                ", data=" + data +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

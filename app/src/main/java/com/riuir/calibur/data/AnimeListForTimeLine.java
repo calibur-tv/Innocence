@@ -35,9 +35,11 @@ public class AnimeListForTimeLine {
         this.data = data;
     }
 
+
+
     @Override
     public String toString() {
-        return "AnimeListForTime{" +
+        return "AnimeListForTimeLine{" +
                 "code=" + code +
                 ", message='" + message + '\'' +
                 ", data=" + data +

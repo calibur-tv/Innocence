@@ -1,10 +1,15 @@
 package com.riuir.calibur.net;
 
+import com.riuir.calibur.data.AnimeListForTagsSearch;
 import com.riuir.calibur.data.AnimeListForTimeLine;
 import com.riuir.calibur.data.DramaListResp;
+import com.riuir.calibur.data.GeeTestInfo;
 import com.riuir.calibur.data.MainCardInfo;
 import com.riuir.calibur.data.ResponseWrapper;
+import com.riuir.calibur.data.params.DramaTags;
 import com.riuir.calibur.utils.Constants;
+
+import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -24,5 +29,16 @@ public interface ApiGet {
     //获取最热帖子
     @GET("post/trending/hot")
     Call<MainCardInfo> getCallMainCardHotGet(@Query("seenIds")String seenIds);
+
+    //geetest api1
+    @GET("image/captcha")
+    Call<GeeTestInfo> getCallGeeTestImageCaptcha();
+
+    //获取动漫标签
+    @GET("bangumi/tags")
+    Call<DramaTags> getCallDramaTags();
+    //获取动漫标签
+    @GET("bangumi/category")
+    Call<AnimeListForTagsSearch> getCallSearchDramaForTags(@Query("id")String id, @Query("page")String page);
 
 }

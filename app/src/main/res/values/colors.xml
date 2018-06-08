@@ -8,6 +8,9 @@
     <color name="color_FFB75EB7">#B75eb7</color>
     <color name="transprent">#00000000</color>
     <color name="color_FFFFFFFF">#FFFFFFFF</color>
+    <color name="color_FF7B7B7B">#FF7B7B7B</color>
+    <color name="color_FF9B9B9B">#FF9B9B9B</color>
     <color name="color_FFDDDDDD">#FFDDDDDD</color>
     <color name="color_FF66CCFF">#FF66CCFF</color>
+    <color name="color_FF44ADE5">#FF44ADFF</color>
 </resources>

@@ -6,18 +6,29 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONException;
 import com.geetest.sdk.Bind.GT3Geetest;
+import com.geetest.sdk.Bind.GT3GeetestBindListener;
+import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
 import com.geetest.sdk.GT3GeetestButton;
 import com.geetest.sdk.GT3GeetestListener;
 import com.geetest.sdk.GT3GeetestUtils;
 import com.geetest.sdk.Gt3GeetestTestMsg;
 import com.riuir.calibur.R;
+import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.GeeTestInfo;
+import com.riuir.calibur.data.params.VerificationCodeBody;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.utils.Constants;
 
 import org.json.JSONObject;
@@ -27,19 +38,39 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends BaseActivity {
 
-    EditText userName;
-    EditText passWord;
+    private static final int NET_GEE_STATUS_captcha = 0;
+    private static final int NET_GEE_STATUS_login = 1;
 
-    String captchaURL = Constants.API_BASE_URL + "image/captcha";
-    String validateURL = Constants.API_BASE_URL + "image/validate";
 
-    GT3GeetestUtils gt3GeetestUtils;
+    @BindView(R.id.login_username_edit)
+    EditText userNameEdit;
+    @BindView(R.id.login_password_edit)
+    EditText passWordEdit;
 
-    @BindView(R.id.ll_btn_type)
-    GT3GeetestButton llBtnType;
+    String userNameStr;
+    String passWordStr;
+
+    @BindView(R.id.login_login_btn)
+    Button loginBtn;
+    @BindView(R.id.login_start_activity_forget_password_btn)
+    TextView startActivityForgetPassWordBtn;
+    @BindView(R.id.login_start_activity_register_btn)
+    TextView startActivityRegisterBtn;
+
+    GT3GeetestUtilsBind gt3GeetestUtilsBindLogin;
+    GT3GeetestBindListener bindListenerLogin;
+
+
+    private GeeTestInfo geeTestInfo;
+    private GeeTestInfo.GeeTest geeTest;
+
+    private VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGeeTest;
 
     @Override
     protected int getContentViewId() {
@@ -48,58 +79,152 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
+        verificationCodeBodyGeeTest = new VerificationCodeBody.VerificationCodeBodyGeeTest();
 
-        gt3GeetestUtils = GT3GeetestUtils.getInstance(LoginActivity.this);
-//        initGeeButton();
+        gt3GeetestUtilsBindLogin = new GT3GeetestUtilsBind(LoginActivity.this);
 
+        initOnClicklistener();
+
+    }
+
+    private void initOnClicklistener() {
+        loginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userNameStr = userNameEdit.getText().toString();
+                passWordStr = passWordEdit.getText().toString();
+                if (userNameStr==null||userNameStr.length() != 11
+                        ||passWordStr == null||passWordStr.length()==0){
+                    ToastUtils.showShort(LoginActivity.this,"请完善您的信息哟(＾Ｕ＾)ノ~");
+                }else {
+
+                    setNet(NET_GEE_STATUS_captcha);
+                }
+            }
+        });
+        startActivityForgetPassWordBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(ForgetPassWordActivity.class);
+            }
+        });
+        startActivityRegisterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(RegisterActivity.class);
+                finish();
+            }
+        });
+    }
+
+    private void setNet(int NET_STATUS){
+        if (NET_STATUS == NET_GEE_STATUS_captcha){
+            //自定义API1后 将API1的返回数据传给gt3GeetestUtils
+            apiGet.getCallGeeTestImageCaptcha().enqueue(new Callback<GeeTestInfo>() {
+                @Override
+                public void onResponse(Call<GeeTestInfo> call, Response<GeeTestInfo> response) {
+                    if (response!=null&&response.body()!=null&&response.body().getCode()==0){
+                        geeTestInfo = response.body();
+                        geeTest = geeTestInfo.getData();
+
+                        verificationCodeBodyGeeTest.setSuccess(geeTest.getSuccess());
+                        verificationCodeBodyGeeTest.setPayload(geeTest.getPayload());
+                        JSONObject params = new JSONObject();
+                        try {
+                            params.put("success",geeTest.getSuccess());
+                            params.put("gt",geeTest.getGt());
+                            params.put("challenge",geeTest.getChallenge());
+                            params.put("new_captcha",true);
+                        } catch (org.json.JSONException e) {
+                            e.printStackTrace();
+                        }
+                        gt3GeetestUtilsBindLogin.gtSetApi1Json(params);
+                        initBind();
+
+                    }else {
+                        ToastUtils.showShort(LoginActivity.this,"不明原因导致验证码发送失败QAQ");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<GeeTestInfo> call, Throwable t) {
+                    ToastUtils.showShort(LoginActivity.this,"请检查您的网络哟~");
+                }
+            });
+        }
+        if (NET_STATUS == NET_GEE_STATUS_login){
+
+            //自定义API2 登录
+            Map<String,Object> params = new HashMap<>();
+            params.put("access",userNameStr);
+            params.put("secret",passWordStr);
+            params.put("geetest",verificationCodeBodyGeeTest);
+
+            LogUtils.d("loginActivity","geetest = "+verificationCodeBodyGeeTest.toString());
+            apiPostNoAuth.getCallLogin(params).enqueue(new Callback<Event<String>>() {
+                @Override
+                public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
+                    if (response!=null&&response.body()!=null){
+
+                        int code = response.body().getCode();
+                        if (code == 0){
+                            gt3GeetestUtilsBindLogin.gt3TestFinish();
+                            // 登录成功
+                            ToastUtils.showShort(LoginActivity.this,"登录成功！✿✿ヽ(°▽°)ノ✿");
+                            //返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
+                            SharedPreferencesUtils.put(App.instance(),"Authorization",response.body().getData());
+                            startActivity(MainActivity.class);
+                            finish();
+                        }else if (code == 400){
+                            ToastUtils.showShort(LoginActivity.this,response.body().getData());
+                            gt3GeetestUtilsBindLogin.gt3TestClose();
+                        }else if (code == 403){
+                            ToastUtils.showShort(LoginActivity.this,response.body().getMessage());
+                            gt3GeetestUtilsBindLogin.gt3TestClose();
+                        }else {
+                            ToastUtils.showShort(LoginActivity.this,"不明原因导致登录失败QAQ");
+                            gt3GeetestUtilsBindLogin.gt3TestClose();
+                        }
+                    }else if (response.code() == 503){
+                        ToastUtils.showShort(LoginActivity.this,"您发送的太多啦，试试明天再来吧");
+                    }else {
+                        ToastUtils.showShort(LoginActivity.this,"不明原因导致登录失败QAQ");
+                        gt3GeetestUtilsBindLogin.gt3TestClose();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Event<String>> call, Throwable t) {
+                    ToastUtils.showShort(LoginActivity.this,"请检查您的网络哟~");
+                    gt3GeetestUtilsBindLogin.gt3TestClose();
+                }
+            });
+        }
 
 
     }
 
-    private void initGeeButton() {
-
-        gt3GeetestUtils.getGeetest(captchaURL, validateURL, null, new GT3GeetestListener() {
-            /**
-             * num 1 点击验证码的关闭按钮来关闭验证码
-             * num 2 点击屏幕关闭验证码
-             * num 3 点击返回键关闭验证码
-             */
+    private void initBindListener() {
+        bindListenerLogin = new GT3GeetestBindListener() {
             @Override
-            public void gt3CloseDialog(int  num) {
+            public void gt3CloseDialog(int i) {
+                super.gt3CloseDialog(i);
             }
 
-
-            /**
-             * 往API1请求中添加参数
-             * 该方法只适用于不使用自定义api1时使用
-             * 添加数据为Map集合
-             * 添加的数据以get形式提交
-             */
             @Override
-            public Map<String, String> gt3CaptchaApi1() {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("t", System.currentTimeMillis()+"");
-                return map;
-
+            public void gt3DialogReady() {
+                super.gt3DialogReady();
             }
 
-            /**
-             * 验证过程错误
-             * 返回的错误码为判断错误类型的依据
-             */
-
+            //用户是否自定义二次验证
             @Override
-            public void gt3DialogOnError(String error) {
-
+            public boolean gt3SetIsCustom() {
+                return true;
             }
 
-            /**
-             * 拿到第二个url（API2）需要的数据
-             * 该方法只适用于不使用自定义api2时使用
-             */
             @Override
-            public void gt3GetDialogResult(String result) {
-
+            public void gt3GeetestStatisticsJson(JSONObject jsonObject) {
+                super.gt3GeetestStatisticsJson(jsonObject);
             }
 
             /**
@@ -107,179 +232,58 @@ public class LoginActivity extends BaseActivity {
              * 拿到第二个url（API2）需要的数据
              * 在该回调里面自行请求api2
              * 对api2的结果进行处理
+             * status 如果是true执行自定义接口2请求
              */
             @Override
-            public void gt3GetDialogResult(boolean status,String result) {
+            public void gt3GetDialogResult(boolean status, String result) {
+//
+                if (status){
+                    //基本使用方法：
 
-                if (status) {
-
-                    /**
-                     * 基本使用方法：
-                     *
-                     * 1.取出该接口返回的三个参数用于自定义二次验证
-                     * JSONObject res_json = new JSONObject(result);
-                     *
-                     * Map<String, String> validateParams = new HashMap<>();
-                     *
-                     * validateParams.put("geetest_challenge", res_json.getString("geetest_challenge"));
-                     *
-                     * validateParams.put("geetest_validate", res_json.getString("geetest_validate"));
-                     *
-                     * validateParams.put("geetest_seccode", res_json.getString("geetest_seccode"));
-                     *
-                     * 新加参数可以继续比如
-                     *
-                     * validateParams.put("user_key1", "value1");
-                     *
-                     * validateParams.put("user_key2", "value2");
-                     *
-                     * 2.自行做网络请求，请求时用上前面取出来的参数
-                     *
-                     * 3.拿到网络请求后的结果，判断是否成功
-                     *
-                     * 二次验证成功调用 gt3GeetestUtils.gt3TestFinish();
-                     * 二次验证失败调用 gt3GeetestUtils.gt3CloseButton();
-                     */
-
-                }
-            }
-
-            /**
-             * 拿到第一个url（API1）返回的数据
-             * 该方法只适用于不使用自定义api1时使用
-             */
-            @Override
-            public void gt3FirstResult(JSONObject jsonObject) {
-            }
-
-            /**
-             * 往二次验证里面put数据
-             * 该方法只适用于不使用自定义api2时使用
-             * put类型是map类型
-             * 注意map的键名不能是以下三个：geetest_challenge，geetest_validate，geetest_seccode
-             */
-            @Override
-            public Map<String, String> gt3SecondResult() {
-                return null;
-            }
-
-            /**
-             * 二次验证完成的回调
-             * 该方法只适用于不使用自定义api2时使用
-             * result为验证后的数据
-             * 根据二次验证返回的数据判断此次验证是否成功
-             * 二次验证成功调用 gt3GeetestUtils.gt3TestFinish();
-             * 二次验证失败调用 gt3GeetestUtils.gt3CloseButton();
-             */
-            //请求成功数据
-            @Override
-            public void gt3DialogSuccessResult(String result) {
-                if(!TextUtils.isEmpty(result)) {
+                    // 1.取出该接口返回的三个参数用于自定义二次验证
+                    JSONObject res_json = null;
                     try {
-                        JSONObject jobj = new JSONObject(result);
-                        String sta = jobj.getString("status");
+                        res_json = new JSONObject(result);
 
-                        if ("success".equals(sta)) {
-                            gt3GeetestUtils.gt3TestFinish();
-                        } else {
-                            gt3GeetestUtils.gt3CloseButton();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        verificationCodeBodyGeeTest.setGeetest_challenge(res_json.getString("geetest_challenge"));
+                        verificationCodeBodyGeeTest.setGeetest_validate(res_json.getString("geetest_validate"));
+                        verificationCodeBodyGeeTest.setGeetest_seccode(res_json.getString("geetest_seccode"));
+
+
                     } catch (org.json.JSONException e) {
                         e.printStackTrace();
                     }
-                }else
-                {
-                    gt3GeetestUtils.gt3CloseButton();
-                }
-                ToastUtils.showShort(LoginActivity.this,result);
-                Gt3GeetestTestMsg.setCandotouch(true);//这里设置验证成功后是否可以再次点击 true为可以 反之不可以
-            }
+                    LogUtils.d("registerLog","verificationCodeBodyGeeTest = "+verificationCodeBodyGeeTest.toString());
 
-
-            /**
-             * 验证码加载准备完成
-             * 此时将弹出验证码
-             */
-            @Override
-            public void gt3DialogReady() {
-
-            }
-
-            /**
-             * 设置是否自定义第二次验证ture为是 默认为false(不自定义)
-             * 如果为false后续会走gt3GetDialogResult(String result)拿到api2需要的参数
-             * 如果为true后续会走gt3GetDialogResult(boolean a, String result)拿到api2需要的参数
-             * result为二次验证所需要的数据
-             */
-            @Override
-            public boolean gt3SetIsCustom() {
-                return false;
-            }
-
-
-            /**
-             * 判断自定义按键是否被点击
-             */
-            @Override
-            public void gtOnClick(boolean onclick) {
-                if(onclick){
-                    //被点击
-                    /**
-                     * 如果api1也想自己自定,那么访问您的服务器后讲INFO数据以如下格式传给我
-                     *  gt3GeetestUtils.gtSetApi1Json(jsonObject);
-                     */
-//                    mGtppDlgTask =  new GtppDlgTask();
-//                    mGtppDlgTask.execute();
-
-                    gt3GeetestUtils.setDialogTouch(true);
+                    setNet(NET_GEE_STATUS_login);
 
                 }
+
             }
 
-        });
-        ButterKnife.bind(this);
 
+
+            @Override
+            public void gt3DialogOnError(String s) {
+                super.gt3DialogOnError(s);
+            }
+        };
     }
 
-//    /**
-//     * 以下代码是模拟自定义api1的异步请求
-//     * 需要自定义api1的可以参考这边的写法
-//     */
-//    GT3Geetest captcha;
-//    GtppDlgTask mGtppDlgTask;
-//    // 请求的API1
-//    private class GtppDlgTask extends AsyncTask<Void, Void, JSONObject> {
-//
-//        @Override
-//        protected JSONObject doInBackground(Void... params) {
-//            captcha = new GT3Geetest(captchaURL,validateURL,null);
-//            String Str_map ="?";
-//            JSONObject jsonObject;
-//
-//            jsonObject = captcha.check2Server(Str_map);
-//
-//            return jsonObject;
-//
-//        }
-//
-//        @Override
-//        protected void onPostExecute(JSONObject parmas) {
-//            //{"success":1,"challenge":"323b14a7fe13fcfb7c830bb44a687e7f","gt":"019924a82c70bb123aae90d483087f94","new_captcha":true}
-//            gt3GeetestUtils.gtSetApi1Json(parmas);
-//        }
-//    }
+    private void initBind() {
+        initBindListener();
+        gt3GeetestUtilsBindLogin.getGeetest(this,"","",null,bindListenerLogin);
+    }
 
 
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         /**
          * 页面关闭时释放资源
          */
-        gt3GeetestUtils.cancelUtils();
+        gt3GeetestUtilsBindLogin.cancelUtils();
+        super.onDestroy();
     }
 
 
@@ -289,7 +293,7 @@ public class LoginActivity extends BaseActivity {
         /**
          * 设置后，界面横竖屏不会关闭验证码，推荐设置
          */
-        gt3GeetestUtils.changeDialogLayout();
+        gt3GeetestUtilsBindLogin.changeDialogLayout();
     }
 
 

@@ -36,7 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private LayoutInflater mInflater;
     private Unbinder unbinder;
     protected static UIHandler handler = new UIHandler(Looper.getMainLooper());
-    protected ApiPost apiPost;
+    protected ApiPost apiPost,apiPostNoAuth;
     protected ApiGet apiGet;
     protected CompositeDisposable compositeDisposable = null;
 
@@ -45,6 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //拿到NetService网络请求的Api返回对象
         apiPost = NetService.getInstance().createServicePost();
+        apiPostNoAuth = NetService.getInstance().createServicePostNoAuth();
         apiGet = NetService.getInstance().createServiceGet();
 
         compositeDisposable = new CompositeDisposable();

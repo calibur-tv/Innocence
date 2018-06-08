@@ -11,4 +11,8 @@ public class Constants {
     //API版本号
     public static final String API_VERSION = "v1";
 
+    public static String AUTH_TOKEN = "";
+
+    public static boolean ISLOGIN = false;
+
 }

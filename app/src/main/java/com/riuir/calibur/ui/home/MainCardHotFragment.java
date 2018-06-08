@@ -85,6 +85,14 @@ public class MainCardHotFragment extends BaseFragment {
 
                 if (response == null||response.body()==null||response.body().getData() == null||response.body().getData().size() == 0){
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        mainCardHotRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
                 }else {
                     listHot = response.body().getData();
                     if (isFristLoad){
@@ -111,6 +119,11 @@ public class MainCardHotFragment extends BaseFragment {
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                 if (isLoadMore){
                     adapter.loadMoreFail();
+                    isLoadMore = false;
+                }
+                if (isRefresh){
+                    mainCardHotRefreshLayout.setRefreshing(false);
+                    isRefresh = false;
                 }
             }
         });
@@ -179,10 +192,8 @@ public class MainCardHotFragment extends BaseFragment {
         adapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
         //开启上拉加载更多
         adapter.setEnableLoadMore(true);
-        //开启下拉刷新
 
-        //下拉到第几个item开始刷新
-        adapter.setStartUpFetchPosition(0);
+
         //添加底部footer
         adapter.setLoadMoreView(new CardLoadMoreView());
         adapter.disableLoadMoreIfNotFullPage(mainCardHotListView);
@@ -202,9 +213,9 @@ public class MainCardHotFragment extends BaseFragment {
                 //item被点击，跳转页面
             }
         });
-        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+        adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 if (view.getId() == R.id.main_card_list_item_upvote_icon){
                     //点赞按钮被点击
                 }
@@ -220,7 +231,6 @@ public class MainCardHotFragment extends BaseFragment {
                 if (view.getId() == R.id.main_card_list_item_little_image_3){
                     //小图3按钮被点击
                 }
-
             }
         });
         //上拉加载监听
@@ -257,11 +267,12 @@ public class MainCardHotFragment extends BaseFragment {
             helper.setText(R.id.main_card_list_item_upvote_count, ""+item.getView_count());
             helper.setText(R.id.main_card_list_item_last_comment_count, ""+item.getComment_count());
             //为点赞按钮添加点击事件
-            helper.addOnLongClickListener(R.id.main_card_list_item_upvote_icon);
-            helper.addOnLongClickListener(R.id.main_card_list_item_big_image);
-            helper.addOnLongClickListener(R.id.main_card_list_item_little_image_1);
-            helper.addOnLongClickListener(R.id.main_card_list_item_little_image_2);
-            helper.addOnLongClickListener(R.id.main_card_list_item_little_image_3);
+            helper.addOnClickListener(R.id.main_card_list_item_upvote_icon);
+
+            helper.addOnClickListener(R.id.main_card_list_item_big_image);
+            helper.addOnClickListener(R.id.main_card_list_item_little_image_1);
+            helper.addOnClickListener(R.id.main_card_list_item_little_image_2);
+            helper.addOnClickListener(R.id.main_card_list_item_little_image_3);
 
             GlideUtils.loadImageView(getContext(), item.getBangumi().getAvatar(), (ImageView) helper.getView(R.id.main_card_list_item_anime_cover));
 

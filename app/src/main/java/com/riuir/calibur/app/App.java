@@ -6,6 +6,8 @@ import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.riuir.calibur.BuildConfig;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
+import com.riuir.calibur.utils.Constants;
 
 /**
  * ************************************
@@ -24,6 +26,14 @@ public class App extends Application {
         super.onCreate();
         instance = this;
         initLogger();
+        Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
+
+
+        if (Constants.AUTH_TOKEN!=null&&Constants.AUTH_TOKEN.length()!=0){
+            Constants.ISLOGIN = true;
+        }else {
+            Constants.ISLOGIN = false;
+        }
         Logger.d("app");
     }
 
