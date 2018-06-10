@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.DramaNewAnimeListFragment"
+    android:orientation="vertical"
+    >
+
+    <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
+        android:id="@+id/drama_new_anime_list_tab"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        ></com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/drama_new_anime_list_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        ></android.support.v4.view.ViewPager>
+
+</LinearLayout>

@@ -1,5 +1,6 @@
 package com.riuir.calibur.ui.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -9,6 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
+import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import com.riuir.calibur.R;
 
 
@@ -63,7 +67,9 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         View view = layoutInflater.inflate(R.layout.layout_main_bottombar, this, true);
         maintabMenu = (LinearLayout) view.findViewById(R.id.maintab_menu);
 
+
         maintabAdd = (ImageView) view.findViewById(R.id.maintab_add);
+
 
         maintabDis = (RelativeLayout) view.findViewById(R.id.maintab_dis);
         maintabDisIv = (ImageView) view.findViewById(R.id.maintab_dis_iv);
@@ -92,6 +98,8 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         maintabMsg.setOnClickListener(this);
         maintabMine.setOnClickListener(this);
     }
+
+
 
     public void init() {
         reset();

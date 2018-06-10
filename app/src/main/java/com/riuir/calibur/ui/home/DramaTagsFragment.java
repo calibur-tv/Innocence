@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeListForTagsSearch;
 import com.riuir.calibur.data.params.DramaTags;
 import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.ArrayList;
@@ -273,7 +275,10 @@ public class DramaTagsFragment extends BaseFragment {
         dramaTagsAnimeListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                int id = dramaTagsAnimeListAdapter.getData().get(position).getId();
+                int animeId = dramaTagsAnimeListAdapter.getData().get(position).getId();
+                Intent intent = new Intent(getActivity(),DramaActivity.class);
+                intent.putExtra("animeId",animeId);
+                startActivity(intent);
             }
         });
 
@@ -331,7 +336,6 @@ public class DramaTagsFragment extends BaseFragment {
                             Integer tagId = tagsIdIterator.next();
                             if (tagId == checkedTextView.getTag()){
                                 tagsIdIterator.remove();
-                                ToastUtils.showShort(getContext(),"取消选择了");
                             }
                         }
 

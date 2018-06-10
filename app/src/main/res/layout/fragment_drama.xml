@@ -4,16 +4,16 @@
     android:layout_height="match_parent"
     android:background="@color/color_FF23ADE5">
 
-    <TextView
-        android:id="@+id/tv_drama"
-        android:layout_width="80dp"
-        android:layout_height="60dp"
-        android:clipToPadding="true"
-        android:fitsSystemWindows="true"
-        android:gravity="center"
-        android:text="番剧"
-        android:textColor="@color/color_FFFFFFFF"
-        android:textSize="20sp" />
+    <!--<TextView-->
+        <!--android:id="@+id/tv_drama"-->
+        <!--android:layout_width="80dp"-->
+        <!--android:layout_height="60dp"-->
+        <!--android:clipToPadding="true"-->
+        <!--android:fitsSystemWindows="true"-->
+        <!--android:gravity="center"-->
+        <!--android:text="番剧"-->
+        <!--android:textColor="@color/color_FFFFFFFF"-->
+        <!--android:textSize="20sp" />-->
 
     <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
         android:id="@+id/drama_pager_tab"

@@ -43,8 +43,6 @@ import retrofit2.Response;
  * 帖子fragment
  */
 public class MainFragment extends BaseFragment {
-    @BindView(R.id.tv_main_card)
-    TextView tvMain;
     @BindView(R.id.main_card_pager_tab)
     MyPagerSlidingTabStrip mainCardTab;
     @BindView(R.id.main_card_view_pager)
@@ -73,8 +71,6 @@ public class MainFragment extends BaseFragment {
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         dm = getResources().getDisplayMetrics();
-        tvMain.setText("帖子");
-
         setViewPager();
 
     }
@@ -100,9 +96,9 @@ public class MainFragment extends BaseFragment {
         // 设置Tab Indicator的高度
         mainCardTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, dm));
         // 设置Tab标题文字的大小
-        mainCardTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16, dm));
+        mainCardTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, dm));
         //设置textclolo
-        mainCardTab.setTextColorResource(R.color.color_FFDDDDDD);
+        mainCardTab.setTextColorResource(R.color.color_FFFFFFFF);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
         mainCardTab.setSelectedTextColorResource(R.color.color_FFFFFFFF);
         //设置滚动条圆角（这是我自定义的一个方法，同时修改了滚动条长度，使其与文字等宽）

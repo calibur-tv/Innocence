@@ -31,13 +31,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.loginAndRegister.LoginActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <activity
+            android:name=".ui.loginAndRegister.LoginActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".ui.home.Drama.DramaActivity" />
-        <activity android:name=".ui.loginAndRegister.RegisterActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
-        <activity android:name=".ui.loginAndRegister.ForgetPassWordActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"></activity>
+        <activity
+            android:name=".ui.loginAndRegister.RegisterActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".ui.loginAndRegister.ForgetPassWordActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity android:name=".ui.home.card.CardPreviewPictureActivity"></activity>
     </application>
 
 </manifest>

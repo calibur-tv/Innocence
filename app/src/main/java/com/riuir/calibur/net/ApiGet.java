@@ -2,6 +2,8 @@ package com.riuir.calibur.net;
 
 import com.riuir.calibur.data.AnimeListForTagsSearch;
 import com.riuir.calibur.data.AnimeListForTimeLine;
+import com.riuir.calibur.data.AnimeNewListForWeek;
+import com.riuir.calibur.data.AnimeShowInfo;
 import com.riuir.calibur.data.DramaListResp;
 import com.riuir.calibur.data.GeeTestInfo;
 import com.riuir.calibur.data.MainCardInfo;
@@ -14,6 +16,7 @@ import org.json.JSONObject;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiGet {
@@ -21,6 +24,10 @@ public interface ApiGet {
     //获取番剧时间抽
     @GET("bangumi/timeline")
     Call<AnimeListForTimeLine> getCallDramaTimeGet(@Query("year")int year, @Query("take")int take);
+
+    //获取番剧时间抽
+    @GET("bangumi/released")
+    Call<AnimeNewListForWeek> getCallDramaNewForWeek();
 
     //获取最新帖子
     @GET("post/trending/new")
@@ -40,5 +47,9 @@ public interface ApiGet {
     //获取动漫标签
     @GET("bangumi/category")
     Call<AnimeListForTagsSearch> getCallSearchDramaForTags(@Query("id")String id, @Query("page")String page);
+
+    //获取动漫标签
+    @GET("bangumi/{bangumiId}/show")
+    Call<AnimeShowInfo> getCallAnimeShow(@Path("bangumiId")int bangumiId);
 
 }

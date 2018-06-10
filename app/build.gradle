@@ -61,4 +61,8 @@ dependencies {
     //AutoFolwLayout 标签流布局
     implementation 'com.github.LRH1993:AutoFlowLayout:1.0.5'
 
+    //CircularFloatingActionMenu 点击扇形展开按钮
+    implementation 'com.oguzdev:CircularFloatingActionMenu:1.0.2'
+    //photo 预览图片
+    implementation 'com.bm.photoview:library:1.4.1'
 }

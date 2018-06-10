@@ -1,6 +1,9 @@
 package com.riuir.calibur.ui.home;
 
 
+import android.app.ActivityOptions;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.print.PrinterId;
 import android.support.annotation.Nullable;
@@ -18,6 +21,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bm.library.PhotoView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.loadmore.LoadMoreView;
@@ -27,6 +31,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.MainCardInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.ui.home.card.CardPreviewPictureActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.ArrayList;
@@ -73,7 +78,6 @@ public class MainCardHotFragment extends BaseFragment {
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         setNet();
-
     }
 
     private void setNet() {
@@ -116,7 +120,8 @@ public class MainCardHotFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<MainCardInfo> call, Throwable t) {
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试123");
+                    LogUtils.d("cardHot","t = "+t);
                 if (isLoadMore){
                     adapter.loadMoreFail();
                     isLoadMore = false;
@@ -220,16 +225,23 @@ public class MainCardHotFragment extends BaseFragment {
                     //点赞按钮被点击
                 }
                 if (view.getId() == R.id.main_card_list_item_big_image){
-                    //大图1按钮被点击
+//                    //大图1按钮被点击
+//                    Intent intent=new Intent(getContext(),CardPreviewPictureActivity.class);
+//                    //将所有图片结合 和被点击的图片位置传到ImgGalleryActivity中
+////                    intent.putStringArrayListExtra("imageUrl", (ArrayList<String>) imageUrl);
+//                    intent.putExtra("imageId", 1);
+//                    //版本大于5.0的时候带有动画
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity(), view, "sharedView").toBundle());
+//                    }else {
+//                        startActivity(intent);
+//                    }
                 }
                 if (view.getId() == R.id.main_card_list_item_little_image_1){
-                    //小图1按钮被点击
                 }
                 if (view.getId() == R.id.main_card_list_item_little_image_2){
-                    //小图2按钮被点击
                 }
                 if (view.getId() == R.id.main_card_list_item_little_image_3){
-                    //小图3按钮被点击
                 }
             }
         });

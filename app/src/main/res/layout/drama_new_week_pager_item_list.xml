@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/drama_timeline_list_item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/drama_new_week_pager_item_list_image"
+            android:layout_marginLeft="30px"
+            android:layout_marginTop="30px"
+            android:layout_marginBottom="30px"
+            android:layout_marginRight="20px"
+            android:layout_width="120px"
+            android:layout_height="160px"
+            android:scaleType="centerCrop"
+            />
+        <TextView
+            android:id="@+id/drama_new_week_pager_item_list_name"
+            android:layout_toRightOf="@id/drama_new_week_pager_item_list_image"
+            android:layout_marginTop="40px"
+            android:layout_width="match_parent"
+            android:layout_height="38px"
+            android:layout_marginRight="30px"
+            android:text="番剧名"
+            android:textSize="30px"
+            android:textColor="#333333"
+            />
+        <CheckedTextView
+            android:id="@+id/drama_new_week_pager_item_list_part"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@id/drama_new_week_pager_item_list_image"
+            android:layout_marginRight="30px"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:textColor="@color/color_FFFFFFFF"
+            android:background="@drawable/drama_new_week_pard_bg_updata_false"
+            android:textSize="25px"
+            android:text="37"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#9B9B9B"
+            android:textSize="25px"
+            android:layout_toLeftOf="@id/drama_new_week_pager_item_list_part"
+            android:layout_alignBottom="@id/drama_new_week_pager_item_list_part"
+            android:text="更新至："
+            />
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

@@ -1,11 +1,26 @@
 package com.riuir.calibur.ui.home;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.app.Activity;
+import android.content.Context;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
+import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import com.orhanobut.logger.Logger;
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.DensityUtils;
+import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ScreenUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.RCode;
 import com.riuir.calibur.ui.common.BaseActivity;
@@ -32,6 +47,11 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     private Fragment fragmentDrama = DramaFragment.newInstance();
     private Fragment fragmentMessage = MessageFragment.newInstance();
     private Fragment fragmentMine = MineFragment.newInstance();
+
+    FloatingActionMenu actionMenu;
+    ImageView childIcon1;
+    ImageView childIcon2;
+    ImageView childIcon3;
 
     @Override
     protected int getContentViewId() {
@@ -64,10 +84,131 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         Logger.d("oninit");
         handler.sendEmptyMessageDelayed(0, 200);
         EventBusUtil.sendEvent(new Event(RCode.EventCode.A));
+
+
+        setFloatingActionBth();
     }
+
+    //将addBtn 以actionBtn的方式在这里初始化
+    private void setFloatingActionBth() {
+        //宽高的px  由dp转换而成
+        int addBtnParams = DensityUtils.dp2px(this,70);
+        int itemIconParams = DensityUtils.dp2px(this,30);
+
+        //设置CircularFloatingActionMenu点击展开扇形图
+        final ImageView addActionImg = new ImageView(this);
+        addActionImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        //设置image宽高边距
+        FloatingActionButton.LayoutParams addImgParams = new FloatingActionButton.LayoutParams(addBtnParams,
+                addBtnParams);
+        addImgParams.setMargins(0, 0, 0,
+                0);
+        addActionImg.setLayoutParams(addImgParams);
+        addActionImg.setImageDrawable(getResources().getDrawable(R.mipmap.maintab_new_normal));
+
+        //设置FloatingActionButton宽高边距
+        FloatingActionButton.LayoutParams addActionButtonParams = new FloatingActionButton.LayoutParams(
+                addBtnParams, addBtnParams);
+        addActionButtonParams.setMargins(0, 0,
+                0, 0);
+        final FloatingActionButton addActionButton =
+                new FloatingActionButton.Builder(this).setContentView(addActionImg,addActionButtonParams)
+                        .setPosition(FloatingActionButton.POSITION_BOTTOM_CENTER)
+                        .setLayoutParams(addImgParams)
+                        .build();
+
+        // Set up customized SubActionButtons for the right center menu
+        SubActionButton.Builder subBuilder = new SubActionButton.Builder(this);
+//        lCSubBuilder.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_action_blue_selector));
+
+        FrameLayout.LayoutParams itemIconLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+        itemIconLayoutParams.setMargins(0, 0,
+                0, 0);
+        subBuilder.setLayoutParams(itemIconLayoutParams);
+        // Set custom layout params
+        FrameLayout.LayoutParams itemParams = new FrameLayout.LayoutParams(itemIconParams,
+                itemIconParams);
+        subBuilder.setLayoutParams(itemParams);
+
+        childIcon1 = new ImageView(this);
+        childIcon2 = new ImageView(this);
+        childIcon3 = new ImageView(this);
+
+        childIcon1.setImageDrawable(getResources().getDrawable(R.drawable.maintab_msg_iv));
+        childIcon2.setImageDrawable(getResources().getDrawable(R.drawable.maintab_msg_iv));
+        childIcon3.setImageDrawable(getResources().getDrawable(R.drawable.maintab_msg_iv));
+
+        SubActionButton itemSub1 = subBuilder.setContentView(childIcon1, itemIconLayoutParams).build();
+        SubActionButton itemSub2 = subBuilder.setContentView(childIcon2, itemIconLayoutParams).build();
+        SubActionButton itemSub3 = subBuilder.setContentView(childIcon3, itemIconLayoutParams).build();
+
+
+        actionMenu = new FloatingActionMenu.Builder(this)
+                .addSubActionView(itemSub1)
+                .addSubActionView(itemSub2)
+                .addSubActionView(itemSub3)
+                .setStartAngle(-135)
+                .setEndAngle(-45)
+                .attachTo(addActionButton)
+                .build();
+
+        itemSub1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showShort(MainActivity.this,"点击了1");
+                actionMenu.close(true);
+            }
+        });
+        itemSub2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showShort(MainActivity.this,"点击了2");
+                actionMenu.close(true);
+            }
+        });
+        itemSub3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showShort(MainActivity.this,"点击了3");
+                actionMenu.close(true);
+            }
+        });
+
+
+        actionMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
+            @Override
+            public void onMenuOpened(FloatingActionMenu menu) {
+                // 增加按钮中的+号图标顺时针旋转45度
+                addActionImg.setRotation(0);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 45);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(addActionImg, pvhR);
+                animation.start();
+                //屏幕变暗
+                ScreenUtils.setScreenBgDarken(MainActivity.this);
+            }
+
+            @Override
+            public void onMenuClosed(FloatingActionMenu menu) {
+                // 增加按钮中的+号图标逆时针旋转45度
+
+                addActionImg.setRotation(45);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(addActionImg, pvhR);
+                animation.start();
+                //屏幕变亮
+                ScreenUtils.setScreenBgLight(MainActivity.this);
+            }
+        });
+
+
+
+    }
+
 
     @Override
     protected boolean isRegisterEventBus() {
+
         return true;
     }
 

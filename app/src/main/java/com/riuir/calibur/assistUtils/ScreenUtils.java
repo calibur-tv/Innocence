@@ -123,4 +123,19 @@ public class ScreenUtils
 
     }
 
+
+    // 设置屏幕背景变暗
+    public static void setScreenBgDarken(Activity activity) {
+        WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+        lp.alpha = 0.7f;
+        lp.dimAmount = 0.7f;
+        activity.getWindow().setAttributes(lp);
+    }
+    // 设置屏幕背景变亮
+    public static void setScreenBgLight(Activity activity) {
+        WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+        lp.alpha = 1.0f;
+        lp.dimAmount = 1.0f;
+        activity.getWindow().setAttributes(lp);
+    }
 }

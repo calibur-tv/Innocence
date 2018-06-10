@@ -252,10 +252,8 @@ public class DramaTimelineFragment extends BaseFragment {
                         @Override
                         public void onClick(View v) {
                             int animeId = itemChild.getId();
-                            String animeName = itemChild.getName();
                             Intent intent = new Intent(getActivity(),DramaActivity.class);
                             intent.putExtra("animeId",animeId);
-                            intent.putExtra("animeName",animeName);
                             startActivity(intent);
                         }
                     });

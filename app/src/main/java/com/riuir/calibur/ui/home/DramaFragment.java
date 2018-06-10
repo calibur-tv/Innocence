@@ -53,8 +53,6 @@ import retrofit2.Response;
 
 public class DramaFragment extends BaseFragment {
 
-    @BindView(R.id.tv_drama)
-    TextView darmaMain;
 
     @BindView(R.id.drama_pager_tab)
     MyPagerSlidingTabStrip dramaPagerTab;
@@ -63,6 +61,7 @@ public class DramaFragment extends BaseFragment {
 
     DramaTagsFragment dramaTagsFragment;
     DramaTimelineFragment dramaTimelineFragment;
+    DramaNewAnimeListFragment dramaNewAnimeListFragment;
 
     /**
      * 获取当前屏幕的密度
@@ -84,7 +83,6 @@ public class DramaFragment extends BaseFragment {
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         dm = getResources().getDisplayMetrics();
-        darmaMain.setText("番剧");
 
         setViewPager();
 
@@ -106,7 +104,6 @@ public class DramaFragment extends BaseFragment {
         // 设置Tab的分割线是透明的
         dramaPagerTab.setDividerColor(Color.TRANSPARENT);
         dramaPagerTab.setBackgroundResource(R.color.color_FF23ADE5);
-        dramaPagerTab.setUnderlineColor(Color.TRANSPARENT);
         //设置underLine
         dramaPagerTab.setUnderlineHeight(2);
         dramaPagerTab.setUnderlineColorResource(R.color.color_FF23ADE5);
@@ -115,9 +112,9 @@ public class DramaFragment extends BaseFragment {
         // 设置Tab Indicator的高度
         dramaPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, dm));
         // 设置Tab标题文字的大小
-        dramaPagerTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16, dm));
+        dramaPagerTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, dm));
         //设置textclolo
-        dramaPagerTab.setTextColorResource(R.color.color_FFDDDDDD);
+        dramaPagerTab.setTextColorResource(R.color.color_FFFFFFFF);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
         dramaPagerTab.setSelectedTextColorResource(R.color.color_FFFFFFFF);
         //设置滚动条圆角（这是我自定义的一个方法，同时修改了滚动条长度，使其与文字等宽）
@@ -133,7 +130,7 @@ public class DramaFragment extends BaseFragment {
             super(fm);
         }
 
-        private final String[] titles = { "标签", "时间轴" };
+        private final String[] titles = { "新番放送","标签", "时间轴" };
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -149,11 +146,16 @@ public class DramaFragment extends BaseFragment {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
+                    if (dramaNewAnimeListFragment == null) {
+                        dramaNewAnimeListFragment = new DramaNewAnimeListFragment();
+                    }
+                    return dramaNewAnimeListFragment;
+                case 1:
                     if (dramaTagsFragment == null) {
                         dramaTagsFragment = new DramaTagsFragment();
                     }
                     return dramaTagsFragment;
-                case 1:
+                case 2:
                     if (dramaTimelineFragment == null) {
                         dramaTimelineFragment = new DramaTimelineFragment();
                     }

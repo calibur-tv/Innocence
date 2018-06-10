@@ -5,16 +5,16 @@
     android:layout_height="match_parent"
     android:background="@color/color_FF23ADE5">
 
-    <TextView
-        android:id="@+id/tv_main_card"
-        android:clipToPadding="true"
-        android:fitsSystemWindows="true"
-        android:layout_width="80dp"
-        android:layout_height="60dp"
-        android:gravity="center"
-        android:text="帖子"
-        android:textSize="20sp"
-        android:textColor="@color/color_FFFFFFFF"/>
+    <!--<TextView-->
+        <!--android:id="@+id/tv_main_card"-->
+        <!--android:clipToPadding="true"-->
+        <!--android:fitsSystemWindows="true"-->
+        <!--android:layout_width="80dp"-->
+        <!--android:layout_height="60dp"-->
+        <!--android:gravity="center"-->
+        <!--android:text="帖子"-->
+        <!--android:textSize="20sp"-->
+        <!--android:textColor="@color/color_FFFFFFFF"/>-->
 
     <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
         android:id="@+id/main_card_pager_tab"

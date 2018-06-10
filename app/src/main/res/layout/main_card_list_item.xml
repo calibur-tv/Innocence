@@ -81,6 +81,7 @@
             android:layout_height="wrap_content"
             android:scaleType="fitStart"
             android:visibility="gone"
+            android:transitionName="preview_card_picture"
             />
         <LinearLayout
             android:id="@+id/main_card_list_item_little_image_group"
@@ -97,6 +98,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:visibility="invisible"
+                android:transitionName="preview_card_picture"
                 />
             <ImageView
                 android:id="@+id/main_card_list_item_little_image_2"
@@ -107,6 +109,7 @@
                 android:layout_marginLeft="15dp"
                 android:scaleType="centerCrop"
                 android:visibility="invisible"
+                android:transitionName="preview_card_picture"
                 />
             <ImageView
                 android:id="@+id/main_card_list_item_little_image_3"
@@ -117,6 +120,7 @@
                 android:layout_marginLeft="15dp"
                 android:scaleType="centerCrop"
                 android:visibility="invisible"
+                android:transitionName="preview_card_picture"
                 />
         </LinearLayout>
 

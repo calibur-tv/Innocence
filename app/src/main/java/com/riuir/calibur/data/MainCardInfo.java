@@ -44,8 +44,8 @@ public class MainCardInfo {
         private MainCardInfoUser user;
         private MainCardInfoBangumi bangumi;
         private List<String> previewImages;
-        private int liked;
-        private int marked;
+        private boolean liked;
+        private boolean marked;
         private boolean commented;
 
         public int getId() {
@@ -152,19 +152,19 @@ public class MainCardInfo {
             this.previewImages = previewImages;
         }
 
-        public int getLiked() {
+        public boolean isLiked() {
             return liked;
         }
 
-        public void setLiked(int liked) {
+        public void setLiked(boolean liked) {
             this.liked = liked;
         }
 
-        public int getMarked() {
+        public boolean isMarked() {
             return marked;
         }
 
-        public void setMarked(int marked) {
+        public void setMarked(boolean marked) {
             this.marked = marked;
         }
 
