@@ -2,7 +2,6 @@ package com.riuir.calibur.ui.home;
 
 
 import android.os.Bundle;
-import android.print.PrinterId;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,12 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -40,52 +35,48 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainCardNewFragment extends BaseFragment {
+public class MainCardActiveFragment extends BaseFragment {
+    String seenIds = "";
+    List<Integer> seenIdList = new ArrayList<>();
 
-    int minId = 0;
+    @BindView(R.id.main_card_active_list_view)
+    RecyclerView mainCardHotListView;
 
-    @BindView(R.id.main_card_new_list_view)
-    RecyclerView mainCardNewListView;
-
-    @BindView(R.id.main_card_new_refresh_layout)
-    SwipeRefreshLayout mainCardNewRefreshLayout;
+    @BindView(R.id.main_card_active_refresh_layout)
+    SwipeRefreshLayout mainCardHotRefreshLayout;
     //用来动态改变RecyclerView的变量
-    private List<MainCardInfo.MainCardInfoList> listNew;
+    private List<MainCardInfo.MainCardInfoList> listHot;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainCardInfo.MainCardInfoList> baseListNew;
+    private List<MainCardInfo.MainCardInfoList> baseListHot;
 
     private MainCardInfo.MainCardInfoData mainCardInfoData;
 
-    private MainCardNewAdapter adapter;
+    private MainCardActiveAdapter adapter;
 
     //帖子总条目数
     int TOTAL_COUNTER = 0;
-
+    //list里面拥有的
+    int listDataCounter = 0;
     boolean isLoadMore = false;
     boolean isRefresh = false;
     boolean isFristLoad = true;
 
     @Override
     protected int getContentViewID() {
-        return R.layout.fragment_main_card_new;
+        return R.layout.fragment_main_card_active;
     }
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         setNet();
-
     }
 
     private void setNet() {
 
-        setMinId();
-        if (isRefresh){
-            minId = 0;
-        }
-        apiGet.getCallMainCardNewGet(minId).enqueue(new Callback<MainCardInfo>() {
+        setSeendIdS();
+        apiGet.getCallMainCardActiveGet(seenIds).enqueue(new Callback<MainCardInfo>() {
             @Override
             public void onResponse(Call<MainCardInfo> call, Response<MainCardInfo> response) {
-//                LogUtils.d("mainCard","minId = "+minId+",N E W = "+response.body().toString()+minId);
 
                 if (response == null||response.body()==null||response.body().getData() == null||response.body().getData().getList().size() == 0){
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
@@ -94,15 +85,14 @@ public class MainCardNewFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        mainCardNewRefreshLayout.setRefreshing(false);
+                        mainCardHotRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
                 }else {
-                    listNew = response.body().getData().getList();
+                    listHot = response.body().getData().getList();
                     mainCardInfoData = response.body().getData();
-
                     if (isFristLoad){
-                        baseListNew = response.body().getData().getList();
+                        baseListHot = response.body().getData().getList();
                         setListAdapter();
                     }
                     if (isLoadMore){
@@ -110,6 +100,10 @@ public class MainCardNewFragment extends BaseFragment {
                     }
                     if (isRefresh){
                         setRefresh();
+                    }
+
+                    for (MainCardInfo.MainCardInfoList hotItem :listHot){
+                        seenIdList.add(hotItem.getId());
                     }
                 }
 
@@ -119,13 +113,14 @@ public class MainCardNewFragment extends BaseFragment {
             @Override
             public void onFailure(Call<MainCardInfo> call, Throwable t) {
 
+                LogUtils.d("cardHot","t = "+t);
                 if (isLoadMore){
                     adapter.loadMoreFail();
                     isLoadMore = false;
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                 }
                 if (isRefresh){
-                    mainCardNewRefreshLayout.setRefreshing(false);
+                    mainCardHotRefreshLayout.setRefreshing(false);
                     isRefresh = false;
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                 }
@@ -133,45 +128,55 @@ public class MainCardNewFragment extends BaseFragment {
         });
     }
 
-    private void setMinId() {
-        if (isFristLoad){
-            minId = 0;
+    private void setSeendIdS() {
+        if (seenIdList!=null&&seenIdList.size()!=0){
+            for (int position = 0; position <seenIdList.size() ; position++) {
+                int id = seenIdList.get(position);
+                if (position == 0){
+                    if (seenIds == null||seenIds.length() == 0){
+                        seenIds = seenIds+id;
+                    }else {
+                        seenIds = seenIds+","+id;
+                    }
+                }else {
+                    seenIds = seenIds+","+id;
+                }
+            }
         }
-
         if (isRefresh){
-            minId = 0;
+            seenIds = "";
+            seenIdList.clear();
         }
 
-        if (isLoadMore){
-            minId = adapter.getData().get(adapter.getData().size()-1).getId();
-        }
+        LogUtils.d("CardHot","seenIds = "+seenIds );
     }
 
     private void setLoadMore() {
         isLoadMore = false;
 
+
         if (mainCardInfoData.isNoMore()) {
             //数据全部加载完毕
-           adapter.loadMoreEnd();
+            adapter.loadMoreEnd();
         } else {
-                //成功获取更多数据
-                adapter.addData(listNew);
-                adapter.loadMoreComplete();
+            //成功获取更多数据
+            adapter.addData(listHot);
+            adapter.loadMoreComplete();
 
         }
     }
 
     private void setRefresh() {
         isRefresh = false;
-        adapter.setNewData(listNew);
-        mainCardNewRefreshLayout.setRefreshing(false);
-
-
+        adapter.setNewData(listHot);
+        mainCardHotRefreshLayout.setRefreshing(false);
     }
 
     private void setListAdapter() {
-        adapter = new MainCardNewAdapter(R.layout.main_card_list_item,baseListNew);
-        mainCardNewListView.setLayoutManager(new LinearLayoutManager(App.instance()));
+
+
+        adapter = new MainCardActiveAdapter(R.layout.main_card_list_item,baseListHot);
+        mainCardHotListView.setLayoutManager(new LinearLayoutManager(App.instance()));
         adapter.setHasStableIds(true);
         /**
          * adapter动画效果
@@ -185,16 +190,16 @@ public class MainCardNewFragment extends BaseFragment {
         //开启上拉加载更多
         adapter.setEnableLoadMore(true);
 
-        //添加底部footer
-        adapter.setLoadMoreView(new CardLoadMoreView());
-        adapter.disableLoadMoreIfNotFullPage(mainCardNewListView);
 
-        mainCardNewListView.setAdapter(adapter);
+        //添加底部footer
+        adapter.setLoadMoreView(new MainCardActiveFragment.CardLoadMoreView());
+        adapter.disableLoadMoreIfNotFullPage(mainCardHotListView);
+
+        mainCardHotListView.setAdapter(adapter);
 
         //添加监听
         setListener();
         isFristLoad = false;
-
     }
 
     private void setListener() {
@@ -212,16 +217,23 @@ public class MainCardNewFragment extends BaseFragment {
                     //点赞按钮被点击
                 }
                 if (view.getId() == R.id.main_card_list_item_big_image){
-                    //大图1按钮被点击
+//                    //大图1按钮被点击
+//                    Intent intent=new Intent(getContext(),CardPreviewPictureActivity.class);
+//                    //将所有图片结合 和被点击的图片位置传到ImgGalleryActivity中
+////                    intent.putStringArrayListExtra("imageUrl", (ArrayList<String>) imageUrl);
+//                    intent.putExtra("imageId", 1);
+//                    //版本大于5.0的时候带有动画
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity(), view, "sharedView").toBundle());
+//                    }else {
+//                        startActivity(intent);
+//                    }
                 }
                 if (view.getId() == R.id.main_card_list_item_little_image_1){
-                    //小图1按钮被点击
                 }
                 if (view.getId() == R.id.main_card_list_item_little_image_2){
-                    //小图2按钮被点击
                 }
                 if (view.getId() == R.id.main_card_list_item_little_image_3){
-                    //小图3按钮被点击
                 }
             }
         });
@@ -231,10 +243,10 @@ public class MainCardNewFragment extends BaseFragment {
                 isLoadMore = true;
                 setNet();
             }
-        }, mainCardNewListView);
+        }, mainCardHotListView);
 
         //下拉刷新监听
-        mainCardNewRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mainCardHotRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 isRefresh = true;
@@ -243,8 +255,8 @@ public class MainCardNewFragment extends BaseFragment {
         });
     }
 
-    class MainCardNewAdapter extends BaseQuickAdapter<MainCardInfo.MainCardInfoList,BaseViewHolder> {
-        public MainCardNewAdapter(int layoutResId, @Nullable List<MainCardInfo.MainCardInfoList> data) {
+    class MainCardActiveAdapter extends BaseQuickAdapter<MainCardInfo.MainCardInfoList,BaseViewHolder> {
+        public MainCardActiveAdapter(int layoutResId, @Nullable List<MainCardInfo.MainCardInfoList> data) {
             super(layoutResId, data);
         }
 
@@ -260,6 +272,7 @@ public class MainCardNewFragment extends BaseFragment {
             helper.setText(R.id.main_card_list_item_last_comment_count, ""+item.getComment_count());
             //为点赞按钮添加点击事件
             helper.addOnClickListener(R.id.main_card_list_item_upvote_icon);
+
             helper.addOnClickListener(R.id.main_card_list_item_big_image);
             helper.addOnClickListener(R.id.main_card_list_item_little_image_1);
             helper.addOnClickListener(R.id.main_card_list_item_little_image_2);
@@ -306,7 +319,7 @@ public class MainCardNewFragment extends BaseFragment {
 
     }
 
-    public static class CardLoadMoreView extends LoadMoreView {
+    public  class CardLoadMoreView extends LoadMoreView {
 
         @Override public int getLayoutId() {
             return R.layout.brvah_quick_view_load_more;

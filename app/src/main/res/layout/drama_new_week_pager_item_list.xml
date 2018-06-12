@@ -12,8 +12,8 @@
             android:layout_marginTop="30px"
             android:layout_marginBottom="30px"
             android:layout_marginRight="20px"
-            android:layout_width="120px"
-            android:layout_height="160px"
+            android:layout_width="100px"
+            android:layout_height="140px"
             android:scaleType="centerCrop"
             />
         <TextView
@@ -24,7 +24,7 @@
             android:layout_height="38px"
             android:layout_marginRight="30px"
             android:text="番剧名"
-            android:textSize="30px"
+            android:textSize="28px"
             android:textColor="#333333"
             />
         <CheckedTextView

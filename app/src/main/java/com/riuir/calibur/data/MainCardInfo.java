@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MainCardInfo {
     private int code;
-    private List<MainCardInfoList> data;
+    private MainCardInfoData data;
 
     public int getCode() {
         return code;
@@ -14,11 +14,11 @@ public class MainCardInfo {
         this.code = code;
     }
 
-    public List<MainCardInfoList> getData() {
+    public MainCardInfoData getData() {
         return data;
     }
 
-    public void setData(List<MainCardInfoList> data) {
+    public void setData(MainCardInfoData data) {
         this.data = data;
     }
 
@@ -28,6 +28,45 @@ public class MainCardInfo {
                 "code=" + code +
                 ", data=" + data +
                 '}';
+    }
+
+    public class MainCardInfoData{
+        private List<MainCardInfoList> list;
+        private int total;
+        private boolean noMore;
+
+        public List<MainCardInfoList> getList() {
+            return list;
+        }
+
+        public void setList(List<MainCardInfoList> list) {
+            this.list = list;
+        }
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
+
+        public boolean isNoMore() {
+            return noMore;
+        }
+
+        public void setNoMore(boolean noMore) {
+            this.noMore = noMore;
+        }
+
+        @Override
+        public String toString() {
+            return "MainCardInfoData{" +
+                    "list=" + list +
+                    ", total=" + total +
+                    ", noMore=" + noMore +
+                    '}';
+        }
     }
 
     public class MainCardInfoList{

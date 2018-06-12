@@ -50,6 +50,7 @@ public class MainFragment extends BaseFragment {
 
     MainCardHotFragment mainCardHotFragment;
     MainCardNewFragment mainCardNewFragment;
+    MainCardActiveFragment mainCardActiveFragment;
 
     /**
      * 获取当前屏幕的密度
@@ -114,7 +115,7 @@ public class MainFragment extends BaseFragment {
             super(fm);
         }
 
-        private final String[] titles = { "最新", "最热" };
+        private final String[] titles = { "最新", "最热","动态" };
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -139,6 +140,11 @@ public class MainFragment extends BaseFragment {
                         mainCardHotFragment = new MainCardHotFragment();
                     }
                     return mainCardHotFragment;
+                case 2:
+                    if (mainCardActiveFragment == null){
+                        mainCardActiveFragment = new MainCardActiveFragment();
+                    }
+                    return mainCardActiveFragment;
                 default:
                     return null;
             }

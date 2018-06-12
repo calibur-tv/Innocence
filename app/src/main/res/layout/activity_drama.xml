@@ -6,24 +6,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.home.Drama.DramaActivity">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/color_FF23ADE5">
-        //标题栏
-    </RelativeLayout>
+
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/color_FF9B9B9B"
+        android:background="@color/color_FFFFFFFF"
         >
         <ImageView
             android:id="@+id/drama_activity_anime_banner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             />
         <ImageView
             android:id="@+id/drama_activity_anime_icon"

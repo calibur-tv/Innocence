@@ -60,6 +60,8 @@ public class MainCardHotFragment extends BaseFragment {
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
     private List<MainCardInfo.MainCardInfoList> baseListHot;
 
+    private MainCardInfo.MainCardInfoData mainCardInfoData;
+
     private MainCardHotAdapter adapter;
 
     //帖子总条目数
@@ -87,7 +89,7 @@ public class MainCardHotFragment extends BaseFragment {
             @Override
             public void onResponse(Call<MainCardInfo> call, Response<MainCardInfo> response) {
 
-                if (response == null||response.body()==null||response.body().getData() == null||response.body().getData().size() == 0){
+                if (response == null||response.body()==null||response.body().getData() == null||response.body().getData().getList().size() == 0){
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                     if (isLoadMore){
                         adapter.loadMoreFail();
@@ -98,9 +100,10 @@ public class MainCardHotFragment extends BaseFragment {
                         isRefresh = false;
                     }
                 }else {
-                    listHot = response.body().getData();
+                    listHot = response.body().getData().getList();
+                    mainCardInfoData = response.body().getData();
                     if (isFristLoad){
-                        baseListHot = response.body().getData();
+                        baseListHot = response.body().getData().getList();
                         setListAdapter();
                     }
                     if (isLoadMore){
@@ -120,15 +123,17 @@ public class MainCardHotFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<MainCardInfo> call, Throwable t) {
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试123");
+
                     LogUtils.d("cardHot","t = "+t);
                 if (isLoadMore){
                     adapter.loadMoreFail();
                     isLoadMore = false;
+                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                 }
                 if (isRefresh){
                     mainCardHotRefreshLayout.setRefreshing(false);
                     isRefresh = false;
+                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                 }
             }
         });
@@ -159,19 +164,17 @@ public class MainCardHotFragment extends BaseFragment {
 
     private void setLoadMore() {
         isLoadMore = false;
-        //TODO 等获取到条目总数之后改为 listDataCounter >=  TOTAL_COUNTER
-//        if (listDataCounter > TOTAL_COUNTER) {
-//            //数据全部加载完毕
-////           adapter.loadMoreEnd();
-//        } else {
+
+
+        if (mainCardInfoData.isNoMore()) {
+            //数据全部加载完毕
+           adapter.loadMoreEnd();
+        } else {
             //成功获取更多数据
             adapter.addData(listHot);
-            listDataCounter = adapter.getData().size();
             adapter.loadMoreComplete();
 
-
-
-//        }
+        }
     }
 
     private void setRefresh() {

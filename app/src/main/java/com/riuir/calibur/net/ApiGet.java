@@ -30,12 +30,16 @@ public interface ApiGet {
     Call<AnimeNewListForWeek> getCallDramaNewForWeek();
 
     //获取最新帖子
-    @GET("post/trending/new")
-    Call<MainCardInfo> getCallMainCardNewGet(@Query("page")int page);
+    @GET("post/trending/news")
+    Call<MainCardInfo> getCallMainCardNewGet(@Query("minId")int minId);
 
     //获取最热帖子
     @GET("post/trending/hot")
     Call<MainCardInfo> getCallMainCardHotGet(@Query("seenIds")String seenIds);
+
+    //获取最热帖子
+    @GET("post/trending/active")
+    Call<MainCardInfo> getCallMainCardActiveGet(@Query("seenIds")String seenIds);
 
     //geetest api1
     @GET("image/captcha")
