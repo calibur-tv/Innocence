@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     private void setFloatingActionBth() {
         //宽高的px  由dp转换而成
         int addBtnParams = DensityUtils.dp2px(this,70);
-        int itemIconParams = DensityUtils.dp2px(this,30);
+        int itemIconParams = DensityUtils.dp2px(this,45);
 
         //设置CircularFloatingActionMenu点击展开扇形图
         final ImageView addActionImg = new ImageView(this);
@@ -135,9 +135,9 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         childIcon2 = new ImageView(this);
         childIcon3 = new ImageView(this);
 
-        childIcon1.setImageDrawable(getResources().getDrawable(R.drawable.maintab_msg_iv));
-        childIcon2.setImageDrawable(getResources().getDrawable(R.drawable.maintab_msg_iv));
-        childIcon3.setImageDrawable(getResources().getDrawable(R.drawable.maintab_msg_iv));
+        childIcon1.setImageDrawable(getResources().getDrawable(R.mipmap.main_bottom_add_item_write));
+        childIcon2.setImageDrawable(getResources().getDrawable(R.mipmap.main_bottom_add_item_picture));
+        childIcon3.setImageDrawable(getResources().getDrawable(R.mipmap.main_bottom_add_item_message));
 
         SubActionButton itemSub1 = subBuilder.setContentView(childIcon1, itemIconLayoutParams).build();
         SubActionButton itemSub2 = subBuilder.setContentView(childIcon2, itemIconLayoutParams).build();

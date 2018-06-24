@@ -78,6 +78,7 @@ public class MainFragment extends BaseFragment {
 
     private void setViewPager() {
         mainCardViewPager.setAdapter(new MainCardPagerAdapter(getChildFragmentManager()));
+        mainCardViewPager.setOffscreenPageLimit(2);
         mainCardTab.setViewPager(mainCardViewPager);
         setMainCardTabs();
     }

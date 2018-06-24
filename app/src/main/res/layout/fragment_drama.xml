@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_FF23ADE5">
+    android:background="@color/theme_magic_sakura_blue">
 
     <!--<TextView-->
         <!--android:id="@+id/tv_drama"-->

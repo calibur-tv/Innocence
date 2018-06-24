@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.MainCardInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.ArrayList;
@@ -45,9 +47,9 @@ public class MainCardActiveFragment extends BaseFragment {
     @BindView(R.id.main_card_active_refresh_layout)
     SwipeRefreshLayout mainCardHotRefreshLayout;
     //用来动态改变RecyclerView的变量
-    private List<MainCardInfo.MainCardInfoList> listHot;
+    private List<MainCardInfo.MainCardInfoList> listActive;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainCardInfo.MainCardInfoList> baseListHot;
+    private List<MainCardInfo.MainCardInfoList> baseListActive;
 
     private MainCardInfo.MainCardInfoData mainCardInfoData;
 
@@ -89,10 +91,10 @@ public class MainCardActiveFragment extends BaseFragment {
                         isRefresh = false;
                     }
                 }else {
-                    listHot = response.body().getData().getList();
+                    listActive = response.body().getData().getList();
                     mainCardInfoData = response.body().getData();
                     if (isFristLoad){
-                        baseListHot = response.body().getData().getList();
+                        baseListActive = response.body().getData().getList();
                         setListAdapter();
                     }
                     if (isLoadMore){
@@ -102,7 +104,7 @@ public class MainCardActiveFragment extends BaseFragment {
                         setRefresh();
                     }
 
-                    for (MainCardInfo.MainCardInfoList hotItem :listHot){
+                    for (MainCardInfo.MainCardInfoList hotItem :listActive){
                         seenIdList.add(hotItem.getId());
                     }
                 }
@@ -154,28 +156,27 @@ public class MainCardActiveFragment extends BaseFragment {
     private void setLoadMore() {
         isLoadMore = false;
 
-
         if (mainCardInfoData.isNoMore()) {
+            adapter.addData(listActive);
             //数据全部加载完毕
             adapter.loadMoreEnd();
         } else {
             //成功获取更多数据
-            adapter.addData(listHot);
+            adapter.addData(listActive);
             adapter.loadMoreComplete();
-
         }
     }
 
     private void setRefresh() {
         isRefresh = false;
-        adapter.setNewData(listHot);
+        adapter.setNewData(listActive);
         mainCardHotRefreshLayout.setRefreshing(false);
     }
 
     private void setListAdapter() {
 
 
-        adapter = new MainCardActiveAdapter(R.layout.main_card_list_item,baseListHot);
+        adapter = new MainCardActiveAdapter(R.layout.main_card_list_item,baseListActive);
         mainCardHotListView.setLayoutManager(new LinearLayoutManager(App.instance()));
         adapter.setHasStableIds(true);
         /**
@@ -192,7 +193,7 @@ public class MainCardActiveFragment extends BaseFragment {
 
 
         //添加底部footer
-        adapter.setLoadMoreView(new MainCardActiveFragment.CardLoadMoreView());
+        adapter.setLoadMoreView(new CardLoadMoreView());
         adapter.disableLoadMoreIfNotFullPage(mainCardHotListView);
 
         mainCardHotListView.setAdapter(adapter);
@@ -208,33 +209,12 @@ public class MainCardActiveFragment extends BaseFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //item被点击，跳转页面
-            }
-        });
-        adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-            @Override
-            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                if (view.getId() == R.id.main_card_list_item_upvote_icon){
-                    //点赞按钮被点击
-                }
-                if (view.getId() == R.id.main_card_list_item_big_image){
-//                    //大图1按钮被点击
-//                    Intent intent=new Intent(getContext(),CardPreviewPictureActivity.class);
-//                    //将所有图片结合 和被点击的图片位置传到ImgGalleryActivity中
-////                    intent.putStringArrayListExtra("imageUrl", (ArrayList<String>) imageUrl);
-//                    intent.putExtra("imageId", 1);
-//                    //版本大于5.0的时候带有动画
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity(), view, "sharedView").toBundle());
-//                    }else {
-//                        startActivity(intent);
-//                    }
-                }
-                if (view.getId() == R.id.main_card_list_item_little_image_1){
-                }
-                if (view.getId() == R.id.main_card_list_item_little_image_2){
-                }
-                if (view.getId() == R.id.main_card_list_item_little_image_3){
-                }
+                Intent intent = new Intent(getActivity(), CardShowInfoActivity.class);
+                MainCardInfo.MainCardInfoList cardInfo = (MainCardInfo.MainCardInfoList) adapter.getData().get(position);
+                int cardID = cardInfo.getId();
+                intent.putExtra("cardID",cardID);
+                startActivity(intent);
+
             }
         });
         //上拉加载监听
@@ -272,11 +252,6 @@ public class MainCardActiveFragment extends BaseFragment {
             helper.setText(R.id.main_card_list_item_last_comment_count, ""+item.getComment_count());
             //为点赞按钮添加点击事件
             helper.addOnClickListener(R.id.main_card_list_item_upvote_icon);
-
-            helper.addOnClickListener(R.id.main_card_list_item_big_image);
-            helper.addOnClickListener(R.id.main_card_list_item_little_image_1);
-            helper.addOnClickListener(R.id.main_card_list_item_little_image_2);
-            helper.addOnClickListener(R.id.main_card_list_item_little_image_3);
 
             GlideUtils.loadImageView(getContext(), item.getBangumi().getAvatar(), (ImageView) helper.getView(R.id.main_card_list_item_anime_cover));
 
@@ -330,7 +305,7 @@ public class MainCardActiveFragment extends BaseFragment {
          * 如果返回false，数据全部加载完毕后会显示getLoadEndViewId()布局
          */
         @Override public boolean isLoadEndGone() {
-            return true;
+            return false;
         }
 
         @Override protected int getLoadingViewId() {
@@ -346,7 +321,7 @@ public class MainCardActiveFragment extends BaseFragment {
          * isLoadEndGone()为false，不能返回0
          */
         @Override protected int getLoadEndViewId() {
-            return 0;
+            return R.id.load_more_load_end_view;
         }
     }
 

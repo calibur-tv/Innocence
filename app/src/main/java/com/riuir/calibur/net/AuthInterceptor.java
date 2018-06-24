@@ -36,11 +36,7 @@ public class AuthInterceptor implements Interceptor {
 //        String ANDROID_ID = Installation.id(App.instance());
 
         Headers headers = request.headers().newBuilder()
-                .add("Authorization","Bearer "+"userTokenString")//userTokenString是用户登录之后才有的标识码，暂时无登录功能先写死
-//                .add("Content-Type", "application/json;charset=utf-8")
-//                .add("X-Auth-Timestamp", String.valueOf(time))
-//                .add("X-Auth-Token", constAuthToken)
-//                .add("X-Device-Id", ANDROID_ID)
+                .add("Authorization","Bearer "+Constants.AUTH_TOKEN)
                 .add("Accept", "application/x.api."+ Constants.API_VERSION+"+json")
                 .build();
 

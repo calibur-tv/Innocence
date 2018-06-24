@@ -26,6 +26,9 @@ import com.riuir.calibur.ui.home.DramaTimelineFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.utils.GlideUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,8 +66,12 @@ public class DramaActivity extends BaseActivity {
 
     DramaCardFragment dramaCardFragment;
     DramaVideoFragment dramaVideoFragment;
+    DramaCartoonFragment dramaCartoonFragment;
 
     int animeID;
+
+    //viewpager Tab标题
+    private List<String> titles = new ArrayList<>();
 
     @Override
     protected int getContentViewId() {
@@ -83,7 +90,7 @@ public class DramaActivity extends BaseActivity {
 
     private void setView() {
         GlideUtils.loadImageView(DramaActivity.this,animeShowInfoData.getAvatar(),animeIcon);
-        GlideUtils.loadImageView(DramaActivity.this,animeShowInfoData.getBanner(),animeBanner);
+        GlideUtils.loadImageViewBlur(DramaActivity.this,animeShowInfoData.getBanner(),animeBanner);
         animeName.setText(animeShowInfoData.getName());
         animeFollowCount.setText(animeShowInfoData.getCount_like()+"");
 
@@ -112,7 +119,19 @@ public class DramaActivity extends BaseActivity {
     }
 
     private void setViewPager() {
+
+        //添加帖子fragment
+        titles.add("帖子");
+        if (animeShowInfoData.isHas_cartoon()){
+            //添加漫画fragment
+            titles.add("漫画");
+        }
+        if (animeShowInfoData.isHas_video()){
+            //添加视频fragment
+            titles.add("视频");
+        }
         dramaViewPager.setAdapter(new DramaActivityPagerAdapter(getSupportFragmentManager()));
+        dramaViewPager.setOffscreenPageLimit(5);
         dramaPagerTab.setViewPager(dramaViewPager);
         setDramaTabs();
     }
@@ -122,10 +141,10 @@ public class DramaActivity extends BaseActivity {
         dramaPagerTab.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         dramaPagerTab.setDividerColor(Color.TRANSPARENT);
-        dramaPagerTab.setBackgroundResource(R.color.color_FF23ADE5);
+        dramaPagerTab.setBackgroundResource(R.color.theme_magic_sakura_blue);
         //设置underLine
         dramaPagerTab.setUnderlineHeight(2);
-        dramaPagerTab.setUnderlineColorResource(R.color.color_FF23ADE5);
+        dramaPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_blue);
         //设置Tab Indicator的高度
         dramaPagerTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
         // 设置Tab Indicator的高度
@@ -154,36 +173,47 @@ public class DramaActivity extends BaseActivity {
             super(fm);
         }
 
-        private final String[] titles = { "帖子","视频" };
+
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return titles[position];
+            return titles.get(position);
         }
 
         @Override
         public int getCount() {
-            return titles.length;
+            return titles.size();
         }
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
+            switch (titles.get(position)) {
+                case "帖子":
                     if (dramaCardFragment == null) {
                         dramaCardFragment = new DramaCardFragment();
                     }
                     return dramaCardFragment;
-                case 1:
+                case "视频":
                     if (dramaVideoFragment == null) {
                         dramaVideoFragment = new DramaVideoFragment();
                     }
                     return dramaVideoFragment;
+                case "漫画":
+                    if (dramaCartoonFragment == null) {
+                        dramaCartoonFragment = new DramaCartoonFragment();
+                    }
+                    return dramaCartoonFragment;
                 default:
                     return null;
             }
+
+
         }
 
+    }
+
+    public int getAnimeID() {
+        return animeID;
     }
 
 }

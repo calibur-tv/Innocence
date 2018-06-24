@@ -25,7 +25,7 @@
             android:layout_marginRight="30px"
             android:text="番剧名"
             android:textSize="28px"
-            android:textColor="#333333"
+            android:textColor="@color/color_FF444444"
             />
         <CheckedTextView
             android:id="@+id/drama_new_week_pager_item_list_part"

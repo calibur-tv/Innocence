@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".app.App"
@@ -41,7 +42,11 @@
         <activity
             android:name=".ui.loginAndRegister.ForgetPassWordActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity android:name=".ui.home.card.CardPreviewPictureActivity"></activity>
+        <activity android:name=".ui.home.card.CardPreviewPictureActivity" />
+        <activity android:name=".ui.home.card.CardShowInfoActivity" />
+        <activity android:name=".ui.home.card.CardReplyActivity" />
+        <activity android:name=".ui.home.card.CardChildCommentActivity" />
+        <activity android:name=".ui.widget.SelectorImagesActivity"></activity>
     </application>
 
 </manifest>

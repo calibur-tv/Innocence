@@ -26,7 +26,7 @@
             android:layout_height="60dp"
             android:layout_alignParentBottom="true"
             android:layout_margin="20dp"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             />
         <TextView
             android:id="@+id/drama_activity_anime_name"
@@ -117,7 +117,7 @@
     <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
         android:id="@+id/drama_activity_pager_tab"
         android:layout_width="match_parent"
-        android:background="@color/color_FF23ADE5"
+        android:background="@color/theme_magic_sakura_blue"
         android:layout_height="40dp"></com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
     <android.support.v4.view.ViewPager
         android:id="@+id/drama_activity_view_pager"

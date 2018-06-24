@@ -77,6 +77,14 @@ public class NetService {
             .readTimeout(30,TimeUnit.SECONDS)
             .retryOnConnectionFailure(false)
             .build();
+
+    private OkHttpClient clientGetHasAuth = new OkHttpClient.Builder()
+            .addInterceptor(new AuthInterceptorGetHasAuth())
+            .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
+            .readTimeout(30,TimeUnit.SECONDS)
+            .retryOnConnectionFailure(false)
+            .build();
+
     /**
      * 创建 Retrofit post
      * 有Auth
@@ -120,6 +128,17 @@ public class NetService {
             .client(clientGet)
             .build();
 
+    /**
+     * 创建 Retrofit get
+     **/
+    private Retrofit retrofitGetHasAuth = new Retrofit.Builder()
+            // 设置网络请求的api地址
+            .baseUrl(baseUrl)
+            // 设置数据解析器
+            .addConverterFactory(GsonConverterFactory.create())
+            //传入OKHttpClient对象
+            .client(clientGetHasAuth)
+            .build();
 
     /**
      * post API单例化
@@ -167,9 +186,24 @@ public class NetService {
         if (null == mApiGet) {
             // 创建 网络请求接口 的实例
             ApiGet apiGet = retrofitGet.create(ApiGet.class);
-            LogUtils.d("drama","get");
+            LogUtils.d("cardShow","get");
             mApiGet = apiGet;
         }
         return mApiGet;
+    }
+
+    /**
+     * get API单例化
+     */
+    private ApiGet mApiGetHasAuth = null;
+    //get
+    public ApiGet createServiceGetHasAuth() {
+        if (null == mApiGetHasAuth) {
+            // 创建 网络请求接口 的实例
+            ApiGet apiGetHasAuth = retrofitGetHasAuth.create(ApiGet.class);
+            LogUtils.d("cardShow","get has Auth");
+            mApiGetHasAuth = apiGetHasAuth;
+        }
+        return mApiGetHasAuth;
     }
 }

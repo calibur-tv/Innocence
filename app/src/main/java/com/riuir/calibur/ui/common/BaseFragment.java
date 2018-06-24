@@ -30,7 +30,7 @@ public abstract class BaseFragment extends Fragment {
     protected LayoutInflater mLayoutInflater;
     protected View rootView;
     protected ApiPost apiPost,apiPostNoAuth;
-    protected ApiGet apiGet;
+    protected ApiGet apiGet,apiGetHasAuth;
     protected Activity activity;
     protected CompositeDisposable compositeDisposable = null;
     Unbinder unbinder;
@@ -43,6 +43,7 @@ public abstract class BaseFragment extends Fragment {
         apiPost = NetService.getInstance().createServicePost();
         apiPostNoAuth = NetService.getInstance().createServicePostNoAuth();
         apiGet = NetService.getInstance().createServiceGet();
+        apiGetHasAuth = NetService.getInstance().createServiceGetHasAuth();
         compositeDisposable = new CompositeDisposable();
     }
 

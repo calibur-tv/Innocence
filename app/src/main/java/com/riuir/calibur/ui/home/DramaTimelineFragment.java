@@ -273,7 +273,7 @@ public class DramaTimelineFragment extends BaseFragment {
          * 如果返回false，数据全部加载完毕后会显示getLoadEndViewId()布局
          */
         @Override public boolean isLoadEndGone() {
-            return true;
+            return false;
         }
 
         @Override protected int getLoadingViewId() {
@@ -289,7 +289,7 @@ public class DramaTimelineFragment extends BaseFragment {
          * isLoadEndGone()为false，不能返回0
          */
         @Override protected int getLoadEndViewId() {
-            return 0;
+            return R.id.load_more_load_end_view;
         }
     }
 

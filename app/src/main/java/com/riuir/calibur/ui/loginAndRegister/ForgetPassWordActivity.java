@@ -334,7 +334,7 @@ public class ForgetPassWordActivity extends BaseActivity {
                 handler.removeMessages(0);
                 sendMessageBtn.setClickable(true);
                 sendMessageBtn.setText("发送验证码");
-                sendMessageBtn.setTextColor(getResources().getColor(R.color.color_FF23ADE5));
+                sendMessageBtn.setTextColor(getResources().getColor(R.color.theme_magic_sakura_blue));
                 break;
 
             default:

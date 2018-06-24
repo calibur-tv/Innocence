@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/selector_image_grid_item_image"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:scaleType="centerCrop"
+        />
+    <CheckBox
+        android:id="@+id/selector_image_grid_item_check"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignRight="@id/selector_image_grid_item_image"
+        android:button="@drawable/selector_image_check"
+        />
+</RelativeLayout>

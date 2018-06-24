@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/drama_timeline_list_item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/drama_video_episodes_list_item_image"
+            android:layout_marginLeft="30px"
+            android:layout_marginTop="30px"
+            android:layout_marginBottom="30px"
+            android:layout_marginRight="20px"
+            android:layout_width="200px"
+            android:layout_height="140px"
+            android:scaleType="centerCrop"
+            />
+        <TextView
+            android:id="@+id/drama_video_episodes_list_item_episodes"
+            android:layout_toRightOf="@id/drama_video_episodes_list_item_image"
+            android:layout_marginTop="45px"
+            android:layout_width="match_parent"
+            android:layout_height="38px"
+            android:layout_marginRight="30px"
+            android:text="第X话"
+            android:textSize="16sp"
+            android:textColor="@color/color_FF444444"
+            />
+        <TextView
+            android:id="@+id/drama_video_episodes_list_item_part_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/drama_video_episodes_list_item_image"
+            android:layout_alignBottom="@id/drama_video_episodes_list_item_image"
+            android:layout_marginRight="30px"
+            android:layout_marginBottom="5dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/color_FF444444"
+            android:textSize="14dp"
+            android:text="集数名字"
+            />
+
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

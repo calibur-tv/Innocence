@@ -1,5 +1,6 @@
 package com.riuir.calibur.ui.loginAndRegister;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Message;
@@ -66,6 +67,8 @@ public class LoginActivity extends BaseActivity {
     GT3GeetestUtilsBind gt3GeetestUtilsBindLogin;
     GT3GeetestBindListener bindListenerLogin;
 
+    //跳转来登陆页面之前的activity的className
+    String fromClassName;
 
     private GeeTestInfo geeTestInfo;
     private GeeTestInfo.GeeTest geeTest;
@@ -82,6 +85,9 @@ public class LoginActivity extends BaseActivity {
         verificationCodeBodyGeeTest = new VerificationCodeBody.VerificationCodeBodyGeeTest();
 
         gt3GeetestUtilsBindLogin = new GT3GeetestUtilsBind(LoginActivity.this);
+
+        Intent intent = getIntent();
+        fromClassName = intent.getComponent().getClassName();
 
         initOnClicklistener();
 

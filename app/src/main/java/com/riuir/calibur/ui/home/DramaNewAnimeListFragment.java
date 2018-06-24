@@ -80,11 +80,11 @@ public class DramaNewAnimeListFragment extends BaseFragment {
         pagerSlidingTabStrip.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         pagerSlidingTabStrip.setDividerColor(Color.TRANSPARENT);
-        pagerSlidingTabStrip.setBackgroundResource(R.color.color_FF23ADE5);
+        pagerSlidingTabStrip.setBackgroundResource(R.color.theme_magic_sakura_blue);
         //滚动条的间隔
         pagerSlidingTabStrip.setTabPaddingLeftRight(10);
         //设置underLine
-        pagerSlidingTabStrip.setUnderlineColorResource(R.color.color_FF23ADE5);
+        pagerSlidingTabStrip.setUnderlineColorResource(R.color.theme_magic_sakura_blue);
         pagerSlidingTabStrip.setUnderlineHeight(2);
         //设置Tab Indicator的颜色
         pagerSlidingTabStrip.setIndicatorColorResource(R.color.color_FFFFFFFF);
@@ -127,7 +127,7 @@ public class DramaNewAnimeListFragment extends BaseFragment {
 
     class NewAnimeListViewPagerAdapter extends PagerAdapter{
 
-        private final String[] titles = { "一","二", "三","四","五","六","日" };
+        private final String[] titles = { "最新","一","二", "三","四","五","六","日" };
         @Override
         public CharSequence getPageTitle(int position) {
             return titles[position];

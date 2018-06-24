@@ -94,6 +94,7 @@ public class DramaFragment extends BaseFragment {
 
     private void setViewPager() {
         dramaViewPager.setAdapter(new DramaPagerAdapter(getChildFragmentManager()));
+        dramaViewPager.setOffscreenPageLimit(2);
         dramaPagerTab.setViewPager(dramaViewPager);
         setDramaTabs();
     }
@@ -103,10 +104,10 @@ public class DramaFragment extends BaseFragment {
         dramaPagerTab.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         dramaPagerTab.setDividerColor(Color.TRANSPARENT);
-        dramaPagerTab.setBackgroundResource(R.color.color_FF23ADE5);
+        dramaPagerTab.setBackgroundResource(R.color.theme_magic_sakura_blue);
         //设置underLine
         dramaPagerTab.setUnderlineHeight(2);
-        dramaPagerTab.setUnderlineColorResource(R.color.color_FF23ADE5);
+        dramaPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_blue);
         //设置Tab Indicator的高度
         dramaPagerTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
         // 设置Tab Indicator的高度

@@ -37,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private Unbinder unbinder;
     protected static UIHandler handler = new UIHandler(Looper.getMainLooper());
     protected ApiPost apiPost,apiPostNoAuth;
-    protected ApiGet apiGet;
+    protected ApiGet apiGet,apiGetHasAuth;
     protected CompositeDisposable compositeDisposable = null;
 
     @Override
@@ -47,6 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         apiPost = NetService.getInstance().createServicePost();
         apiPostNoAuth = NetService.getInstance().createServicePostNoAuth();
         apiGet = NetService.getInstance().createServiceGet();
+        apiGetHasAuth = NetService.getInstance().createServiceGetHasAuth();
 
         compositeDisposable = new CompositeDisposable();
         //状态栏透明

@@ -1,5 +1,6 @@
 package com.riuir.calibur.ui.home.Drama;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,7 +13,10 @@ import android.view.ViewGroup;
 import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseFragment;
 
+
 public class DramaCardFragment extends BaseFragment {
+
+
 
     @Override
     protected int getContentViewID() {

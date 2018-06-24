@@ -1,13 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.riuir.calibur"
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+
+        packagingOptions {
+            exclude 'META-INF/rxjava.properties'
+        }
     }
     buildTypes {
         release {
@@ -26,8 +30,8 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     //noinspection GradleCompatible
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:recyclerview-v7:27.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation(["com.squareup.okhttp3:logging-interceptor:$okhttp_version",
                     "com.squareup.retrofit2:retrofit:$retrofit2_version",
@@ -41,13 +45,13 @@ dependencies {
     implementation "com.orhanobut:logger:$logger_version"
     // butterKnife
     implementation 'com.jakewharton:butterknife:8.8.1'
-    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:support-v4:27.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'org.greenrobot:eventbus:3.0.0'
     //glide 加载图片
     implementation "com.github.bumptech.glide:glide:$glide_version"
-    implementation 'jp.wasabeef:glide-transformations:2.0.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
+    implementation 'jp.wasabeef:glide-transformations:3.3.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
     //recycleview
     implementation 'net.idik:slimadapter:2.1.2'
     implementation 'com.yqritc:recyclerview-flexibledivider:1.4.0'
@@ -65,4 +69,8 @@ dependencies {
     implementation 'com.oguzdev:CircularFloatingActionMenu:1.0.2'
     //photo 预览图片
     implementation 'com.bm.photoview:library:1.4.1'
+    //magic sakura
+    implementation 'com.bilibili:magicasakura:0.1.8@aar'
+
+
 }

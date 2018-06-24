@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/color_FF222222"
-        android:transitionName="preview_card_picture"
+        android:transitionName="ToPreviewImageActivity"
         >
     </android.support.v4.view.ViewPager>
 </android.support.constraint.ConstraintLayout>

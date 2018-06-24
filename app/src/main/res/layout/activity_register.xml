@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_FF23ADE5"
+    android:background="@color/theme_magic_sakura_blue"
     tools:context=".ui.loginAndRegister.RegisterActivity">
     <LinearLayout
         android:layout_width="match_parent"
@@ -111,7 +111,7 @@
                 android:layout_weight="1"
                 android:text="发送验证码"
                 android:gravity="center"
-                android:textColor="@color/color_FF23ADE5"
+                android:textColor="@color/theme_magic_sakura_blue"
                 />
 
         </LinearLayout>

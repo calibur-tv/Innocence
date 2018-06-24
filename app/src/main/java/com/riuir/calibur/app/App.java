@@ -18,7 +18,7 @@ import com.riuir.calibur.utils.Constants;
  * 版权：
  * ************************************
  */
-public class App extends Application {
+public class App extends Application  {
     private static App instance;
 
     @Override
@@ -36,6 +36,7 @@ public class App extends Application {
         }
         Logger.d("app");
     }
+
 
     public static App instance() {
         return instance;
@@ -57,4 +58,8 @@ public class App extends Application {
             }
         });
     }
+
+
+
+
 }

@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.print.PrinterId;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.MainCardInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.ArrayList;
@@ -151,6 +153,7 @@ public class MainCardNewFragment extends BaseFragment {
         isLoadMore = false;
 
         if (mainCardInfoData.isNoMore()) {
+            adapter.addData(listNew);
             //数据全部加载完毕
            adapter.loadMoreEnd();
         } else {
@@ -203,28 +206,15 @@ public class MainCardNewFragment extends BaseFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //item被点击，跳转页面
+
+                Intent intent = new Intent(getActivity(), CardShowInfoActivity.class);
+                MainCardInfo.MainCardInfoList cardInfo = (MainCardInfo.MainCardInfoList) adapter.getData().get(position);
+                int cardID = cardInfo.getId();
+                intent.putExtra("cardID",cardID);
+                startActivity(intent);
             }
         });
-        adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-            @Override
-            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                if (view.getId() == R.id.main_card_list_item_upvote_icon){
-                    //点赞按钮被点击
-                }
-                if (view.getId() == R.id.main_card_list_item_big_image){
-                    //大图1按钮被点击
-                }
-                if (view.getId() == R.id.main_card_list_item_little_image_1){
-                    //小图1按钮被点击
-                }
-                if (view.getId() == R.id.main_card_list_item_little_image_2){
-                    //小图2按钮被点击
-                }
-                if (view.getId() == R.id.main_card_list_item_little_image_3){
-                    //小图3按钮被点击
-                }
-            }
-        });
+
         //上拉加载监听
         adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
             @Override public void onLoadMoreRequested() {
@@ -260,10 +250,7 @@ public class MainCardNewFragment extends BaseFragment {
             helper.setText(R.id.main_card_list_item_last_comment_count, ""+item.getComment_count());
             //为点赞按钮添加点击事件
             helper.addOnClickListener(R.id.main_card_list_item_upvote_icon);
-            helper.addOnClickListener(R.id.main_card_list_item_big_image);
-            helper.addOnClickListener(R.id.main_card_list_item_little_image_1);
-            helper.addOnClickListener(R.id.main_card_list_item_little_image_2);
-            helper.addOnClickListener(R.id.main_card_list_item_little_image_3);
+
 
             GlideUtils.loadImageView(getContext(), item.getBangumi().getAvatar(), (ImageView) helper.getView(R.id.main_card_list_item_anime_cover));
 
@@ -317,7 +304,7 @@ public class MainCardNewFragment extends BaseFragment {
          * 如果返回false，数据全部加载完毕后会显示getLoadEndViewId()布局
          */
         @Override public boolean isLoadEndGone() {
-            return true;
+            return false;
         }
 
         @Override protected int getLoadingViewId() {
@@ -333,7 +320,7 @@ public class MainCardNewFragment extends BaseFragment {
          * isLoadEndGone()为false，不能返回0
          */
         @Override protected int getLoadEndViewId() {
-            return 0;
+            return R.id.load_more_load_end_view;
         }
     }
 

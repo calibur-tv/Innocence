@@ -1,14 +1,29 @@
 package com.riuir.calibur.utils;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
+import com.bm.library.PhotoView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+
+import java.io.File;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
+import static com.riuir.calibur.utils.GlideOptions.bitmapTransform;
 
 /**
  * ************************************
@@ -19,34 +34,63 @@ import com.bumptech.glide.request.target.SimpleTarget;
  * ************************************
  */
 public class GlideUtils {
+
     //默认加载
     public static void loadImageView(Context mContext, String path, ImageView mImageView) {
         Glide.with(mContext).load(path).into(mImageView);
     }
 
+    //默认加载
+    public static void loadImageViewFromFile(Context mContext, File file, ImageView mImageView) {
+        Glide.with(mContext).load(file).into(mImageView);
+    }
+
+    //模糊加载
+    public static void loadImageViewBlur(Context mContext, String path, ImageView mImageView) {
+        Glide.with(mContext).load(path).apply(bitmapTransform(new BlurTransformation(15))).into(mImageView);
+    }
+
+    //圆形加载
+    public static void loadImageViewCircle(Context mContext, String path, ImageView mImageView) {
+        Glide.with(mContext).load(path).apply(bitmapTransform(new CircleCrop())).into(mImageView);
+    }
+
+    //preview加载
+    public static void loadImageViewpreview(Context mContext, String path, final PhotoView photoView) {
+        GlideApp.with(mContext).load(path).into(new SimpleTarget() {
+
+            @Override
+            public void onResourceReady(@NonNull Object resource, @Nullable Transition transition) {
+                //photoview重写了设置图片的方法 ，所以不能像普通的imageview去对待
+                photoView.setImageDrawable((Drawable) resource);
+            }
+        });
+    }
+
+
     //加载指定大小
     public static void loadImageViewSize(Context mContext, String path, int width, int height, ImageView mImageView) {
-        Glide.with(mContext).load(path).override(width, height).into(mImageView);
+        GlideApp.with(mContext).load(path).override(width, height).into(mImageView);
     }
 
     //设置加载中以及加载失败图片
     public static void loadImageViewLoding(Context mContext, String path, ImageView mImageView, int lodingImage, int errorImageView) {
-        Glide.with(mContext).load(path).placeholder(lodingImage).error(errorImageView).into(mImageView);
+        GlideApp.with(mContext).load(path).placeholder(lodingImage).error(errorImageView).into(mImageView);
     }
 
     //设置加载中以及加载失败图片并且指定大小
     public static void loadImageViewLodingSize(Context mContext, String path, int width, int height, ImageView mImageView, int lodingImage, int errorImageView) {
-        Glide.with(mContext).load(path).override(width, height).placeholder(lodingImage).error(errorImageView).into(mImageView);
+        GlideApp.with(mContext).load(path).override(width, height).placeholder(lodingImage).error(errorImageView).into(mImageView);
     }
 
     //设置跳过内存缓存
     public static void loadImageViewCache(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).skipMemoryCache(true).into(mImageView);
+        GlideApp.with(mContext).load(path).skipMemoryCache(true).into(mImageView);
     }
 
     //设置下载优先级
     public static void loadImageViewPriority(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).priority(Priority.NORMAL).into(mImageView);
+        GlideApp.with(mContext).load(path).priority(Priority.NORMAL).into(mImageView);
     }
 
     /**
@@ -63,16 +107,17 @@ public class GlideUtils {
 
     //设置缓存策略
     public static void loadImageViewDiskCache(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).diskCacheStrategy(DiskCacheStrategy.ALL).into(mImageView);
+        GlideApp.with(mContext).load(path).diskCacheStrategy(DiskCacheStrategy.ALL).into(mImageView);
     }
 
     /**
      * api也提供了几个常用的动画：比如crossFade()
+     * animate方法失效了
      */
 
     //设置加载动画
     public static void loadImageViewAnim(Context mContext, String path, int anim, ImageView mImageView) {
-        Glide.with(mContext).load(path).animate(anim).into(mImageView);
+        Glide.with(mContext).load(path).transition(new DrawableTransitionOptions().crossFade()).into(mImageView);
     }
 
     /**
@@ -90,32 +135,33 @@ public class GlideUtils {
 
     //设置动态转换
     public static void loadImageViewCrop(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).centerCrop().into(mImageView);
+        GlideApp.with(mContext).load(path).centerCrop().into(mImageView);
     }
 
     //设置动态GIF加载方式
     public static void loadImageViewDynamicGif(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).asGif().into(mImageView);
+        GlideApp.with(mContext).asGif().load(path).into(mImageView);
+
     }
 
     //设置静态GIF加载方式
     public static void loadImageViewStaticGif(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).asBitmap().into(mImageView);
+        GlideApp.with(mContext).asBitmap().load(path).into(mImageView);
     }
 
     //设置监听的用处 可以用于监控请求发生错误来源，以及图片来源 是内存还是磁盘
 
     //设置监听请求接口
-    public static void loadImageViewListener(Context mContext, String path, ImageView mImageView, RequestListener<String, GlideDrawable> requstlistener) {
-        Glide.with(mContext).load(path).listener(requstlistener).into(mImageView);
-    }
+//    public static void loadImageViewListener(Context mContext, String path, ImageView mImageView, RequestListener<String, GlideDrawable> requstlistener) {
+//        Glide.with(mContext).load(path).listener(requstlistener).into(mImageView);
+//    }
 
     //项目中有很多需要先下载图片然后再做一些合成的功能，比如项目中出现的图文混排
 
     //设置要加载的内容
-    public static void loadImageViewContent(Context mContext, String path, SimpleTarget<GlideDrawable> simpleTarget) {
-        Glide.with(mContext).load(path).centerCrop().into(simpleTarget);
-    }
+//    public static void loadImageViewContent(Context mContext, String path, SimpleTarget<GlideDrawable> simpleTarget) {
+//        Glide.with(mContext).load(path).centerCrop().into(simpleTarget);
+//    }
 
     //清理磁盘缓存
     public static void GuideClearDiskCache(Context mContext) {
