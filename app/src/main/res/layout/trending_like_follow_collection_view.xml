@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <RelativeLayout
+            android:id="@+id/trending_header_collection_layout"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/bg_card_show_header_collection"
+            >
+            <CheckBox
+                android:id="@+id/trending_header_collection_checkBox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:button="@drawable/card_show_header_collection"
+                android:text="收藏"
+                android:layout_centerInParent="true"
+                android:textColor="@color/color_FFFFFFFF"
+                android:textSize="10sp"
+                />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/trending_header_like_layout"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_toLeftOf="@id/trending_header_collection_layout"
+            android:background="@drawable/bg_card_show_header_like"
+            android:layout_marginRight="15dp"
+            >
+            <CheckBox
+                android:id="@+id/trending_header_like_checkBox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:button="@drawable/card_show_header_like"
+                android:text="喜欢"
+                android:gravity="center"
+                android:textColor="@color/color_FFFFFFFF"
+                android:textSize="10sp"
+                />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/trending_header_rewarded_btn"
+            android:layout_width="50dp"
+            android:layout_height="25dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_toRightOf="@id/trending_header_collection_layout"
+            android:background="@drawable/bg_card_show_header_like"
+            android:text="打赏"
+            android:gravity="center"
+            android:textColor="@color/color_FFFFFFFF"
+            android:textSize="10sp"
+            android:layout_marginLeft="15dp"
+            android:drawableLeft="@drawable/card_show_header_like"
+            />
+
+    </RelativeLayout>
+</RelativeLayout>

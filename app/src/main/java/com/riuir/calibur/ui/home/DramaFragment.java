@@ -62,6 +62,7 @@ public class DramaFragment extends BaseFragment {
     DramaTagsFragment dramaTagsFragment;
     DramaTimelineFragment dramaTimelineFragment;
     DramaNewAnimeListFragment dramaNewAnimeListFragment;
+    DramaRolesListFragment dramaRolesListFragment;
 
     /**
      * 获取当前屏幕的密度
@@ -88,13 +89,9 @@ public class DramaFragment extends BaseFragment {
 
     }
 
-
-
-
-
     private void setViewPager() {
         dramaViewPager.setAdapter(new DramaPagerAdapter(getChildFragmentManager()));
-        dramaViewPager.setOffscreenPageLimit(2);
+        dramaViewPager.setOffscreenPageLimit(5);
         dramaPagerTab.setViewPager(dramaViewPager);
         setDramaTabs();
     }
@@ -104,10 +101,10 @@ public class DramaFragment extends BaseFragment {
         dramaPagerTab.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         dramaPagerTab.setDividerColor(Color.TRANSPARENT);
-        dramaPagerTab.setBackgroundResource(R.color.theme_magic_sakura_blue);
+        dramaPagerTab.setBackgroundResource(R.color.theme_magic_sakura_primary);
         //设置underLine
         dramaPagerTab.setUnderlineHeight(2);
-        dramaPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_blue);
+        dramaPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
         //设置Tab Indicator的高度
         dramaPagerTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
         // 设置Tab Indicator的高度
@@ -131,7 +128,7 @@ public class DramaFragment extends BaseFragment {
             super(fm);
         }
 
-        private final String[] titles = { "新番放送","标签", "时间轴" };
+        private final String[] titles = { "新番放送","标签", "时间轴","角色排行榜" };
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -161,6 +158,11 @@ public class DramaFragment extends BaseFragment {
                         dramaTimelineFragment = new DramaTimelineFragment();
                     }
                     return dramaTimelineFragment;
+                case 3:
+                    if (dramaRolesListFragment == null) {
+                        dramaRolesListFragment = new DramaRolesListFragment();
+                    }
+                    return dramaRolesListFragment;
                 default:
                     return null;
             }

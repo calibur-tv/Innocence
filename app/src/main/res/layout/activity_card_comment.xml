@@ -13,7 +13,7 @@
         android:gravity="center"
         android:textSize="16sp"
         android:textColor="@color/color_FFFFFFFF"
-        android:background="@color/theme_magic_sakura_blue"
+        android:background="@color/theme_magic_sakura_primary"
         />
     <TextView
         android:id="@+id/card_reply_activity_send"

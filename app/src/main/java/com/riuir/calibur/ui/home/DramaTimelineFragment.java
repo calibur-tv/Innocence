@@ -35,6 +35,7 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeListForTimeLine;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
+import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.view.ChildListView;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -65,7 +66,7 @@ public class DramaTimelineFragment extends BaseFragment {
 
     private boolean isLoadMore = false;
     private boolean isRefresh = false;
-    private boolean isFristLoad = true;
+    private boolean isFirstLoad = true;
 
     TimeLineAdapter adapter;
 
@@ -97,7 +98,7 @@ public class DramaTimelineFragment extends BaseFragment {
                 groupList =  response.body().getData().getList();
 
                 year -= howLongYear;
-                if (isFristLoad){
+                if (isFirstLoad){
                     setDramaAdapter();
                 }
                 if (isRefresh){
@@ -160,13 +161,13 @@ public class DramaTimelineFragment extends BaseFragment {
         //开启上拉加载更多
         adapter.setEnableLoadMore(true);
         //添加底部footer
-        adapter.setLoadMoreView(new CardLoadMoreView());
+        adapter.setLoadMoreView(new MyLoadMoreView());
         adapter.disableLoadMoreIfNotFullPage(timeLineListView);
         adapter.expandAll();
         timeLineListView.setAdapter(adapter);
 
         setListener();
-        isFristLoad = false;
+        isFirstLoad = false;
     }
 
     private void setList() {
@@ -183,12 +184,12 @@ public class DramaTimelineFragment extends BaseFragment {
 
         for (AnimeListForTimeLine.AnimeClassifyForDate groupItem:groupList){
             timeLineList.add(groupItem);
-            if (isFristLoad){
+            if (isFirstLoad){
             baseTimeLineList.add(groupItem);
             }
             for (AnimeListForTimeLine.AnimeInfo childItem:groupItem.getList()){
                 timeLineList.add(childItem);
-                if (isFristLoad){
+                if (isFirstLoad){
                 baseTimeLineList.add(childItem);
                 }
             }
@@ -259,37 +260,6 @@ public class DramaTimelineFragment extends BaseFragment {
                     });
                     break;
             }
-        }
-    }
-
-    public static class CardLoadMoreView extends LoadMoreView {
-
-        @Override public int getLayoutId() {
-            return R.layout.brvah_quick_view_load_more;
-        }
-
-        /**
-         * 如果返回true，数据全部加载完毕后会隐藏加载更多
-         * 如果返回false，数据全部加载完毕后会显示getLoadEndViewId()布局
-         */
-        @Override public boolean isLoadEndGone() {
-            return false;
-        }
-
-        @Override protected int getLoadingViewId() {
-            return R.id.load_more_loading_view;
-        }
-
-        @Override protected int getLoadFailViewId() {
-            return R.id.load_more_load_fail_view;
-        }
-
-        /**
-         * isLoadEndGone()为true，可以返回0
-         * isLoadEndGone()为false，不能返回0
-         */
-        @Override protected int getLoadEndViewId() {
-            return R.id.load_more_load_end_view;
         }
     }
 

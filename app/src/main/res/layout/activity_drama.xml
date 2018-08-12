@@ -12,32 +12,40 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/color_FFFFFFFF"
         >
         <ImageView
             android:id="@+id/drama_activity_anime_banner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:background="@color/theme_magic_sakura_primary"
             />
-        <ImageView
-            android:id="@+id/drama_activity_anime_icon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+        <RelativeLayout
+            android:id="@+id/drama_activity_anime_icon_layout"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_alignParentBottom="true"
+            android:gravity="center"
             android:layout_margin="20dp"
-            android:scaleType="centerCrop"
-            />
+            android:background="@color/color_FFFFFFFF"
+            >
+            <ImageView
+                android:id="@+id/drama_activity_anime_icon"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:scaleType="centerCrop"
+                />
+        </RelativeLayout>
         <TextView
             android:id="@+id/drama_activity_anime_name"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:text="番剧名字"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:textColor="@color/color_FFFFFFFF"
             android:gravity="center_vertical"
-            android:layout_toRightOf="@id/drama_activity_anime_icon"
-            android:layout_alignTop="@id/drama_activity_anime_icon"
+            android:layout_toRightOf="@id/drama_activity_anime_icon_layout"
+            android:layout_alignTop="@id/drama_activity_anime_icon_layout"
             />
         <TextView
             android:id="@+id/drama_activity_anime_follow"
@@ -45,10 +53,10 @@
             android:layout_height="20dp"
             android:text="关注"
             android:textColor="@color/color_FFFFFFFF"
-            android:textSize="12sp"
+            android:textSize="13sp"
             android:gravity="center_vertical"
-            android:layout_toRightOf="@id/drama_activity_anime_icon"
-            android:layout_alignBottom="@id/drama_activity_anime_icon"
+            android:layout_toRightOf="@id/drama_activity_anime_icon_layout"
+            android:layout_alignBottom="@id/drama_activity_anime_icon_layout"
             />
         <TextView
             android:id="@+id/drama_activity_anime_follow_count"
@@ -56,11 +64,11 @@
             android:layout_height="20dp"
             android:text="110"
             android:textColor="@color/color_FFFFFFFF"
-            android:textSize="12sp"
+            android:textSize="13sp"
             android:gravity="center_vertical"
             android:layout_marginLeft="6dp"
             android:layout_toRightOf="@id/drama_activity_anime_follow"
-            android:layout_alignBottom="@id/drama_activity_anime_icon"
+            android:layout_alignBottom="@id/drama_activity_anime_icon_layout"
             />
         <TextView
             android:id="@+id/drama_activity_anime_card"
@@ -68,11 +76,11 @@
             android:layout_height="20dp"
             android:text="帖子"
             android:textColor="@color/color_FFFFFFFF"
-            android:textSize="12sp"
+            android:textSize="13sp"
             android:gravity="center_vertical"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@id/drama_activity_anime_follow_count"
-            android:layout_alignBottom="@id/drama_activity_anime_icon"
+            android:layout_alignBottom="@id/drama_activity_anime_icon_layout"
             />
         <TextView
             android:id="@+id/drama_activity_anime_card_count"
@@ -80,34 +88,39 @@
             android:layout_height="20dp"
             android:text="110"
             android:textColor="@color/color_FFFFFFFF"
-            android:textSize="12sp"
+            android:textSize="13sp"
             android:gravity="center_vertical"
             android:layout_marginLeft="6dp"
             android:layout_toRightOf="@id/drama_activity_anime_card"
-            android:layout_alignBottom="@id/drama_activity_anime_icon"
+            android:layout_alignBottom="@id/drama_activity_anime_icon_layout"
             />
         <LinearLayout
             android:id="@+id/drama_activity_anime_follow_btn"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="20dp"
             android:layout_marginRight="25dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="25dp"
             android:padding="3dp"
             android:background="@drawable/bg_follow_anime_btn"
             android:orientation="horizontal"
             >
             <ImageView
+                android:layout_gravity="center_vertical"
                 android:layout_width="15dp"
-                android:layout_height="15dp" />
+                android:layout_height="15dp"
+                android:layout_marginLeft="3dp"
+                />
             <TextView
                 android:id="@+id/drama_activity_anime_follow_btn_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textColor="@color/color_FFFFFFFF"
+                android:layout_marginLeft="2dp"
                 android:text="关注"
+                android:layout_gravity="center_vertical"
                 android:gravity="center"
                 />
         </LinearLayout>
@@ -117,7 +130,7 @@
     <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
         android:id="@+id/drama_activity_pager_tab"
         android:layout_width="match_parent"
-        android:background="@color/theme_magic_sakura_blue"
+        android:background="@color/theme_magic_sakura_primary"
         android:layout_height="40dp"></com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
     <android.support.v4.view.ViewPager
         android:id="@+id/drama_activity_view_pager"

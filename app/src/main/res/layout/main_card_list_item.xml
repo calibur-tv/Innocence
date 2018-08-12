@@ -4,9 +4,9 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <ImageView
-        android:id="@+id/main_card_list_item_anime_cover"
-        android:layout_width="37dp"
-        android:layout_height="49dp"
+        android:id="@+id/main_card_list_item_user_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="15dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -14,40 +14,43 @@
         android:scaleType="centerCrop"
         />
     <TextView
-        android:id="@+id/main_card_list_item_anime_name"
+        android:id="@+id/main_card_list_item_user_name"
         android:layout_width="0dp"
         android:minHeight="19dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="15dp"
         android:textSize="14sp"
-        android:textColor="#615C5D"
+        android:text="用户昵称"
+        android:textColor="@color/color_FF7B7B7B"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/main_card_list_item_anime_cover"
-        app:layout_constraintTop_toTopOf="@id/main_card_list_item_anime_cover"
+        app:layout_constraintLeft_toRightOf="@id/main_card_list_item_user_icon"
+        app:layout_constraintTop_toTopOf="@id/main_card_list_item_user_icon"
         />
     <TextView
-        android:id="@+id/main_card_list_item_user_name"
+        android:id="@+id/main_card_list_item_anime_name"
         android:layout_width="0dp"
         android:minHeight="15dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="15dp"
         android:layout_marginTop="10dp"
+        android:text="番剧名·0分钟前"
         android:textSize="11sp"
-        android:textColor="#615C5D"
-        app:layout_constraintBottom_toBottomOf="@id/main_card_list_item_anime_cover"
-        app:layout_constraintTop_toBottomOf="@id/main_card_list_item_anime_name"
+        android:textColor="@color/color_FF9B9B9B"
+        app:layout_constraintBottom_toBottomOf="@id/main_card_list_item_user_icon"
+        app:layout_constraintTop_toBottomOf="@id/main_card_list_item_user_name"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/main_card_list_item_anime_cover"
+        app:layout_constraintLeft_toRightOf="@id/main_card_list_item_user_icon"
         />
     <TextView
         android:id="@+id/main_card_list_item_card_title"
-        app:layout_constraintTop_toBottomOf="@id/main_card_list_item_anime_cover"
-        app:layout_constraintLeft_toLeftOf="@id/main_card_list_item_anime_cover"
-        app:layout_constraintRight_toRightOf="@id/main_card_list_item_anime_name"
-        android:textSize="17sp"
-        android:textColor="#333333"
+        app:layout_constraintTop_toBottomOf="@id/main_card_list_item_user_icon"
+        app:layout_constraintLeft_toLeftOf="@id/main_card_list_item_user_icon"
+        app:layout_constraintRight_toRightOf="@id/main_card_list_item_user_name"
+        android:textSize="15sp"
+        android:textColor="@color/color_FF5B5B5B"
+        android:text="帖子名称"
         android:layout_marginTop="10dp"
         android:layout_width="0dp"
         android:minHeight="20dp"
@@ -56,11 +59,12 @@
     <TextView
         android:id="@+id/main_card_list_item_card_desc"
         app:layout_constraintTop_toBottomOf="@id/main_card_list_item_card_title"
-        app:layout_constraintLeft_toLeftOf="@id/main_card_list_item_anime_cover"
-        app:layout_constraintRight_toRightOf="@id/main_card_list_item_anime_name"
-        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toLeftOf="@id/main_card_list_item_user_icon"
+        app:layout_constraintRight_toRightOf="@id/main_card_list_item_user_name"
+        android:layout_marginTop="6dp"
         android:layout_width="0dp"
-        android:textSize="11sp"
+        android:textSize="13sp"
+        android:text="帖子简介"
         android:textColor="#615C5D"
         android:layout_height="wrap_content"
         android:maxLines="5"
@@ -70,9 +74,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/main_card_list_item_card_desc"
-        app:layout_constraintLeft_toLeftOf="@id/main_card_list_item_anime_cover"
-        app:layout_constraintRight_toRightOf="@id/main_card_list_item_anime_name"
-        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toLeftOf="@id/main_card_list_item_user_icon"
+        app:layout_constraintRight_toRightOf="@id/main_card_list_item_user_name"
         android:orientation="vertical"
         >
         <ImageView
@@ -81,6 +84,7 @@
             android:layout_height="wrap_content"
             android:scaleType="fitStart"
             android:visibility="gone"
+            android:layout_marginTop="10dp"
             android:transitionName="preview_card_picture"
             />
         <LinearLayout
@@ -88,6 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginTop="10dp"
             android:visibility="gone"
             >
             <ImageView
@@ -124,59 +129,50 @@
                 />
         </LinearLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:orientation="horizontal"
             >
+
             <TextView
-                android:id="@+id/main_card_list_item_last_comment_time"
-                android:layout_width="wrap_content"
-                android:layout_height="12dp"
-                android:text="0分钟前"
-                android:textColor="#9B9B9B"
-                android:textSize="8sp"
+                android:id="@+id/main_card_list_item_reward_count"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_alignParentRight="true"
+                android:text="赞赏：0"
+                android:textColor="@color/color_FF7B7B7B"
+                android:textSize="12sp"
                 />
 
             <TextView
-                android:id="@+id/main_card_list_item_last_comment_count"
-                android:layout_width="20dp"
-                android:layout_height="12dp"
+                android:id="@+id/main_card_list_item_marked_count"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:layout_alignParentRight="true"
-                android:text="888"
-                android:textColor="#9B9B9B"
-                android:textSize="8sp"
-                />
-            <ImageView
-                android:id="@+id/main_card_list_item_last_comment_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/main_card_list_item_last_comment_count"
-                android:src="@mipmap/card_comment_icon"
-                android:layout_marginRight="2dp"
+                android:layout_marginRight="5dp"
+                android:text="收藏：0"
+                android:textColor="@color/color_FF7B7B7B"
+                android:textSize="12sp"
                 />
             <TextView
-                android:id="@+id/main_card_list_item_upvote_count"
-                android:layout_width="20dp"
-                android:layout_height="12dp"
+                android:id="@+id/main_card_list_item_comment_count"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:layout_toLeftOf="@id/main_card_list_item_last_comment_icon"
                 android:layout_marginRight="5dp"
-                android:text="8888"
-                android:textColor="#9B9B9B"
-                android:textSize="8sp"
+                android:text="评论：0"
+                android:textColor="@color/color_FF7B7B7B"
+                android:textSize="12sp"
                 />
-            <ImageView
-                android:id="@+id/main_card_list_item_upvote_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/main_card_list_item_upvote_count"
-                android:src="@mipmap/card_upvote_icon"
-                android:layout_marginRight="2dp"
-                />
-        </RelativeLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
 

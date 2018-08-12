@@ -36,10 +36,14 @@ public class AnimeShowInfo {
         private String avatar;
         private String banner;
         private String summary;
+        private double score;
         private int count_score;
         private int count_like;
         private String alias;
-        private int followed;
+        private boolean followed;
+        private boolean scored;
+        private boolean is_master;
+        private List<AnimeInfoManagers> managers;
         private List<AnimeShowInfoTags> tags;
         private List<AnimeShowInfoFollowers> followers;
         private boolean has_video;
@@ -85,6 +89,14 @@ public class AnimeShowInfo {
             this.summary = summary;
         }
 
+        public double getScore() {
+            return score;
+        }
+
+        public void setScore(double score) {
+            this.score = score;
+        }
+
         public int getCount_score() {
             return count_score;
         }
@@ -109,12 +121,36 @@ public class AnimeShowInfo {
             this.alias = alias;
         }
 
-        public int getFollowed() {
+        public boolean isFollowed() {
             return followed;
         }
 
-        public void setFollowed(int followed) {
+        public void setFollowed(boolean followed) {
             this.followed = followed;
+        }
+
+        public boolean isScored() {
+            return scored;
+        }
+
+        public void setScored(boolean scored) {
+            this.scored = scored;
+        }
+
+        public boolean isIs_master() {
+            return is_master;
+        }
+
+        public void setIs_master(boolean is_master) {
+            this.is_master = is_master;
+        }
+
+        public List<AnimeInfoManagers> getManagers() {
+            return managers;
+        }
+
+        public void setManagers(List<AnimeInfoManagers> managers) {
+            this.managers = managers;
         }
 
         public List<AnimeShowInfoTags> getTags() {
@@ -157,16 +193,33 @@ public class AnimeShowInfo {
                     ", avatar='" + avatar + '\'' +
                     ", banner='" + banner + '\'' +
                     ", summary='" + summary + '\'' +
+                    ", score=" + score +
                     ", count_score=" + count_score +
                     ", count_like=" + count_like +
                     ", alias='" + alias + '\'' +
                     ", followed=" + followed +
+                    ", scored=" + scored +
+                    ", is_master=" + is_master +
+                    ", managers=" + managers +
                     ", tags=" + tags +
                     ", followers=" + followers +
                     ", has_video=" + has_video +
                     ", has_cartoon=" + has_cartoon +
                     '}';
         }
+    }
+
+    public class AnimeInfoManagers{
+        private int is_leader;
+        private String created_at;
+        private AnimeInfoManagersUser user;
+    }
+
+    public class AnimeInfoManagersUser{
+        private int id;
+        private String zone;
+        private String avatar;
+        private String nickname;
     }
 
     public class AnimeShowInfoTags{

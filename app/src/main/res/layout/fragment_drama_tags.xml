@@ -10,7 +10,7 @@
         android:id="@+id/drama_tags_search_layout"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@color/theme_magic_sakura_blue"
+        android:background="@color/theme_magic_sakura_primary"
         android:orientation="horizontal"
         >
         <EditText

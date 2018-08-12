@@ -2,6 +2,9 @@ package com.riuir.calibur.data;
 
 import java.util.List;
 
+
+//TODO 暂时作废
+
 public class MainCardInfo {
     private int code;
     private MainCardInfoData data;
@@ -70,22 +73,36 @@ public class MainCardInfo {
     }
 
     public class MainCardInfoList{
+
+        //公用字段
         private int id;
+        private MainCardInfoUser user;
+        private MainCardInfoBangumi bangumi;
+        private String created_at;
+        private String updated_at;
+
+        //帖子字段
         private String title;
         private String desc;
         private List<MainCardImages> images;
-        private String created_at;
-        private String updated_at;
         private int view_count;
         private int like_count;
         private int comment_count;
         private int mark_count;
-        private MainCardInfoUser user;
-        private MainCardInfoBangumi bangumi;
-        private List<String> previewImages;
         private boolean liked;
         private boolean marked;
         private boolean commented;
+        private boolean is_nice;
+
+
+        //图片需要字段
+        private int user_id;
+        private int bangumi_id;
+        private String name;
+        private int image_count;
+        private MainImageInfoSource source;
+        private boolean is_album;
+        private boolean is_creator;
 
         public int getId() {
             return id;
@@ -93,6 +110,38 @@ public class MainCardInfo {
 
         public void setId(int id) {
             this.id = id;
+        }
+
+        public MainCardInfoUser getUser() {
+            return user;
+        }
+
+        public void setUser(MainCardInfoUser user) {
+            this.user = user;
+        }
+
+        public MainCardInfoBangumi getBangumi() {
+            return bangumi;
+        }
+
+        public void setBangumi(MainCardInfoBangumi bangumi) {
+            this.bangumi = bangumi;
+        }
+
+        public String getCreated_at() {
+            return created_at;
+        }
+
+        public void setCreated_at(String created_at) {
+            this.created_at = created_at;
+        }
+
+        public String getUpdated_at() {
+            return updated_at;
+        }
+
+        public void setUpdated_at(String updated_at) {
+            this.updated_at = updated_at;
         }
 
         public String getTitle() {
@@ -117,22 +166,6 @@ public class MainCardInfo {
 
         public void setImages(List<MainCardImages> images) {
             this.images = images;
-        }
-
-        public String getCreated_at() {
-            return created_at;
-        }
-
-        public void setCreated_at(String created_at) {
-            this.created_at = created_at;
-        }
-
-        public String getUpdated_at() {
-            return updated_at;
-        }
-
-        public void setUpdated_at(String updated_at) {
-            this.updated_at = updated_at;
         }
 
         public int getView_count() {
@@ -167,30 +200,6 @@ public class MainCardInfo {
             this.mark_count = mark_count;
         }
 
-        public MainCardInfoUser getUser() {
-            return user;
-        }
-
-        public void setUser(MainCardInfoUser user) {
-            this.user = user;
-        }
-
-        public MainCardInfoBangumi getBangumi() {
-            return bangumi;
-        }
-
-        public void setBangumi(MainCardInfoBangumi bangumi) {
-            this.bangumi = bangumi;
-        }
-
-        public List<String> getPreviewImages() {
-            return previewImages;
-        }
-
-        public void setPreviewImages(List<String> previewImages) {
-            this.previewImages = previewImages;
-        }
-
         public boolean isLiked() {
             return liked;
         }
@@ -215,25 +224,97 @@ public class MainCardInfo {
             this.commented = commented;
         }
 
+        public boolean isIs_nice() {
+            return is_nice;
+        }
+
+        public void setIs_nice(boolean is_nice) {
+            this.is_nice = is_nice;
+        }
+
+        public int getUser_id() {
+            return user_id;
+        }
+
+        public void setUser_id(int user_id) {
+            this.user_id = user_id;
+        }
+
+        public int getBangumi_id() {
+            return bangumi_id;
+        }
+
+        public void setBangumi_id(int bangumi_id) {
+            this.bangumi_id = bangumi_id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getImage_count() {
+            return image_count;
+        }
+
+        public void setImage_count(int image_count) {
+            this.image_count = image_count;
+        }
+
+        public MainImageInfoSource getSource() {
+            return source;
+        }
+
+        public void setSource(MainImageInfoSource source) {
+            this.source = source;
+        }
+
+        public boolean isIs_album() {
+            return is_album;
+        }
+
+        public void setIs_album(boolean is_album) {
+            this.is_album = is_album;
+        }
+
+        public boolean isIs_creator() {
+            return is_creator;
+        }
+
+        public void setIs_creator(boolean is_creator) {
+            this.is_creator = is_creator;
+        }
+
+
         @Override
         public String toString() {
             return "MainCardInfoList{" +
                     "id=" + id +
+                    ", user=" + user +
+                    ", bangumi=" + bangumi +
+                    ", created_at='" + created_at + '\'' +
+                    ", updated_at='" + updated_at + '\'' +
                     ", title='" + title + '\'' +
                     ", desc='" + desc + '\'' +
                     ", images=" + images +
-                    ", created_at='" + created_at + '\'' +
-                    ", updated_at='" + updated_at + '\'' +
                     ", view_count=" + view_count +
                     ", like_count=" + like_count +
                     ", comment_count=" + comment_count +
                     ", mark_count=" + mark_count +
-                    ", user=" + user +
-                    ", bangumi=" + bangumi +
-                    ", previewImages=" + previewImages +
                     ", liked=" + liked +
                     ", marked=" + marked +
                     ", commented=" + commented +
+                    ", is_nice=" + is_nice +
+                    ", user_id=" + user_id +
+                    ", bangumi_id=" + bangumi_id +
+                    ", name='" + name + '\'' +
+                    ", image_count=" + image_count +
+                    ", source=" + source +
+                    ", is_album=" + is_album +
+                    ", is_creator=" + is_creator +
                     '}';
         }
     }
@@ -384,6 +465,15 @@ public class MainCardInfo {
                     '}';
         }
     }
+
+    public class MainImageInfoSource{
+        private String url;
+        private int width;
+        private int height;
+        private int size;
+        private String type;
+    }
+
 }
 
 

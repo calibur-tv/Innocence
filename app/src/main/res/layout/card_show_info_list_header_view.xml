@@ -98,68 +98,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         ></LinearLayout>
-    <RelativeLayout
+
+    <com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView
+        android:id="@+id/card_show_info_list_header_lfc_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        >
+        ></com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView>
 
-        <RelativeLayout
-            android:id="@+id/card_show_info_list_header_card_collection_layout"
-            android:layout_width="50dp"
-            android:layout_height="25dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/bg_card_show_header_collection"
-            >
-            <CheckBox
-                android:id="@+id/card_show_info_list_header_card_collection"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:button="@drawable/card_show_header_collection"
-                android:text="收藏"
-                android:layout_centerInParent="true"
-                android:textColor="@color/color_FFFFFFFF"
-                android:textSize="10sp"
-                />
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/card_show_info_list_header_card_like_layout"
-            android:layout_width="50dp"
-            android:layout_height="25dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:layout_toLeftOf="@id/card_show_info_list_header_card_collection_layout"
-            android:background="@drawable/bg_card_show_header_like"
-            android:layout_marginRight="15dp"
-            >
-            <CheckBox
-                android:id="@+id/card_show_info_list_header_card_like"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:button="@drawable/card_show_header_like"
-                android:text="喜欢"
-                android:gravity="center"
-                android:textColor="@color/color_FFFFFFFF"
-                android:textSize="10sp"
-                />
-        </RelativeLayout>
-
-        <Button
-            android:id="@+id/card_show_info_list_header_card_reply"
-            android:layout_width="50dp"
-            android:layout_height="25dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:drawableLeft="@mipmap/card_show_header_reply"
-            android:background="@drawable/bg_card_show_header_reply"
-            android:text="回复"
-            android:textColor="@color/color_FFFFFFFF"
-            android:textSize="10sp"
-            android:layout_toRightOf="@id/card_show_info_list_header_card_collection_layout"
-            android:layout_marginLeft="15dp"
-            />
-    </RelativeLayout>
+    <com.riuir.calibur.ui.widget.BangumiForShowView
+        android:id="@+id/card_show_info_list_header_bangumi_view"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"></com.riuir.calibur.ui.widget.BangumiForShowView>
 </LinearLayout>

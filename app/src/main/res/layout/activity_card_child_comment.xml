@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.home.card.CardChildCommentActivity"
     >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/theme_magic_sakura_primary"
+        >
+    </RelativeLayout>
 
     <ScrollView
         android:id="@+id/card_child_comment_header_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="45dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         >
 
         <LinearLayout
@@ -32,6 +39,7 @@
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:scaleType="centerCrop"
+                    android:layout_marginRight="6dp"
                     />
                 <TextView
                     android:id="@+id/card_child_comment_header_name"
@@ -86,13 +94,21 @@
                 android:layout_marginRight="12dp"
                 >
             </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:background="@color/color_FFDDDDDD"
+                />
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/card_child_comment_header_child_comment_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/color_FFEEEEEE"
-                android:layout_marginLeft="67dp"
-                android:layout_marginRight="12dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="14dp"
                 ></android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
@@ -101,7 +117,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_alignParentBottom="true"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:orientation="horizontal"
@@ -128,4 +143,4 @@
             />
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

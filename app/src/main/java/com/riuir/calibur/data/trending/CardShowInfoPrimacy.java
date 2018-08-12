@@ -1,6 +1,5 @@
-package com.riuir.calibur.data.card;
+package com.riuir.calibur.data.trending;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class CardShowInfoPrimacy  {
@@ -76,6 +75,7 @@ public class CardShowInfoPrimacy  {
         private String avatar;
         private String summary;
         private boolean followed;
+        private boolean is_master;
 
         public int getId() {
             return id;
@@ -117,6 +117,14 @@ public class CardShowInfoPrimacy  {
             this.followed = followed;
         }
 
+        public boolean isIs_master() {
+            return is_master;
+        }
+
+        public void setIs_master(boolean is_master) {
+            this.is_master = is_master;
+        }
+
         @Override
         public String toString() {
             return "CardShowInfoPrimacyBangumi{" +
@@ -125,6 +133,7 @@ public class CardShowInfoPrimacy  {
                     ", avatar='" + avatar + '\'' +
                     ", summary='" + summary + '\'' +
                     ", followed=" + followed +
+                    ", is_master=" + is_master +
                     '}';
         }
     }
@@ -132,19 +141,24 @@ public class CardShowInfoPrimacy  {
         private int id;
         private int comment_count;
         private int like_count;
+        private int reward_count;
         private int view_count;
         private int mark_count;
         private String title;
         private String desc;
         private boolean liked;
         private boolean marked;
+        private boolean rewarded;
         private boolean commented;
+
         private String content;
         private List<CardShowInfoPrimacyImages> images;
         private String created_at;
         private String updated_at;
         private List<CardShowInfoPrimacyPreviewImages> preview_images;
         private List<CardShowInfoPrimacyLikeUser> like_users;
+        private List<CardShowInfoPrimacyLikeUser> reward_users;
+
 
         public int getId() {
             return id;
@@ -218,6 +232,14 @@ public class CardShowInfoPrimacy  {
             this.marked = marked;
         }
 
+        public boolean isRewarded() {
+            return rewarded;
+        }
+
+        public void setRewarded(boolean rewarded) {
+            this.rewarded = rewarded;
+        }
+
         public boolean isCommented() {
             return commented;
         }
@@ -274,18 +296,36 @@ public class CardShowInfoPrimacy  {
             this.like_users = like_users;
         }
 
+        public int getReward_count() {
+            return reward_count;
+        }
+
+        public void setReward_count(int reward_count) {
+            this.reward_count = reward_count;
+        }
+
+        public List<CardShowInfoPrimacyLikeUser> getReward_users() {
+            return reward_users;
+        }
+
+        public void setReward_users(List<CardShowInfoPrimacyLikeUser> reward_users) {
+            this.reward_users = reward_users;
+        }
+
         @Override
         public String toString() {
             return "CardShowInfoPrimacyPost{" +
                     "id=" + id +
                     ", comment_count=" + comment_count +
                     ", like_count=" + like_count +
+                    ", reward_count=" + reward_count +
                     ", view_count=" + view_count +
                     ", mark_count=" + mark_count +
                     ", title='" + title + '\'' +
                     ", desc='" + desc + '\'' +
                     ", liked=" + liked +
                     ", marked=" + marked +
+                    ", rewarded=" + rewarded +
                     ", commented=" + commented +
                     ", content='" + content + '\'' +
                     ", images=" + images +
@@ -293,6 +333,7 @@ public class CardShowInfoPrimacy  {
                     ", updated_at='" + updated_at + '\'' +
                     ", preview_images=" + preview_images +
                     ", like_users=" + like_users +
+                    ", reward_users=" + reward_users +
                     '}';
         }
     }

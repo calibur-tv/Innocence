@@ -179,6 +179,9 @@ public class LoginActivity extends BaseActivity {
                             ToastUtils.showShort(LoginActivity.this,"登录成功！✿✿ヽ(°▽°)ノ✿");
                             //返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
                             SharedPreferencesUtils.put(App.instance(),"Authorization",response.body().getData());
+                            Constants.ISLOGIN = true;
+                            Constants.AUTH_TOKEN = response.body().getData();
+
                             startActivity(MainActivity.class);
                             finish();
                         }else if (code == 400){

@@ -1,10 +1,10 @@
-package com.riuir.calibur.data.card;
+package com.riuir.calibur.data.trending;
 
 import java.util.List;
 
-public class CardChildCommentInfo {
+public class TrendingChildCommentInfo {
     private int code;
-    private CardChildCommentInfoData data;
+    private TrendingChildCommentInfoData data;
 
     public int getCode() {
         return code;
@@ -14,32 +14,32 @@ public class CardChildCommentInfo {
         this.code = code;
     }
 
-    public CardChildCommentInfoData getData() {
+    public TrendingChildCommentInfoData getData() {
         return data;
     }
 
-    public void setData(CardChildCommentInfoData data) {
+    public void setData(TrendingChildCommentInfoData data) {
         this.data = data;
     }
 
     @Override
     public String toString() {
-        return "CardChildCommentInfo{" +
+        return "TrendingChildCommentInfo{" +
                 "code=" + code +
                 ", data=" + data +
                 '}';
     }
 
-    public class CardChildCommentInfoData{
-        private List<CardChildCommentInfoList> list;
+    public class TrendingChildCommentInfoData{
+        private List<TrendingChildCommentInfoList> list;
         private int total;
         private boolean noMore;
 
-        public List<CardChildCommentInfoList> getList() {
+        public List<TrendingChildCommentInfoList> getList() {
             return list;
         }
 
-        public void setList(List<CardChildCommentInfoList> list) {
+        public void setList(List<TrendingChildCommentInfoList> list) {
             this.list = list;
         }
 
@@ -61,14 +61,14 @@ public class CardChildCommentInfo {
 
         @Override
         public String toString() {
-            return "CardChildCommentInfoData{" +
+            return "TrendingChildCommentInfoData{" +
                     "list=" + list +
                     ", total=" + total +
                     ", noMore=" + noMore +
                     '}';
         }
     }
-    public class CardChildCommentInfoList{
+    public class TrendingChildCommentInfoList{
         private int id;
         private String content;
         private String created_at;
@@ -180,7 +180,7 @@ public class CardChildCommentInfo {
 
         @Override
         public String toString() {
-            return "CardChildCommentInfoList{" +
+            return "TrendingChildCommentInfoList{" +
                     "id=" + id +
                     ", content='" + content + '\'' +
                     ", created_at='" + created_at + '\'' +

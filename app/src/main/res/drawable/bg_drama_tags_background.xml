@@ -2,11 +2,11 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_checked="true">
         <shape >
-            <solid android:color="@color/theme_magic_sakura_blue" />
+            <solid android:color="@color/theme_magic_sakura_primary" />
             <corners android:radius="10dip"/>
             <stroke
                 android:width="1dip"
-                android:color="@color/theme_magic_sakura_blue" />
+                android:color="@color/theme_magic_sakura_primary" />
         </shape>
     </item>
     <item android:state_checked="false">
@@ -15,7 +15,7 @@
             <corners android:radius="10dip"/>
             <stroke
                 android:width="1dip"
-                android:color="@color/theme_magic_sakura_blue" />
+                android:color="@color/theme_magic_sakura_primary" />
         </shape>
     </item>
 </selector>

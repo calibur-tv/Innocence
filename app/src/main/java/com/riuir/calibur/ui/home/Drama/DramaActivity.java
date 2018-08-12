@@ -15,9 +15,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.data.AnimeShowInfo;
+import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.DramaFragment;
 import com.riuir.calibur.ui.home.DramaNewAnimeListFragment;
@@ -26,6 +28,7 @@ import com.riuir.calibur.ui.home.DramaTimelineFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.utils.GlideUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +45,7 @@ public class DramaActivity extends BaseActivity {
     ImageView animeBanner;
     @BindView(R.id.drama_activity_anime_name)
     TextView animeName;
-    @BindView(R.id.drama_activity_anime_follow)
+    @BindView(R.id.drama_activity_anime_follow_count)
     TextView animeFollowCount;
     @BindView(R.id.drama_activity_anime_card_count)
     TextView animeCardCount;
@@ -67,6 +70,9 @@ public class DramaActivity extends BaseActivity {
     DramaCardFragment dramaCardFragment;
     DramaVideoFragment dramaVideoFragment;
     DramaCartoonFragment dramaCartoonFragment;
+    DramaImageFragment dramaImageFragment;
+    DramaScoreFragment dramaScoreFragment;
+    DramaRoleFragment dramaRoleFragment;
 
     int animeID;
 
@@ -90,7 +96,9 @@ public class DramaActivity extends BaseActivity {
 
     private void setView() {
         GlideUtils.loadImageView(DramaActivity.this,animeShowInfoData.getAvatar(),animeIcon);
-        GlideUtils.loadImageViewBlur(DramaActivity.this,animeShowInfoData.getBanner(),animeBanner);
+        GlideUtils.loadImageViewBlur(DramaActivity.this,
+                GlideUtils.setImageUrl(DramaActivity.this,animeShowInfoData.getBanner(),GlideUtils.FULL_SCREEN),
+                animeBanner);
         animeName.setText(animeShowInfoData.getName());
         animeFollowCount.setText(animeShowInfoData.getCount_like()+"");
 
@@ -101,19 +109,28 @@ public class DramaActivity extends BaseActivity {
         apiGet.getCallAnimeShow(animeID).enqueue(new Callback<AnimeShowInfo>() {
             @Override
             public void onResponse(Call<AnimeShowInfo> call, Response<AnimeShowInfo> response) {
-                if (response!=null&&response.body()!=null){
+                if (response!=null&&response.isSuccessful()){
                     if (response.body().getCode() == 0){
+                        LogUtils.d("animeId","animeId = "+animeID);
                         animeShowInfoData = response.body().getData();
                         setView();
                     }
                 }else {
-
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+                    LogUtils.d("animeId","errorStrInfo = "+info.getMessage());
                 }
             }
 
             @Override
             public void onFailure(Call<AnimeShowInfo> call, Throwable t) {
-
+                LogUtils.d("animeId","t = "+t.getMessage());
             }
         });
     }
@@ -130,9 +147,15 @@ public class DramaActivity extends BaseActivity {
             //添加视频fragment
             titles.add("视频");
         }
+        titles.add("相册");
+
+        titles.add("评分");
+
+        titles.add("偶像");
+
         dramaViewPager.setAdapter(new DramaActivityPagerAdapter(getSupportFragmentManager()));
-        dramaViewPager.setOffscreenPageLimit(5);
         dramaPagerTab.setViewPager(dramaViewPager);
+        dramaViewPager.setOffscreenPageLimit(5);
         setDramaTabs();
     }
 
@@ -141,10 +164,10 @@ public class DramaActivity extends BaseActivity {
         dramaPagerTab.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         dramaPagerTab.setDividerColor(Color.TRANSPARENT);
-        dramaPagerTab.setBackgroundResource(R.color.theme_magic_sakura_blue);
+        dramaPagerTab.setBackgroundResource(R.color.theme_magic_sakura_primary);
         //设置underLine
         dramaPagerTab.setUnderlineHeight(2);
-        dramaPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_blue);
+        dramaPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
         //设置Tab Indicator的高度
         dramaPagerTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
         // 设置Tab Indicator的高度
@@ -203,6 +226,21 @@ public class DramaActivity extends BaseActivity {
                         dramaCartoonFragment = new DramaCartoonFragment();
                     }
                     return dramaCartoonFragment;
+                case "相册":
+                    if (dramaImageFragment == null) {
+                        dramaImageFragment = new DramaImageFragment();
+                    }
+                    return dramaImageFragment;
+                case "评分":
+                    if (dramaScoreFragment == null) {
+                        dramaScoreFragment = new DramaScoreFragment();
+                    }
+                    return dramaScoreFragment;
+                case "偶像":
+                    if (dramaRoleFragment == null) {
+                        dramaRoleFragment = new DramaRoleFragment();
+                    }
+                    return dramaRoleFragment;
                 default:
                     return null;
             }

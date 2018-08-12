@@ -72,5 +72,10 @@ dependencies {
     //magic sakura
     implementation 'com.bilibili:magicasakura:0.1.8@aar'
 
+    implementation 'com.qiniu:qiniu-android-sdk:7.3.+'
+    //ratingbar 评分
+    implementation 'com.hedgehog.ratingbar:app:1.1.2'
+    //MPAndroidChart 图表
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
 }

@@ -26,6 +26,7 @@ import com.riuir.calibur.data.AnimeListForTagsSearch;
 import com.riuir.calibur.data.params.DramaTags;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
+import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.ArrayList;
@@ -234,7 +235,7 @@ public class DramaTagsFragment extends BaseFragment {
 
 
             //添加底部footer
-            dramaTagsAnimeListAdapter.setLoadMoreView(new CardLoadMoreView());
+            dramaTagsAnimeListAdapter.setLoadMoreView(new MyLoadMoreView());
             dramaTagsAnimeListAdapter.disableLoadMoreIfNotFullPage(tagsAnimeListView);
             tagsAnimeListView.setLayoutManager(new LinearLayoutManager(App.instance()));
             tagsAnimeListView.setAdapter(dramaTagsAnimeListAdapter);
@@ -395,34 +396,4 @@ public class DramaTagsFragment extends BaseFragment {
         LogUtils.d("tagsSearch","seenIds = "+tagsIDStr );
     }
 
-    public  class CardLoadMoreView extends LoadMoreView {
-
-        @Override public int getLayoutId() {
-            return R.layout.brvah_quick_view_load_more;
-        }
-
-        /**
-         * 如果返回true，数据全部加载完毕后会隐藏加载更多
-         * 如果返回false，数据全部加载完毕后会显示getLoadEndViewId()布局
-         */
-        @Override public boolean isLoadEndGone() {
-            return false;
-        }
-
-        @Override protected int getLoadingViewId() {
-            return R.id.load_more_loading_view;
-        }
-
-        @Override protected int getLoadFailViewId() {
-            return R.id.load_more_load_fail_view;
-        }
-
-        /**
-         * isLoadEndGone()为true，可以返回0
-         * isLoadEndGone()为false，不能返回0
-         */
-        @Override protected int getLoadEndViewId() {
-            return R.id.load_more_load_end_view;
-        }
-    }
 }

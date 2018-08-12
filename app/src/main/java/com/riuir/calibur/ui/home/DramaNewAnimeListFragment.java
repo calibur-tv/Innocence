@@ -69,6 +69,10 @@ public class DramaNewAnimeListFragment extends BaseFragment {
 
     private void setViewPagerAdapter() {
         newAnimeListViewPagerAdapter = new NewAnimeListViewPagerAdapter();
+
+        if (newAnimeViewPager == null){
+            newAnimeViewPager = getView().findViewById(R.id.drama_new_anime_list_view_pager);
+        }
         newAnimeViewPager.setAdapter(newAnimeListViewPagerAdapter);
         pagerSlidingTabStrip.setViewPager(newAnimeViewPager);
         setDramaTabs();
@@ -80,11 +84,11 @@ public class DramaNewAnimeListFragment extends BaseFragment {
         pagerSlidingTabStrip.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         pagerSlidingTabStrip.setDividerColor(Color.TRANSPARENT);
-        pagerSlidingTabStrip.setBackgroundResource(R.color.theme_magic_sakura_blue);
+        pagerSlidingTabStrip.setBackgroundResource(R.color.theme_magic_sakura_primary);
         //滚动条的间隔
         pagerSlidingTabStrip.setTabPaddingLeftRight(10);
         //设置underLine
-        pagerSlidingTabStrip.setUnderlineColorResource(R.color.theme_magic_sakura_blue);
+        pagerSlidingTabStrip.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
         pagerSlidingTabStrip.setUnderlineHeight(2);
         //设置Tab Indicator的颜色
         pagerSlidingTabStrip.setIndicatorColorResource(R.color.color_FFFFFFFF);

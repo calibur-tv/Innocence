@@ -205,7 +205,7 @@
             android:layout_height="wrap_content"
             android:text="查看更多回复>>>"
             android:layout_margin="2dp"
-            android:textColor="@color/theme_magic_sakura_blue"
+            android:textColor="@color/theme_magic_sakura_primary"
             android:visibility="gone"
             android:background="@drawable/card_child_comment_background"
             />

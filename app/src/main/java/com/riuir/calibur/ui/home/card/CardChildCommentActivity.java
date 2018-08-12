@@ -2,9 +2,7 @@ package com.riuir.calibur.ui.home.card;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +14,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,15 +24,16 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.chad.library.adapter.base.loadmore.LoadMoreView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.card.CardChildCommentInfo;
-import com.riuir.calibur.data.card.CardShowInfoCommentMain;
+import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.trending.TrendingChildCommentInfo;
+import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
@@ -70,19 +68,26 @@ public class CardChildCommentActivity extends BaseActivity {
 
     CardChildCommentListAdapter childCommentListAdapter;
 
+    TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList mainComment;
+
+    TrendingChildCommentInfo.TrendingChildCommentInfoData childCommentInfoData;
+    List<TrendingChildCommentInfo.TrendingChildCommentInfoList> baseChildList;
+    List<TrendingChildCommentInfo.TrendingChildCommentInfoList> childList;
+
+    String commentReplyToUserName = "";
+    int commentReplyToUserId = 0;
+
+    String commentReplyString;
+
     int commentId;
-    CardShowInfoCommentMain.CardShowInfoCommentMainList mainComment;
-
-    CardChildCommentInfo.CardChildCommentInfoData childCommentInfoData;
-    List<CardChildCommentInfo.CardChildCommentInfoList> baseChildList;
-    List<CardChildCommentInfo.CardChildCommentInfoList> childList;
-
-    String commentReplyToUserName;
-    int commentReplyToUserId;
-
     int maxId;
-    boolean isFristLoad =false;
+    String type;
+    boolean isFirstLoad =false;
     boolean isLoadMore = false;
+
+    private static final int NET_STATUS_GET_LIST = 0;
+    private static final int NET_STATUS_REPLY_COMMENT = 1;
+
 
     @Override
     protected int getContentViewId() {
@@ -92,12 +97,13 @@ public class CardChildCommentActivity extends BaseActivity {
     @Override
     protected void onInit() {
         Intent intent = getIntent();
-        commentId = intent.getIntExtra("commentId",0);
-        mainComment = (CardShowInfoCommentMain.CardShowInfoCommentMainList) intent.getSerializableExtra("mainComment");
+        commentId = intent.getIntExtra("id",0);
+        type = intent.getStringExtra("type");
+        mainComment = (TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList) intent.getSerializableExtra("mainComment");
 
         setView();
-        isFristLoad = true;
-        setNet();
+        isFirstLoad = true;
+        setNet(NET_STATUS_GET_LIST);
     }
 
     private void setView() {
@@ -122,39 +128,58 @@ public class CardChildCommentActivity extends BaseActivity {
 
     }
 
-    private void setNet() {
-
-        setMaxId();
-        apiGet.getCallChildComment("post",commentId,maxId).enqueue(new Callback<CardChildCommentInfo>() {
-            @Override
-            public void onResponse(Call<CardChildCommentInfo> call, Response<CardChildCommentInfo> response) {
-                LogUtils.d("childComment","isSuccessful = "+response.isSuccessful());
-                if (response.isSuccessful()){
-                    childCommentInfoData = response.body().getData();
-                    childList = response.body().getData().getList();
-                    if (isFristLoad){
-                        isFristLoad=false;
-                        baseChildList = response.body().getData().getList();
-                        setAdapter();
+    private void setNet(int NET_STATUS) {
+        if (NET_STATUS == NET_STATUS_GET_LIST){
+            setMaxId();
+            apiGet.getCallChildComment(type,commentId,maxId).enqueue(new Callback<TrendingChildCommentInfo>() {
+                @Override
+                public void onResponse(Call<TrendingChildCommentInfo> call, Response<TrendingChildCommentInfo> response) {
+                    LogUtils.d("childComment","isSuccessful = "+response.isSuccessful());
+                    if (response.isSuccessful()){
+                        childCommentInfoData = response.body().getData();
+                        childList = response.body().getData().getList();
+                        if (isFirstLoad){
+                            isFirstLoad=false;
+                            baseChildList = response.body().getData().getList();
+                            setAdapter();
+                        }
+                        if (isLoadMore){
+                            isLoadMore = false;
+                            setLoadMore();
+                        }
+                    }else {
+                        if (childCommentListAdapter!=null){
+                            childCommentListAdapter.loadMoreFail();
+                        }
                     }
+                }
+
+                @Override
+                public void onFailure(Call<TrendingChildCommentInfo> call, Throwable t) {
+                    LogUtils.d("childComment","Throwable = "+t);
                     if (isLoadMore){
                         isLoadMore = false;
-                        setLoadMore();
+                        childCommentListAdapter.loadMoreFail();
                     }
-                }else {
-                    childCommentListAdapter.loadMoreFail();
                 }
-            }
+            });
+        }
 
-            @Override
-            public void onFailure(Call<CardChildCommentInfo> call, Throwable t) {
-                LogUtils.d("childComment","Throwable = "+t);
-                if (isLoadMore){
-                    isLoadMore = false;
-                    childCommentListAdapter.loadMoreFail();
+        //TODO
+        if (NET_STATUS == NET_STATUS_REPLY_COMMENT){
+            apiPost.geCalltReplyChildComment(commentId,commentReplyToUserId,commentReplyString).enqueue(new Callback<Event<String>>() {
+                @Override
+                public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
+
                 }
-            }
-        });
+
+                @Override
+                public void onFailure(Call<Event<String>> call, Throwable t) {
+
+                }
+            });
+        }
+
     }
 
     private void setLoadMore() {
@@ -167,7 +192,7 @@ public class CardChildCommentActivity extends BaseActivity {
     }
 
     private void setMaxId() {
-        if (isFristLoad){
+        if (isFirstLoad){
             maxId = 0;
         }
         if (isLoadMore){
@@ -196,7 +221,7 @@ public class CardChildCommentActivity extends BaseActivity {
         }else {
             //添加底部footer
             childCommentListAdapter.setEnableLoadMore(true);
-            childCommentListAdapter.setLoadMoreView(new CardLoadMoreView());
+            childCommentListAdapter.setLoadMoreView(new MyLoadMoreView());
             childCommentListAdapter.disableLoadMoreIfNotFullPage(childCommentListView);
         }
 
@@ -215,11 +240,30 @@ public class CardChildCommentActivity extends BaseActivity {
 
                 }else {
                     isLoadMore =true;
-                    setNet();
+                    setNet(NET_STATUS_GET_LIST);
                 }
             }
         },childCommentListView);
 
+
+        replyCommentBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String [] commentReplyTexts = replyCommentEdit.getText().toString().split(":");
+                if (commentReplyTexts.length == 2){
+                    commentReplyString = commentReplyTexts[1];
+                }
+                if (commentReplyToUserId == 0){
+                    commentReplyToUserId = mainComment.getFrom_user_id();
+                }else {
+                }
+
+                if (commentReplyToUserName == null||commentReplyToUserName.equals("")){
+                    commentReplyToUserName = mainComment.getFrom_user_name();
+                }else {
+                }
+            }
+        });
     }
 
     @Override
@@ -227,15 +271,15 @@ public class CardChildCommentActivity extends BaseActivity {
 
     }
 
-    class CardChildCommentListAdapter extends BaseQuickAdapter<CardChildCommentInfo.CardChildCommentInfoList,BaseViewHolder>{
+    class CardChildCommentListAdapter extends BaseQuickAdapter<TrendingChildCommentInfo.TrendingChildCommentInfoList,BaseViewHolder>{
 
 
-        public CardChildCommentListAdapter(int layoutResId, @Nullable List<CardChildCommentInfo.CardChildCommentInfoList> data) {
+        public CardChildCommentListAdapter(int layoutResId, @Nullable List<TrendingChildCommentInfo.TrendingChildCommentInfoList> data) {
             super(layoutResId, data);
         }
 
         @Override
-        protected void convert(BaseViewHolder helper, final CardChildCommentInfo.CardChildCommentInfoList item) {
+        protected void convert(BaseViewHolder helper, final TrendingChildCommentInfo.TrendingChildCommentInfoList item) {
 
             TextView commentChildText = helper.getView(R.id.card_child_comment_list_item_content);
 
@@ -250,7 +294,7 @@ public class CardChildCommentActivity extends BaseActivity {
                 @Override
                 public void updateDrawState(TextPaint ds) {
                     super.updateDrawState(ds);
-                    ds.setColor(getResources().getColor(R.color.theme_magic_sakura_blue));
+                    ds.setColor(getResources().getColor(R.color.theme_magic_sakura_primary));
                     ds.setUnderlineText(false);
                 }
             }, 0, fromUserName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -270,7 +314,7 @@ public class CardChildCommentActivity extends BaseActivity {
                     @Override
                     public void updateDrawState(TextPaint ds) {
                         super.updateDrawState(ds);
-                        ds.setColor(getResources().getColor(R.color.theme_magic_sakura_blue));
+                        ds.setColor(getResources().getColor(R.color.theme_magic_sakura_primary));
                         ds.setUnderlineText(false);
                     }
                 },0,toUserName.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -308,35 +352,4 @@ public class CardChildCommentActivity extends BaseActivity {
         }
     }
 
-    public  class CardLoadMoreView extends LoadMoreView {
-
-        @Override public int getLayoutId() {
-            return R.layout.brvah_quick_view_load_more;
-        }
-
-        /**
-         * 如果返回true，数据全部加载完毕后会隐藏加载更多
-         * 如果返回false，数据全部加载完毕后会显示getLoadEndViewId()布局
-         */
-        @Override public boolean isLoadEndGone() {
-            return false;
-        }
-
-        @Override protected int getLoadingViewId() {
-            return R.id.load_more_loading_view;
-        }
-
-        @Override protected int getLoadFailViewId() {
-            return R.id.load_more_load_fail_view;
-        }
-
-        /**
-         * isLoadEndGone()为true，可以返回0
-         * isLoadEndGone()为false，不能返回0
-         */
-        @Override protected int getLoadEndViewId() {
-            return R.id.load_more_load_end_view;
-        }
-
-    }
 }

@@ -368,7 +368,7 @@ public class RegisterActivity extends BaseActivity {
                 handler.removeMessages(0);
                 sendVerificationCodeBtn.setClickable(true);
                 sendVerificationCodeBtn.setText("发送验证码");
-                sendVerificationCodeBtn.setTextColor(getResources().getColor(R.color.theme_magic_sakura_blue));
+                sendVerificationCodeBtn.setTextColor(getResources().getColor(R.color.theme_magic_sakura_primary));
                 break;
 
             default:

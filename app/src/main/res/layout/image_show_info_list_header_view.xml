@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+    <TextView
+        android:id="@+id/image_show_info_list_header_card_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="帖子标题标题标题"
+        android:textSize="18sp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:layout_marginTop="10dp"
+        >
+        <ImageView
+            android:id="@+id/image_show_info_list_header_user_icon"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:scaleType="centerCrop"
+            android:layout_marginRight="10dp"
+            />
+        <TextView
+            android:id="@+id/image_show_info_list_header_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="用户昵称"
+            android:textColor="@color/color_FF7B7B7B"
+            android:textSize="15sp"
+            android:layout_toRightOf="@id/image_show_info_list_header_user_icon"
+            />
+        <TextView
+            android:id="@+id/image_show_info_list_header_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="第1楼·共N楼·一天前"
+            android:textSize="13sp"
+            android:textColor="@color/color_FF9B9B9B"
+            android:layout_toRightOf="@id/image_show_info_list_header_user_icon"
+            android:layout_alignBottom="@id/image_show_info_list_header_user_icon"
+            />
+        <TextView
+            android:id="@+id/image_show_info_list_header_card_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="···"
+            android:textSize="15sp"
+            android:paddingRight="8dp"
+            android:paddingLeft="8dp"
+            android:layout_alignParentRight="true"
+            />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/image_show_info_list_header_card_image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        ></LinearLayout>
+
+    <com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView
+        android:id="@+id/image_show_info_list_header_lfc_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        ></com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView>
+
+    <com.riuir.calibur.ui.widget.BangumiForShowView
+        android:id="@+id/image_show_info_list_header_bangumi_view"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"></com.riuir.calibur.ui.widget.BangumiForShowView>
+
+</LinearLayout>

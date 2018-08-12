@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/role_fans_list_item_fans_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:scaleType="centerInside"
+        />
+    <TextView
+        android:id="@+id/role_fans_list_item_fans_name"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_toRightOf="@id/role_fans_list_item_fans_icon"
+        android:text="用户昵称"
+        android:textSize="16sp"
+        android:textColor="@color/color_FF7B7B7B"
+        android:gravity="center_vertical"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        />
+    <TextView
+        android:id="@+id/role_fans_list_item_score"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="14dp"
+        android:text="应援次数：000"
+        android:textSize="12sp"
+        android:textColor="@color/theme_magic_sakura_primary"
+        android:gravity="center_vertical"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        />
+
+</RelativeLayout>

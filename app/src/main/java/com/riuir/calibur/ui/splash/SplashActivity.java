@@ -4,6 +4,7 @@ import android.os.Message;
 
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
+import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
@@ -27,6 +28,8 @@ public class SplashActivity extends BaseActivity {
 
         AUTH_TOKEN = Constants.AUTH_TOKEN;
         isLogin = Constants.ISLOGIN;
+
+//        LogUtils.d("Bearer","token = "+AUTH_TOKEN);
 
         if (isLogin){
             handler.sendEmptyMessageDelayed(0,1500);

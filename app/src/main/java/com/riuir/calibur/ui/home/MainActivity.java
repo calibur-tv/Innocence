@@ -92,7 +92,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     //将addBtn 以actionBtn的方式在这里初始化
     private void setFloatingActionBth() {
         //宽高的px  由dp转换而成
-        int addBtnParams = DensityUtils.dp2px(this,70);
+        int addBtnParams = DensityUtils.dp2px(this,60);
         int itemIconParams = DensityUtils.dp2px(this,45);
 
         //设置CircularFloatingActionMenu点击展开扇形图
@@ -185,7 +185,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(addActionImg, pvhR);
                 animation.start();
                 //屏幕变暗
-                ScreenUtils.setScreenBgDarken(MainActivity.this);
+//                ScreenUtils.setScreenBgDarken(MainActivity.this);
             }
 
             @Override
@@ -197,7 +197,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(addActionImg, pvhR);
                 animation.start();
                 //屏幕变亮
-                ScreenUtils.setScreenBgLight(MainActivity.this);
+//                ScreenUtils.setScreenBgLight(MainActivity.this);
             }
         });
 

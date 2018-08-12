@@ -9,26 +9,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.widget.TextView;
 
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.ResponseWrapper;
-import com.riuir.calibur.net.RxApiErrorHandleTransformer;
-import com.riuir.calibur.net.RxProgressTransformer;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import butterknife.BindView;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * ************************************
@@ -48,9 +34,11 @@ public class MainFragment extends BaseFragment {
     @BindView(R.id.main_card_view_pager)
     ViewPager mainCardViewPager;
 
-    MainCardHotFragment mainCardHotFragment;
-    MainCardNewFragment mainCardNewFragment;
     MainCardActiveFragment mainCardActiveFragment;
+//    MainCardHotFragment mainCardHotFragment;
+//    MainCardNewFragment mainCardNewFragment;
+    MainImageFragment mainImageFragment;
+    MainScoreFragment mainScoreFragment;
 
     /**
      * 获取当前屏幕的密度
@@ -78,7 +66,7 @@ public class MainFragment extends BaseFragment {
 
     private void setViewPager() {
         mainCardViewPager.setAdapter(new MainCardPagerAdapter(getChildFragmentManager()));
-        mainCardViewPager.setOffscreenPageLimit(2);
+        mainCardViewPager.setOffscreenPageLimit(5);
         mainCardTab.setViewPager(mainCardViewPager);
         setMainCardTabs();
     }
@@ -88,11 +76,11 @@ public class MainFragment extends BaseFragment {
         mainCardTab.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         mainCardTab.setDividerColor(Color.TRANSPARENT);
-        mainCardTab.setBackgroundResource(R.color.color_FF23ADE5);
+        mainCardTab.setBackgroundResource(R.color.theme_magic_sakura_primary);
         mainCardTab.setUnderlineColor(Color.TRANSPARENT);
         //设置underLine
         mainCardTab.setUnderlineHeight(2);
-        mainCardTab.setUnderlineColorResource(R.color.color_FF23ADE5);
+        mainCardTab.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
         //设置Tab Indicator的高度
         mainCardTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
         // 设置Tab Indicator的高度
@@ -104,7 +92,7 @@ public class MainFragment extends BaseFragment {
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
         mainCardTab.setSelectedTextColorResource(R.color.color_FFFFFFFF);
         //设置滚动条圆角（这是我自定义的一个方法，同时修改了滚动条长度，使其与文字等宽）
-        mainCardTab.setRoundRadius(3);
+        mainCardTab.setRoundRadius(1);
 
         // 取消点击Tab时的背景色
         mainCardTab.setTabBackground(0);
@@ -116,7 +104,7 @@ public class MainFragment extends BaseFragment {
             super(fm);
         }
 
-        private final String[] titles = { "最新", "最热","动态" };
+        private final String[] titles = { "帖子", "图片","漫评" };
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -132,20 +120,21 @@ public class MainFragment extends BaseFragment {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    if (mainCardNewFragment == null) {
-                        mainCardNewFragment = new MainCardNewFragment();
-                    }
-                    return mainCardNewFragment;
-                case 1:
-                    if (mainCardHotFragment == null) {
-                        mainCardHotFragment = new MainCardHotFragment();
-                    }
-                    return mainCardHotFragment;
-                case 2:
                     if (mainCardActiveFragment == null){
                         mainCardActiveFragment = new MainCardActiveFragment();
                     }
                     return mainCardActiveFragment;
+                case 1:
+                    if (mainImageFragment == null) {
+                        mainImageFragment = new MainImageFragment();
+                    }
+                    return mainImageFragment;
+                case 2:
+                    if (mainScoreFragment == null) {
+                        mainScoreFragment = new MainScoreFragment();
+                    }
+                    return mainScoreFragment;
+
                 default:
                     return null;
             }

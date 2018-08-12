@@ -17,11 +17,14 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ScreenUtils;
 
 import java.io.File;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 import static com.riuir.calibur.utils.GlideOptions.bitmapTransform;
 
@@ -34,6 +37,7 @@ import static com.riuir.calibur.utils.GlideOptions.bitmapTransform;
  * ************************************
  */
 public class GlideUtils {
+
 
     //默认加载
     public static void loadImageView(Context mContext, String path, ImageView mImageView) {
@@ -53,6 +57,12 @@ public class GlideUtils {
     //圆形加载
     public static void loadImageViewCircle(Context mContext, String path, ImageView mImageView) {
         Glide.with(mContext).load(path).apply(bitmapTransform(new CircleCrop())).into(mImageView);
+    }
+
+    //圆角加载
+    public static void loadImageViewRoundedCorners(Context mContext, String path, ImageView mImageView) {
+        Glide.with(mContext).load(path).apply(bitmapTransform(new RoundedCornersTransformation(30, 0, RoundedCornersTransformation.CornerType.ALL)))
+                .into(mImageView);
     }
 
     //preview加载
@@ -175,4 +185,33 @@ public class GlideUtils {
         Glide.get(mContext).clearMemory();
     }
 
+
+    public static final int FULL_SCREEN = 0;
+    public static final int THIRD_SCREEN = 1;
+    public static final int HALF_SCREEN = 2;
+
+    //设置图片url地址 并且添加七牛云的图片处理
+    public static String setImageUrl(Context context,String url,int style){
+        int screenWidth = ScreenUtils.getScreenWidth(context);
+
+        if (url.contains(Constants.API_IMAGE_BASE_URL)){
+        }else {
+            url = Constants.API_IMAGE_BASE_URL+url;
+        }
+
+        String imageUrl = "";
+        if (style == FULL_SCREEN){
+            imageUrl = url+"?imageMogr2/thumbnail/"+screenWidth*2+"x";
+        } else if (style == THIRD_SCREEN){
+            imageUrl = url+"?imageMogr2/thumbnail/"+((screenWidth*2)/3)+"x";
+        } else if (style == THIRD_SCREEN){
+            imageUrl = url+"?imageMogr2/thumbnail/"+screenWidth+"x";
+        }else {
+            imageUrl = url;
+        }
+        LogUtils.d("activetrending","image url finish = "+imageUrl);
+
+
+        return imageUrl;
+    }
 }

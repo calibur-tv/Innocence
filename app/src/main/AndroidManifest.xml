@@ -46,7 +46,11 @@
         <activity android:name=".ui.home.card.CardShowInfoActivity" />
         <activity android:name=".ui.home.card.CardReplyActivity" />
         <activity android:name=".ui.home.card.CardChildCommentActivity" />
-        <activity android:name=".ui.widget.SelectorImagesActivity"></activity>
+        <activity android:name=".ui.widget.SelectorImagesActivity" />
+        <activity android:name=".ui.home.role.RolesShowInfoActivity" />
+        <activity android:name=".ui.home.image.ImageShowInfoActivity" />
+        <activity android:name=".ui.home.score.ScoreShowInfoActivity" />
+        <activity android:name=".ui.home.user.UserMainActivity"></activity>
     </application>
 
 </manifest>

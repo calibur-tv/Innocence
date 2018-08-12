@@ -1,11 +1,11 @@
-package com.riuir.calibur.data.card;
+package com.riuir.calibur.data.trending;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class CardShowInfoCommentMain {
+public class TrendingShowInfoCommentMain {
     private int code;
-    private CardShowInfoCommentMainData data;
+    private TrendingShowInfoCommentMainData data;
 
     public int getCode() {
         return code;
@@ -15,26 +15,26 @@ public class CardShowInfoCommentMain {
         this.code = code;
     }
 
-    public CardShowInfoCommentMainData getData() {
+    public TrendingShowInfoCommentMainData getData() {
         return data;
     }
 
-    public void setData(CardShowInfoCommentMainData data) {
+    public void setData(TrendingShowInfoCommentMainData data) {
         this.data = data;
     }
 
     @Override
     public String toString() {
-        return "CardShowInfoCommentMain{" +
+        return "TrendingShowInfoCommentMain{" +
                 "code=" + code +
                 ", data=" + data +
                 '}';
     }
 
-    public class CardShowInfoCommentMainData{
+    public class TrendingShowInfoCommentMainData{
         private int total;
         private boolean noMore;
-        private List<CardShowInfoCommentMainList> list;
+        private List<TrendingShowInfoCommentMainList> list;
 
         public int getTotal() {
             return total;
@@ -52,17 +52,17 @@ public class CardShowInfoCommentMain {
             this.noMore = noMore;
         }
 
-        public List<CardShowInfoCommentMainList> getList() {
+        public List<TrendingShowInfoCommentMainList> getList() {
             return list;
         }
 
-        public void setList(List<CardShowInfoCommentMainList> list) {
+        public void setList(List<TrendingShowInfoCommentMainList> list) {
             this.list = list;
         }
 
         @Override
         public String toString() {
-            return "CardShowInfoCommentMainData{" +
+            return "TrendingShowInfoCommentMainData{" +
                     "total=" + total +
                     ", noMore=" + noMore +
                     ", list=" + list +
@@ -70,10 +70,10 @@ public class CardShowInfoCommentMain {
         }
     }
 
-    public class CardShowInfoCommentMainList implements Serializable {
+    public class TrendingShowInfoCommentMainList implements Serializable {
         private int id;
         private String content;
-        private List<CardShowInfoCommentMainImages> images;
+        private List<TrendingShowInfoCommentMainImages> images;
         private int modal_id;
         private String created_at;
         private int floor_count;
@@ -82,7 +82,7 @@ public class CardShowInfoCommentMain {
         private String from_user_name;
         private String from_user_zone;
         private String from_user_avatar;
-        private CardShowInfoCommentMainComment comments;
+        private TrendingShowInfoCommentMainComment comments;
         private boolean liked;
         private int like_count;
 
@@ -102,11 +102,11 @@ public class CardShowInfoCommentMain {
             this.content = content;
         }
 
-        public List<CardShowInfoCommentMainImages> getImages() {
+        public List<TrendingShowInfoCommentMainImages> getImages() {
             return images;
         }
 
-        public void setImages(List<CardShowInfoCommentMainImages> images) {
+        public void setImages(List<TrendingShowInfoCommentMainImages> images) {
             this.images = images;
         }
 
@@ -174,11 +174,11 @@ public class CardShowInfoCommentMain {
             this.from_user_avatar = from_user_avatar;
         }
 
-        public CardShowInfoCommentMainComment getComments() {
+        public TrendingShowInfoCommentMainComment getComments() {
             return comments;
         }
 
-        public void setComments(CardShowInfoCommentMainComment comments) {
+        public void setComments(TrendingShowInfoCommentMainComment comments) {
             this.comments = comments;
         }
 
@@ -200,7 +200,7 @@ public class CardShowInfoCommentMain {
 
         @Override
         public String toString() {
-            return "CardShowInfoCommentMainList{" +
+            return "TrendingShowInfoCommentMainList{" +
                     "id=" + id +
                     ", content='" + content + '\'' +
                     ", images=" + images +
@@ -219,7 +219,7 @@ public class CardShowInfoCommentMain {
         }
     }
 
-    public class CardShowInfoCommentMainImages implements Serializable{
+    public class TrendingShowInfoCommentMainImages implements Serializable{
         private String url;
         private String width;
         private String height;
@@ -268,7 +268,7 @@ public class CardShowInfoCommentMain {
 
         @Override
         public String toString() {
-            return "CardShowInfoCommentMainImages{" +
+            return "TrendingShowInfoCommentMainImages{" +
                     "url='" + url + '\'' +
                     ", width='" + width + '\'' +
                     ", height='" + height + '\'' +
@@ -277,10 +277,10 @@ public class CardShowInfoCommentMain {
                     '}';
         }
     }
-    public class CardShowInfoCommentMainComment implements Serializable{
+    public class TrendingShowInfoCommentMainComment implements Serializable{
         private int total;
         private boolean noMore;
-        private List<CardShowInfoCommentMainCommentList> list;
+        private List<TrendingShowInfoCommentMainCommentList> list;
 
         public int getTotal() {
             return total;
@@ -298,24 +298,24 @@ public class CardShowInfoCommentMain {
             this.noMore = noMore;
         }
 
-        public List<CardShowInfoCommentMainCommentList> getList() {
+        public List<TrendingShowInfoCommentMainCommentList> getList() {
             return list;
         }
 
-        public void setList(List<CardShowInfoCommentMainCommentList> list) {
+        public void setList(List<TrendingShowInfoCommentMainCommentList> list) {
             this.list = list;
         }
 
         @Override
         public String toString() {
-            return "CardShowInfoCommentMainComment{" +
+            return "TrendingShowInfoCommentMainComment{" +
                     "total=" + total +
                     ", noMore=" + noMore +
                     ", list=" + list +
                     '}';
         }
     }
-    public class CardShowInfoCommentMainCommentList implements Serializable{
+    public class TrendingShowInfoCommentMainCommentList implements Serializable{
         private int id;
         private String content;
         private String created_at;
@@ -427,7 +427,7 @@ public class CardShowInfoCommentMain {
 
         @Override
         public String toString() {
-            return "CardShowInfoCommentMainCommentList{" +
+            return "TrendingShowInfoCommentMainCommentList{" +
                     "id=" + id +
                     ", content='" + content + '\'' +
                     ", created_at='" + created_at + '\'' +

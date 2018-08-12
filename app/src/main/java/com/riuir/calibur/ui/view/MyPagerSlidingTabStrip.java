@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.riuir.calibur.R;
 
 import java.util.Locale;
 
@@ -68,7 +69,8 @@ public class MyPagerSlidingTabStrip extends HorizontalScrollView {
     private int indicatorHeight = 8;
     private int underlineHeight = 2;
     private int dividerPadding = 12;
-    private int tabPadding = 24;
+    //TODO 横向边距
+    private int tabPadding = 16;
     private int dividerWidth = 1;
 
     private int tabTextSize = 12;
@@ -76,7 +78,7 @@ public class MyPagerSlidingTabStrip extends HorizontalScrollView {
     private int selectedTabTextColor = 0xFF666666;
 
     private Typeface tabTypeface = null;
-    private int tabTypefaceStyle = Typeface.BOLD;
+    private int tabTypefaceStyle = Typeface.NORMAL;
 
     private int lastScrollX = 0;
     //滚动条圆角

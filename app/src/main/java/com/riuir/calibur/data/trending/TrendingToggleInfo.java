@@ -1,6 +1,6 @@
-package com.riuir.calibur.data.card;
+package com.riuir.calibur.data.trending;
 
-public class CardToggleInfo {
+public class TrendingToggleInfo {
     private int code;
     private boolean data;
     private String message;
@@ -31,7 +31,7 @@ public class CardToggleInfo {
 
     @Override
     public String toString() {
-        return "CardToggleInfo{" +
+        return "TrendingToggleInfo{" +
                 "code=" + code +
                 ", data=" + data +
                 ", message='" + message + '\'' +

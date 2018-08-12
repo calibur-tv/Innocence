@@ -23,6 +23,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.widget.SelectorImagesActivity;
 import com.riuir.calibur.utils.GlideUtils;
@@ -80,7 +81,19 @@ public class CardReplyActivity extends BaseActivity  {
                 outRect.bottom = 10;
             }
         });
+        imageGridAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                if (view.getId() == R.id.reply_card_image_grid_item_image_delete){
+
+                    adapter.setNewData((List) adapter.getData().remove(position));
+
+                }
+            }
+        });
         gridImage.setAdapter(imageGridAdapter);
+
+
         setFooterView();
 
 
@@ -111,12 +124,14 @@ public class CardReplyActivity extends BaseActivity  {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //获取图片路径
-
-        LogUtils.d("result11","requestCode = "+requestCode+",resultCode = "+resultCode);
         if ( resultCode == IMAGE && data != null) {
             imagesUrl = data.getStringArrayListExtra("selectionImageUrls");
-            imageGridAdapter.addData(imagesUrl);
-            LogUtils.d("result11","拿到返回值");
+            if (imageGridAdapter.getData().size()+imagesUrl.size()>9){
+                ToastUtils.showShort(CardReplyActivity.this,"所选图片超出9张，自动保存本次所选");
+                imageGridAdapter.setNewData(imagesUrl);
+            }else {
+                imageGridAdapter.addData(imagesUrl);
+            }
         }
 
     }
@@ -132,6 +147,8 @@ public class CardReplyActivity extends BaseActivity  {
 
             File file = new File(item);
             GlideUtils.loadImageViewFromFile(CardReplyActivity.this,file, (ImageView) helper.getView(R.id.reply_card_image_grid_item_image));
+            helper.addOnClickListener(R.id.reply_card_image_grid_item_image_delete);
+
         }
     }
 
