@@ -12,21 +12,21 @@ import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
 
-public class RoleFansListAdapter extends BaseQuickAdapter<RoleFansListInfo.RoleFansListInfoData,BaseViewHolder> {
+public class RoleFansListAdapter extends BaseQuickAdapter<RoleFansListInfo.RoleFansListInfoList,BaseViewHolder> {
 
     Context context;
 
-    public RoleFansListAdapter(int layoutResId, @Nullable List<RoleFansListInfo.RoleFansListInfoData> data, Context context) {
+    public RoleFansListAdapter(int layoutResId, @Nullable List<RoleFansListInfo.RoleFansListInfoList> data, Context context) {
         super(layoutResId, data);
         this.context = context;
     }
 
-    public RoleFansListAdapter(int layoutResId, @Nullable List<RoleFansListInfo.RoleFansListInfoData> data) {
+    public RoleFansListAdapter(int layoutResId, @Nullable List<RoleFansListInfo.RoleFansListInfoList> data) {
         super(layoutResId, data);
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, RoleFansListInfo.RoleFansListInfoData item) {
+    protected void convert(BaseViewHolder helper, RoleFansListInfo.RoleFansListInfoList item) {
         ImageView userIcon = helper.getView(R.id.role_fans_list_item_fans_icon);
         GlideUtils.loadImageViewCircle(context,item.getAvatar(),userIcon);
         helper.setText(R.id.role_fans_list_item_fans_name,item.getNickname());

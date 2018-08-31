@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -41,6 +42,8 @@ public class DramaRolesListFragment extends BaseFragment {
 
     @BindView(R.id.drama_role_list_list_view)
     RecyclerView roleListView;
+    @BindView(R.id.drama_role_list_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     private List<MainTrendingInfo.MainTrendingInfoList> dataList;
     private List<MainTrendingInfo.MainTrendingInfoList> baseDataList;
@@ -52,7 +55,7 @@ public class DramaRolesListFragment extends BaseFragment {
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
 
     @Override
     protected int getContentViewID() {
@@ -62,8 +65,9 @@ public class DramaRolesListFragment extends BaseFragment {
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         isFirstLoad = true;
-
+        refreshLayout.setRefreshing(true);
         setView();
+        setAdapter();
         setNet();
 
     }
@@ -74,7 +78,7 @@ public class DramaRolesListFragment extends BaseFragment {
 
     private void setNet() {
         setSeendIdS();
-        apiGet.getCallTrendingHotGet("role",seenIds,0).enqueue(new Callback<MainTrendingInfo>() {
+        apiGet.getFollowList("role","hot",0,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -82,7 +86,11 @@ public class DramaRolesListFragment extends BaseFragment {
                     roleInfoData = response.body().getData();
                     if (isFirstLoad){
                         baseDataList = response.body().getData().getList();
-                        setAdapter();
+                        refreshLayout.setRefreshing(false);
+                        setFirstData();
+                    }
+                    if (isRefresh){
+                        setRefresh();
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -106,12 +114,26 @@ public class DramaRolesListFragment extends BaseFragment {
                         roleListAdapter.loadMoreFail();
                         isLoadMore = false;
                     }
+                    if (isRefresh){
+                        refreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        refreshLayout.setRefreshing(false);
+                    }
 
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
                         roleListAdapter.loadMoreFail();
                         isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        refreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        refreshLayout.setRefreshing(false);
                     }
                 }
             }
@@ -122,6 +144,13 @@ public class DramaRolesListFragment extends BaseFragment {
                 if (isLoadMore){
                     roleListAdapter.loadMoreFail();
                     isLoadMore = false;
+                }
+                if (isRefresh){
+                    refreshLayout.setRefreshing(false);
+                    isRefresh = false;
+                }
+                if (isFirstLoad){
+                    refreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -141,6 +170,14 @@ public class DramaRolesListFragment extends BaseFragment {
         }
     }
 
+    private void setRefresh() {
+        isRefresh = false;
+        roleListAdapter.setNewData(dataList);
+        refreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
+    }
+
+
     private void setSeendIdS() {
         if (seenIdList!=null&&seenIdList.size()!=0){
             for (int position = 0; position <seenIdList.size() ; position++) {
@@ -157,6 +194,10 @@ public class DramaRolesListFragment extends BaseFragment {
             }
         }
         if (isFirstLoad){
+            seenIdList.clear();
+            seenIds = "";
+        }
+        if (isRefresh){
             seenIdList.clear();
             seenIds = "";
         }
@@ -196,8 +237,12 @@ public class DramaRolesListFragment extends BaseFragment {
 
         //添加监听
         setListener();
-        isFirstLoad = false;
 
+
+    }
+    private void  setFirstData(){
+        isFirstLoad = false;
+        roleListAdapter.addData(baseDataList);
     }
 
     private void setListener() {
@@ -218,6 +263,14 @@ public class DramaRolesListFragment extends BaseFragment {
                 setNet();
             }
         }, roleListView);
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isRefresh = true;
+                setNet();
+            }
+        });
     }
 
 }

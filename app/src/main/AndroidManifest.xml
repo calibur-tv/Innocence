@@ -13,18 +13,22 @@
     <application
         android:name=".app.App"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/calibur_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/calibur_launcher"
+        tools:replace="android:icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.riuir.calibur.utils.CustomGlideModule"
             android:value="GlideModule" />
 
-        <activity android:name=".ui.home.MainActivity" />
+        <activity
+            android:name=".ui.home.MainActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.splash.SplashActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,23 +38,56 @@
         </activity>
         <activity
             android:name=".ui.loginAndRegister.LoginActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity android:name=".ui.home.Drama.DramaActivity" />
+        <activity
+            android:name=".ui.home.Drama.DramaActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.loginAndRegister.RegisterActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".ui.loginAndRegister.ForgetPassWordActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-        <activity android:name=".ui.home.card.CardPreviewPictureActivity" />
-        <activity android:name=".ui.home.card.CardShowInfoActivity" />
-        <activity android:name=".ui.home.card.CardReplyActivity" />
-        <activity android:name=".ui.home.card.CardChildCommentActivity" />
-        <activity android:name=".ui.widget.SelectorImagesActivity" />
-        <activity android:name=".ui.home.role.RolesShowInfoActivity" />
-        <activity android:name=".ui.home.image.ImageShowInfoActivity" />
-        <activity android:name=".ui.home.score.ScoreShowInfoActivity" />
-        <activity android:name=".ui.home.user.UserMainActivity"></activity>
+        <activity
+            android:name=".ui.home.card.CardPreviewPictureActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.card.CardShowInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.card.CardReplyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.card.CardChildCommentActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.widget.SelectorImagesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.role.RolesShowInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.image.ImageShowInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.score.ScoreShowInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.user.UserMainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.Drama.DramaSearchActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustPan" />
+        <activity
+            android:name=".ui.home.card.CardCreateNewActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.home.Drama.DramaVideoPlayActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

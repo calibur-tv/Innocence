@@ -43,9 +43,9 @@ public class AnimeShowInfo {
         private boolean followed;
         private boolean scored;
         private boolean is_master;
-        private List<AnimeInfoManagers> managers;
+        private AnimeInfoManagersUser manager_users;
         private List<AnimeShowInfoTags> tags;
-        private List<AnimeShowInfoFollowers> followers;
+        private AnimeShowInfoUsers follow_users;
         private boolean has_video;
         private boolean has_cartoon;
 
@@ -145,12 +145,20 @@ public class AnimeShowInfo {
             this.is_master = is_master;
         }
 
-        public List<AnimeInfoManagers> getManagers() {
-            return managers;
+        public AnimeInfoManagersUser getManager_users() {
+            return manager_users;
         }
 
-        public void setManagers(List<AnimeInfoManagers> managers) {
-            this.managers = managers;
+        public void setManager_users(AnimeInfoManagersUser manager_users) {
+            this.manager_users = manager_users;
+        }
+
+        public AnimeShowInfoUsers getFollow_users() {
+            return follow_users;
+        }
+
+        public void setFollow_users(AnimeShowInfoUsers follow_users) {
+            this.follow_users = follow_users;
         }
 
         public List<AnimeShowInfoTags> getTags() {
@@ -161,13 +169,7 @@ public class AnimeShowInfo {
             this.tags = tags;
         }
 
-        public List<AnimeShowInfoFollowers> getFollowers() {
-            return followers;
-        }
 
-        public void setFollowers(List<AnimeShowInfoFollowers> followers) {
-            this.followers = followers;
-        }
 
         public boolean isHas_video() {
             return has_video;
@@ -200,9 +202,9 @@ public class AnimeShowInfo {
                     ", followed=" + followed +
                     ", scored=" + scored +
                     ", is_master=" + is_master +
-                    ", managers=" + managers +
+                    ", manager_users=" + manager_users +
                     ", tags=" + tags +
-                    ", followers=" + followers +
+                    ", follow_users=" + follow_users +
                     ", has_video=" + has_video +
                     ", has_cartoon=" + has_cartoon +
                     '}';
@@ -216,6 +218,18 @@ public class AnimeShowInfo {
     }
 
     public class AnimeInfoManagersUser{
+        private int total;
+        private boolean noMore;
+        private List<AnimeInfoManagersUserList> list;
+    }
+
+    public class AnimeInfoManagersUserList{
+        private int is_leader;
+        private String created_at;
+        private AnimeInfoManagersUserListUser user;
+    }
+
+    public class AnimeInfoManagersUserListUser{
         private int id;
         private String zone;
         private String avatar;
@@ -251,7 +265,46 @@ public class AnimeShowInfo {
         }
     }
 
-    public class AnimeShowInfoFollowers{
+    public class AnimeShowInfoUsers{
+        private int total;
+        private boolean noMore;
+        private List<AnimeShowInfoUserList> list;
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
+
+        public boolean isNoMore() {
+            return noMore;
+        }
+
+        public void setNoMore(boolean noMore) {
+            this.noMore = noMore;
+        }
+
+        public List<AnimeShowInfoUserList> getList() {
+            return list;
+        }
+
+        public void setList(List<AnimeShowInfoUserList> list) {
+            this.list = list;
+        }
+
+        @Override
+        public String toString() {
+            return "AnimeShowInfoUsers{" +
+                    "total=" + total +
+                    ", noMore=" + noMore +
+                    ", list=" + list +
+                    '}';
+        }
+    }
+
+    public class AnimeShowInfoUserList{
         private int id;
         private String zone;
         private String avatar;

@@ -56,7 +56,7 @@ public class DramaCardFragment extends BaseFragment {
     int listDataCounter = 0;
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
     int bangumiID = 0;
 
     @Override
@@ -68,13 +68,14 @@ public class DramaCardFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
+        isFirstLoad = true;
         setNet();
     }
 
     private void setNet() {
 
         setSeendIdS();
-        apiGet.getCallTrendingActiveGet("post",seenIds,bangumiID).enqueue(new Callback<MainTrendingInfo>() {
+        apiGet.getFollowList("post","active",bangumiID,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
 
@@ -186,6 +187,7 @@ public class DramaCardFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listActive);
         cardRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 
     private void setListAdapter() {

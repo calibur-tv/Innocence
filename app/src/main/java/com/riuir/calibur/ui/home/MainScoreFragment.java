@@ -50,13 +50,13 @@ public class MainScoreFragment extends BaseFragment {
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listScore;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainTrendingInfo.MainTrendingInfoList> baseListScore;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseListScore = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData mainScoreInfoData;
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
 
     private ScoreListAdapter adapter;
 
@@ -67,6 +67,9 @@ public class MainScoreFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
+        isFirstLoad = true;
+        setListAdapter();
+        mainScoreRefreshLayout.setRefreshing(true);
         setNet();
     }
 
@@ -94,17 +97,19 @@ public class MainScoreFragment extends BaseFragment {
     }
 
     private void setNet() {
+
         setSeendIdS();
-        apiGet.getCallTrendingActiveGet("score",seenIds,0).enqueue(new Callback<MainTrendingInfo>() {
+        apiGet.getFollowList("score","active",0,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
-                LogUtils.d("score_fragment","response = "+response+",data = "+response.body().getData());
+//                LogUtils.d("score_fragment","response = "+response+",data = "+response.body().getData());
                 if (response!=null&&response.isSuccessful()){
                     listScore = response.body().getData().getList();
                     mainScoreInfoData = response.body().getData();
                     if (isFirstLoad){
                         baseListScore = response.body().getData().getList();
-                        setListAdapter();
+                        setFirstData();
+                        mainScoreRefreshLayout.setRefreshing(false);
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -135,7 +140,9 @@ public class MainScoreFragment extends BaseFragment {
                         mainScoreRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
-
+                    if (isFirstLoad){
+                        mainScoreRefreshLayout.setRefreshing(false);
+                    }
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -145,6 +152,9 @@ public class MainScoreFragment extends BaseFragment {
                     if (isRefresh){
                         mainScoreRefreshLayout.setRefreshing(false);
                         isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        mainScoreRefreshLayout.setRefreshing(false);
                     }
                 }
             }
@@ -159,6 +169,9 @@ public class MainScoreFragment extends BaseFragment {
                 if (isRefresh){
                     mainScoreRefreshLayout.setRefreshing(false);
                     isRefresh = false;
+                }
+                if (isFirstLoad){
+                    mainScoreRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -189,7 +202,11 @@ public class MainScoreFragment extends BaseFragment {
 
         //添加监听
         setListener();
+    }
+
+    private void setFirstData(){
         isFirstLoad = false;
+        adapter.addData(baseListScore);
     }
 
     private void setListener() {
@@ -242,6 +259,7 @@ public class MainScoreFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listScore);
         mainScoreRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 
 }

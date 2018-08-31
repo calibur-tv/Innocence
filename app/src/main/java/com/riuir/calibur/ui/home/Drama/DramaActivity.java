@@ -7,10 +7,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,10 +20,6 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.data.AnimeShowInfo;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.DramaFragment;
-import com.riuir.calibur.ui.home.DramaNewAnimeListFragment;
-import com.riuir.calibur.ui.home.DramaTagsFragment;
-import com.riuir.calibur.ui.home.DramaTimelineFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -60,6 +55,9 @@ public class DramaActivity extends BaseActivity {
     @BindView(R.id.drama_activity_view_pager)
     ViewPager dramaViewPager;
 
+    @BindView(R.id.drama_activity_back_btn)
+     ImageView backBtn;
+
     AnimeShowInfo.AnimeShowInfoData animeShowInfoData;
 
     /**
@@ -68,7 +66,7 @@ public class DramaActivity extends BaseActivity {
     private DisplayMetrics dm;
 
     DramaCardFragment dramaCardFragment;
-    DramaVideoFragment dramaVideoFragment;
+    DramaSeasonVideoFragment dramaSeasonVideoFragment;
     DramaCartoonFragment dramaCartoonFragment;
     DramaImageFragment dramaImageFragment;
     DramaScoreFragment dramaScoreFragment;
@@ -89,9 +87,18 @@ public class DramaActivity extends BaseActivity {
         dm = getResources().getDisplayMetrics();
         Intent intent = getIntent();
         animeID = intent.getIntExtra("animeId",0);
-
         setNet();
+        setListener();
 
+    }
+
+    private void setListener() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     private void setView() {
@@ -101,6 +108,7 @@ public class DramaActivity extends BaseActivity {
                 animeBanner);
         animeName.setText(animeShowInfoData.getName());
         animeFollowCount.setText(animeShowInfoData.getCount_like()+"");
+
 
         setViewPager();
     }
@@ -217,10 +225,10 @@ public class DramaActivity extends BaseActivity {
                     }
                     return dramaCardFragment;
                 case "视频":
-                    if (dramaVideoFragment == null) {
-                        dramaVideoFragment = new DramaVideoFragment();
+                    if (dramaSeasonVideoFragment == null) {
+                        dramaSeasonVideoFragment = new DramaSeasonVideoFragment();
                     }
-                    return dramaVideoFragment;
+                    return dramaSeasonVideoFragment;
                 case "漫画":
                     if (dramaCartoonFragment == null) {
                         dramaCartoonFragment = new DramaCartoonFragment();

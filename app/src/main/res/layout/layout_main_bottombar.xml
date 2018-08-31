@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/maintab_menu"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="54dp"
     android:clickable="true">
 
     <View
@@ -32,10 +32,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/maintab_dis_iv"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="1.5dp"
             android:text="社区"
             android:textColor="@drawable/maintab_text_color"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/maintab_dis_reddot"
@@ -75,10 +75,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/maintab_circle_iv"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="1.5dp"
             android:text="番剧"
             android:textColor="@drawable/maintab_text_color"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/maintab_circle_reddot"
@@ -130,10 +130,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/maintab_msg_iv"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="1.5dp"
             android:text="消息"
             android:textColor="@drawable/maintab_text_color"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/maintab_msg_reddot"
@@ -171,10 +171,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/maintab_mine_iv"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="1.5dp"
             android:text="我的"
             android:textColor="@drawable/maintab_text_color"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/maintab_mine_reddot"

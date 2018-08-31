@@ -5,50 +5,39 @@
     <RelativeLayout
         android:id="@+id/drama_timeline_list_item_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingLeft="7.5dp"
+        android:paddingRight="7.5dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="6dp"
+        >
         <ImageView
             android:id="@+id/drama_new_week_pager_item_list_image"
-            android:layout_marginLeft="30px"
-            android:layout_marginTop="30px"
-            android:layout_marginBottom="30px"
-            android:layout_marginRight="20px"
-            android:layout_width="100px"
-            android:layout_height="140px"
-            android:scaleType="centerCrop"
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:scaleType="centerInside"
             />
         <TextView
             android:id="@+id/drama_new_week_pager_item_list_name"
-            android:layout_toRightOf="@id/drama_new_week_pager_item_list_image"
-            android:layout_marginTop="40px"
+            android:layout_below="@id/drama_new_week_pager_item_list_image"
+            android:layout_marginTop="9dp"
             android:layout_width="match_parent"
-            android:layout_height="38px"
-            android:layout_marginRight="30px"
-            android:text="番剧名"
-            android:textSize="28px"
-            android:textColor="@color/color_FF444444"
-            />
-        <CheckedTextView
-            android:id="@+id/drama_new_week_pager_item_list_part"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignBottom="@id/drama_new_week_pager_item_list_image"
-            android:layout_marginRight="30px"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:textColor="@color/color_FFFFFFFF"
-            android:background="@drawable/drama_new_week_pard_bg_updata_false"
-            android:textSize="25px"
-            android:text="37"
+            android:text="番剧名"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:lineSpacingExtra="3dp"
+            android:textColor="@color/color_FF333333"
             />
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/drama_new_week_pager_item_list_part"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#9B9B9B"
+            android:layout_below="@id/drama_new_week_pager_item_list_name"
+            android:textColor="@color/color_FF9B9B9B"
+            android:gravity="center"
             android:textSize="25px"
-            android:layout_toLeftOf="@id/drama_new_week_pager_item_list_part"
-            android:layout_alignBottom="@id/drama_new_week_pager_item_list_part"
-            android:text="更新至："
+            android:text="更新至第37集"
             />
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home.image;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +48,8 @@ public class ImageShowInfoActivity extends BaseActivity {
 
     @BindView(R.id.image_show_info_list_view)
     RecyclerView imageShowInfoListView;
+    @BindView(R.id.image_show_info_back_btn)
+    ImageView backBtn;
 
     private ImageShowInfoPrimacy.ImageShowInfoPrimacyData primacyData;
     private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
@@ -89,7 +92,7 @@ public class ImageShowInfoActivity extends BaseActivity {
     protected void onInit() {
         Intent intent = getIntent();
         imageID = intent.getIntExtra("imageID",0);
-
+        setBackBtn();
         isFirstLoad = true;
         setNet(NET_STATUS_MAIN_COMMENT);
     }
@@ -245,6 +248,7 @@ public class ImageShowInfoActivity extends BaseActivity {
         trendingLFCView.setLiked(primacyData.isLiked());
         trendingLFCView.setCollected(primacyData.isMarked());
         trendingLFCView.setRewarded(primacyData.isRewarded());
+        trendingLFCView.setIsCreator(primacyData.isIs_creator());
         trendingLFCView.startListenerAndNet();
 
         //所属番剧操作
@@ -285,6 +289,9 @@ public class ImageShowInfoActivity extends BaseActivity {
                         DensityUtils.dp2px(ImageShowInfoActivity.this,4));
                 primacyImageView.setLayoutParams(params);
                 primacyImageView.setScaleType(ImageView.ScaleType.FIT_START);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    primacyImageView.setTransitionName("ToPreviewImageActivity");
+                }
 
                 GlideUtils.loadImageView(ImageShowInfoActivity.this,
                         GlideUtils.setImageUrl(ImageShowInfoActivity.this,primacyData.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
@@ -322,6 +329,15 @@ public class ImageShowInfoActivity extends BaseActivity {
         for (int i = 0; i <primacyData.getImages().size() ; i++) {
             previewImagesList.add(primacyData.getImages().get(i).getUrl());
         }
+    }
+
+    private void setBackBtn(){
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     private void setListener() {

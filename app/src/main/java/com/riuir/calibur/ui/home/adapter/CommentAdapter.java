@@ -2,6 +2,7 @@ package com.riuir.calibur.ui.home.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.SpannableString;
@@ -10,6 +11,8 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -19,10 +22,16 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.DensityUtils;
+import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ScreenUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
+import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
+import com.riuir.calibur.data.trending.TrendingToggleInfo;
 import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.ui.loginAndRegister.LoginActivity;
@@ -37,8 +46,9 @@ import retrofit2.Response;
 
 public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList,BaseViewHolder> {
 
-    CheckBox commentUpvoteCheckBox;
+
     ApiPost apiPost;
+
 
     private Context context;
     private String type;
@@ -46,6 +56,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
     public static final String TYPE_POST = "post";
     public static final String TYPE_IMAGE = "image";
     public static final String TYPE_SCORE = "score";
+    public static final String TYPE_VIDEO = "video";
 
     public CommentAdapter(int layoutResId, @Nullable List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> data,Context context,ApiPost apiPost,String type){
         super(layoutResId, data);
@@ -63,6 +74,9 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
     protected void convert(BaseViewHolder helper, final TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList item) {
 
         final int commentId = item.getId();
+        final LinearLayout commentUpvoteCheckBtn;
+        final ImageView commentUpvoteCheckIcon;
+        final TextView commentUpvoteCheckText;
 
         helper.setText(R.id.card_show_info_list_comment_item_user_name,item.getFrom_user_name());
         GlideUtils.loadImageViewCircle(context,item.getFrom_user_avatar(),
@@ -93,58 +107,348 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
         helper.addOnClickListener(R.id.card_show_info_list_comment_item_image9);
         helper.addOnClickListener(R.id.card_show_info_list_comment_item_reply);
 
-        commentUpvoteCheckBox= helper.getView(R.id.card_show_info_list_comment_item_upovte);
+        commentUpvoteCheckBtn= helper.getView(R.id.card_show_info_list_comment_item_upovte);
+        commentUpvoteCheckIcon = helper.getView(R.id.card_show_info_list_comment_item_upovte_icon);
+        commentUpvoteCheckText = helper.getView(R.id.card_show_info_list_comment_item_upovte_text);
+
+
 
         if (item.isLiked()){
-            commentUpvoteCheckBox.setChecked(true);
+            commentUpvoteCheckIcon.setImageResource(R.mipmap.ic_zan_active);
         }else {
-            commentUpvoteCheckBox.setChecked(false);
+            commentUpvoteCheckIcon.setImageResource(R.mipmap.ic_zan_normal);
         }
 
-        if (commentUpvoteCheckBox.isChecked()){
-            commentUpvoteCheckBox.setChecked(true);
-        }else {
-            commentUpvoteCheckBox.setChecked(false);
-        }
-
-        commentUpvoteCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        commentUpvoteCheckBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, final boolean b) {
+            public void onClick(View view) {
                 if (Constants.ISLOGIN){
-                    commentUpvoteCheckBox.setClickable(false);
-                    apiPost.getCardCommentToggleLike(commentId).enqueue(new Callback<Event<String>>() {
+                    commentUpvoteCheckText.setText("点赞中");
+                    apiPost.getCardCommentToggleLike(commentId,type).enqueue(new Callback<TrendingToggleInfo>() {
                         @Override
-                        public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                            if (response!=null&&response.body()!=null){
-                                if (response.body().getCode() == 0){
-                                    ToastUtils.showShort(context,"点赞或取消点赞成功");
-                                }else if (response.body().getCode() == 40003){
-                                    ToastUtils.showShort(context,response.body().getMessage());
-//                                        commentUpvoteCheckBox.toggle();
+                        public void onResponse(Call<TrendingToggleInfo> call, Response<TrendingToggleInfo> response) {
+                            if (response!=null&&response.isSuccessful()){
+                                if (response.body().isData()){
+                                    ToastUtils.showShort(context,"点赞成功");
+                                    commentUpvoteCheckIcon.setImageResource(R.mipmap.ic_zan_active);
+                                }else {
+                                    ToastUtils.showShort(context,"取消赞成功");
+                                    commentUpvoteCheckIcon.setImageResource(R.mipmap.ic_zan_normal);
                                 }
                             }else {
                                 ToastUtils.showShort(context,"点赞/取消点赞失败了");
-//                                    commentUpvoteCheckBox.toggle();
                             }
-                            commentUpvoteCheckBox.setClickable(true);
+                            commentUpvoteCheckText.setText("赞");
                         }
 
                         @Override
-                        public void onFailure(Call<Event<String>> call, Throwable t) {
-                            commentUpvoteCheckBox.setClickable(true);
+                        public void onFailure(Call<TrendingToggleInfo> call, Throwable t) {
                             ToastUtils.showShort(context,"点赞/取消点赞失败了");
-//                                commentUpvoteCheckBox.toggle();
+                            commentUpvoteCheckText.setText("赞");
                         }
                     });
                 }else {
-                    Intent intent = new Intent(context,LoginActivity.class);
-                    context.startActivity(intent);
+                    ToastUtils.showShort(context,"未登录不能点赞哦");
+                    LoginUtils.ReLogin(context);
                 }
-
-
             }
         });
 
+        int height1,height2,height3,height4,height5,height6,height7,height8,height9;
+        ViewGroup.LayoutParams params1,params2,params3,params4,params5,params6,params7,params8,params9;
+        double screenWidth = DensityUtils.px2dp(context, ScreenUtils.getScreenWidth(context));
+        int width = (int) (screenWidth-79);
+
+        commentMainImageView1.setVisibility(View.GONE);
+        commentMainImageView2.setVisibility(View.GONE);
+        commentMainImageView3.setVisibility(View.GONE);
+        commentMainImageView4.setVisibility(View.GONE);
+        commentMainImageView5.setVisibility(View.GONE);
+        commentMainImageView6.setVisibility(View.GONE);
+        commentMainImageView7.setVisibility(View.GONE);
+        commentMainImageView8.setVisibility(View.GONE);
+        commentMainImageView9.setVisibility(View.GONE);
+
+        for (int i = 0; i < item.getImages().size(); i++) {
+
+            switch (i){
+                case 0:
+                    commentMainImageView1.setVisibility(View.VISIBLE);
+                    height1 = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(i).getHeight()),
+                            Integer.parseInt(item.getImages().get(i).getWidth()),79,1);
+                    params1 = commentMainImageView1.getLayoutParams();
+                    params1.height = height1;
+                    commentMainImageView1.setLayoutParams(params1);
+                    GlideUtils.loadImageView(context,
+                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            commentMainImageView1);
+                    break;
+                case 1:
+                    commentMainImageView2.setVisibility(View.VISIBLE);
+                    height2 = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(i).getHeight()),
+                            Integer.parseInt(item.getImages().get(i).getWidth()),79,1);
+                    params2 = commentMainImageView1.getLayoutParams();
+                    params2.height = height2;
+                    GlideUtils.loadImageView(context,
+                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            commentMainImageView2);
+                    break;
+                case 2:
+                    commentMainImageView3.setVisibility(View.VISIBLE);
+                    height3 = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(i).getHeight()),
+                            Integer.parseInt(item.getImages().get(i).getWidth()),79,1);
+                    params3 = commentMainImageView1.getLayoutParams();
+                    params3.height = height3;
+                    GlideUtils.loadImageView(context,
+                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            commentMainImageView3);
+                    break;
+                case 3:
+                    commentMainImageView4.setVisibility(View.VISIBLE);
+                    height4 = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(i).getHeight()),
+                            Integer.parseInt(item.getImages().get(i).getWidth()),79,1);
+                    params4 = commentMainImageView1.getLayoutParams();
+                    params4.height = height4;
+                    GlideUtils.loadImageView(context,
+                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            commentMainImageView4);
+                    break;
+                case 4:
+                    commentMainImageView5.setVisibility(View.VISIBLE);
+                    height5 = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(i).getHeight()),
+                            Integer.parseInt(item.getImages().get(i).getWidth()),79,1);
+                    params5 = commentMainImageView1.getLayoutParams();
+                    params5.height = height5;
+                    GlideUtils.loadImageView(context,
+                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            commentMainImageView5);
+                    break;
+                case 5:
+                    commentMainImageView6.setVisibility(View.VISIBLE);
+                    height6 = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(i).getHeight()),
+                            Integer.parseInt(item.getImages().get(i).getWidth()),79,1);
+                    params6 = commentMainImageView1.getLayoutParams();
+                    params6.height = height6;
+                    GlideUtils.loadImageView(context,
+                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            commentMainImageView6);
+                    break;
+                case 6:
+                    commentMainImageView7.setVisibility(View.VISIBLE);
+                    height7 = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(i).getHeight()),
+                            Integer.parseInt(item.getImages().get(i).getWidth()),79,1);
+                    params7 = commentMainImageView1.getLayoutParams();
+                    params7.height = height7;
+                    GlideUtils.loadImageView(context,
+                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            commentMainImageView7);
+                    break;
+                case 7:
+                    commentMainImageView8.setVisibility(View.VISIBLE);
+                    height8 = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(i).getHeight()),
+                            Integer.parseInt(item.getImages().get(i).getWidth()),79,1);
+                    params8 = commentMainImageView1.getLayoutParams();
+                    params8.height = height8;
+                    GlideUtils.loadImageView(context,
+                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            commentMainImageView8);
+                    break;
+                case 8:
+                    commentMainImageView9.setVisibility(View.VISIBLE);
+                    height9 = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(i).getHeight()),
+                            Integer.parseInt(item.getImages().get(i).getWidth()),79,1);
+                    params9 = commentMainImageView1.getLayoutParams();
+                    params9.height = height9;
+                    GlideUtils.loadImageView(context,
+                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            commentMainImageView9);
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+
+//        if (item.getImages()!=null&&item.getImages().size()!=0){
+//            if (item.getImages().size() == 1){
+//                commentMainImageView1.setVisibility(View.VISIBLE);
+//                commentMainImageView2.setVisibility(View.GONE);
+//                commentMainImageView3.setVisibility(View.GONE);
+//                commentMainImageView4.setVisibility(View.GONE);
+//                commentMainImageView5.setVisibility(View.GONE);
+//                commentMainImageView6.setVisibility(View.GONE);
+//                commentMainImageView7.setVisibility(View.GONE);
+//                commentMainImageView8.setVisibility(View.GONE);
+//                commentMainImageView9.setVisibility(View.GONE);
+//
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView1);
+//
+//            }else if (item.getImages().size() == 2){
+//                commentMainImageView1.setVisibility(View.VISIBLE);
+//                commentMainImageView2.setVisibility(View.VISIBLE);
+//                commentMainImageView3.setVisibility(View.GONE);
+//                commentMainImageView4.setVisibility(View.GONE);
+//                commentMainImageView5.setVisibility(View.GONE);
+//                commentMainImageView6.setVisibility(View.GONE);
+//                commentMainImageView7.setVisibility(View.GONE);
+//                commentMainImageView8.setVisibility(View.GONE);
+//                commentMainImageView9.setVisibility(View.GONE);
+//
+//
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView1);
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(1).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView2);
+//            }else if (item.getImages().size() == 3){
+//                commentMainImageView1.setVisibility(View.VISIBLE);
+//                commentMainImageView2.setVisibility(View.VISIBLE);
+//                commentMainImageView3.setVisibility(View.VISIBLE);
+//                commentMainImageView4.setVisibility(View.GONE);
+//                commentMainImageView5.setVisibility(View.GONE);
+//                commentMainImageView6.setVisibility(View.GONE);
+//                commentMainImageView7.setVisibility(View.GONE);
+//                commentMainImageView8.setVisibility(View.GONE);
+//                commentMainImageView9.setVisibility(View.GONE);
+//
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView1);
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(1).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView2);
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(2).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView3);
+//            }else if (item.getImages().size() == 4){
+//                commentMainImageView1.setVisibility(View.VISIBLE);
+//                commentMainImageView2.setVisibility(View.VISIBLE);
+//                commentMainImageView3.setVisibility(View.VISIBLE);
+//                commentMainImageView4.setVisibility(View.VISIBLE);
+//                commentMainImageView5.setVisibility(View.GONE);
+//                commentMainImageView6.setVisibility(View.GONE);
+//                commentMainImageView7.setVisibility(View.GONE);
+//                commentMainImageView8.setVisibility(View.GONE);
+//                commentMainImageView9.setVisibility(View.GONE);
+//
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView1);
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(1).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView2);
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(2).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView3);
+//                GlideUtils.loadImageView(context,
+//                        GlideUtils.setImageUrl(context,item.getImages().get(3).getUrl(),GlideUtils.FULL_SCREEN),
+//                        commentMainImageView4);
+//            }else if (item.getImages().size() == 5){
+//                commentMainImageView1.setVisibility(View.VISIBLE);
+//                commentMainImageView2.setVisibility(View.VISIBLE);
+//                commentMainImageView3.setVisibility(View.VISIBLE);
+//                commentMainImageView4.setVisibility(View.VISIBLE);
+//                commentMainImageView5.setVisibility(View.VISIBLE);
+//                commentMainImageView6.setVisibility(View.GONE);
+//                commentMainImageView7.setVisibility(View.GONE);
+//                commentMainImageView8.setVisibility(View.GONE);
+//                commentMainImageView9.setVisibility(View.GONE);
+//
+//                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
+//                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
+//                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
+//                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
+//                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
+//            }else if (item.getImages().size() == 6){
+//                commentMainImageView1.setVisibility(View.VISIBLE);
+//                commentMainImageView2.setVisibility(View.VISIBLE);
+//                commentMainImageView3.setVisibility(View.VISIBLE);
+//                commentMainImageView4.setVisibility(View.VISIBLE);
+//                commentMainImageView5.setVisibility(View.VISIBLE);
+//                commentMainImageView6.setVisibility(View.VISIBLE);
+//                commentMainImageView7.setVisibility(View.GONE);
+//                commentMainImageView8.setVisibility(View.GONE);
+//                commentMainImageView9.setVisibility(View.GONE);
+//
+//                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
+//                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
+//                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
+//                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
+//                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
+//                GlideUtils.loadImageView(context,item.getImages().get(5).getUrl(),commentMainImageView6);
+//            }else if (item.getImages().size() == 7){
+//                commentMainImageView1.setVisibility(View.VISIBLE);
+//                commentMainImageView2.setVisibility(View.VISIBLE);
+//                commentMainImageView3.setVisibility(View.VISIBLE);
+//                commentMainImageView4.setVisibility(View.VISIBLE);
+//                commentMainImageView5.setVisibility(View.VISIBLE);
+//                commentMainImageView6.setVisibility(View.VISIBLE);
+//                commentMainImageView7.setVisibility(View.VISIBLE);
+//                commentMainImageView8.setVisibility(View.GONE);
+//                commentMainImageView9.setVisibility(View.GONE);
+//
+//                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
+//                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
+//                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
+//                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
+//                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
+//                GlideUtils.loadImageView(context,item.getImages().get(5).getUrl(),commentMainImageView6);
+//                GlideUtils.loadImageView(context,item.getImages().get(6).getUrl(),commentMainImageView7);
+//            }else if (item.getImages().size() == 8){
+//                commentMainImageView1.setVisibility(View.VISIBLE);
+//                commentMainImageView2.setVisibility(View.VISIBLE);
+//                commentMainImageView3.setVisibility(View.VISIBLE);
+//                commentMainImageView4.setVisibility(View.VISIBLE);
+//                commentMainImageView5.setVisibility(View.VISIBLE);
+//                commentMainImageView6.setVisibility(View.VISIBLE);
+//                commentMainImageView7.setVisibility(View.VISIBLE);
+//                commentMainImageView8.setVisibility(View.VISIBLE);
+//                commentMainImageView9.setVisibility(View.GONE);
+//
+//                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
+//                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
+//                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
+//                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
+//                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
+//                GlideUtils.loadImageView(context,item.getImages().get(5).getUrl(),commentMainImageView6);
+//                GlideUtils.loadImageView(context,item.getImages().get(6).getUrl(),commentMainImageView7);
+//                GlideUtils.loadImageView(context,item.getImages().get(7).getUrl(),commentMainImageView8);
+//            }else if (item.getImages().size() >= 9){
+//                commentMainImageView1.setVisibility(View.VISIBLE);
+//                commentMainImageView2.setVisibility(View.VISIBLE);
+//                commentMainImageView3.setVisibility(View.VISIBLE);
+//                commentMainImageView4.setVisibility(View.VISIBLE);
+//                commentMainImageView5.setVisibility(View.VISIBLE);
+//                commentMainImageView6.setVisibility(View.VISIBLE);
+//                commentMainImageView7.setVisibility(View.VISIBLE);
+//                commentMainImageView8.setVisibility(View.VISIBLE);
+//                commentMainImageView9.setVisibility(View.VISIBLE);
+//
+//                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
+//                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
+//                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
+//                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
+//                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
+//                GlideUtils.loadImageView(context,item.getImages().get(5).getUrl(),commentMainImageView6);
+//                GlideUtils.loadImageView(context,item.getImages().get(6).getUrl(),commentMainImageView7);
+//                GlideUtils.loadImageView(context,item.getImages().get(7).getUrl(),commentMainImageView8);
+//                GlideUtils.loadImageView(context,item.getImages().get(8).getUrl(),commentMainImageView9);
+//            }
+//        }else {
+//            commentMainImageView1.setVisibility(View.GONE);
+//            commentMainImageView2.setVisibility(View.GONE);
+//            commentMainImageView3.setVisibility(View.GONE);
+//            commentMainImageView4.setVisibility(View.GONE);
+//            commentMainImageView5.setVisibility(View.GONE);
+//            commentMainImageView6.setVisibility(View.GONE);
+//            commentMainImageView7.setVisibility(View.GONE);
+//            commentMainImageView8.setVisibility(View.GONE);
+//            commentMainImageView9.setVisibility(View.GONE);
+//        }
 
         TextView commentChild1 = helper.getView(R.id.card_show_info_list_comment_item_child_comment1);
         TextView commentChild2 = helper.getView(R.id.card_show_info_list_comment_item_child_comment2);
@@ -154,165 +458,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
         commentChild1.setMovementMethod(LinkMovementMethod.getInstance());
         commentChild2.setMovementMethod(LinkMovementMethod.getInstance());
 
-        if (item.getImages()!=null&&item.getImages().size()!=0){
-            if (item.getImages().size() == 1){
-                commentMainImageView1.setVisibility(View.VISIBLE);
-                commentMainImageView2.setVisibility(View.GONE);
-                commentMainImageView3.setVisibility(View.GONE);
-                commentMainImageView4.setVisibility(View.GONE);
-                commentMainImageView5.setVisibility(View.GONE);
-                commentMainImageView6.setVisibility(View.GONE);
-                commentMainImageView7.setVisibility(View.GONE);
-                commentMainImageView8.setVisibility(View.GONE);
-                commentMainImageView9.setVisibility(View.GONE);
 
-                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
-
-            }else if (item.getImages().size() == 2){
-                commentMainImageView1.setVisibility(View.VISIBLE);
-                commentMainImageView2.setVisibility(View.VISIBLE);
-                commentMainImageView3.setVisibility(View.GONE);
-                commentMainImageView4.setVisibility(View.GONE);
-                commentMainImageView5.setVisibility(View.GONE);
-                commentMainImageView6.setVisibility(View.GONE);
-                commentMainImageView7.setVisibility(View.GONE);
-                commentMainImageView8.setVisibility(View.GONE);
-                commentMainImageView9.setVisibility(View.GONE);
-
-
-                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
-                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
-            }else if (item.getImages().size() == 3){
-                commentMainImageView1.setVisibility(View.VISIBLE);
-                commentMainImageView2.setVisibility(View.VISIBLE);
-                commentMainImageView3.setVisibility(View.VISIBLE);
-                commentMainImageView4.setVisibility(View.GONE);
-                commentMainImageView5.setVisibility(View.GONE);
-                commentMainImageView6.setVisibility(View.GONE);
-                commentMainImageView7.setVisibility(View.GONE);
-                commentMainImageView8.setVisibility(View.GONE);
-                commentMainImageView9.setVisibility(View.GONE);
-
-                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
-                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
-                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
-            }else if (item.getImages().size() == 4){
-                commentMainImageView1.setVisibility(View.VISIBLE);
-                commentMainImageView2.setVisibility(View.VISIBLE);
-                commentMainImageView3.setVisibility(View.VISIBLE);
-                commentMainImageView4.setVisibility(View.VISIBLE);
-                commentMainImageView5.setVisibility(View.GONE);
-                commentMainImageView6.setVisibility(View.GONE);
-                commentMainImageView7.setVisibility(View.GONE);
-                commentMainImageView8.setVisibility(View.GONE);
-                commentMainImageView9.setVisibility(View.GONE);
-
-                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
-                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
-                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
-                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
-            }else if (item.getImages().size() == 5){
-                commentMainImageView1.setVisibility(View.VISIBLE);
-                commentMainImageView2.setVisibility(View.VISIBLE);
-                commentMainImageView3.setVisibility(View.VISIBLE);
-                commentMainImageView4.setVisibility(View.VISIBLE);
-                commentMainImageView5.setVisibility(View.VISIBLE);
-                commentMainImageView6.setVisibility(View.GONE);
-                commentMainImageView7.setVisibility(View.GONE);
-                commentMainImageView8.setVisibility(View.GONE);
-                commentMainImageView9.setVisibility(View.GONE);
-
-                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
-                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
-                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
-                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
-                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
-            }else if (item.getImages().size() == 6){
-                commentMainImageView1.setVisibility(View.VISIBLE);
-                commentMainImageView2.setVisibility(View.VISIBLE);
-                commentMainImageView3.setVisibility(View.VISIBLE);
-                commentMainImageView4.setVisibility(View.VISIBLE);
-                commentMainImageView5.setVisibility(View.VISIBLE);
-                commentMainImageView6.setVisibility(View.VISIBLE);
-                commentMainImageView7.setVisibility(View.GONE);
-                commentMainImageView8.setVisibility(View.GONE);
-                commentMainImageView9.setVisibility(View.GONE);
-
-                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
-                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
-                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
-                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
-                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
-                GlideUtils.loadImageView(context,item.getImages().get(5).getUrl(),commentMainImageView6);
-            }else if (item.getImages().size() == 7){
-                commentMainImageView1.setVisibility(View.VISIBLE);
-                commentMainImageView2.setVisibility(View.VISIBLE);
-                commentMainImageView3.setVisibility(View.VISIBLE);
-                commentMainImageView4.setVisibility(View.VISIBLE);
-                commentMainImageView5.setVisibility(View.VISIBLE);
-                commentMainImageView6.setVisibility(View.VISIBLE);
-                commentMainImageView7.setVisibility(View.VISIBLE);
-                commentMainImageView8.setVisibility(View.GONE);
-                commentMainImageView9.setVisibility(View.GONE);
-
-                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
-                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
-                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
-                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
-                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
-                GlideUtils.loadImageView(context,item.getImages().get(5).getUrl(),commentMainImageView6);
-                GlideUtils.loadImageView(context,item.getImages().get(6).getUrl(),commentMainImageView7);
-            }else if (item.getImages().size() == 8){
-                commentMainImageView1.setVisibility(View.VISIBLE);
-                commentMainImageView2.setVisibility(View.VISIBLE);
-                commentMainImageView3.setVisibility(View.VISIBLE);
-                commentMainImageView4.setVisibility(View.VISIBLE);
-                commentMainImageView5.setVisibility(View.VISIBLE);
-                commentMainImageView6.setVisibility(View.VISIBLE);
-                commentMainImageView7.setVisibility(View.VISIBLE);
-                commentMainImageView8.setVisibility(View.VISIBLE);
-                commentMainImageView9.setVisibility(View.GONE);
-
-                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
-                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
-                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
-                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
-                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
-                GlideUtils.loadImageView(context,item.getImages().get(5).getUrl(),commentMainImageView6);
-                GlideUtils.loadImageView(context,item.getImages().get(6).getUrl(),commentMainImageView7);
-                GlideUtils.loadImageView(context,item.getImages().get(7).getUrl(),commentMainImageView8);
-            }else if (item.getImages().size() >= 9){
-                commentMainImageView1.setVisibility(View.VISIBLE);
-                commentMainImageView2.setVisibility(View.VISIBLE);
-                commentMainImageView3.setVisibility(View.VISIBLE);
-                commentMainImageView4.setVisibility(View.VISIBLE);
-                commentMainImageView5.setVisibility(View.VISIBLE);
-                commentMainImageView6.setVisibility(View.VISIBLE);
-                commentMainImageView7.setVisibility(View.VISIBLE);
-                commentMainImageView8.setVisibility(View.VISIBLE);
-                commentMainImageView9.setVisibility(View.VISIBLE);
-
-                GlideUtils.loadImageView(context,item.getImages().get(0).getUrl(),commentMainImageView1);
-                GlideUtils.loadImageView(context,item.getImages().get(1).getUrl(),commentMainImageView2);
-                GlideUtils.loadImageView(context,item.getImages().get(2).getUrl(),commentMainImageView3);
-                GlideUtils.loadImageView(context,item.getImages().get(3).getUrl(),commentMainImageView4);
-                GlideUtils.loadImageView(context,item.getImages().get(4).getUrl(),commentMainImageView5);
-                GlideUtils.loadImageView(context,item.getImages().get(5).getUrl(),commentMainImageView6);
-                GlideUtils.loadImageView(context,item.getImages().get(6).getUrl(),commentMainImageView7);
-                GlideUtils.loadImageView(context,item.getImages().get(7).getUrl(),commentMainImageView8);
-                GlideUtils.loadImageView(context,item.getImages().get(8).getUrl(),commentMainImageView9);
-            }
-        }else {
-            commentMainImageView1.setVisibility(View.GONE);
-            commentMainImageView2.setVisibility(View.GONE);
-            commentMainImageView3.setVisibility(View.GONE);
-            commentMainImageView4.setVisibility(View.GONE);
-            commentMainImageView5.setVisibility(View.GONE);
-            commentMainImageView6.setVisibility(View.GONE);
-            commentMainImageView7.setVisibility(View.GONE);
-            commentMainImageView8.setVisibility(View.GONE);
-            commentMainImageView9.setVisibility(View.GONE);
-        }
         if (item.getComments().getList()!=null&&item.getComments().getList().size()!=0){
             if (item.getComments().getList().size()==1){
                 commentChildLayout.setVisibility(View.VISIBLE);
@@ -323,7 +469,8 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 fromUserName1.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        ToastUtils.showShort(context,"点击了A");
+                        UserMainUtils.toUserMainActivity(context,item.getComments().getList().get(0).getFrom_user_id(),
+                                                        item.getComments().getList().get(0).getFrom_user_zone());
                     }
 
                     @Override
@@ -339,8 +486,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 toUserName1.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        ToastUtils.showShort(context,"点击了B");
+                        UserMainUtils.toUserMainActivity(context,item.getComments().getList().get(0).getTo_user_id(),
+                                item.getComments().getList().get(0).getTo_user_zone());
                     }
+
 
                     @Override
                     public void updateDrawState(TextPaint ds) {
@@ -362,7 +511,8 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 fromUserName1.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        ToastUtils.showShort(context,"点击了A");
+                        UserMainUtils.toUserMainActivity(context,item.getComments().getList().get(0).getFrom_user_id(),
+                                item.getComments().getList().get(0).getFrom_user_zone());
                     }
 
                     @Override
@@ -378,7 +528,8 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 toUserName1.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        ToastUtils.showShort(context,"点击了B");
+                        UserMainUtils.toUserMainActivity(context,item.getComments().getList().get(0).getTo_user_id(),
+                                item.getComments().getList().get(0).getTo_user_zone());
                     }
 
                     @Override
@@ -396,7 +547,8 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 fromUserName2.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        ToastUtils.showShort(context,"点击了A");
+                        UserMainUtils.toUserMainActivity(context,item.getComments().getList().get(1).getFrom_user_id(),
+                                item.getComments().getList().get(1).getFrom_user_zone());
                     }
 
                     @Override
@@ -412,7 +564,8 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 toUserName2.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        ToastUtils.showShort(context,"点击了B");
+                        UserMainUtils.toUserMainActivity(context,item.getComments().getList().get(1).getTo_user_id(),
+                                item.getComments().getList().get(1).getTo_user_zone());
                     }
 
                     @Override

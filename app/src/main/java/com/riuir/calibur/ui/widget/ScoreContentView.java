@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.widget;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.util.AttributeSet;
@@ -57,8 +58,8 @@ public class ScoreContentView extends LinearLayout{
         contentS= contents;
         previewImagesLists =previewImagesList;
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT);
         params.setMargins(DensityUtils.dp2px(context,12),
                 DensityUtils.dp2px(context,4),
                 DensityUtils.dp2px(context,12),
@@ -78,11 +79,14 @@ public class ScoreContentView extends LinearLayout{
                     ImageView primacyImageView = new ImageView(context);
                     primacyImageView.setLayoutParams(params);
                     primacyImageView.setScaleType(ImageView.ScaleType.FIT_START);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        primacyImageView.setTransitionName("ToPreviewImageActivity");
+                    }
                     GlideUtils.loadImageView(context,
                             GlideUtils.setImageUrl(context,contentS.get(i).getUrl(),GlideUtils.FULL_SCREEN),
                             primacyImageView);
                     final int finalI = i;
-                    primacyImageView.setOnClickListener(new View.OnClickListener() {
+                    primacyImageView.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View view) {
 

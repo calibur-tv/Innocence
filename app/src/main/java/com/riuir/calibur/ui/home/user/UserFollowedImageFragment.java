@@ -79,7 +79,7 @@ public class UserFollowedImageFragment extends BaseFragment {
 
     private void setNet() {
         setPage();
-        apiGet.getCallUserFollowedImage(zone,page).enqueue(new Callback<MainTrendingInfo>() {
+        apiGet.getFollowList("image","news",0,zone,page,20,0,"").enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -231,5 +231,6 @@ public class UserFollowedImageFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listImage);
         imageRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 }

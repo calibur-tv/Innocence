@@ -11,14 +11,17 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ScreenUtils;
+import com.riuir.calibur.utils.glide.GlideCenterCropRoundTransform;
 
 import java.io.File;
 
@@ -60,8 +63,17 @@ public class GlideUtils {
     }
 
     //圆角加载
-    public static void loadImageViewRoundedCorners(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).apply(bitmapTransform(new RoundedCornersTransformation(30, 0, RoundedCornersTransformation.CornerType.ALL)))
+    public static void loadImageViewRoundedCorners(Context mContext, String path, ImageView mImageView,int rounds) {
+        Glide.with(mContext).load(path).apply(bitmapTransform(new RoundedCornersTransformation(DensityUtils.dp2px(mContext,rounds), 0, RoundedCornersTransformation.CornerType.ALL)))
+                .into(mImageView);
+    }
+    //圆角 centerCrop加载
+    public static void loadImageViewCenterCropRoundedCorners(Context mContext, String path, ImageView mImageView,int rounds){
+        RequestOptions myOptions = new RequestOptions()
+                .transform(new GlideCenterCropRoundTransform(mContext,rounds));
+        Glide.with(mContext)
+                .load(path)
+                .apply(myOptions)
                 .into(mImageView);
     }
 
@@ -189,6 +201,7 @@ public class GlideUtils {
     public static final int FULL_SCREEN = 0;
     public static final int THIRD_SCREEN = 1;
     public static final int HALF_SCREEN = 2;
+    public static final int THIRD_SCREEN_CENTER_CROP = 3;
 
     //设置图片url地址 并且添加七牛云的图片处理
     public static String setImageUrl(Context context,String url,int style){
@@ -204,8 +217,10 @@ public class GlideUtils {
             imageUrl = url+"?imageMogr2/thumbnail/"+screenWidth*2+"x";
         } else if (style == THIRD_SCREEN){
             imageUrl = url+"?imageMogr2/thumbnail/"+((screenWidth*2)/3)+"x";
-        } else if (style == THIRD_SCREEN){
+        } else if (style == HALF_SCREEN){
             imageUrl = url+"?imageMogr2/thumbnail/"+screenWidth+"x";
+        }else if (style == THIRD_SCREEN_CENTER_CROP){
+            imageUrl = url+"?imageMogr2/gravity/Center/crop/"+((screenWidth*2)/3)+"x"+((screenWidth*2)/3);
         }else {
             imageUrl = url;
         }
@@ -213,5 +228,47 @@ public class GlideUtils {
 
 
         return imageUrl;
+    }
+
+    //设置图片url地址 并且添加七牛云的图片处理
+    //只用作三个图片并列成一行的情况
+    public static String setImageUrl(Context context,String url,int width,int height){
+        int screenWidth = ScreenUtils.getScreenWidth(context);
+
+        if (url.contains(Constants.API_IMAGE_BASE_URL)){
+        }else {
+            url = Constants.API_IMAGE_BASE_URL+url;
+        }
+
+        String imageUrl = "";
+        int px = 0;
+        if (width>=height){
+            px = height;
+        }else {
+            px = width;
+        }
+
+        imageUrl = url+"?imageMogr2/gravity/Center/crop/"+px+"x"+px
+                    +"/thumbnail/"+((screenWidth*2)/3)+"x";
+
+        LogUtils.d("activetrendingTTT","image url finish = "+imageUrl);
+
+
+        return imageUrl;
+    }
+
+    public static int getImageHeightDp(Context context,int pictureHeight,int pictureWidth,float padding,int pictureNumber){
+        double screenWidth = DensityUtils.px2dp(context, ScreenUtils.getScreenWidth(context));
+
+        double h = pictureHeight;
+        double w = pictureWidth;
+        double m = h/w;
+
+        LogUtils.d("image_1","screenWidth = "+screenWidth+",m = "+m+
+                ",heigth = "+h+" , width = "+w);
+
+        double height = (screenWidth/pictureNumber-padding)*m;
+
+        return DensityUtils.dp2px(context, (float) height);
     }
 }

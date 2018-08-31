@@ -62,7 +62,7 @@ public class MainCardHotFragment extends BaseFragment {
     int listDataCounter = 0;
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
 
     @Override
     protected int getContentViewID() {
@@ -71,6 +71,7 @@ public class MainCardHotFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
+        isFirstLoad = true;
         setNet();
     }
 
@@ -174,6 +175,7 @@ public class MainCardHotFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listHot);
         mainCardHotRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 
     private void setListAdapter() {

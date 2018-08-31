@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import com.riuir.calibur.data.Event;
 
@@ -36,9 +37,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     private LayoutInflater mInflater;
     private Unbinder unbinder;
     protected static UIHandler handler = new UIHandler(Looper.getMainLooper());
-    protected ApiPost apiPost,apiPostNoAuth;
+    protected ApiPost apiPost,apiPostNoAuth,apiPostNoGeetest;
     protected ApiGet apiGet,apiGetHasAuth;
     protected CompositeDisposable compositeDisposable = null;
+
+    private View contentViewGroup;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,15 +49,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         //拿到NetService网络请求的Api返回对象
         apiPost = NetService.getInstance().createServicePost();
         apiPostNoAuth = NetService.getInstance().createServicePostNoAuth();
+        apiPostNoGeetest = NetService.getInstance().createServicePostNoGeetest();
         apiGet = NetService.getInstance().createServiceGet();
         apiGetHasAuth = NetService.getInstance().createServiceGetHasAuth();
 
         compositeDisposable = new CompositeDisposable();
         //状态栏透明
-        ActivityUtils.setTranslucentStatus(this, true);
         setHandler();
 
         setContentView(getContentViewId());
+        ActivityUtils.setTranslucentStatus(this, true);
         unbinder = ButterKnife.bind(this);
         mInflater = LayoutInflater.from(this);
         if (isRegisterEventBus()) {

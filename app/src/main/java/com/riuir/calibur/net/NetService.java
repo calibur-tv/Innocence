@@ -68,6 +68,24 @@ public class NetService {
 
     /**
      * 创建 OkHttp
+     * 带有阻断的
+     * 无Auth usertoken
+     * 无Geetest
+     **/
+    private OkHttpClient clientNoGeetest = new OkHttpClient.Builder()
+            /** OkHttp 日志
+             *
+             * 阻截interceptor 添加Header参数**/
+            .addInterceptor(new AuthWithOutGeetest())
+            .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
+            //请求超时时间
+            .readTimeout(30, TimeUnit.SECONDS)
+            //请求失败是否重新请求
+            .retryOnConnectionFailure(false)
+            .build();
+
+    /**
+     * 创建 OkHttp
      * get
      * 阻断
      **/
@@ -113,6 +131,22 @@ public class NetService {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             //传入OKHttpClient对象
             .client(clientNoAuth)
+            .build();
+
+    /**
+     * 创建 Retrofit post
+     * 无Auth
+     * 无Geetest
+     **/
+    private Retrofit retrofitNoGeetest = new Retrofit.Builder()
+            // 设置网络请求的api地址
+            .baseUrl(baseUrl)
+            // 设置数据解析器
+            .addConverterFactory(GsonConverterFactory.create())
+            // 支持RxJava平台
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            //传入OKHttpClient对象
+            .client(clientNoGeetest)
             .build();
 
 
@@ -174,6 +208,24 @@ public class NetService {
         }
 
         return mApiPostNoAuth;
+    }
+
+    /**
+     * post API单例化
+     * 有Auth
+     */
+    private ApiPost mApiPostNoGeetest = null;
+
+    //Observable post
+    public ApiPost createServicePostNoGeetest() {
+        if (null == mApiPostNoGeetest) {
+            // 创建 网络请求接口 的实例
+            ApiPost apiPostNoGeetest = retrofitNoGeetest.create(ApiPost.class);
+            LogUtils.d("drama","noGeetest");
+            mApiPostNoGeetest = apiPostNoGeetest;
+        }
+
+        return mApiPostNoGeetest;
     }
 
 

@@ -4,7 +4,7 @@ import java.util.List;
 
 public class RoleFansListInfo {
     private int code;
-    private List<RoleFansListInfoData> data;
+    private RoleFansListInfoData data;
 
     public int getCode() {
         return code;
@@ -14,11 +14,11 @@ public class RoleFansListInfo {
         this.code = code;
     }
 
-    public List<RoleFansListInfoData> getData() {
+    public RoleFansListInfoData getData() {
         return data;
     }
 
-    public void setData(List<RoleFansListInfoData> data) {
+    public void setData(RoleFansListInfoData data) {
         this.data = data;
     }
 
@@ -31,6 +31,45 @@ public class RoleFansListInfo {
     }
 
     public class  RoleFansListInfoData{
+        private List<RoleFansListInfoList> list;
+        private int total;
+        private boolean noMore;
+
+        public List<RoleFansListInfoList> getList() {
+            return list;
+        }
+
+        public void setList(List<RoleFansListInfoList> list) {
+            this.list = list;
+        }
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
+
+        public boolean isNoMore() {
+            return noMore;
+        }
+
+        public void setNoMore(boolean noMore) {
+            this.noMore = noMore;
+        }
+
+        @Override
+        public String toString() {
+            return "RoleFansListInfoData{" +
+                    "list=" + list +
+                    ", total=" + total +
+                    ", noMore=" + noMore +
+                    '}';
+        }
+    }
+
+    public class  RoleFansListInfoList{
         private int id;
         private String zone;
         private String avatar;

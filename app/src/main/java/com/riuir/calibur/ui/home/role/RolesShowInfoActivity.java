@@ -3,6 +3,7 @@ package com.riuir.calibur.ui.home.role;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,12 +20,14 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.MainTrendingInfo;
 import com.riuir.calibur.data.role.RoleFansListInfo;
 import com.riuir.calibur.data.role.RoleShowInfo;
 import com.riuir.calibur.data.trending.TrendingToggleInfo;
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
+import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.role.adapter.RoleFansListAdapter;
 import com.riuir.calibur.ui.home.user.UserMainActivity;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
@@ -33,6 +36,7 @@ import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -56,12 +60,20 @@ public class RolesShowInfoActivity extends BaseActivity {
 
     int roleId;
 
+    String seenIds = "";
+    List<Integer> seenIdList = new ArrayList<>();
+
+    @BindView(R.id.role_show_info_refresh_layout)
+    SwipeRefreshLayout roleShowInfoRefreshLayout;
     @BindView(R.id.role_show_info_list_view)
     RecyclerView roleShowInfoListView;
+    @BindView(R.id.role_show_info_back_btn)
+    ImageView backBtn;
 
     private RoleShowInfo.RoleShowInfoData primacyData;
-    private List<RoleFansListInfo.RoleFansListInfoData> fansList;
-    private List<RoleFansListInfo.RoleFansListInfoData> baseFansList;
+    private RoleFansListInfo.RoleFansListInfoData fansData;
+    private List<RoleFansListInfo.RoleFansListInfoList> fansList;
+    private List<RoleFansListInfo.RoleFansListInfoList> baseFansList;
 
     private LinearLayout headerLayout;
 
@@ -71,8 +83,9 @@ public class RolesShowInfoActivity extends BaseActivity {
 
     private RoleFansListAdapter fansListAdapter;
 
-    private boolean isFirstLoad = true;
+    private boolean isFirstLoad = false;
     boolean isLoadMore = false;
+    boolean isRefresh = false;
 
     @Override
     protected int getContentViewId() {
@@ -85,6 +98,7 @@ public class RolesShowInfoActivity extends BaseActivity {
         roleId = intent.getIntExtra("roleId",0);
         LogUtils.d("roleShowInfo","roleId = "+roleId);
         isFirstLoad = true;
+        setBackBtn();
         setNet(NET_STATUS_PRIMACY);
     }
 
@@ -133,18 +147,26 @@ public class RolesShowInfoActivity extends BaseActivity {
         }
 
         if (NET_STATUS == NET_STATUS_USER_LIST){
-
-            mApiGet.getCallRolesFansList(roleId,"hot",0).enqueue(new Callback<RoleFansListInfo>() {
+            setSeendIdS();
+            mApiGet.getCallRolesFansList(roleId,"hot",seenIds).enqueue(new Callback<RoleFansListInfo>() {
                 @Override
                 public void onResponse(Call<RoleFansListInfo> call, Response<RoleFansListInfo> response) {
                     if (response!=null&&response.isSuccessful()){
-                        fansList = response.body().getData();
+                        fansList = response.body().getData().getList();
+                        fansData = response.body().getData();
                         if (isFirstLoad){
-                            baseFansList = response.body().getData();
+                            baseFansList = response.body().getData().getList();
                             setAdapter();
                         }
-
-
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+                        for (RoleFansListInfo.RoleFansListInfoList hotItem :fansList){
+                            seenIdList.add(hotItem.getId());
+                        }
                     }else if (response!=null&&response.isSuccessful()==false){
                         String errorStr = "";
                         try {
@@ -161,8 +183,24 @@ public class RolesShowInfoActivity extends BaseActivity {
                         }else if (info.getCode() == 40401){
                             ToastUtils.showShort(RolesShowInfoActivity.this,info.getMessage());
                         }
+                        if (isLoadMore){
+                            fansListAdapter.loadMoreFail();
+                            isLoadMore = false;
+                        }
+                        if (isRefresh){
+                            roleShowInfoRefreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
                     }else {
                         ToastUtils.showShort(RolesShowInfoActivity.this,"未知错误出现了！");
+                        if (isLoadMore){
+                            fansListAdapter.loadMoreFail();
+                            isLoadMore = false;
+                        }
+                        if (isRefresh){
+                            roleShowInfoRefreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
                     }
 
                 }
@@ -170,6 +208,14 @@ public class RolesShowInfoActivity extends BaseActivity {
                 @Override
                 public void onFailure(Call<RoleFansListInfo> call, Throwable t) {
                     ToastUtils.showShort(RolesShowInfoActivity.this,"请检查您的网络哟~");
+                    if (isLoadMore){
+                        fansListAdapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        roleShowInfoRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
                 }
             });
         }
@@ -216,6 +262,28 @@ public class RolesShowInfoActivity extends BaseActivity {
 
     }
 
+    private void setSeendIdS() {
+        if (seenIdList!=null&&seenIdList.size()!=0){
+            for (int position = 0; position <seenIdList.size() ; position++) {
+                int id = seenIdList.get(position);
+                if (position == 0){
+                    if (seenIds == null||seenIds.length() == 0){
+                        seenIds = seenIds+id;
+                    }else {
+                        seenIds = seenIds+","+id;
+                    }
+                }else {
+                    seenIds = seenIds+","+id;
+                }
+            }
+        }
+        if (isRefresh){
+            seenIds = "";
+            seenIdList.clear();
+        }
+
+        LogUtils.d("image_1","seenIds = "+seenIds );
+    }
 
     private void setAdapter() {
         fansListAdapter = new RoleFansListAdapter(R.layout.role_fans_list_item,baseFansList,RolesShowInfoActivity.this);
@@ -235,7 +303,13 @@ public class RolesShowInfoActivity extends BaseActivity {
          *SLIDEIN_RIGHT 从右到左
          */
         fansListAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
+        //开启上拉加载更多
+        fansListAdapter.setEnableLoadMore(true);
 
+
+        //添加底部footer
+        fansListAdapter.setLoadMoreView(new MyLoadMoreView());
+        fansListAdapter.disableLoadMoreIfNotFullPage(roleShowInfoListView);
 
 
         roleShowInfoListView.setAdapter(fansListAdapter);
@@ -278,11 +352,44 @@ public class RolesShowInfoActivity extends BaseActivity {
 
     }
 
+    private void setLoadMore() {
+        isLoadMore = false;
+
+        if (fansData.isNoMore()) {
+            fansListAdapter.addData(fansList);
+            //数据全部加载完毕
+            fansListAdapter.loadMoreEnd();
+        } else {
+            //成功获取更多数据
+            fansListAdapter.addData(fansList);
+            fansListAdapter.loadMoreComplete();
+        }
+    }
+
+    private void setRefresh() {
+        isRefresh = false;
+        fansListAdapter.setNewData(fansList);
+        roleShowInfoRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(RolesShowInfoActivity.this,"刷新成功！");
+    }
+
+    private void setBackBtn(){
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
+
     private void setListener() {
+
+
+
         fansListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                RoleFansListInfo.RoleFansListInfoData roleFansInfo = (RoleFansListInfo.RoleFansListInfoData) adapter.getData().get(position);
+                RoleFansListInfo.RoleFansListInfoList roleFansInfo = (RoleFansListInfo.RoleFansListInfoList) adapter.getData().get(position);
                 UserMainUtils.toUserMainActivity(RolesShowInfoActivity.this,roleFansInfo.getId(),roleFansInfo.getZone());
             }
         });
@@ -310,6 +417,23 @@ public class RolesShowInfoActivity extends BaseActivity {
                 intent.putExtra("animeId",primacyData.getBangumi().getId());
                 startActivity(intent);
 
+            }
+        });
+
+        //上拉加载监听
+        fansListAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+            @Override public void onLoadMoreRequested() {
+                isLoadMore = true;
+                setNet(NET_STATUS_USER_LIST);
+            }
+        }, roleShowInfoListView);
+
+        //下拉刷新监听
+        roleShowInfoRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isRefresh = true;
+                setNet(NET_STATUS_USER_LIST);
             }
         });
 

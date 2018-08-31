@@ -53,13 +53,11 @@ public class ScoreShowInfoPrimacy {
         private int commented;
         private int comment_count;
         private boolean liked;
-        private int like_count;
-        private List<ScoreShowInfoPrimacyLikeUser> like_users;
+        private ScoreShowInfoPrimacyLikeUser like_users;
         private boolean rewarded;
-        private int reward_count;
-        private List<ScoreShowInfoPrimacyLikeUser> reward_users;
+        private ScoreShowInfoPrimacyLikeUser reward_users;
         private boolean marked;
-        private int mark_count;
+        private ScoreShowInfoPrimacyLikeUser mark_users;
         private String created_at;
         private String updated_at;
         private String published_at;
@@ -232,21 +230,30 @@ public class ScoreShowInfoPrimacy {
             this.liked = liked;
         }
 
-        public int getLike_count() {
-            return like_count;
+        public void setLike_users(ScoreShowInfoPrimacyLikeUser like_users) {
+            this.like_users = like_users;
         }
 
-        public void setLike_count(int like_count) {
-            this.like_count = like_count;
-        }
-
-        public List<ScoreShowInfoPrimacyLikeUser> getLike_users() {
+        public ScoreShowInfoPrimacyLikeUser getLike_users() {
             return like_users;
         }
 
-        public void setLike_users(List<ScoreShowInfoPrimacyLikeUser> like_users) {
-            this.like_users = like_users;
+        public void setMark_users(ScoreShowInfoPrimacyLikeUser mark_users) {
+            this.mark_users = mark_users;
         }
+
+        public ScoreShowInfoPrimacyLikeUser getMark_users() {
+            return mark_users;
+        }
+
+        public void setReward_users(ScoreShowInfoPrimacyLikeUser reward_users) {
+            this.reward_users = reward_users;
+        }
+
+        public ScoreShowInfoPrimacyLikeUser getReward_users() {
+            return reward_users;
+        }
+
 
         public boolean isRewarded() {
             return rewarded;
@@ -256,21 +263,6 @@ public class ScoreShowInfoPrimacy {
             this.rewarded = rewarded;
         }
 
-        public int getReward_count() {
-            return reward_count;
-        }
-
-        public void setReward_count(int reward_count) {
-            this.reward_count = reward_count;
-        }
-
-        public List<ScoreShowInfoPrimacyLikeUser> getReward_users() {
-            return reward_users;
-        }
-
-        public void setReward_users(List<ScoreShowInfoPrimacyLikeUser> reward_users) {
-            this.reward_users = reward_users;
-        }
 
         public boolean isMarked() {
             return marked;
@@ -280,13 +272,6 @@ public class ScoreShowInfoPrimacy {
             this.marked = marked;
         }
 
-        public int getMark_count() {
-            return mark_count;
-        }
-
-        public void setMark_count(int mark_count) {
-            this.mark_count = mark_count;
-        }
 
         public String getCreated_at() {
             return created_at;
@@ -319,30 +304,28 @@ public class ScoreShowInfoPrimacy {
                     ", user=" + user +
                     ", title='" + title + '\'' +
                     ", bangumi=" + bangumi +
-                    ", total=" + total +
-                    ", lol=" + lol +
-                    ", cry=" + cry +
-                    ", fight=" + fight +
-                    ", moe=" + moe +
-                    ", sound=" + sound +
-                    ", vision=" + vision +
-                    ", role=" + role +
-                    ", story=" + story +
-                    ", express=" + express +
-                    ", style=" + style +
+                    ", total='" + total + '\'' +
+                    ", lol='" + lol + '\'' +
+                    ", cry='" + cry + '\'' +
+                    ", fight='" + fight + '\'' +
+                    ", moe='" + moe + '\'' +
+                    ", sound='" + sound + '\'' +
+                    ", vision='" + vision + '\'' +
+                    ", role='" + role + '\'' +
+                    ", story='" + story + '\'' +
+                    ", express='" + express + '\'' +
+                    ", style='" + style + '\'' +
                     ", intro='" + intro + '\'' +
                     ", content=" + content +
                     ", is_creator=" + is_creator +
                     ", commented=" + commented +
                     ", comment_count=" + comment_count +
                     ", liked=" + liked +
-                    ", like_count=" + like_count +
                     ", like_users=" + like_users +
                     ", rewarded=" + rewarded +
-                    ", reward_count=" + reward_count +
                     ", reward_users=" + reward_users +
                     ", marked=" + marked +
-                    ", mark_count=" + mark_count +
+                    ", mark_users=" + mark_users +
                     ", created_at='" + created_at + '\'' +
                     ", updated_at='" + updated_at + '\'' +
                     ", published_at='" + published_at + '\'' +
@@ -556,8 +539,46 @@ public class ScoreShowInfoPrimacy {
                     '}';
         }
     }
+    public class ScoreShowInfoPrimacyLikeUser{
+        private List<ScoreShowInfoPrimacyLikeUserList> list;
+        private int total;
+        private boolean noMore;
 
-    public class ScoreShowInfoPrimacyLikeUser {
+
+        public List<ScoreShowInfoPrimacyLikeUserList> getList() {
+            return list;
+        }
+
+        public void setList(List<ScoreShowInfoPrimacyLikeUserList> list) {
+            this.list = list;
+        }
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
+
+        public boolean isNoMore() {
+            return noMore;
+        }
+
+        public void setNoMore(boolean noMore) {
+            this.noMore = noMore;
+        }
+
+        @Override
+        public String toString() {
+            return "ScoreShowInfoPrimacyLikeUser{" +
+                    "list=" + list +
+                    ", total=" + total +
+                    ", noMore=" + noMore +
+                    '}';
+        }
+    }
+    public class ScoreShowInfoPrimacyLikeUserList {
         private int id;
         private String zone;
         private String avatar;

@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp"
+    android:padding="5.5dp"
     >
     <ImageView
         android:id="@+id/main_image_list_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitStart"
+        android:minHeight="55dp"
         />
     <TextView
         android:id="@+id/main_image_list_item_image_name"
-        android:layout_marginTop="4dp"
+        android:layout_alignBottom="@id/main_image_list_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="图片名字"
-        android:textColor="@color/color_FF5B5B5B"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="9dp"
+        android:maxLines="2"
+        android:textColor="@color/color_FFF4F4F4"
         android:textSize="14sp"
+        android:background="@drawable/image_list_title_bg"
         android:gravity="center"
         />
-</LinearLayout>
+</RelativeLayout>

@@ -1,33 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <LinearLayout
-        android:id="@+id/drama_timeline_title_layout"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/drama_timeline_title_icon"
-            android:layout_width="28px"
-            android:layout_height="28px"
-            android:layout_marginTop="40px"
-            android:layout_marginLeft="30px"
-            android:layout_marginRight="7px"
-            android:src="@mipmap/drama_timeline_time_title_icon"
-            />
-        <TextView
-            android:id="@+id/drama_timeline_title_time"
-            android:layout_width="wrap_content"
-            android:layout_marginTop="40px"
-            android:layout_height="28px"
-            android:text="xxxx年xx月"
-            android:textSize="24px"
-            />
-    </LinearLayout>
+    android:layout_height="28dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:background="@color/color_FFF4F4F4"
+    >
 
+    <TextView
+        android:id="@+id/drama_timeline_title_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="xxxx年xx月"
+        android:textSize="12sp"
+        android:textColor="@color/color_FF9B9B9B"
+        android:layout_centerVertical="true"
 
+        />
 
-</LinearLayout>
+</RelativeLayout>

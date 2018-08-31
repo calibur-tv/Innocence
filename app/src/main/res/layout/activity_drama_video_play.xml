@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.home.Drama.DramaVideoPlayActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+        android:id="@+id/drama_video_play_player"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+        <TextView
+            android:id="@+id/drama_video_play_other_site_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="因版权等相关问题，该视频无法播放"
+            android:textColor="@color/color_FFFFFFFF"
+            android:textSize="16sp"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/drama_video_play_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"></android.support.v7.widget.RecyclerView>
+</LinearLayout>

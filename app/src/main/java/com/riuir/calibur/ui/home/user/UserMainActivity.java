@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,6 +45,8 @@ public class UserMainActivity extends BaseActivity {
     MyPagerSlidingTabStrip userMainPagerTab;
     @BindView(R.id.user_main_activity_view_pager)
     ViewPager userMainPager;
+    @BindView(R.id.user_main_info_back_btn)
+    ImageView backBtn;
 
     int userId;
     String zone;
@@ -57,6 +60,7 @@ public class UserMainActivity extends BaseActivity {
     private UserFollowedRoleFragment userFollowedRoleFragment;
     private UserFollowedImageFragment userFollowedImageFragment;
     private UserCardFragment userCardFragment;
+    private UserFollowedScoreFragment userFollowedScoreFragment;
 
     /**
      * 获取当前屏幕的密度
@@ -75,6 +79,7 @@ public class UserMainActivity extends BaseActivity {
         Intent intent = getIntent();
         userId = intent.getIntExtra("userId",0);
         zone = intent.getStringExtra("zone");
+        setListener();
         setNet();
     }
 
@@ -112,11 +117,20 @@ public class UserMainActivity extends BaseActivity {
     private void setView() {
         GlideUtils.loadImageViewBlur(UserMainActivity.this,
                 GlideUtils.setImageUrl(UserMainActivity.this,userData.getBanner(),GlideUtils.FULL_SCREEN),bannerImg);
-        GlideUtils.loadImageView(UserMainActivity.this,userData.getAvatar(),userIcon);
+        GlideUtils.loadImageViewCircle(UserMainActivity.this,userData.getAvatar(),userIcon);
         userName.setText(userData.getNickname());
         userSignature.setText(userData.getSignature());
 
         setViewPager();
+    }
+
+    private void setListener() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -133,7 +147,7 @@ public class UserMainActivity extends BaseActivity {
 //
         titles.add("相册");
 //
-//        titles.add("评分");
+        titles.add("评分");
 
         titles.add("偶像");
 
@@ -203,6 +217,11 @@ public class UserMainActivity extends BaseActivity {
                         userFollowedImageFragment = new UserFollowedImageFragment();
                     }
                     return userFollowedImageFragment;
+                case "评分":
+                    if (userFollowedScoreFragment == null) {
+                        userFollowedScoreFragment = new UserFollowedScoreFragment();
+                    }
+                    return userFollowedScoreFragment;
                 case "偶像":
                     if (userFollowedRoleFragment == null) {
                         userFollowedRoleFragment = new UserFollowedRoleFragment();

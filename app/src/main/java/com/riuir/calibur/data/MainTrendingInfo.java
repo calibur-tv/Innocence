@@ -114,6 +114,8 @@ public class MainTrendingInfo {
         private int fans_count;
         private MainTrendingInfoUser lover;
 
+        private int has_star;
+
 
         public int getId() {
             return id;
@@ -348,6 +350,14 @@ public class MainTrendingInfo {
             this.lover = lover;
         }
 
+        public int getHas_star() {
+            return has_star;
+        }
+
+        public void setHas_star(int has_star) {
+            this.has_star = has_star;
+        }
+
         @Override
         public String toString() {
             return "MainTrendingInfoList{" +
@@ -380,6 +390,7 @@ public class MainTrendingInfo {
                     ", star_count=" + star_count +
                     ", fans_count=" + fans_count +
                     ", lover=" + lover +
+                    ", has_star=" + has_star +
                     '}';
         }
     }

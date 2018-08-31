@@ -56,7 +56,7 @@ public class UserReplyCardFragment extends BaseFragment {
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
 
     //page默认是0
     int page = 0;
@@ -71,6 +71,7 @@ public class UserReplyCardFragment extends BaseFragment {
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
+        isFirstLoad = true;
         setNet();
     }
 
@@ -220,6 +221,7 @@ public class UserReplyCardFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listCard);
         cardRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 
     private void setPage() {

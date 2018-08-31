@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -9,27 +9,26 @@
         android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="15dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:scaleType="centerCrop"
         />
     <TextView
         android:id="@+id/user_release_list_item_card_name"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:minHeight="19dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="15dp"
         android:textSize="14sp"
         android:text="帖子名称"
+        android:ellipsize="end"
+        android:lines="1"
         android:textColor="@color/color_FF7B7B7B"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/user_release_list_item_bangumi_icon"
-        app:layout_constraintTop_toTopOf="@id/user_release_list_item_bangumi_icon"
+        android:layout_toRightOf="@id/user_release_list_item_bangumi_icon"
+        android:layout_alignTop="@id/user_release_list_item_bangumi_icon"
         />
     <TextView
         android:id="@+id/user_release_list_item_card_time"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:minHeight="15dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -38,20 +37,20 @@
         android:text="番剧名·0分钟前"
         android:textSize="11sp"
         android:textColor="@color/color_FF9B9B9B"
-        app:layout_constraintBottom_toBottomOf="@id/user_release_list_item_bangumi_icon"
+        android:layout_alignBottom="@id/user_release_list_item_bangumi_icon"
         app:layout_constraintTop_toBottomOf="@id/user_release_list_item_card_name"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/user_release_list_item_bangumi_icon"
+        android:layout_toRightOf="@id/user_release_list_item_bangumi_icon"
         />
     <TextView
         android:id="@+id/user_release_list_item_card_desc"
-        app:layout_constraintTop_toBottomOf="@id/user_release_list_item_card_time"
-        app:layout_constraintLeft_toLeftOf="@id/user_release_list_item_bangumi_icon"
-        app:layout_constraintRight_toRightOf="@id/user_release_list_item_card_name"
+        android:layout_below="@id/user_release_list_item_card_time"
+        android:layout_alignLeft="@id/user_release_list_item_bangumi_icon"
+        android:layout_alignRight="@id/user_release_list_item_card_name"
         android:layout_marginTop="6dp"
         android:layout_width="0dp"
         android:textSize="13sp"
         android:text="帖子简介"
+        android:ellipsize="end"
         android:textColor="#615C5D"
         android:layout_height="wrap_content"
         android:maxLines="5"
@@ -60,9 +59,9 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/user_release_list_item_card_desc"
-        app:layout_constraintLeft_toLeftOf="@id/user_release_list_item_bangumi_icon"
-        app:layout_constraintRight_toRightOf="@id/user_release_list_item_card_name"
+        android:layout_below="@id/user_release_list_item_card_desc"
+        android:layout_alignLeft="@id/user_release_list_item_bangumi_icon"
+        android:layout_alignRight="@id/user_release_list_item_card_name"
         android:orientation="vertical"
         >
         <ImageView
@@ -161,4 +160,4 @@
         </LinearLayout>
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

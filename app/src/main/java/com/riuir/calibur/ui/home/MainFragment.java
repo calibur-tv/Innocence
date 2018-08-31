@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
+import com.riuir.calibur.utils.ActivityUtils;
 
 import butterknife.BindView;
 
@@ -59,6 +60,8 @@ public class MainFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
+        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
+        rootView.setPadding(0,stautsBarHeight,0,0);
         dm = getResources().getDisplayMetrics();
         setViewPager();
 
@@ -79,14 +82,14 @@ public class MainFragment extends BaseFragment {
         mainCardTab.setBackgroundResource(R.color.theme_magic_sakura_primary);
         mainCardTab.setUnderlineColor(Color.TRANSPARENT);
         //设置underLine
-        mainCardTab.setUnderlineHeight(2);
+        mainCardTab.setUnderlineHeight(0);
         mainCardTab.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
         //设置Tab Indicator的高度
         mainCardTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
         // 设置Tab Indicator的高度
-        mainCardTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, dm));
+        mainCardTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, dm));
         // 设置Tab标题文字的大小
-        mainCardTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, dm));
+        mainCardTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 18, dm));
         //设置textclolo
         mainCardTab.setTextColorResource(R.color.color_FFFFFFFF);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)

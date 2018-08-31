@@ -30,8 +30,8 @@ public class DramaScoreListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
 
     @Override
     protected void convert(BaseViewHolder helper, MainTrendingInfo.MainTrendingInfoList item) {
-        ImageView animeIcon = helper.getView(R.id.main_score_list_item_user_icon);
-        GlideUtils.loadImageViewCircle(context, item.getUser().getAvatar(), animeIcon);
+        ImageView userIcon = helper.getView(R.id.main_score_list_item_user_icon);
+        GlideUtils.loadImageViewCircle(context, item.getUser().getAvatar(), userIcon);
         helper.setText(R.id.main_score_list_item_anime_name, item.getUser().getNickname());
         helper.setText(R.id.main_score_list_item_user_name_time, TimeUtils.HowLongTimeForNow(item.getCreated_at()));
         helper.setText(R.id.main_score_list_item_title, item.getTitle());

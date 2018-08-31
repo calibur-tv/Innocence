@@ -20,6 +20,7 @@ import com.geetest.sdk.GT3GeetestButton;
 import com.geetest.sdk.GT3GeetestListener;
 import com.geetest.sdk.GT3GeetestUtils;
 import com.geetest.sdk.Gt3GeetestTestMsg;
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -34,6 +35,9 @@ import com.riuir.calibur.utils.Constants;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,8 +107,9 @@ public class LoginActivity extends BaseActivity {
                         ||passWordStr == null||passWordStr.length()==0){
                     ToastUtils.showShort(LoginActivity.this,"请完善您的信息哟(＾Ｕ＾)ノ~");
                 }else {
-
-                    setNet(NET_GEE_STATUS_captcha);
+                    //TODO
+                    setNetWithOutGee();
+//                    setNet(NET_GEE_STATUS_captcha);
                 }
             }
         });
@@ -123,13 +128,67 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
+    private void setNetWithOutGee(){
+
+
+
+        //自定义API2 登录
+        Map<String,Object> params = new HashMap<>();
+        params.put("access",userNameStr);
+        params.put("secret",passWordStr);
+//        params.put("geetest",verificationCodeBodyGeeTest);
+
+        LogUtils.d("loginActivity","geetest = "+verificationCodeBodyGeeTest.toString());
+        apiPostNoGeetest.getCallLogin(params).enqueue(new Callback<Event<String>>() {
+            @Override
+            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
+                if (response!=null&&response.isSuccessful()){
+
+                    int code = response.body().getCode();
+                    if (code == 0){
+                        gt3GeetestUtilsBindLogin.gt3TestFinish();
+                        // 登录成功
+                        ToastUtils.showShort(LoginActivity.this,"登录成功！✿✿ヽ(°▽°)ノ✿");
+                        //返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
+                        SharedPreferencesUtils.put(App.instance(),"Authorization",response.body().getData());
+                        Constants.ISLOGIN = true;
+                        Constants.AUTH_TOKEN = response.body().getData();
+
+                        startActivity(MainActivity.class);
+                        finish();
+                    }
+                }else if (response!=null&&!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                    ToastUtils.showShort(LoginActivity.this,info.getMessage());
+                }else {
+                    ToastUtils.showShort(LoginActivity.this,"不明原因导致登录失败QAQ");
+                    gt3GeetestUtilsBindLogin.gt3TestClose();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Event<String>> call, Throwable t) {
+                ToastUtils.showShort(LoginActivity.this,"请检查您的网络哟~");
+                gt3GeetestUtilsBindLogin.gt3TestClose();
+            }
+        });
+    }
+
     private void setNet(int NET_STATUS){
         if (NET_STATUS == NET_GEE_STATUS_captcha){
             //自定义API1后 将API1的返回数据传给gt3GeetestUtils
             apiGet.getCallGeeTestImageCaptcha().enqueue(new Callback<GeeTestInfo>() {
                 @Override
                 public void onResponse(Call<GeeTestInfo> call, Response<GeeTestInfo> response) {
-                    if (response!=null&&response.body()!=null&&response.body().getCode()==0){
+                    if (response!=null&&response.isSuccessful()){
                         geeTestInfo = response.body();
                         geeTest = geeTestInfo.getData();
 
@@ -147,6 +206,17 @@ public class LoginActivity extends BaseActivity {
                         gt3GeetestUtilsBindLogin.gtSetApi1Json(params);
                         initBind();
 
+                    }else if (response!=null&&!response.isSuccessful()){
+                        String errorStr = "";
+                        try {
+                            errorStr = response.errorBody().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Gson gson = new Gson();
+                        Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                        ToastUtils.showShort(LoginActivity.this,info.getMessage());
                     }else {
                         ToastUtils.showShort(LoginActivity.this,"不明原因导致验证码发送失败QAQ");
                     }
@@ -170,7 +240,7 @@ public class LoginActivity extends BaseActivity {
             apiPostNoAuth.getCallLogin(params).enqueue(new Callback<Event<String>>() {
                 @Override
                 public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                    if (response!=null&&response.body()!=null){
+                    if (response!=null&&response.isSuccessful()){
 
                         int code = response.body().getCode();
                         if (code == 0){
@@ -184,18 +254,18 @@ public class LoginActivity extends BaseActivity {
 
                             startActivity(MainActivity.class);
                             finish();
-                        }else if (code == 400){
-                            ToastUtils.showShort(LoginActivity.this,response.body().getData());
-                            gt3GeetestUtilsBindLogin.gt3TestClose();
-                        }else if (code == 403){
-                            ToastUtils.showShort(LoginActivity.this,response.body().getMessage());
-                            gt3GeetestUtilsBindLogin.gt3TestClose();
-                        }else {
-                            ToastUtils.showShort(LoginActivity.this,"不明原因导致登录失败QAQ");
-                            gt3GeetestUtilsBindLogin.gt3TestClose();
                         }
-                    }else if (response.code() == 503){
-                        ToastUtils.showShort(LoginActivity.this,"您发送的太多啦，试试明天再来吧");
+                    }else if (response!=null&&!response.isSuccessful()){
+                        String errorStr = "";
+                        try {
+                            errorStr = response.errorBody().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Gson gson = new Gson();
+                        Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                        ToastUtils.showShort(LoginActivity.this,info.getMessage());
                     }else {
                         ToastUtils.showShort(LoginActivity.this,"不明原因导致登录失败QAQ");
                         gt3GeetestUtilsBindLogin.gt3TestClose();
@@ -304,8 +374,6 @@ public class LoginActivity extends BaseActivity {
          */
         gt3GeetestUtilsBindLogin.changeDialogLayout();
     }
-
-
 
     @Override
     protected void handler(Message msg) {

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.net.NetService;
+import com.riuir.calibur.utils.ActivityUtils;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -35,6 +36,7 @@ public abstract class BaseFragment extends Fragment {
     protected CompositeDisposable compositeDisposable = null;
     Unbinder unbinder;
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +47,7 @@ public abstract class BaseFragment extends Fragment {
         apiGet = NetService.getInstance().createServiceGet();
         apiGetHasAuth = NetService.getInstance().createServiceGetHasAuth();
         compositeDisposable = new CompositeDisposable();
+
     }
 
     @Nullable

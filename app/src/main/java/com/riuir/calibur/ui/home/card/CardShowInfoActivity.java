@@ -1,11 +1,13 @@
 package com.riuir.calibur.ui.home.card;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -83,6 +85,9 @@ public class CardShowInfoActivity extends BaseActivity {
 
     @BindView(R.id.card_show_info_list_view)
     RecyclerView cardShowInfoListView;
+    @BindView(R.id.card_show_info_back_btn)
+    ImageView backBtn;
+
     @Override
     protected int getContentViewId() {
         return R.layout.activity_card_show_info;
@@ -94,6 +99,7 @@ public class CardShowInfoActivity extends BaseActivity {
         cardID = intent.getIntExtra("cardID",0);
         LogUtils.d("cardInfo","cardID = "+cardID);
         LogUtils.d("cardInfo","userToken = "+Constants.AUTH_TOKEN);
+        setBackBtn();
         isFirstLoad = true;
         setNet(NET_STATUS_MAIN_COMMENT);
     }
@@ -246,6 +252,7 @@ public class CardShowInfoActivity extends BaseActivity {
         trendingLFCView.setLiked(primacyData.getPost().isLiked());
         trendingLFCView.setCollected(primacyData.getPost().isMarked());
         trendingLFCView.setRewarded(primacyData.getPost().isRewarded());
+        trendingLFCView.setIsCreator(primacyData.getPost().isIs_creator());
         trendingLFCView.startListenerAndNet();
 
 
@@ -288,11 +295,17 @@ public class CardShowInfoActivity extends BaseActivity {
                 CardShowInfoPrimacy.CardShowInfoPrimacyImages primacyImage = primacyData.getPost().getImages().get(i);
                 ImageView primacyImageView = new ImageView(CardShowInfoActivity.this);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                        GlideUtils.getImageHeightDp(CardShowInfoActivity.this,
+                                Integer.parseInt(primacyData.getPost().getImages().get(i).getHeight()),
+                                Integer.parseInt(primacyData.getPost().getImages().get(i).getWidth())
+                        ,24,1));
                 params.setMargins(DensityUtils.dp2px(CardShowInfoActivity.this,12),
                         DensityUtils.dp2px(CardShowInfoActivity.this,4),
                         DensityUtils.dp2px(CardShowInfoActivity.this,12),
                         DensityUtils.dp2px(CardShowInfoActivity.this,4));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    primacyImageView.setTransitionName("ToPreviewImageActivity");
+                }
                 primacyImageView.setLayoutParams(params);
                 primacyImageView.setScaleType(ImageView.ScaleType.FIT_START);
 
@@ -328,12 +341,23 @@ public class CardShowInfoActivity extends BaseActivity {
         if (previewImagesList == null){
             previewImagesList = new ArrayList<>();
         }
+
         for (int i = 0; i <primacyData.getPost().getPreview_images().size() ; i++) {
             previewImagesList.add(primacyData.getPost().getPreview_images().get(i).getUrl());
         }
     }
 
+    private void setBackBtn(){
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
+
     private void setListener() {
+
 
         headerUserIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -439,6 +463,9 @@ public class CardShowInfoActivity extends BaseActivity {
 
 
         commentAdapter = new CommentAdapter(R.layout.card_show_info_list_comment_item,baseCommentMainList,CardShowInfoActivity.this,apiPost,CommentAdapter.TYPE_POST);
+        if (cardShowInfoListView == null){
+            cardShowInfoListView = findViewById(R.id.card_show_info_list_view);
+        }
         cardShowInfoListView.setLayoutManager(new LinearLayoutManager(CardShowInfoActivity.this));
         commentAdapter.setHasStableIds(true);
         /**

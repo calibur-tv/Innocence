@@ -1,22 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ui.home.score.ScoreShowInfoActivity">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:background="@color/theme_magic_sakura_primary"
-        >
-    </RelativeLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/score_show_info_list_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="10dp"
-        ></android.support.v7.widget.RecyclerView>
-</LinearLayout>
+        android:fitsSystemWindows="true"
+        android:background="@color/theme_magic_sakura_primary"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/theme_magic_sakura_primary"
+            >
+            <ImageView
+                android:id="@+id/score_show_info_back_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@mipmap/app_btn_back_white"
+                android:layout_centerVertical="true"
+                android:padding="10dp"
+                />
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/score_show_info_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_FFFFFFFF"
+            android:paddingBottom="10dp"
+            ></android.support.v7.widget.RecyclerView>
+    </LinearLayout>
+</android.support.v4.widget.DrawerLayout>

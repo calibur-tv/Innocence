@@ -21,7 +21,7 @@
             android:layout_toRightOf="@id/drama_video_episodes_list_item_image"
             android:layout_marginTop="45px"
             android:layout_width="match_parent"
-            android:layout_height="38px"
+            android:layout_height="wrap_content"
             android:layout_marginRight="30px"
             android:text="第X话"
             android:textSize="16sp"

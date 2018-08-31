@@ -11,16 +11,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
+import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
+import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.CardActiveListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
+import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +50,7 @@ public class MainCardActiveFragment extends BaseFragment {
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listActive;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainTrendingInfo.MainTrendingInfoList> baseListActive;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseListActive = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData mainTrendingInfoData;
 
@@ -58,7 +62,7 @@ public class MainCardActiveFragment extends BaseFragment {
     int listDataCounter = 0;
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
 
     @Override
     protected int getContentViewID() {
@@ -67,42 +71,32 @@ public class MainCardActiveFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
+        isFirstLoad = true;
+        setListAdapter();
+        mainCardHotRefreshLayout.setRefreshing(true);
         setNet();
     }
 
     private void setNet() {
-
+        ApiGet mApiGet;
+        if (Constants.ISLOGIN){
+            mApiGet = apiGetHasAuth;
+        }else {
+            mApiGet = apiGet;
+        }
+        LogUtils.d("cardList","isLogin = "+Constants.ISLOGIN);
         setSeendIdS();
-        apiGet.getCallTrendingActiveGet("post",seenIds,0).enqueue(new Callback<MainTrendingInfo>() {
+        mApiGet.getFollowList("post","active",0,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
 
-                if (response == null||!response.isSuccessful()||response.body()==null||response.body().getData() == null){
-                    if (!response.isSuccessful()){
-                        try {
-                            ToastUtils.showShort(getContext(),response.errorBody().string());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }else {
-                        ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                    }
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        mainCardHotRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-
-                }else {
+                if (response!=null&&response.isSuccessful()){
                     listActive = response.body().getData().getList();
                     mainTrendingInfoData = response.body().getData();
                     if (isFirstLoad){
                         baseListActive = response.body().getData().getList();
-                        setListAdapter();
+                        mainCardHotRefreshLayout.setRefreshing(false);
+                        setFirstData();
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -114,24 +108,59 @@ public class MainCardActiveFragment extends BaseFragment {
                     for (MainTrendingInfo.MainTrendingInfoList hotItem :listActive){
                         seenIdList.add(hotItem.getId());
                     }
+                }else if (response!=null&&!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                    ToastUtils.showShort(getContext(),info.getMessage());
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        mainCardHotRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        mainCardHotRefreshLayout.setRefreshing(false);
+                    }
+                }else {
+                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        mainCardHotRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        mainCardHotRefreshLayout.setRefreshing(false);
+                    }
                 }
-
-
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
 
                 LogUtils.d("cardHot","t = "+t);
+                ToastUtils.showShort(getContext(),"请检查您的网络！");
                 if (isLoadMore){
                     adapter.loadMoreFail();
                     isLoadMore = false;
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                 }
                 if (isRefresh){
                     mainCardHotRefreshLayout.setRefreshing(false);
                     isRefresh = false;
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                }
+                if (isFirstLoad){
+                    mainCardHotRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -178,6 +207,7 @@ public class MainCardActiveFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listActive);
         mainCardHotRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 
     private void setListAdapter() {
@@ -207,7 +237,10 @@ public class MainCardActiveFragment extends BaseFragment {
 
         //添加监听
         setListener();
+    }
+    private void  setFirstData(){
         isFirstLoad = false;
+        adapter.addData(baseListActive);
     }
 
     private void setListener() {

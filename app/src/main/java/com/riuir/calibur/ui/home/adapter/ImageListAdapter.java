@@ -37,23 +37,12 @@ public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTren
         ViewGroup.LayoutParams params = img.getLayoutParams();
 
 
-        double screenWidth = DensityUtils.px2dp(context, ScreenUtils.getScreenWidth(context));
-
-        double h = item.getSource().getHeight();
-        double w = item.getSource().getWidth();
-        double m = h/w;
-
-        LogUtils.d("image_1","screenWidth = "+screenWidth+",m = "+m+
-                ",heigth = "+h+" , width = "+w);
-
-        double height = (screenWidth-24.0)*m;
-
-        params.height = (int) height;
+        params.height =  GlideUtils.getImageHeightDp(context,item.getSource().getHeight(),item.getSource().getWidth(),21.0f,2);
         img.setLayoutParams(params);
 
         GlideUtils.loadImageViewRoundedCorners(context,
                 GlideUtils.setImageUrl(mContext,item.getSource().getUrl(),GlideUtils.HALF_SCREEN),
-                img);
+                img,15);
         helper.setText(R.id.main_image_list_item_image_name,item.getName());
 
     }

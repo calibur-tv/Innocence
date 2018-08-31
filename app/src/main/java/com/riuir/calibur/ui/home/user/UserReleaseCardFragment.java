@@ -54,7 +54,7 @@ public class UserReleaseCardFragment extends BaseFragment {
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
 
     //page默认是0
     int page = 0;
@@ -69,12 +69,13 @@ public class UserReleaseCardFragment extends BaseFragment {
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
+        isFirstLoad = true;
         setNet();
     }
 
     private void setNet() {
         setPage();
-        apiGet.getCallUserReleseCard(zone,page).enqueue(new Callback<MainTrendingInfo>() {
+        apiGet.getFollowList("post","news",0,zone,page,20,0,"").enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -156,6 +157,7 @@ public class UserReleaseCardFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listCard);
         cardRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 
     private void setPage() {

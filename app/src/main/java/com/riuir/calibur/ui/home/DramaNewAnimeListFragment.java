@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -18,16 +20,20 @@ import android.widget.ImageView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeNewListForWeek;
+import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
+import com.riuir.calibur.ui.view.NewAnimePagerSlidingTabStrip;
 import com.riuir.calibur.utils.GlideUtils;
 
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -41,12 +47,15 @@ import retrofit2.Response;
 public class DramaNewAnimeListFragment extends BaseFragment {
 
     @BindView(R.id.drama_new_anime_list_tab)
-    MyPagerSlidingTabStrip pagerSlidingTabStrip;
+    NewAnimePagerSlidingTabStrip pagerSlidingTabStrip;
 
     @BindView(R.id.drama_new_anime_list_view_pager)
     ViewPager newAnimeViewPager;
+    @BindView(R.id.drama_new_anime_list_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     AnimeNewListForWeek animeNewListForWeek;
+
     NewAnimeListViewPagerAdapter newAnimeListViewPagerAdapter;
 
 
@@ -63,8 +72,18 @@ public class DramaNewAnimeListFragment extends BaseFragment {
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         dm = getResources().getDisplayMetrics();
+        refreshLayout.setRefreshing(true);
         setNet();
+        setListener();
+    }
 
+    private void setListener() {
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                setNet();
+            }
+        });
     }
 
     private void setViewPagerAdapter() {
@@ -79,29 +98,30 @@ public class DramaNewAnimeListFragment extends BaseFragment {
 
     }
 
+
     private void setDramaTabs() {
         // 设置Tab是自动填充满屏幕的
-        pagerSlidingTabStrip.setShouldExpand(true);
+        pagerSlidingTabStrip.setShouldExpand(false);
         // 设置Tab的分割线是透明的
         pagerSlidingTabStrip.setDividerColor(Color.TRANSPARENT);
-        pagerSlidingTabStrip.setBackgroundResource(R.color.theme_magic_sakura_primary);
+        pagerSlidingTabStrip.setBackgroundResource(R.color.color_00FFFFFF);
         //滚动条的间隔
-        pagerSlidingTabStrip.setTabPaddingLeftRight(10);
+//        pagerSlidingTabStrip.setTabPaddingLeftRight(8);
         //设置underLine
-        pagerSlidingTabStrip.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
-        pagerSlidingTabStrip.setUnderlineHeight(2);
+        pagerSlidingTabStrip.setUnderlineColorResource(R.color.color_FFFFFFFF);
+        pagerSlidingTabStrip.setUnderlineHeight(0);
         //设置Tab Indicator的颜色
-        pagerSlidingTabStrip.setIndicatorColorResource(R.color.color_FFFFFFFF);
+        pagerSlidingTabStrip.setIndicatorColorResource(R.color.theme_magic_sakura_primary);
         // 设置Tab Indicator的高度
-        pagerSlidingTabStrip.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, dm));
+        pagerSlidingTabStrip.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, dm));
         // 设置Tab标题文字的大小
-        pagerSlidingTabStrip.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, dm));
+        pagerSlidingTabStrip.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 15, dm));
         //设置textclolo
-        pagerSlidingTabStrip.setTextColorResource(R.color.color_FFFFFFFF);
+        pagerSlidingTabStrip.setTextColorResource(R.color.color_FF9B9B9B);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
-        pagerSlidingTabStrip.setSelectedTextColorResource(R.color.color_FFFFFFFF);
+        pagerSlidingTabStrip.setSelectedTextColorResource(R.color.theme_magic_sakura_primary);
         //设置滚动条圆角（这是我自定义的一个方法，同时修改了滚动条长度，使其与文字等宽）
-        pagerSlidingTabStrip.setRoundRadius(3);
+        pagerSlidingTabStrip.setRoundRadius(2.5f);
         // 取消点击Tab时的背景色
         pagerSlidingTabStrip.setTabBackground(0);
     }
@@ -110,21 +130,35 @@ public class DramaNewAnimeListFragment extends BaseFragment {
         apiGet.getCallDramaNewForWeek().enqueue(new Callback<AnimeNewListForWeek>() {
             @Override
             public void onResponse(Call<AnimeNewListForWeek> call, Response<AnimeNewListForWeek> response) {
-                if (response!=null&&response.body()!=null){
-                    if (response.body().getCode() == 0){
-                        animeNewListForWeek = response.body();
-                        setViewPagerAdapter();
-                    }else {
-                        ToastUtils.showShort(getContext(),"数据异常，正在启动自爆程序");
+                if (response!=null&&response.isSuccessful()){
+
+                    animeNewListForWeek = response.body();
+                    setViewPagerAdapter();
+
+                }else if (!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                    ToastUtils.showShort(getContext(),info.getMessage());
+
                 }else {
-                    ToastUtils.showShort(getContext(),"数据异常，正在启动自爆程序3,2,1....");
+                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
+
                 }
+
+                refreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<AnimeNewListForWeek> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"数据异常，正在启动自爆程序3,2,1.");
+                ToastUtils.showShort(getContext(),"请检查您的网络！");
+                refreshLayout.setRefreshing(false);
             }
         });
     }
@@ -163,7 +197,7 @@ public class DramaNewAnimeListFragment extends BaseFragment {
              *SLIDEIN_RIGHT 从右到左
              */
             newAnimeListAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
-            newAnimeList.setLayoutManager(new LinearLayoutManager(App.instance()));
+            newAnimeList.setLayoutManager(new GridLayoutManager(App.instance(),3));
             newAnimeList.setAdapter(newAnimeListAdapter);
 
             newAnimeListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -198,14 +232,9 @@ public class DramaNewAnimeListFragment extends BaseFragment {
         @Override
         protected void convert(BaseViewHolder helper, AnimeNewListForWeek.AnimeNewListForWeekData item) {
             helper.setText(R.id.drama_new_week_pager_item_list_name,item.getName());
-            helper.setText(R.id.drama_new_week_pager_item_list_part,item.getReleased_part());
-            LogUtils.d("newWeekAnime","item = "+item.toString());
-            if (item.isUpdate()){
-                helper.getView(R.id.drama_new_week_pager_item_list_part).setBackgroundResource(R.drawable.drama_new_week_pard_bg_updata_true);
-            }else {
-                helper.getView(R.id.drama_new_week_pager_item_list_part).setBackgroundResource(R.drawable.drama_new_week_pard_bg_updata_false);
-            }
-            GlideUtils.loadImageView(getContext(),item.getAvatar(), (ImageView) helper.getView(R.id.drama_new_week_pager_item_list_image));
+            helper.setText(R.id.drama_new_week_pager_item_list_part,"更新至第"+item.getReleased_part()+"集");
+
+            GlideUtils.loadImageViewRoundedCorners(getContext(),item.getAvatar(), (ImageView) helper.getView(R.id.drama_new_week_pager_item_list_image),10);
 
         }
     }

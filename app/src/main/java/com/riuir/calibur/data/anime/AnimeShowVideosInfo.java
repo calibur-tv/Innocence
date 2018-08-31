@@ -1,4 +1,4 @@
-package com.riuir.calibur.data;
+package com.riuir.calibur.data.anime;
 
 import java.util.List;
 

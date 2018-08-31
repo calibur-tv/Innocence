@@ -2,6 +2,7 @@ package com.riuir.calibur.ui.home.Drama;
 
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,15 +12,37 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.daimajia.numberprogressbar.NumberProgressBar;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.charts.RadarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.data.RadarData;
+import com.github.mikephil.charting.data.RadarDataSet;
+import com.github.mikephil.charting.data.RadarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
 import com.google.gson.Gson;
+import com.hedgehog.ratingbar.RatingBar;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
+import com.riuir.calibur.data.anime.AnimeScoreInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaScoreListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -49,6 +72,14 @@ public class DramaScoreFragment extends BaseFragment {
     @BindView(R.id.drama_score_refresh_layout)
     SwipeRefreshLayout scoreRefreshLayout;
 
+    LinearLayout headerLayout;
+    RadarChart radarChart;
+    PieChart pieChart;
+    RatingBar ratingBar;
+    TextView allScore;
+    TextView peopleNum;
+    NumberProgressBar bar1,bar2,bar3,bar4,bar5;
+
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listScore;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
@@ -56,12 +87,17 @@ public class DramaScoreFragment extends BaseFragment {
 
     private MainTrendingInfo.MainTrendingInfoData mainScoreInfoData;
 
+    private AnimeScoreInfo.AnimeScoreInfoData animeScore;
+
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
     int bangumiID = 0;
 
     private DramaScoreListAdapter adapter;
+
+    private static final int NET_LIST = 0;
+    private static final int NET_PRIMACY = 1;
 
     @Override
     protected int getContentViewID() {
@@ -72,7 +108,8 @@ public class DramaScoreFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
-        setNet();
+        isFirstLoad = true;
+        setNet(NET_LIST);
     }
 
     private void setSeendIdS() {
@@ -98,75 +135,316 @@ public class DramaScoreFragment extends BaseFragment {
         LogUtils.d("image_1","seenIds = "+seenIds );
     }
 
-    private void setNet() {
-        setSeendIdS();
-        apiGet.getCallTrendingActiveGet("score",seenIds,bangumiID).enqueue(new Callback<MainTrendingInfo>() {
-            @Override
-            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
-                LogUtils.d("score_fragment","response = "+response+",data = "+response.body().getData());
-                if (response!=null&&response.isSuccessful()){
-                    listScore = response.body().getData().getList();
-                    mainScoreInfoData = response.body().getData();
-                    if (isFirstLoad){
-                        baseListScore = response.body().getData().getList();
+    private void setNet(int NET_STATUS) {
+        if (NET_STATUS == NET_LIST){
+            setSeendIdS();
+            apiGet.getFollowList("score","active",bangumiID,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
+                @Override
+                public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
+
+                    if (response!=null&&response.isSuccessful()){
+                        listScore = response.body().getData().getList();
+                        mainScoreInfoData = response.body().getData();
+                        if (isFirstLoad){
+                            baseListScore = response.body().getData().getList();
+                            setNet(NET_PRIMACY);
+
+                        }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+                        for (MainTrendingInfo.MainTrendingInfoList hotItem :listScore){
+                            seenIdList.add(hotItem.getId());
+                        }
+
+                    }else if (!response.isSuccessful()){
+                        String errorStr = "";
+                        try {
+                            errorStr = response.errorBody().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Gson gson = new Gson();
+                        Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                        ToastUtils.showShort(getContext(),info.getMessage());
+                        if (isLoadMore){
+                            adapter.loadMoreFail();
+                            isLoadMore = false;
+                        }
+                        if (isRefresh){
+                            scoreRefreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
+
+                    }else {
+                        ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
+                        if (isLoadMore){
+                            adapter.loadMoreFail();
+                            isLoadMore = false;
+                        }
+                        if (isRefresh){
+                            scoreRefreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
+                    ToastUtils.showShort(getContext(),"请检查您的网络！");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        scoreRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                }
+            });
+        }
+
+        if (NET_STATUS == NET_PRIMACY){
+            apiGet.getCallAnimeShowAllScore(bangumiID).enqueue(new Callback<AnimeScoreInfo>() {
+                @Override
+                public void onResponse(Call<AnimeScoreInfo> call, Response<AnimeScoreInfo> response) {
+                    if (response!=null&&response.isSuccessful()){
+
+                        animeScore = response.body().getData();
                         setListAdapter();
-                    }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setRefresh();
-                    }
-                    for (MainTrendingInfo.MainTrendingInfoList hotItem :listScore){
-                        seenIdList.add(hotItem.getId());
-                    }
 
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        scoreRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
+                    }else if (!response.isSuccessful()){
+                        String errorStr = "";
+                        try {
+                            errorStr = response.errorBody().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Gson gson = new Gson();
+                        Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        scoreRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
+                        ToastUtils.showShort(getContext(),info.getMessage());
+                    }else {
+                        ToastUtils.showShort(getContext(),"请检查您的网络！");
                     }
                 }
+
+                @Override
+                public void onFailure(Call<AnimeScoreInfo> call, Throwable t) {
+                    ToastUtils.showShort(getContext(),"请检查您的网络！");
+                }
+            });
+        }
+
+    }
+
+    private void setPrimacy() {
+        headerLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.drama_score_list_header_view,null);
+        radarChart = headerLayout.findViewById(R.id.drama_score_list_header_score_radar_chart);
+        pieChart = headerLayout.findViewById(R.id.drama_score_list_header_score_pie_chart);
+        ratingBar = headerLayout.findViewById(R.id.drama_score_list_header_score_all_score_rating);
+        allScore = headerLayout.findViewById(R.id.drama_score_list_header_score_all_score_text);
+        peopleNum = headerLayout.findViewById(R.id.drama_score_list_header_score_people_number);
+        bar1 = headerLayout.findViewById(R.id.drama_score_list_header_score_starbar_1);
+        bar2 = headerLayout.findViewById(R.id.drama_score_list_header_score_starbar_2);
+        bar3 = headerLayout.findViewById(R.id.drama_score_list_header_score_starbar_3);
+        bar4 = headerLayout.findViewById(R.id.drama_score_list_header_score_starbar_4);
+        bar5 = headerLayout.findViewById(R.id.drama_score_list_header_score_starbar_5);
+
+        if (animeScore!=null&&animeScore.getLadder()!=null){
+            int one = animeScore.getLadder().get(0).getVal();
+            int two = animeScore.getLadder().get(1).getVal();
+            int three = animeScore.getLadder().get(2).getVal();
+            int four = animeScore.getLadder().get(3).getVal();
+            int five = animeScore.getLadder().get(4).getVal();
+            int max = one+two+three+four+five;
+
+            bar1.setMax(max);
+            bar2.setMax(max);
+            bar3.setMax(max);
+            bar4.setMax(max);
+            bar5.setMax(max);
+            bar1.setProgress(one);
+            bar2.setProgress(two);
+            bar3.setProgress(three);
+            bar4.setProgress(four);
+            bar5.setProgress(five);
+
+            peopleNum.setText("共"+animeScore.getCount()+"人评分");
+            if (animeScore.getTotal()!=null){
+                allScore.setText(animeScore.getTotal());
+                float a = (float) Double.parseDouble(animeScore.getTotal())/20;
+                ratingBar.setStar(a);
             }
+            setRadarChart();
+//        setPieChart();
+
+
+        }
+
+        adapter.addHeaderView(headerLayout);
+
+    }
+
+    private void setPieChart() {
+
+        float one = animeScore.getLadder().get(0).getVal();
+        float two = animeScore.getLadder().get(1).getVal();
+        float three = animeScore.getLadder().get(2).getVal();
+        float four = animeScore.getLadder().get(3).getVal();
+        float five = animeScore.getLadder().get(4).getVal();
+
+        //这个方法为true就是环形图，为false就是饼图
+        pieChart.setDrawHoleEnabled(true);
+        //设置环形中间空白颜色是白色
+        pieChart.setHoleColor(Color.WHITE);
+        pieChart.setRotationEnabled(false);//是否可以旋转
+        Description desc = new Description();
+        desc.setText("");
+        pieChart.setDescription(desc);
+
+        List<PieEntry> strings = new ArrayList<>();
+        strings.add(new PieEntry(one,"1星"));
+        strings.add(new PieEntry(two,"2星"));
+        strings.add(new PieEntry(three,"3星"));
+        strings.add(new PieEntry(four,"4星"));
+        strings.add(new PieEntry(five,"5星"));
+
+        PieDataSet dataSet = new PieDataSet(strings,"");
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+        colors.add(getResources().getColor(R.color.color_radar_chart));
+        colors.add(getResources().getColor(R.color.theme_magic_sakura_yellow));
+        colors.add(getResources().getColor(R.color.theme_magic_sakura_blue));
+        colors.add(getResources().getColor(R.color.theme_magic_sakura_primary));
+        colors.add(getResources().getColor(R.color.color_FFB75EB7));
+        dataSet.setColors(colors);
+        PieData pieData = new PieData(dataSet);
+        pieData.setDrawValues(true);
+        pieData.setValueTextColor(Color.WHITE);
+        pieChart.setData(pieData);
+        pieChart.invalidate();
+
+
+    }
+
+    private void setRadarChart() {
+        radarChart.getDescription().setEnabled(false);
+
+        radarChart.setWebLineWidth(1f);
+        radarChart.setWebColor(Color.LTGRAY);
+        radarChart.setWebLineWidthInner(1f);
+        radarChart.setWebColorInner(Color.LTGRAY);
+        radarChart.setWebAlpha(150);
+        radarChart.setRotationEnabled(false);
+        Legend legend = radarChart.getLegend();
+        legend.setEnabled(false);
+        setData();
+
+        radarChart.animateXY(0, 0);
+
+        XAxis xAxis = radarChart.getXAxis();
+
+//        xAxis.setTypeface(mTfLight);
+
+        xAxis.setTextSize(9f);
+        xAxis.setYOffset(0f);
+        xAxis.setXOffset(0f);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+
+            private String[] mActivities = new String[]{"笑点", "泪点", "燃点", "萌点", "声音","画面","故事","人设","内涵","美感"};
+
+
 
             @Override
-            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络！");
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isRefresh){
-                    scoreRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                }
+
+            public String getFormattedValue(float value, AxisBase axis) {
+
+                return mActivities[(int) value % mActivities.length];
+
             }
+
         });
+
+        xAxis.setTextColor(getResources().getColor(R.color.color_FF9B9B9B));
+
+        YAxis yAxis = radarChart.getYAxis();
+
+//        yAxis.setTypeface(mTfLight);
+
+        yAxis.setLabelCount(5, false);
+
+        yAxis.setTextSize(9f);
+
+        yAxis.setAxisMinimum(0f);
+
+        yAxis.setAxisMaximum(80f);
+
+        yAxis.setDrawLabels(false);
+
+
+        Legend l = radarChart.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(true);
+//        l.setTypeface(mTfLight);
+        l.setXEntrySpace(0f);
+        l.setYEntrySpace(0f);
+        l.setTextColor(getResources().getColor(R.color.color_FF7B7B7B));
+
+    }
+
+    public void setData() {
+
+        ArrayList<RadarEntry> entries1 = new ArrayList<RadarEntry>();
+//        ArrayList<RadarEntry> entries2 = new ArrayList<RadarEntry>();
+
+        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
+
+        // the chart.
+
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getLol())*10));
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getCry())*10));
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getFight())*10));
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getMoe())*10));
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getSound())*10));
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getVision())*10));
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getStory())*10));
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getRole())*10));
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getExpress())*10));
+        entries1.add(new RadarEntry((float) Double.parseDouble(animeScore.getRadar().getStyle())*10));
+
+
+
+
+        RadarDataSet set1 = new RadarDataSet(entries1, "总评");
+        set1.setColor(getResources().getColor(R.color.color_radar_chart));
+        set1.setFillColor(getResources().getColor(R.color.color_radar_chart));
+        set1.setDrawFilled(true);
+        set1.setFillAlpha(180);
+        set1.setLineWidth(1f);
+        set1.setDrawHighlightCircleEnabled(true);
+        set1.setDrawHighlightIndicators(false);
+
+
+        ArrayList<IRadarDataSet> sets = new ArrayList<IRadarDataSet>();
+        sets.add(set1);
+
+
+        RadarData data = new RadarData(sets);
+//        data.setValueTypeface(mTfLight);
+        data.setValueTextSize(8f);
+        data.setDrawValues(false);
+        data.setValueTextColor(Color.WHITE);
+
+        radarChart.setData(data);
+        radarChart.invalidate();
+
     }
 
     private void setListAdapter() {
@@ -191,7 +469,7 @@ public class DramaScoreFragment extends BaseFragment {
         adapter.disableLoadMoreIfNotFullPage(scoreListView);
 
         scoreListView.setAdapter(adapter);
-
+        setPrimacy();
         //添加监听
         setListener();
         isFirstLoad = false;
@@ -215,7 +493,7 @@ public class DramaScoreFragment extends BaseFragment {
         adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
             @Override public void onLoadMoreRequested() {
                 isLoadMore = true;
-                setNet();
+                setNet(NET_LIST);
             }
         }, scoreListView);
 
@@ -224,7 +502,7 @@ public class DramaScoreFragment extends BaseFragment {
             @Override
             public void onRefresh() {
                 isRefresh = true;
-                setNet();
+                setNet(NET_LIST);
             }
         });
     }
@@ -247,5 +525,6 @@ public class DramaScoreFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listScore);
         scoreRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 }

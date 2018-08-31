@@ -1,10 +1,14 @@
 package com.riuir.calibur.ui.home;
 
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -18,17 +22,21 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.loadmore.LoadMoreView;
 import com.example.library.AutoFlowLayout;
 import com.example.library.FlowAdapter;
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeListForTagsSearch;
+import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.params.DramaTags;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
+import com.riuir.calibur.ui.home.Drama.DramaSearchActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.utils.GlideUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,18 +53,18 @@ import retrofit2.Response;
  */
 public class DramaTagsFragment extends BaseFragment {
 
-    @BindView(R.id.drama_tags_search_edit_text)
-    EditText searchEdit;
-    @BindView(R.id.drama_tags_search_btn)
-    ImageView searchBtn;
+
     @BindView(R.id.drama_tags_refresh_tags_text)
     TextView refreshTagsBtn;
     @BindView(R.id.drama_tags_tags_grid)
     AutoFlowLayout tagsGridFlowLayout;
     @BindView(R.id.drama_tags_anime_list)
     RecyclerView tagsAnimeListView;
+
+    @BindView(R.id.drama_tags_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
     //网络获取的tags总list
-    List<DramaTags.DramaTagsData> tagsDataList;
+    List<DramaTags.DramaTagsData> tagsDataList = new ArrayList<>();
     //换一批添加的tags list
     List<DramaTags.DramaTagsData> someTagsList;
 
@@ -71,6 +79,8 @@ public class DramaTagsFragment extends BaseFragment {
     public static final int NET_SEARCH_ANIME_FOR_EDIT = 2;
 
     boolean isLoadMore = false;
+
+    boolean isTagsRefresh = false;
 
     int minTagsId = 0;
     int totalTagsId = 0;
@@ -94,9 +104,9 @@ public class DramaTagsFragment extends BaseFragment {
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
 
-        setNet(NET_GET_TAGS);
+        refreshLayout.setRefreshing(true);
         initFlowLayoutGrid();
-
+        setNet(NET_GET_TAGS);
         setOnClickListener();
 
     }
@@ -106,22 +116,32 @@ public class DramaTagsFragment extends BaseFragment {
             apiGet.getCallDramaTags().enqueue(new Callback<DramaTags>() {
                 @Override
                 public void onResponse(Call<DramaTags> call, Response<DramaTags> response) {
-                    if (response!=null&&response.body()!=null){
-                        if (response.body().getCode() == 0){
-                            tagsDataList = response.body().getData();
-                            LogUtils.d("dramaTags","tagsDataList = "+tagsDataList);
-                            setTagsGridAdapter();
-                        }else {
-                            ToastUtils.showShort(getContext(),"获取番剧标签失败QAQ");
+                    if (response!=null&&response.isSuccessful()){
+                        tagsDataList = response.body().getData();
+                        LogUtils.d("dramaTags","tagsDataList = "+tagsDataList);
+                        setTagsGridAdapter();
+
+                    }else if (!response.isSuccessful()){
+                        String errorStr = "";
+                        try {
+                            errorStr = response.errorBody().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
+                        Gson gson = new Gson();
+                        Event<String> info =gson.fromJson(errorStr,Event.class);
+                        ToastUtils.showShort(getContext(),info.getMessage());
                     }else {
-                        ToastUtils.showShort(getContext(),"获取番剧标签失败QAQ");
+                        ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
+
                     }
+                    refreshLayout.setRefreshing(false);
                 }
 
                 @Override
                 public void onFailure(Call<DramaTags> call, Throwable t) {
                     ToastUtils.showShort(getContext(),"请检查您的网络哟~");
+                    refreshLayout.setRefreshing(false);
                 }
             });
         }
@@ -137,6 +157,9 @@ public class DramaTagsFragment extends BaseFragment {
                             animeListForTagsSearch = response.body();
                             animeListForTagsSearchesData = response.body().getData().getList();
                             setTagsAnimeAdapter();
+                            if (isTagsRefresh){
+                                ToastUtils.showShort(getContext(),"刷新成功");
+                            }
                         }else {
                             ToastUtils.showShort(getContext(),"根据标签搜索番剧失败了");
                             if (isLoadMore){
@@ -195,18 +218,20 @@ public class DramaTagsFragment extends BaseFragment {
         }
         LogUtils.d("tagSearch","minTagsId = "+ minTagsId+",totalTagsId = "+totalTagsId);
         LogUtils.d("tagSearch","tagsIdList size= "+tagsIdList.size());
-        if (minTagsId<tagsDataList.size()&&totalTagsId<tagsDataList.size()){
-            for (int i = minTagsId; i <totalTagsId ; i++) {
-                someTagsList.add(tagsDataList.get(i));
+        if (tagsDataList.size()!=0){
+            if (minTagsId<tagsDataList.size()&&totalTagsId<tagsDataList.size()){
+                for (int i = minTagsId; i <totalTagsId ; i++) {
+                    someTagsList.add(tagsDataList.get(i));
+                }
+                LogUtils.d("tagSearch","都小于");
+            }else{
+                for (int i = minTagsId; i <tagsDataList.size() ; i++) {
+                    someTagsList.add(tagsDataList.get(i));
+                }
+                minTagsId = 0;
+                totalTagsId = 0;
+                LogUtils.d("tagSearch","有一个不小于");
             }
-            LogUtils.d("tagSearch","都小于");
-        }else{
-            for (int i = minTagsId; i <tagsDataList.size() ; i++) {
-                someTagsList.add(tagsDataList.get(i));
-            }
-            minTagsId = 0;
-            totalTagsId = 0;
-            LogUtils.d("tagSearch","又一个不小于");
         }
 
         dramaTagsGridAdapter = new DramaTagsGridAdapter(someTagsList);
@@ -259,15 +284,33 @@ public class DramaTagsFragment extends BaseFragment {
         refreshTagsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setTagsGridAdapter();
+                if (tagsDataList == null||tagsDataList.size()==0){
+                    ToastUtils.showShort(getContext(),"还没有获取到标签哦");
+                }else {
+                    setTagsGridAdapter();
+                    if (tagsIdList!=null&&tagsIdList.size()!=0){
+                        tagsIdList.clear();
+                    }
+                    if (dramaTagsAnimeListAdapter!=null){
+                        animeListForTagsSearchesData.clear();
+                        dramaTagsAnimeListAdapter.setNewData(animeListForTagsSearchesData);
+                    }
+                }
+            }
+        });
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isTagsRefresh = true;
+                setNet(NET_GET_TAGS);
                 if (tagsIdList!=null&&tagsIdList.size()!=0){
                     tagsIdList.clear();
                 }
                 if (dramaTagsAnimeListAdapter!=null){
                     animeListForTagsSearchesData.clear();
-                    dramaTagsAnimeListAdapter.setNewData(animeListForTagsSearchesData);
                 }
-
+                minTagsId = 0;
+                totalTagsId = 0;
             }
         });
 

@@ -48,11 +48,9 @@ public class ImageShowInfoPrimacy {
         private boolean liked;
         private boolean marked;
         private boolean rewarded;
-        private List<ImageShowInfoPrimacyLikeUser> like_users;
-        private List<ImageShowInfoPrimacyLikeUser> reward_users;
-        private int mark_count;
-        private int like_count;
-        private int reward_count;
+        private ImageShowInfoPrimacyLikeUser like_users;
+        private ImageShowInfoPrimacyLikeUser reward_users;
+        private ImageShowInfoPrimacyLikeUser mark_users;
         private String created_at;
         private String updated_at;
 
@@ -192,45 +190,30 @@ public class ImageShowInfoPrimacy {
             this.rewarded = rewarded;
         }
 
-        public List<ImageShowInfoPrimacyLikeUser> getLike_users() {
+        public ImageShowInfoPrimacyLikeUser getLike_users() {
             return like_users;
         }
 
-        public void setLike_users(List<ImageShowInfoPrimacyLikeUser> like_users) {
+        public void setLike_users(ImageShowInfoPrimacyLikeUser like_users) {
             this.like_users = like_users;
         }
 
-        public List<ImageShowInfoPrimacyLikeUser> getReward_users() {
+        public ImageShowInfoPrimacyLikeUser getReward_users() {
             return reward_users;
         }
 
-        public void setReward_users(List<ImageShowInfoPrimacyLikeUser> reward_users) {
+        public void setReward_users(ImageShowInfoPrimacyLikeUser reward_users) {
             this.reward_users = reward_users;
         }
 
-        public int getMark_count() {
-            return mark_count;
+        public ImageShowInfoPrimacyLikeUser getMark_users() {
+            return mark_users;
         }
 
-        public void setMark_count(int mark_count) {
-            this.mark_count = mark_count;
+        public void setMark_users(ImageShowInfoPrimacyLikeUser mark_users) {
+            this.mark_users = mark_users;
         }
 
-        public int getLike_count() {
-            return like_count;
-        }
-
-        public void setLike_count(int like_count) {
-            this.like_count = like_count;
-        }
-
-        public int getReward_count() {
-            return reward_count;
-        }
-
-        public void setReward_count(int reward_count) {
-            this.reward_count = reward_count;
-        }
 
         public String getCreated_at() {
             return created_at;
@@ -270,9 +253,6 @@ public class ImageShowInfoPrimacy {
                     ", rewarded=" + rewarded +
                     ", like_users=" + like_users +
                     ", reward_users=" + reward_users +
-                    ", mark_count=" + mark_count +
-                    ", like_count=" + like_count +
-                    ", reward_count=" + reward_count +
                     ", created_at='" + created_at + '\'' +
                     ", updated_at='" + updated_at + '\'' +
                     '}';
@@ -561,6 +541,45 @@ public class ImageShowInfoPrimacy {
         }
     }
     public class ImageShowInfoPrimacyLikeUser{
+        private int total;
+        private boolean noMore;
+        private List<ImageShowInfoPrimacyLikeUserList> list;
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
+
+        public boolean isNoMore() {
+            return noMore;
+        }
+
+        public void setNoMore(boolean noMore) {
+            this.noMore = noMore;
+        }
+
+        public List<ImageShowInfoPrimacyLikeUserList> getList() {
+            return list;
+        }
+
+        public void setList(List<ImageShowInfoPrimacyLikeUserList> list) {
+            this.list = list;
+        }
+
+        @Override
+        public String toString() {
+            return "ImageShowInfoPrimacyLikeUser{" +
+                    "total=" + total +
+                    ", noMore=" + noMore +
+                    ", list=" + list +
+                    '}';
+        }
+    }
+
+    public class ImageShowInfoPrimacyLikeUserList{
         private int id;
         private String zone;
         private String avatar;

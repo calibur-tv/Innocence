@@ -140,10 +140,7 @@ public class CardShowInfoPrimacy  {
     public class CardShowInfoPrimacyPost{
         private int id;
         private int comment_count;
-        private int like_count;
-        private int reward_count;
         private int view_count;
-        private int mark_count;
         private String title;
         private String desc;
         private boolean liked;
@@ -156,8 +153,12 @@ public class CardShowInfoPrimacy  {
         private String created_at;
         private String updated_at;
         private List<CardShowInfoPrimacyPreviewImages> preview_images;
-        private List<CardShowInfoPrimacyLikeUser> like_users;
-        private List<CardShowInfoPrimacyLikeUser> reward_users;
+        private CardShowInfoPrimacyLikeUser like_users;
+        private CardShowInfoPrimacyLikeUser reward_users;
+        private CardShowInfoPrimacyLikeUser mark_users;
+
+        private boolean is_nice;
+        private boolean is_creator;
 
 
         public int getId() {
@@ -176,13 +177,7 @@ public class CardShowInfoPrimacy  {
             this.comment_count = comment_count;
         }
 
-        public int getLike_count() {
-            return like_count;
-        }
 
-        public void setLike_count(int like_count) {
-            this.like_count = like_count;
-        }
 
         public int getView_count() {
             return view_count;
@@ -192,13 +187,7 @@ public class CardShowInfoPrimacy  {
             this.view_count = view_count;
         }
 
-        public int getMark_count() {
-            return mark_count;
-        }
 
-        public void setMark_count(int mark_count) {
-            this.mark_count = mark_count;
-        }
 
         public String getTitle() {
             return title;
@@ -288,28 +277,47 @@ public class CardShowInfoPrimacy  {
             this.preview_images = preview_images;
         }
 
-        public List<CardShowInfoPrimacyLikeUser> getLike_users() {
+
+
+
+        public CardShowInfoPrimacyLikeUser getLike_users() {
             return like_users;
         }
 
-        public void setLike_users(List<CardShowInfoPrimacyLikeUser> like_users) {
+        public void setLike_users(CardShowInfoPrimacyLikeUser like_users) {
             this.like_users = like_users;
         }
 
-        public int getReward_count() {
-            return reward_count;
-        }
-
-        public void setReward_count(int reward_count) {
-            this.reward_count = reward_count;
-        }
-
-        public List<CardShowInfoPrimacyLikeUser> getReward_users() {
+        public CardShowInfoPrimacyLikeUser getReward_users() {
             return reward_users;
         }
 
-        public void setReward_users(List<CardShowInfoPrimacyLikeUser> reward_users) {
+        public void setReward_users(CardShowInfoPrimacyLikeUser reward_users) {
             this.reward_users = reward_users;
+        }
+
+        public CardShowInfoPrimacyLikeUser getMark_users() {
+            return mark_users;
+        }
+
+        public void setMark_users(CardShowInfoPrimacyLikeUser mark_users) {
+            this.mark_users = mark_users;
+        }
+
+        public boolean isIs_nice() {
+            return is_nice;
+        }
+
+        public void setIs_nice(boolean is_nice) {
+            this.is_nice = is_nice;
+        }
+
+        public boolean isIs_creator() {
+            return is_creator;
+        }
+
+        public void setIs_creator(boolean is_creator) {
+            this.is_creator = is_creator;
         }
 
         @Override
@@ -317,10 +325,7 @@ public class CardShowInfoPrimacy  {
             return "CardShowInfoPrimacyPost{" +
                     "id=" + id +
                     ", comment_count=" + comment_count +
-                    ", like_count=" + like_count +
-                    ", reward_count=" + reward_count +
                     ", view_count=" + view_count +
-                    ", mark_count=" + mark_count +
                     ", title='" + title + '\'' +
                     ", desc='" + desc + '\'' +
                     ", liked=" + liked +
@@ -334,6 +339,9 @@ public class CardShowInfoPrimacy  {
                     ", preview_images=" + preview_images +
                     ", like_users=" + like_users +
                     ", reward_users=" + reward_users +
+                    ", mark_users=" + mark_users +
+                    ", is_nice=" + is_nice +
+                    ", is_creator=" + is_creator +
                     '}';
         }
     }
@@ -505,6 +513,45 @@ public class CardShowInfoPrimacy  {
     }
 
     public class CardShowInfoPrimacyLikeUser{
+        private int total;
+        private boolean noMore;
+        private List<CardShowInfoPrimacyLikeUserList> list;
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
+
+        public boolean isNoMore() {
+            return noMore;
+        }
+
+        public void setNoMore(boolean noMore) {
+            this.noMore = noMore;
+        }
+
+        public List<CardShowInfoPrimacyLikeUserList> getList() {
+            return list;
+        }
+
+        public void setList(List<CardShowInfoPrimacyLikeUserList> list) {
+            this.list = list;
+        }
+
+        @Override
+        public String toString() {
+            return "CardShowInfoPrimacyLikeUser{" +
+                    "total=" + total +
+                    ", noMore=" + noMore +
+                    ", list=" + list +
+                    '}';
+        }
+    }
+
+    public class CardShowInfoPrimacyLikeUserList{
         private int id;
         private String zone;
         private String avatar;

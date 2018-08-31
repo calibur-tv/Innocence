@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.bm.library.PhotoView;
 import com.bumptech.glide.Glide;
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -21,6 +22,8 @@ import butterknife.BindView;
 
 public class CardPreviewPictureActivity extends BaseActivity {
 
+    @BindView(R.id.preview_image_back_btn)
+    ImageView backBtn;
     @BindView(R.id.card_preview_viewpager)
     ViewPager previewViewpager;
     String selectImageUrl;
@@ -37,8 +40,17 @@ public class CardPreviewPictureActivity extends BaseActivity {
         Intent intent = getIntent();
         selectImageUrl = intent.getStringExtra("imageUrl");
         previewImaegUrlList = intent.getStringArrayListExtra("previewImagesList");
-
         setAdapter();
+        setListener();
+    }
+
+    private void setListener() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     private void setAdapter() {

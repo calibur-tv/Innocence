@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home.score;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.RadarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.RadarData;
+import com.github.mikephil.charting.data.RadarDataSet;
+import com.github.mikephil.charting.data.RadarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
 import com.google.gson.Gson;
 import com.hedgehog.ratingbar.RatingBar;
 import com.riuir.calibur.R;
@@ -89,6 +101,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
     RatingBar scoreRatingExpress;
     RatingBar scoreRatingStyle;
 
+    RadarChart scoreRadarChart;
+
     TrendingLikeFollowCollectionView trendingLFCView;
 
     BangumiForShowView headerBangumiView;
@@ -97,6 +111,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
     @BindView(R.id.score_show_info_list_view)
     RecyclerView scoreShowInfoListView;
+    @BindView(R.id.score_show_info_back_btn)
+    ImageView backBtn;
 
     private static final int NET_STATUS_PRIMACY = 0;
     private static final int NET_STATUS_MAIN_COMMENT = 1;
@@ -110,7 +126,7 @@ public class ScoreShowInfoActivity extends BaseActivity {
     protected void onInit() {
         Intent intent = getIntent();
         scoreID = intent.getIntExtra("scoreID",0);
-
+        setBackBtn();
         isFirstLoad = true;
         setNet(NET_STATUS_MAIN_COMMENT);
     }
@@ -279,6 +295,10 @@ public class ScoreShowInfoActivity extends BaseActivity {
         scoreRatingExpress = headerLayout.findViewById(R.id.score_show_info_list_header_score_express_rating);
         scoreRatingStyle = headerLayout.findViewById(R.id.score_show_info_list_header_score_style_rating);
 
+        scoreRadarChart = headerLayout.findViewById(R.id.score_show_info_list_header_score_radar_chart);
+
+        setRadarChart();
+
         scoreTitleLol.setText("笑点："+(Double.parseDouble(primacyData.getLol())*2));
         scoreTitleCry.setText("泪点："+(Double.parseDouble(primacyData.getCry())*2));
         scoreTitleFight.setText("燃点："+(Double.parseDouble(primacyData.getFight())*2));
@@ -320,6 +340,7 @@ public class ScoreShowInfoActivity extends BaseActivity {
         trendingLFCView.setLiked(primacyData.isLiked());
         trendingLFCView.setCollected(primacyData.isMarked());
         trendingLFCView.setRewarded(primacyData.isRewarded());
+        trendingLFCView.setIsCreator(primacyData.isIs_creator());
         trendingLFCView.startListenerAndNet();
 
         //所属番剧操作
@@ -356,7 +377,169 @@ public class ScoreShowInfoActivity extends BaseActivity {
         setListener();
     }
 
+    private void setRadarChart() {
+        scoreRadarChart.getDescription().setEnabled(false);
+
+        scoreRadarChart.setWebLineWidth(1f);
+        scoreRadarChart.setWebColor(Color.LTGRAY);
+        scoreRadarChart.setWebLineWidthInner(1f);
+        scoreRadarChart.setWebColorInner(Color.LTGRAY);
+        scoreRadarChart.setWebAlpha(150);
+
+
+        setData();
+
+
+
+        scoreRadarChart.animateXY(0, 0);
+
+
+
+        XAxis xAxis = scoreRadarChart.getXAxis();
+
+//        xAxis.setTypeface(mTfLight);
+
+        xAxis.setTextSize(9f);
+
+        xAxis.setYOffset(0f);
+
+        xAxis.setXOffset(0f);
+
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+
+
+
+            private String[] mActivities = new String[]{"笑点", "泪点", "燃点", "萌点", "声音","画面","故事","人设","内涵","美感"};
+
+
+
+            @Override
+
+            public String getFormattedValue(float value, AxisBase axis) {
+
+                return mActivities[(int) value % mActivities.length];
+
+            }
+
+        });
+
+        xAxis.setTextColor(getResources().getColor(R.color.color_FF9B9B9B));
+
+
+
+        YAxis yAxis = scoreRadarChart.getYAxis();
+
+//        yAxis.setTypeface(mTfLight);
+
+        yAxis.setLabelCount(5, false);
+
+        yAxis.setTextSize(9f);
+
+        yAxis.setAxisMinimum(0f);
+
+        yAxis.setAxisMaximum(80f);
+
+        yAxis.setDrawLabels(false);
+
+
+
+        Legend l = scoreRadarChart.getLegend();
+
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+
+        l.setDrawInside(true);
+
+//        l.setTypeface(mTfLight);
+
+        l.setXEntrySpace(0f);
+
+        l.setYEntrySpace(0f);
+
+        l.setTextColor(getResources().getColor(R.color.color_FF7B7B7B));
+
+    }
+
+    public void setData() {
+
+        ArrayList<RadarEntry> entries1 = new ArrayList<RadarEntry>();
+//        ArrayList<RadarEntry> entries2 = new ArrayList<RadarEntry>();
+
+        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
+
+        // the chart.
+
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getLol())*20));
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getCry())*20));
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getFight())*20));
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getMoe())*20));
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getSound())*20));
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getVision())*20));
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getStory())*20));
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getRole())*20));
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getExpress())*20));
+        entries1.add(new RadarEntry((float) Double.parseDouble(primacyData.getStyle())*20));
+
+
+
+
+        RadarDataSet set1 = new RadarDataSet(entries1, "个人总评");
+
+        set1.setColor(getResources().getColor(R.color.color_radar_chart));
+
+        set1.setFillColor(getResources().getColor(R.color.color_radar_chart));
+
+        set1.setDrawFilled(true);
+
+        set1.setFillAlpha(180);
+
+        set1.setLineWidth(1f);
+
+        set1.setDrawHighlightCircleEnabled(true);
+
+        set1.setDrawHighlightIndicators(false);
+
+
+
+
+
+        ArrayList<IRadarDataSet> sets = new ArrayList<IRadarDataSet>();
+
+        sets.add(set1);
+
+
+
+
+        RadarData data = new RadarData(sets);
+
+//        data.setValueTypeface(mTfLight);
+
+        data.setValueTextSize(8f);
+
+        data.setDrawValues(false);
+
+        data.setValueTextColor(Color.WHITE);
+
+
+        scoreRadarChart.setData(data);
+
+        scoreRadarChart.invalidate();
+
+    }
+    private void setBackBtn(){
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
     private void setListener() {
+
+
 
         headerUserIcon.setOnClickListener(new View.OnClickListener() {
             @Override

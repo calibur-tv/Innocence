@@ -6,9 +6,13 @@
     tools:context=".ui.home.user.UserFollowedRoleFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/user_main_follow_role_list_view"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/user_main_follow_role_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
-
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/user_main_follow_role_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>

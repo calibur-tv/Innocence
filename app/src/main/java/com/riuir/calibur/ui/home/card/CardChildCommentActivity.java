@@ -29,6 +29,7 @@ import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.trending.TrendingChildCommentInfo;
 import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
@@ -65,6 +66,8 @@ public class CardChildCommentActivity extends BaseActivity {
     EditText replyCommentEdit;
     @BindView(R.id.card_reply_comment_button)
     Button replyCommentBtn;
+    @BindView(R.id.card_child_comment_back_btn)
+    ImageView backBtn;
 
     CardChildCommentListAdapter childCommentListAdapter;
 
@@ -264,6 +267,12 @@ public class CardChildCommentActivity extends BaseActivity {
                 }
             }
         });
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -288,7 +297,8 @@ public class CardChildCommentActivity extends BaseActivity {
             fromUserName.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
-                    ToastUtils.showShort(CardChildCommentActivity.this,"点击了A");
+                    UserMainUtils.toUserMainActivity(CardChildCommentActivity.this,item.getFrom_user_id(),
+                            item.getFrom_user_zone());
                 }
 
                 @Override
@@ -308,7 +318,8 @@ public class CardChildCommentActivity extends BaseActivity {
                 toUserName.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        ToastUtils.showShort(CardChildCommentActivity.this,"点击了B");
+                        UserMainUtils.toUserMainActivity(CardChildCommentActivity.this,item.getTo_user_id(),
+                                item.getTo_user_zone());
                     }
 
                     @Override

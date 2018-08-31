@@ -48,7 +48,7 @@ public class DramaRoleFragment extends BaseFragment {
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
     int bangumiID = 0;
 
     @Override
@@ -59,10 +59,8 @@ public class DramaRoleFragment extends BaseFragment {
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         isFirstLoad = true;
-
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
-
         setNet();
 
     }
@@ -73,7 +71,7 @@ public class DramaRoleFragment extends BaseFragment {
 
     private void setNet() {
         setSeendIdS();
-        apiGet.getCallTrendingHotGet("role",seenIds,bangumiID).enqueue(new Callback<MainTrendingInfo>() {
+        apiGet.getFollowList("role","hot",bangumiID,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){

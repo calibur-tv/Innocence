@@ -167,7 +167,6 @@ public class ForgetPassWordActivity extends BaseActivity {
                         LogUtils.d("resetPass",response.body().toString());
                         int code = response.body().getCode();
                         if (code == 0){
-                            // 登录成功
                             ToastUtils.showShort(ForgetPassWordActivity.this,"重置密码短信发送成功！✿✿ヽ(°▽°)ノ✿");
                             gt3GeetestUtilsBindForgetPassword.gt3TestFinish();
                             reSetSendMessageBtnSecond = 60;

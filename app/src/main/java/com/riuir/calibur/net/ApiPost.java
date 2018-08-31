@@ -48,6 +48,9 @@ public interface ApiPost {
     @POST("door/logout")
     Call<Event<String>> getMineUserLogOut();
 
+    @POST("user/daySign")
+    Call<Event<String>> getCallUserDaySign();
+
     //发送给帖子点赞
     @POST("toggle/like")
     Call<TrendingToggleInfo> getTrendingToggleLike(@Query("type")String type,@Query("id")int postId);
@@ -64,9 +67,9 @@ public interface ApiPost {
     @POST("toggle/mark")
     Call<TrendingToggleInfo> getTrendingToggleCollection(@Query("type")String type,@Query("id")int postId);
 
-    //发送给帖子主评论点赞
-    @POST("post/comment/main/toggleLike/{commentId}")
-    Call<Event<String>> getCardCommentToggleLike(@Path("commentId")int commentId);
+    //发送给主评论点赞
+    @POST("comment/main/toggleLike")
+    Call<TrendingToggleInfo> getCardCommentToggleLike(@Query("id") int id,@Query("type")String type);
 
     //回复帖子评论
     @POST("post/comment/{commentId}/reply")

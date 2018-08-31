@@ -2,9 +2,16 @@ package com.riuir.calibur.ui.home.adapter;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -30,17 +37,48 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, MainTrendingInfo.MainTrendingInfoList item) {
+    protected void convert(BaseViewHolder helper, final MainTrendingInfo.MainTrendingInfoList item) {
 
         helper.setText(R.id.main_card_list_item_user_name, item.getUser().getNickname());
         helper.setText(R.id.main_card_list_item_anime_name, item.getBangumi().getName()+"·"+ TimeUtils.HowLongTimeForNow(item.getUpdated_at()));
         helper.setText(R.id.main_card_list_item_card_title, item.getTitle());
-        helper.setText(R.id.main_card_list_item_card_desc, item.getDesc());
 
-        helper.setText(R.id.main_card_list_item_reward_count, "赞赏："+item.getReward_count());
-        helper.setText(R.id.main_card_list_item_comment_count, "评论："+item.getComment_count());
-        helper.setText(R.id.main_card_list_item_marked_count, "收藏："+item.getMark_count());
 
+        helper.setText(R.id.main_card_list_item_reward_count, ""+item.getReward_count());
+        helper.setText(R.id.main_card_list_item_zan_count, ""+item.getLike_count());
+        helper.setText(R.id.main_card_list_item_comment_count, ""+item.getComment_count());
+        helper.setText(R.id.main_card_list_item_marked_count, ""+item.getMark_count());
+
+        TextView desc = helper.getView(R.id.main_card_list_item_card_desc);
+        desc.setText(item.getDesc());
+
+
+        if (item.isIs_creator()){
+            //原创显示打赏数
+            helper.setVisible(R.id.main_card_list_item_zan_count,false);
+            helper.setVisible(R.id.main_card_list_item_reward_count,true);
+            helper.setVisible(R.id.main_card_list_item_zan_icon,false);
+            helper.setVisible(R.id.main_card_list_item_reward_icon,true);
+        }else {
+            //非原创显示赞数
+            helper.setVisible(R.id.main_card_list_item_zan_count,true);
+            helper.setVisible(R.id.main_card_list_item_reward_count,false);
+            helper.setVisible(R.id.main_card_list_item_zan_icon,true);
+            helper.setVisible(R.id.main_card_list_item_reward_icon,false);
+        }
+
+        LogUtils.d("cardList","isliked = "+item.isLiked()+", ismarked = "+item.isMarked());
+
+        if (item.isLiked()){
+            helper.setImageResource(R.id.main_card_list_item_zan_icon,R.mipmap.ic_zan_active);
+        }else {
+            helper.setImageResource(R.id.main_card_list_item_zan_icon,R.mipmap.ic_zan_normal);
+        }
+        if (item.isMarked()){
+            helper.setImageResource(R.id.main_card_list_item_marked_icon,R.mipmap.ic_mark_active);
+        }else {
+            helper.setImageResource(R.id.main_card_list_item_marked_icon,R.mipmap.ic_mark_normal);
+        }
 
         GlideUtils.loadImageViewCircle(context, item.getUser().getAvatar(), (ImageView) helper.getView(R.id.main_card_list_item_user_icon));
         helper.addOnClickListener(R.id.main_card_list_item_user_icon);
@@ -60,23 +98,41 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
             bigOne.setVisibility(View.GONE);
         } else if (item.getImages().size() == 1) {
             littleGroup.setVisibility(View.GONE);
+
+            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
+
+            params.height = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(0).getHeight()),
+                    Integer.parseInt(item.getImages().get(0).getWidth()),30,1);
+            bigOne.setLayoutParams(params);
+
             bigOne.setVisibility(View.VISIBLE);
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
+            GlideUtils.loadImageViewRoundedCorners(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne,15);
 
         } else {
             littleGroup.setVisibility(View.VISIBLE);
             bigOne.setVisibility(View.GONE);
             little1.setVisibility(View.VISIBLE);
             little2.setVisibility(View.VISIBLE);
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.THIRD_SCREEN), little1);
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(1).getUrl(),GlideUtils.THIRD_SCREEN), little2);
+            GlideUtils.loadImageViewRoundedCorners(context,
+                    GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),
+                            Integer.parseInt(item.getImages().get(0).getWidth())
+                            ,Integer.parseInt(item.getImages().get(0).getHeight()))
+                    , little1,10);
+            GlideUtils.loadImageViewRoundedCorners(context,
+                    GlideUtils.setImageUrl(context,item.getImages().get(1).getUrl(),
+                            Integer.parseInt(item.getImages().get(1).getWidth())
+                            ,Integer.parseInt(item.getImages().get(1).getHeight()))
+                    , little2,10);
             if (item.getImages().size() == 2) {
                 little3.setVisibility(View.INVISIBLE);
             } else {
                 little3.setVisibility(View.VISIBLE);
-                GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(2).getUrl(),GlideUtils.THIRD_SCREEN), little3);
+                GlideUtils.loadImageViewRoundedCorners(context,
+                        GlideUtils.setImageUrl(context,item.getImages().get(2).getUrl(),
+                                Integer.parseInt(item.getImages().get(2).getWidth())
+                                ,Integer.parseInt(item.getImages().get(2).getHeight()))
+                        , little3,10);
             }
-
 
         }
 

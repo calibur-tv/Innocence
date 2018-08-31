@@ -57,7 +57,7 @@ public class DramaImageFragment extends BaseFragment {
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
     int bangumiID = 0;
 
     private ImageListAdapter adapter;
@@ -71,6 +71,7 @@ public class DramaImageFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
+        isFirstLoad = true;
         setNet();
     }
 
@@ -132,7 +133,7 @@ public class DramaImageFragment extends BaseFragment {
 
     private void setNet() {
         setSeendIdS();
-        apiGet.getCallTrendingActiveGet("image",seenIds,bangumiID).enqueue(new Callback<MainTrendingInfo>() {
+        apiGet.getFollowList("image","active",bangumiID,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -247,5 +248,6 @@ public class DramaImageFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listImage);
         imageRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 }

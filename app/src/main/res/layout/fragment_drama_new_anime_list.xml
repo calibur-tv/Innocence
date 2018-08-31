@@ -6,20 +6,41 @@
     tools:context=".ui.home.DramaNewAnimeListFragment"
     android:orientation="vertical"
     >
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/drama_new_anime_list_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="43dp">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/color_FFEEEEEE"
+                    android:layout_marginBottom="5dp"
+                    />
+                <com.riuir.calibur.ui.view.NewAnimePagerSlidingTabStrip
+                    android:id="@+id/drama_new_anime_list_tab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_centerHorizontal="true"
+                    ></com.riuir.calibur.ui.view.NewAnimePagerSlidingTabStrip>
 
-    <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
-        android:id="@+id/drama_new_anime_list_tab"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_centerHorizontal="true"
-        ></com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
-    <android.support.v4.view.ViewPager
-        android:id="@+id/drama_new_anime_list_view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        ></android.support.v4.view.ViewPager>
+            </RelativeLayout>
+            <android.support.v4.view.ViewPager
+                android:id="@+id/drama_new_anime_list_view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="13dp"
+                android:layout_marginRight="13dp"
+                ></android.support.v4.view.ViewPager>
+        </LinearLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

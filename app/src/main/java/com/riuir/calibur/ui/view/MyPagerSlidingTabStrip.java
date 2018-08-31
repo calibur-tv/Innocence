@@ -88,6 +88,9 @@ public class MyPagerSlidingTabStrip extends HorizontalScrollView {
 
     private Locale locale;
 
+    private AttributeSet attrs;
+    private Context context;
+
     public MyPagerSlidingTabStrip(Context context) {
         this(context, null);
     }
@@ -99,12 +102,15 @@ public class MyPagerSlidingTabStrip extends HorizontalScrollView {
     public MyPagerSlidingTabStrip(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
+        this.attrs = attrs;
+        this.context = context;
+
         setFillViewport(true);
         setWillNotDraw(false);
 
         tabsContainer = new LinearLayout(context);
         tabsContainer.setOrientation(LinearLayout.HORIZONTAL);
-        tabsContainer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        tabsContainer.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         addView(tabsContainer);
 
         DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -550,8 +556,10 @@ public class MyPagerSlidingTabStrip extends HorizontalScrollView {
         return tabBackgroundResId;
     }
 
+    //TODO 设置边距
     public void setTabPaddingLeftRight(int paddingPx) {
         this.tabPadding = paddingPx;
+
         updateTabStyles();
     }
 

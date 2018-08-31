@@ -5,10 +5,13 @@ import com.riuir.calibur.data.AnimeListForTagsSearch;
 import com.riuir.calibur.data.AnimeListForTimeLine;
 import com.riuir.calibur.data.AnimeNewListForWeek;
 import com.riuir.calibur.data.AnimeShowInfo;
-import com.riuir.calibur.data.AnimeShowVideosInfo;
+import com.riuir.calibur.data.anime.AnimeScoreInfo;
+import com.riuir.calibur.data.anime.AnimeShowVideosInfo;
 import com.riuir.calibur.data.GeeTestInfo;
 import com.riuir.calibur.data.MainCardInfo;
 import com.riuir.calibur.data.MainTrendingInfo;
+import com.riuir.calibur.data.anime.AnimeVideosActivityInfo;
+import com.riuir.calibur.data.anime.SearchAnimeInfo;
 import com.riuir.calibur.data.role.RoleFansListInfo;
 import com.riuir.calibur.data.role.RoleShowInfo;
 import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
@@ -20,6 +23,7 @@ import com.riuir.calibur.data.params.DramaTags;
 import com.riuir.calibur.data.user.UserFollowedBangumiInfo;
 import com.riuir.calibur.data.user.UserFollowedRoleInfo;
 import com.riuir.calibur.data.user.UserMainInfo;
+import com.riuir.calibur.data.user.UserNotificationInfo;
 import com.riuir.calibur.data.user.UserReplyCardInfo;
 
 import retrofit2.Call;
@@ -30,7 +34,9 @@ import retrofit2.http.Query;
 public interface ApiGet {
 
 
-
+    //搜索接口
+    @GET("search/new")
+    Call<SearchAnimeInfo> getCallSearch(@Query("q")String q,@Query("type")String type,@Query("page")int page);
     //获取最新帖子
     @GET("post/trending/news")
     Call<MainCardInfo> getCallMainCardNewGet(@Query("minId")int minId);
@@ -46,6 +52,13 @@ public interface ApiGet {
     //获取trending 首页帖子/图片/漫评
     @GET("trending/active")
     Call<MainTrendingInfo> getCallTrendingActiveGet(@Query("type")String type, @Query("seenIds")String seenIds, @Query("bangumiId")int bangumiId);
+
+    //总列表flowList
+    @GET("flow/list")
+    Call<MainTrendingInfo> getFollowList(@Query("type")String type,@Query("sort")String sort,@Query("bangumiId")int bangumiId,
+                                         @Query("userZone")String userZone,@Query("page")int page,@Query("take")int take,@Query("minId")int minId,
+                                         @Query("seenIds")String seenIds);
+
 
     //获取trending 首页帖子/图片/漫评
     @GET("trending/hot")
@@ -80,9 +93,19 @@ public interface ApiGet {
     @GET("bangumi/{bangumiId}/show")
     Call<AnimeShowInfo> getCallAnimeShow(@Path("bangumiId")int bangumiId);
 
+
+
     //获取动漫视频列表
     @GET("bangumi/{bangumiId}/videos")
     Call<AnimeShowVideosInfo> getCallAnimeShowVideos(@Path("bangumiId")int bangumiId);
+
+    //获取动漫评分总评
+    @GET("score/bangumis")
+    Call<AnimeScoreInfo> getCallAnimeShowAllScore(@Query("id") int id);
+
+    //获取动漫视频资源
+    @GET("video/{videoId}/show")
+    Call<AnimeVideosActivityInfo> getCallAnimeVideo(@Path("videoId")int videoId);
 
     //获取帖子详情
     @GET("post/{id}/show")
@@ -102,7 +125,7 @@ public interface ApiGet {
 
     //获取角色应援列表
     @GET("cartoon_role/{roleId}/fans")
-    Call<RoleFansListInfo> getCallRolesFansList(@Path("roleId")int roleId,@Query("sort")String sort,@Query("seenIds")int seenIds );
+    Call<RoleFansListInfo> getCallRolesFansList(@Path("roleId")int roleId,@Query("sort")String sort,@Query("seenIds")String seenIds );
 
     //获取各种主评论
     @GET("comment/main/list")
@@ -124,9 +147,6 @@ public interface ApiGet {
     @GET("user/{zone}/followed/role")
     Call<UserFollowedRoleInfo> getCallUserFollowedRole(@Path("zone")String zone);
 
-    //获取用户相册
-    @GET("image/users")
-    Call<MainTrendingInfo> getCallUserFollowedImage(@Query("zone") String zone,@Query("page")int page);
 
     //获取用户主题帖
     @GET("user/{zone}/posts/mine")
@@ -135,4 +155,8 @@ public interface ApiGet {
     //获取用户回复帖
     @GET("user/{zone}/posts/reply")
     Call<UserReplyCardInfo> getCallUserReplyCard(@Path("zone") String zone, @Query("page")int page);
+
+    @GET("/user/notification/list")
+    Call<UserNotificationInfo> getCallUserNotification(@Query("minId")int minId);
+
 }

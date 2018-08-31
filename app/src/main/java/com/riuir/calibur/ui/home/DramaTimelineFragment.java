@@ -26,6 +26,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.entity.AbstractExpandableItem;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
 import com.chad.library.adapter.base.loadmore.LoadMoreView;
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -33,6 +34,7 @@ import com.riuir.calibur.assistUtils.TimeUtils;
 
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeListForTimeLine;
+import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -40,6 +42,7 @@ import com.riuir.calibur.ui.view.ChildListView;
 import com.riuir.calibur.utils.GlideUtils;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,17 +63,15 @@ public class DramaTimelineFragment extends BaseFragment {
     //timeLineList 动态改变 用于传值
     List<MultiItemEntity> timeLineList;
     //baseTimeLineList首次加载的时候添加完数据后保持不变（默认与adapter中的DATA关联）
-    List<MultiItemEntity> baseTimeLineList;
+    List<MultiItemEntity> baseTimeLineList = new ArrayList<>();
 
     List<AnimeListForTimeLine.AnimeClassifyForDate> groupList;
 
     private boolean isLoadMore = false;
     private boolean isRefresh = false;
-    private boolean isFirstLoad = true;
+    private boolean isFirstLoad = false;
 
     TimeLineAdapter adapter;
-
-    boolean loadFinishFlag;
 
     int year = TimeUtils.getYear();
     int howLongYear = 1;
@@ -82,7 +83,9 @@ public class DramaTimelineFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
-        loadFinishFlag = false;
+        isFirstLoad = true;
+        timeLineRefreshLayout.setRefreshing(true);
+        setDramaAdapter();
         setNet();
     }
 
@@ -95,25 +98,59 @@ public class DramaTimelineFragment extends BaseFragment {
         apiGet.getCallDramaTimeGet(year,howLongYear).enqueue(new Callback<AnimeListForTimeLine>() {
             @Override
             public void onResponse(Call<AnimeListForTimeLine> call, Response<AnimeListForTimeLine> response) {
-                groupList =  response.body().getData().getList();
+                if (response!=null&&response.isSuccessful()){
+                    groupList =  response.body().getData().getList();
 
-                year -= howLongYear;
-                if (isFirstLoad){
-                    setDramaAdapter();
-                }
-                if (isRefresh){
-                    setRefresh();
-                }
-                if (isLoadMore){
-                    setLoadMore();
+                    year -= howLongYear;
+                    if (isFirstLoad){
+                        setFirstData();
+                        timeLineRefreshLayout.setRefreshing(false);
+
+                    }
+                    if (isRefresh){
+                        setRefresh();
+                    }
+                    if (isLoadMore){
+                        setLoadMore();
+                    }
+                }else if (response!=null&&!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                    ToastUtils.showShort(getContext(),info.getMessage());
+                    if (isRefresh){
+                        timeLineRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isFirstLoad){
+                        timeLineRefreshLayout.setRefreshing(false);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<AnimeListForTimeLine> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                if (isRefresh){
+                    timeLineRefreshLayout.setRefreshing(false);
+                    isRefresh = false;
+                }
                 if (isLoadMore){
-                adapter.loadMoreFail();
+                    adapter.loadMoreFail();
+                    isLoadMore = false;
+                }
+                if (isFirstLoad){
+                    timeLineRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -145,7 +182,7 @@ public class DramaTimelineFragment extends BaseFragment {
         setList();
         adapter.setNewData(timeLineList);
         timeLineRefreshLayout.setRefreshing(false);
-
+        ToastUtils.showShort(getContext(),"刷新成功！");
 
     }
 
@@ -167,6 +204,11 @@ public class DramaTimelineFragment extends BaseFragment {
         timeLineListView.setAdapter(adapter);
 
         setListener();
+    }
+
+    private void setFirstData(){
+        setList();
+        adapter.addData(baseTimeLineList);
         isFirstLoad = false;
     }
 
@@ -181,20 +223,22 @@ public class DramaTimelineFragment extends BaseFragment {
             timeLineList.clear();
         }
 
-
-        for (AnimeListForTimeLine.AnimeClassifyForDate groupItem:groupList){
-            timeLineList.add(groupItem);
-            if (isFirstLoad){
-            baseTimeLineList.add(groupItem);
-            }
-            for (AnimeListForTimeLine.AnimeInfo childItem:groupItem.getList()){
-                timeLineList.add(childItem);
+        if (groupList!=null&&groupList.size()!=0){
+            for (AnimeListForTimeLine.AnimeClassifyForDate groupItem:groupList){
+                timeLineList.add(groupItem);
                 if (isFirstLoad){
-                baseTimeLineList.add(childItem);
+                    baseTimeLineList.add(groupItem);
+
+                }
+                for (AnimeListForTimeLine.AnimeInfo childItem:groupItem.getList()){
+                    timeLineList.add(childItem);
+                    if (isFirstLoad){
+                        baseTimeLineList.add(childItem);
+                    }
                 }
             }
         }
-
+        LogUtils.d("TimeLine","base = "+baseTimeLineList.toString());
         LogUtils.d("TimeLine","timeLineList = "+timeLineList.toString());
     }
 
@@ -247,7 +291,8 @@ public class DramaTimelineFragment extends BaseFragment {
                     final AnimeListForTimeLine.AnimeInfo itemChild = (AnimeListForTimeLine.AnimeInfo) item;
                     helper.setText(R.id.drama_timeline_list_item_name,itemChild.getName());
                     helper.setText(R.id.drama_timeline_list_item_summary,itemChild.getSummary());
-                    GlideUtils.loadImageView(getContext(),itemChild.getAvatar(), (ImageView) helper.getView(R.id.drama_timeline_list_item_image));
+                    GlideUtils.loadImageViewRoundedCorners(getContext(),itemChild.getAvatar(),
+                            (ImageView) helper.getView(R.id.drama_timeline_list_item_image),6);
 
                     helper.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override

@@ -78,12 +78,14 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .hide(fragmentMine)
                 .show(fragmentMain)
                 .commitAllowingStateLoss();
+
         maintabBottombar.init();
         maintabBottombar.setOnSingleClickListener(this);
-        //demo
-        Logger.d("oninit");
-        handler.sendEmptyMessageDelayed(0, 200);
-        EventBusUtil.sendEvent(new Event(RCode.EventCode.A));
+
+        //demo TODO
+//        Logger.d("oninit");
+//        handler.sendEmptyMessageDelayed(0, 200);
+//        EventBusUtil.sendEvent(new Event(RCode.EventCode.A));
 
 
         setFloatingActionBth();
@@ -92,8 +94,8 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     //将addBtn 以actionBtn的方式在这里初始化
     private void setFloatingActionBth() {
         //宽高的px  由dp转换而成
-        int addBtnParams = DensityUtils.dp2px(this,60);
-        int itemIconParams = DensityUtils.dp2px(this,45);
+        int addBtnParams = DensityUtils.dp2px(this,45);
+        int itemIconParams = DensityUtils.dp2px(this,40);
 
         //设置CircularFloatingActionMenu点击展开扇形图
         final ImageView addActionImg = new ImageView(this);
@@ -102,7 +104,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         FloatingActionButton.LayoutParams addImgParams = new FloatingActionButton.LayoutParams(addBtnParams,
                 addBtnParams);
         addImgParams.setMargins(0, 0, 0,
-                0);
+                8);
         addActionImg.setLayoutParams(addImgParams);
         addActionImg.setImageDrawable(getResources().getDrawable(R.mipmap.maintab_new_normal));
 
@@ -274,5 +276,21 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .hide(fragmentMain)
                 .show(fragmentMine)
                 .commitAllowingStateLoss();
+    }
+
+    @Override
+    public void onBackPressed() {
+        ExitApp();
+    }
+
+    private long exitTime = 0;
+
+    public void ExitApp() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            ToastUtils.showShort(MainActivity.this,"再次点击返回退出程序哟~");
+            exitTime = System.currentTimeMillis();
+        } else {
+            this.finish();
+        }
     }
 }

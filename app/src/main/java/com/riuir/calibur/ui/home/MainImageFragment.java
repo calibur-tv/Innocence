@@ -57,13 +57,13 @@ public class MainImageFragment extends BaseFragment {
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listImage;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainTrendingInfo.MainTrendingInfoList> baseListImage;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseListImage = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData mainImageInfoData;
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
-    boolean isFirstLoad = true;
+    boolean isFirstLoad = false;
 
     private ImageListAdapter adapter;
 
@@ -74,6 +74,9 @@ public class MainImageFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
+        isFirstLoad = true;
+        setListAdapter();
+        mainImageRefreshLayout.setRefreshing(true);
         setNet();
     }
 
@@ -134,8 +137,9 @@ public class MainImageFragment extends BaseFragment {
 
 
     private void setNet() {
+
         setSeendIdS();
-        apiGet.getCallTrendingActiveGet("image",seenIds,0).enqueue(new Callback<MainTrendingInfo>() {
+        apiGet.getFollowList("image","active",0,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -143,7 +147,8 @@ public class MainImageFragment extends BaseFragment {
                     mainImageInfoData = response.body().getData();
                     if (isFirstLoad){
                         baseListImage = response.body().getData().getList();
-                        setListAdapter();
+                        setFirstData();
+                        mainImageRefreshLayout.setRefreshing(false);
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -174,7 +179,9 @@ public class MainImageFragment extends BaseFragment {
                         mainImageRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
-
+                    if (isFirstLoad){
+                        mainImageRefreshLayout.setRefreshing(false);
+                    }
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -184,6 +191,9 @@ public class MainImageFragment extends BaseFragment {
                     if (isRefresh){
                         mainImageRefreshLayout.setRefreshing(false);
                         isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        mainImageRefreshLayout.setRefreshing(false);
                     }
                 }
             }
@@ -198,6 +208,9 @@ public class MainImageFragment extends BaseFragment {
                 if (isRefresh){
                     mainImageRefreshLayout.setRefreshing(false);
                     isRefresh = false;
+                }
+                if (isFirstLoad){
+                    mainImageRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -228,7 +241,11 @@ public class MainImageFragment extends BaseFragment {
 
         //添加监听
         setListener();
+    }
+
+    private void setFirstData(){
         isFirstLoad = false;
+        adapter.addData(baseListImage);
     }
 
     private void setLoadMore() {
@@ -249,6 +266,7 @@ public class MainImageFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listImage);
         mainImageRefreshLayout.setRefreshing(false);
+        ToastUtils.showShort(getContext(),"刷新成功！");
     }
 
 
