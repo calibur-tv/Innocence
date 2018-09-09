@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="50dp"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+        <ImageView
+            android:id="@+id/choose_all_bangumi_item_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/glide_place_holder_img"/>
+        <TextView
+            android:id="@+id/choose_all_bangumi_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/choose_all_bangumi_item_icon"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="番剧名字"
+            android:maxLines="1"
+            android:textColor="@color/color_FF5B5B5B"
+            android:textSize="14sp"
+            />
+    </RelativeLayout>
+   <View
+       android:layout_width="match_parent"
+       android:layout_height="0.5dp"
+       android:background="@color/color_FFF4F4F4"
+       android:layout_alignParentBottom="true"
+       />
+</RelativeLayout>

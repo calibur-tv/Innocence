@@ -1,5 +1,11 @@
 package com.riuir.calibur.utils;
 
+import com.riuir.calibur.data.MineUserInfo;
+import com.riuir.calibur.data.anime.BangumiAllList;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * ************************************
  * 预设静态变量存储类
@@ -16,6 +22,12 @@ public class Constants {
 
     public static String AUTH_TOKEN = "";
 
+    public static String QINIU_TOKEN = "";
+
     public static boolean ISLOGIN = false;
+
+    public static MineUserInfo.MinEUserInfoData userInfoData = null;
+
+    public static ArrayList<BangumiAllList.BangumiAllListData> bangumiAllListData = null;
 
 }

@@ -9,20 +9,25 @@ import android.widget.TextView;
 import com.geetest.sdk.Bind.GT3GeetestBindListener;
 import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
 import com.geetest.sdk.GT3GeetestButton;
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.DramaListResp;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.GeeTestInfo;
 import com.riuir.calibur.data.params.VerificationCodeBody;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
+import com.riuir.calibur.ui.splash.SplashActivity;
+import com.riuir.calibur.utils.Constants;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -116,6 +121,8 @@ public class RegisterActivity extends BaseActivity {
                     ToastUtils.showShort(RegisterActivity.this,"请完善您的信息哟(＾Ｕ＾)ノ~");
                 }else {
                     if (passWordStr.equals(passwordConfirmdStr)){
+                        registerBtn.setText("注册中");
+                        registerBtn.setClickable(false);
                         setNet(NET_REGISTER);
                     }else {
                         ToastUtils.showShort(RegisterActivity.this,"两次输入的密码不一样哟(＾Ｕ＾)ノ~");
@@ -147,8 +154,50 @@ public class RegisterActivity extends BaseActivity {
                 }else{
                     verificationCodebodyBody.setType("sign_up");
                     verificationCodebodyBody.setPhone_number(phoneNumber);
-                    setNet(NET_GEE_STATUS_captcha);
+                    sendVerificationCodeBtn.setClickable(false);
+                    sendVerificationCodeBtn.setText("发送中..");
+                    sendVerWithOutGee();
+//                    setNet(NET_GEE_STATUS_captcha);
                 }
+            }
+        });
+    }
+
+    private void sendVerWithOutGee(){
+        apiPostNoGeetest.getGeeTestSendValidateNoGee("sign_up",phoneNumber).enqueue(new Callback<Event<String>>() {
+            @Override
+            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
+                if (response!=null&&response.isSuccessful()){
+                    //发送成功
+                    ToastUtils.showShort(RegisterActivity.this,response.body().getData());
+                    reSetsendVerificationCodeBtnSecond = 60;
+                    handler.sendEmptyMessage(0);
+                }else if (!response.isSuccessful()){
+
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                    ToastUtils.showShort(RegisterActivity.this,info.getMessage());
+                    sendVerificationCodeBtn.setClickable(true);
+                    sendVerificationCodeBtn.setText("发送验证码");
+                }else {
+                    ToastUtils.showShort(RegisterActivity.this,"发送失败");
+                    sendVerificationCodeBtn.setClickable(true);
+                    sendVerificationCodeBtn.setText("发送验证码");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Event<String>> call, Throwable t) {
+                ToastUtils.showShort(RegisterActivity.this,"发送失败");
+                sendVerificationCodeBtn.setClickable(true);
+                sendVerificationCodeBtn.setText("发送验证码");
             }
         });
     }
@@ -242,30 +291,40 @@ public class RegisterActivity extends BaseActivity {
             apiPostNoAuth.getCallRegister(parmas).enqueue(new Callback<Event<String>>() {
                 @Override
                 public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                    if (response!=null&&response.body()!=null){
-                        if(response.body().getCode() == 0){
+                    if (response!=null&&response.isSuccessful()){
+
                             ToastUtils.showShort(RegisterActivity.this,"注册成功！✿✿ヽ(°▽°)ノ✿");
                             //注册成功 返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                            SharedPreferencesUtils.put(App.instance()," ",response.body().getData());
-                            startActivity(MainActivity.class);
-                            finish();
-                        }else if (response.body().getCode() == 400){
-                            ToastUtils.showShort(RegisterActivity.this,response.body().getData());
-                        }else if (response.body().getCode() == 401){
-                            ToastUtils.showShort(RegisterActivity.this,response.body().getMessage());
-                        }else if (response.body().getCode() == 403){
-                            ToastUtils.showShort(RegisterActivity.this,response.body().getMessage());
-                        }else {
-                            ToastUtils.showShort(RegisterActivity.this,"不明原因导致注册失败了QAQ");
+                            SharedPreferencesUtils.put(App.instance(),"Authorization",response.body().getData());
+                            Constants.ISLOGIN = true;
+                            Constants.AUTH_TOKEN = response.body().getData();
+                            BangumiAllListUtils.setBangumiAllList(RegisterActivity.this,apiGet);
+//                            startActivity(MainActivity.class);
+//                            finish();
+                    }else if (response!=null&&!response.isSuccessful()){
+                        String errorStr = "";
+                        try {
+                            errorStr = response.errorBody().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
+                        Gson gson = new Gson();
+                        Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                        ToastUtils.showShort(RegisterActivity.this,info.getMessage());
                     }else {
                         ToastUtils.showShort(RegisterActivity.this,"不明原因导致注册失败了QAQ");
                     }
+
+                    registerBtn.setText("注册并登陆");
+                    registerBtn.setClickable(true);
                 }
 
                 @Override
                 public void onFailure(Call<Event<String>> call, Throwable t) {
                     ToastUtils.showShort(RegisterActivity.this,"请检查您的网络哟~");
+                    registerBtn.setText("注册并登陆");
+                    registerBtn.setClickable(true);
                 }
             });
         }

@@ -33,6 +33,7 @@ import com.riuir.calibur.net.NetService;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaSearchActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
+import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.utils.ActivityUtils;
 
 import java.io.IOException;
@@ -61,11 +62,12 @@ import retrofit2.Response;
 
 public class DramaFragment extends BaseFragment {
 
-    @BindView(R.id.drama_search_edit_text)
-    TextView searchEdit;
-    @BindView(R.id.drama_search_btn)
-    ImageView searchBtn;
-
+//    @BindView(R.id.drama_search_edit_text)
+//    TextView searchEdit;
+//    @BindView(R.id.drama_search_btn)
+//    ImageView searchBtn;
+    @BindView(R.id.drama_search_layout)
+    SearchLayout searchLayout;
     @BindView(R.id.drama_pager_tab)
     MyPagerSlidingTabStrip dramaPagerTab;
     @BindView(R.id.drama_view_pager)
@@ -96,36 +98,26 @@ public class DramaFragment extends BaseFragment {
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         dm = getResources().getDisplayMetrics();
-        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
-        rootView.setPadding(0,stautsBarHeight,0,0);
+//        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
+//        rootView.setPadding(0,stautsBarHeight,0,0);
         setViewPager();
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
+        rootView.setPadding(0,stautsBarHeight,0,0);
     }
 
     private void setViewPager() {
         dramaViewPager.setAdapter(new DramaPagerAdapter(getChildFragmentManager()));
         dramaViewPager.setOffscreenPageLimit(5);
         dramaPagerTab.setViewPager(dramaViewPager);
-        setListener();
         setDramaTabs();
     }
 
-    private void setListener() {
-        searchEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent toSearchActivityIntent = new Intent(getContext(), DramaSearchActivity.class);
-
-                //版本大于5.0的时候带有动画
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    startActivity(toSearchActivityIntent, ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                            view, "ToSearchDramaActivity").toBundle());
-                }else {
-                    startActivity(toSearchActivityIntent);
-                }
-            }
-        });
-    }
 
     private void setDramaTabs() {
         // 设置Tab是自动填充满屏幕的

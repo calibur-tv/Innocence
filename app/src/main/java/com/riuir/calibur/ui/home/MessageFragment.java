@@ -25,6 +25,7 @@ import com.riuir.calibur.ui.home.adapter.UserMessageAdapter;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
+import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
 
@@ -66,6 +67,9 @@ public class MessageFragment extends BaseFragment {
     @BindView(R.id.main_user_message_refresh_layout)
     SwipeRefreshLayout messageRefreshLayout;
 
+    @BindView(R.id.message_search_layout)
+    SearchLayout searchLayout;
+
     UserMessageAdapter adapter;
 
     private final int MESSAGE_TYPE_POST_LIKE = 1,MESSAGE_TYPE_POST_REWARD = 2,MESSAGE_TYPE_POST_MARK = 3,
@@ -93,10 +97,17 @@ public class MessageFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         minId = 0;
         isFirstLoad = true;
-        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
-        rootView.setPadding(0,stautsBarHeight,0,0);
+//        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
+//        rootView.setPadding(0,stautsBarHeight,0,0);
         setNet();
         setAdapter();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
+        rootView.setPadding(0,stautsBarHeight,0,0);
     }
 
     private void setMinId() {

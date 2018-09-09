@@ -2,33 +2,35 @@ package com.riuir.calibur.ui.home;
 
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.google.gson.Gson;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
-import com.orhanobut.logger.Logger;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.ScreenUtils;
 import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.MineUserInfo;
 import com.riuir.calibur.data.RCode;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
+import com.riuir.calibur.ui.home.image.CreateNewImageActivity;
 import com.riuir.calibur.ui.widget.MainBottomBar;
-import com.riuir.calibur.utils.EventBusUtil;
+import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.assistUtils.ToastUtils;
 
+import java.io.IOException;
+
 import butterknife.BindView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * ************************************
@@ -43,6 +45,8 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     FrameLayout framelayoutMain;
     @BindView(R.id.maintab_bottombar)
     MainBottomBar maintabBottombar;
+
+
     private Fragment fragmentMain = MainFragment.newInstance();
     private Fragment fragmentDrama = DramaFragment.newInstance();
     private Fragment fragmentMessage = MessageFragment.newInstance();
@@ -52,6 +56,9 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     ImageView childIcon1;
     ImageView childIcon2;
     ImageView childIcon3;
+
+    public static final int CODE_TO_NEW_CARD = 99;
+    public static final int CODE_TO_NEW_IMAGE = 100;
 
     @Override
     protected int getContentViewId() {
@@ -82,14 +89,45 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         maintabBottombar.init();
         maintabBottombar.setOnSingleClickListener(this);
 
+        if (Constants.userInfoData == null){
+            setNetToGetUserInfo();
+        }
         //demo TODO
 //        Logger.d("oninit");
 //        handler.sendEmptyMessageDelayed(0, 200);
 //        EventBusUtil.sendEvent(new Event(RCode.EventCode.A));
-
-
         setFloatingActionBth();
     }
+
+
+    private void setNetToGetUserInfo() {
+        apiPost.getMineUserInfo().enqueue(new Callback<MineUserInfo>() {
+            @Override
+            public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
+                if (response!=null&&response.isSuccessful()){
+                    Constants.userInfoData = response.body().getData();
+                }else  if (!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+                    ToastUtils.showShort(MainActivity.this,info.getMessage());
+                }else {
+                    ToastUtils.showShort(MainActivity.this,"网络异常,请检查您的网络");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MineUserInfo> call, Throwable t) {
+                ToastUtils.showShort(MainActivity.this,"网络异常,请检查您的网络");
+            }
+        });
+    }
+
 
     //将addBtn 以actionBtn的方式在这里初始化
     private void setFloatingActionBth() {
@@ -137,9 +175,9 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         childIcon2 = new ImageView(this);
         childIcon3 = new ImageView(this);
 
-        childIcon1.setImageDrawable(getResources().getDrawable(R.mipmap.main_bottom_add_item_write));
-        childIcon2.setImageDrawable(getResources().getDrawable(R.mipmap.main_bottom_add_item_picture));
-        childIcon3.setImageDrawable(getResources().getDrawable(R.mipmap.main_bottom_add_item_message));
+        childIcon1.setImageDrawable(getResources().getDrawable(R.mipmap.ic_main_add_post));
+        childIcon2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_main_add_picture));
+        childIcon3.setImageDrawable(getResources().getDrawable(R.mipmap.ic_main_add_score));
 
         SubActionButton itemSub1 = subBuilder.setContentView(childIcon1, itemIconLayoutParams).build();
         SubActionButton itemSub2 = subBuilder.setContentView(childIcon2, itemIconLayoutParams).build();
@@ -158,21 +196,33 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         itemSub1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtils.showShort(MainActivity.this,"点击了1");
+
+                if (Constants.ISLOGIN){
+                    Intent intent = new Intent(MainActivity.this, CardCreateNewActivity.class);
+                    startActivityForResult(intent,CODE_TO_NEW_CARD);
+                }else {
+                    ToastUtils.showShort(MainActivity.this,"登录状态才能发帖哦");
+                }
+
                 actionMenu.close(true);
             }
         });
         itemSub2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtils.showShort(MainActivity.this,"点击了2");
+                if (Constants.ISLOGIN){
+                    Intent intent = new Intent(MainActivity.this, CreateNewImageActivity.class);
+                    startActivityForResult(intent,CODE_TO_NEW_IMAGE);
+                }else {
+                    ToastUtils.showShort(MainActivity.this,"登录状态才能发图哦");
+                }
                 actionMenu.close(true);
             }
         });
         itemSub3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtils.showShort(MainActivity.this,"点击了3");
+                ToastUtils.showShort(MainActivity.this,"开发中，敬请期待3");
                 actionMenu.close(true);
             }
         });
@@ -236,6 +286,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
     @Override
     public void onClickOne() {
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .hide(fragmentDrama)
@@ -243,10 +294,12 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .hide(fragmentMine)
                 .show(fragmentMain)
                 .commitAllowingStateLoss();
+
     }
 
     @Override
     public void onClickTwo() {
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .hide(fragmentMain)
@@ -254,10 +307,12 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .hide(fragmentMine)
                 .show(fragmentDrama)
                 .commitAllowingStateLoss();
+
     }
 
     @Override
     public void onClickThree() {
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .hide(fragmentDrama)
@@ -265,10 +320,12 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .hide(fragmentMine)
                 .show(fragmentMessage)
                 .commitAllowingStateLoss();
+
     }
 
     @Override
     public void onClickFour() {
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .hide(fragmentDrama)
@@ -276,6 +333,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .hide(fragmentMain)
                 .show(fragmentMine)
                 .commitAllowingStateLoss();
+
     }
 
     @Override

@@ -4,7 +4,7 @@
     android:layout_height="wrap_content">
     <ImageView
         android:id="@+id/reply_card_add_image_btn"
-        android:background="@color/color_FFEEEEEE"
+        android:background="@drawable/bg_edittext_normal"
         android:src="@mipmap/reply_card_add_image_icon"
         android:scaleType="center"
         android:layout_width="75dp"

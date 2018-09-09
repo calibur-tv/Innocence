@@ -338,7 +338,9 @@ public class RolesShowInfoActivity extends BaseActivity {
         bangumi.setImageView(RolesShowInfoActivity.this,primacyData.getBangumi().getAvatar());
 
         GlideUtils.loadImageView(RolesShowInfoActivity.this,primacyData.getData().getAvatar(),headerRoleIcon);
-        GlideUtils.loadImageViewCircle(RolesShowInfoActivity.this,primacyData.getData().getLover().getAvatar(),headerLoverIcon);
+        if (primacyData.getData().getLover()!=null&&primacyData.getData().getLover().getAvatar()!=null){
+            GlideUtils.loadImageViewCircle(RolesShowInfoActivity.this,primacyData.getData().getLover().getAvatar(),headerLoverIcon);
+        }
         headerRoleName.setText(primacyData.getData().getName());
         headerLoverName.setText(primacyData.getData().getLover().getNickname());
         headerRoleIntro.setText("简介："+primacyData.getData().getIntro());
@@ -369,7 +371,9 @@ public class RolesShowInfoActivity extends BaseActivity {
     private void setRefresh() {
         isRefresh = false;
         fansListAdapter.setNewData(fansList);
-        roleShowInfoRefreshLayout.setRefreshing(false);
+        if (roleShowInfoRefreshLayout!=null){
+            roleShowInfoRefreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(RolesShowInfoActivity.this,"刷新成功！");
     }
 

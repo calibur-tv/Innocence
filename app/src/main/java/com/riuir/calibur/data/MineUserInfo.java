@@ -1,5 +1,7 @@
 package com.riuir.calibur.data;
 
+import java.io.Serializable;
+
 public class MineUserInfo {
     private int code;
     private MinEUserInfoData data;
@@ -28,7 +30,7 @@ public class MineUserInfo {
                 '}';
     }
 
-    public class  MinEUserInfoData{
+    public class  MinEUserInfoData implements Serializable{
         private int id;
         private String zone;
         private String avatar;
@@ -197,7 +199,7 @@ public class MineUserInfo {
         }
     }
 
-    public class MinEUserInfoUpToken{
+    public class MinEUserInfoUpToken implements Serializable{
         private String upToken;
         private long expiredAt;
 

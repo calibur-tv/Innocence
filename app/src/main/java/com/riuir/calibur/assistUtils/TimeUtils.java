@@ -3,9 +3,11 @@ package com.riuir.calibur.assistUtils;
 
 import android.content.Context;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public  class TimeUtils {
 
@@ -111,4 +113,39 @@ public  class TimeUtils {
             }
         }
     }
+
+    public static long getCurTimeLong(){
+        long time=System.currentTimeMillis();
+        return time;
+    }
+    public static String getCurDate(String pattern){
+        SimpleDateFormat sDateFormat = new SimpleDateFormat(pattern);
+        return sDateFormat.format(new java.util.Date());
+    }
+
+    //时间戳转换成字符窜
+    //时间格式类型 pattern
+    public static String getTimestamp2Date(long milSecond, String pattern) {
+        Date date = new Date(milSecond);
+        SimpleDateFormat format = new SimpleDateFormat(pattern);
+        return format.format(date);
+    }
+    //字符窜转换成时间戳
+    //时间格式类型 pattern
+    // "yyyy-MM-dd HH:mm:ss"
+    // "yyyy-MM-dd"
+    //"yyyy年MM月dd日 HH时mm分ss秒"
+    //"yyyy年MM月dd日"
+    public static long getDate2Timestamp(String dateString, String pattern) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+        Date date = new Date();
+        try{
+            date = dateFormat.parse(dateString);
+        } catch(ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return date.getTime();
+    }
+
 }

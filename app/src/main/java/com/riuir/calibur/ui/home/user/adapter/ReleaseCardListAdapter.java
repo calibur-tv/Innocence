@@ -3,6 +3,7 @@ package com.riuir.calibur.ui.home.user.adapter;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -57,21 +58,41 @@ public class ReleaseCardListAdapter extends BaseQuickAdapter<MainTrendingInfo.Ma
             bigOne.setVisibility(View.GONE);
         } else if (item.getImages().size() == 1) {
             littleGroup.setVisibility(View.GONE);
+
+            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
+
+            params.height = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(0).getHeight()),
+                    Integer.parseInt(item.getImages().get(0).getWidth()),30,1);
+            bigOne.setLayoutParams(params);
+
             bigOne.setVisibility(View.VISIBLE);
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
+            GlideUtils.loadImageViewRoundedCorners(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne,15);
+
 
         } else {
             littleGroup.setVisibility(View.VISIBLE);
             bigOne.setVisibility(View.GONE);
             little1.setVisibility(View.VISIBLE);
             little2.setVisibility(View.VISIBLE);
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.THIRD_SCREEN), little1);
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(1).getUrl(),GlideUtils.THIRD_SCREEN), little2);
+            GlideUtils.loadImageViewRoundedCorners(context,
+                    GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),
+                            Integer.parseInt(item.getImages().get(0).getWidth())
+                            ,Integer.parseInt(item.getImages().get(0).getHeight()))
+                    , little1,10);
+            GlideUtils.loadImageViewRoundedCorners(context,
+                    GlideUtils.setImageUrl(context,item.getImages().get(1).getUrl(),
+                            Integer.parseInt(item.getImages().get(1).getWidth())
+                            ,Integer.parseInt(item.getImages().get(1).getHeight()))
+                    , little2,10);
             if (item.getImages().size() == 2) {
                 little3.setVisibility(View.INVISIBLE);
             } else {
                 little3.setVisibility(View.VISIBLE);
-                GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(2).getUrl(),GlideUtils.THIRD_SCREEN), little3);
+                GlideUtils.loadImageViewRoundedCorners(context,
+                        GlideUtils.setImageUrl(context,item.getImages().get(2).getUrl(),
+                                Integer.parseInt(item.getImages().get(2).getWidth())
+                                ,Integer.parseInt(item.getImages().get(2).getHeight()))
+                        , little3,10);
             }
 
 

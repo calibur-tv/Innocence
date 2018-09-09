@@ -25,7 +25,7 @@
             android:textColor="@color/color_FF333333"
             android:textSize="28sp"
             android:gravity="center"
-            android:text="8.5"
+            android:text="0.0"
             android:textStyle="bold"
             />
         <com.hedgehog.ratingbar.RatingBar
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/drama_score_list_header_score_all_score_text"
             android:layout_below="@id/drama_score_list_header_score_all_score_rating"
-            android:text="共4人评分"
+            android:text="共0人评分"
             android:textSize="12sp"
             android:textColor="@color/color_FF9B9B9B"
             />

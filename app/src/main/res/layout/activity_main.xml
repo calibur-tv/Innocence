@@ -8,13 +8,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/theme_magic_sakura_primary"
         android:orientation="vertical">
+
         <FrameLayout
             android:id="@+id/framelayout_main"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:background="@color/color_FFFFFFFF"/>
 
         <View
             android:layout_width="match_parent"

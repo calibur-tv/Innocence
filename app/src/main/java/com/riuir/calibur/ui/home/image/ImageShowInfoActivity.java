@@ -3,9 +3,11 @@ package com.riuir.calibur.ui.home.image;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +33,7 @@ import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
+import com.riuir.calibur.ui.widget.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
@@ -50,22 +53,30 @@ public class ImageShowInfoActivity extends BaseActivity {
     RecyclerView imageShowInfoListView;
     @BindView(R.id.image_show_info_back_btn)
     ImageView backBtn;
+    @BindView(R.id.image_show_info_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
+
+    @BindView(R.id.image_show_info_comment_view)
+    ReplyAndCommentView commentView;
 
     private ImageShowInfoPrimacy.ImageShowInfoPrimacyData primacyData;
     private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
     private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData baseCommentMainData;
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> baseCommentMainList;
+    private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> commentMainList;
     private ArrayList<String> previewImagesList;
 
     int fetchId = 0;
     boolean isLoadMore = false;
     boolean isFirstLoad = false;
+    boolean isRefresh = false;
 
     private CommentAdapter commentAdapter;
 
 
     LinearLayout headerLayout;
     LinearLayout headerImageLayout;
+    TextView noImgText;
     TextView headerCardTitle;
     ImageView headerUserIcon;
     TextView headerUserName;
@@ -93,7 +104,9 @@ public class ImageShowInfoActivity extends BaseActivity {
         Intent intent = getIntent();
         imageID = intent.getIntExtra("imageID",0);
         setBackBtn();
+        setAdapter();
         isFirstLoad = true;
+        refreshLayout.setRefreshing(true);
         setNet(NET_STATUS_MAIN_COMMENT);
     }
 
@@ -112,8 +125,16 @@ public class ImageShowInfoActivity extends BaseActivity {
                     if (response!=null&&response.isSuccessful()){
                         primacyData = response.body().getData();
                         //两次网络请求都完成后开始加载数据
-                        setAdapter();
-                        setPrimacyView();
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            refreshLayout.setRefreshing(false);
+                            setAdapter();
+                            setPrimacyView();
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+
                     }else if (response!=null&&response.isSuccessful()==false){
                         String errorStr = "";
                         try {
@@ -130,14 +151,35 @@ public class ImageShowInfoActivity extends BaseActivity {
                         }else if (info.getCode() == 40401){
                             ToastUtils.showShort(ImageShowInfoActivity.this,info.getMessage());
                         }
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                        }
+                        refreshLayout.setRefreshing(false);
                     }else {
                         ToastUtils.showShort(ImageShowInfoActivity.this,"未知错误出现了！");
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                        }
+                        refreshLayout.setRefreshing(false);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ImageShowInfoPrimacy> call, Throwable t) {
                     ToastUtils.showShort(ImageShowInfoActivity.this,"请检查您的网络！");
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                    }
+                    refreshLayout.setRefreshing(false);
                 }
             });
         }
@@ -148,8 +190,9 @@ public class ImageShowInfoActivity extends BaseActivity {
                 public void onResponse(Call<TrendingShowInfoCommentMain> call, Response<TrendingShowInfoCommentMain> response) {
                     if (response!=null&&response.body()!=null&&response.body().getCode()==0){
                         commentMainData = response.body().getData();
+                        commentMainList = response.body().getData().getList();
                         if (isFirstLoad){
-                            isFirstLoad = false;
+//                            isFirstLoad = false;
                             baseCommentMainData = response.body().getData();
                             baseCommentMainList = response.body().getData().getList();
                             //第一次网络请求结束后 开始第二次网络请求
@@ -157,6 +200,9 @@ public class ImageShowInfoActivity extends BaseActivity {
                         }
                         if (isLoadMore){
                             setLoadMore();
+                        }
+                        if (isRefresh){
+                            setNet(NET_STATUS_PRIMACY);
                         }
                     }else  if (response!=null&&response.isSuccessful()==false){
                         String errorStr = "";
@@ -176,11 +222,27 @@ public class ImageShowInfoActivity extends BaseActivity {
                             commentAdapter.loadMoreFail();
                             isLoadMore = false;
                         }
+                        if (isFirstLoad){
+                            refreshLayout.setRefreshing(false);
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            refreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
                     }else {
                         ToastUtils.showShort(ImageShowInfoActivity.this,"未知错误出现了！");
                         if (isLoadMore){
                             commentAdapter.loadMoreFail();
                             isLoadMore = false;
+                        }
+                        if (isFirstLoad){
+                            refreshLayout.setRefreshing(false);
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            refreshLayout.setRefreshing(false);
+                            isRefresh = false;
                         }
                     }
                 }
@@ -192,6 +254,14 @@ public class ImageShowInfoActivity extends BaseActivity {
                     if (isLoadMore){
                         commentAdapter.loadMoreFail();
                         isLoadMore = false;
+                    }
+                    if (isFirstLoad){
+                        refreshLayout.setRefreshing(false);
+                        isFirstLoad = false;
+                    }
+                    if (isRefresh){
+                        refreshLayout.setRefreshing(false);
+                        isRefresh = false;
                     }
                 }
             });
@@ -214,17 +284,27 @@ public class ImageShowInfoActivity extends BaseActivity {
          */
         commentAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
 
-        if (commentMainData.isNoMore()){
-            commentAdapter.setEnableLoadMore(false);
-        }else {
-            //添加底部footer
-            commentAdapter.setEnableLoadMore(true);
-            commentAdapter.setLoadMoreView(new MyLoadMoreView());
-            commentAdapter.disableLoadMoreIfNotFullPage(imageShowInfoListView);
-        }
+
+        //添加底部footer
+        commentAdapter.setEnableLoadMore(true);
+        commentAdapter.setLoadMoreView(new MyLoadMoreView());
+        commentAdapter.disableLoadMoreIfNotFullPage(imageShowInfoListView);
+
 
         imageShowInfoListView.setAdapter(commentAdapter);
+        setCommentView();
 
+    }
+
+    private void setCommentView() {
+        commentView.setStatus(ReplyAndCommentView.STATUS_MAIN_COMMENT);
+        commentView.setApiPost(apiPost);
+        commentView.setCommentAdapter(commentAdapter);
+        commentView.setFromUserName("");
+        commentView.setId(imageID);
+        commentView.setType(ReplyAndCommentView.TYPE_IMAGE);
+        commentView.setTargetUserId(0);
+        commentView.setNetAndListener();
     }
 
     private void setPrimacyView() {
@@ -236,6 +316,7 @@ public class ImageShowInfoActivity extends BaseActivity {
         headerTime = headerLayout.findViewById(R.id.image_show_info_list_header_time);
         headerCardMore = headerLayout.findViewById(R.id.image_show_info_list_header_card_more);
         headerImageLayout = headerLayout.findViewById(R.id.image_show_info_list_header_card_image_layout);
+        noImgText = headerLayout.findViewById(R.id.image_show_info_list_header_card_no_img_text);
 
         /**
          * 先设置trendingLFCView的各项属性，再设置开启监听和网络
@@ -275,42 +356,83 @@ public class ImageShowInfoActivity extends BaseActivity {
             }
         });
 
+        if (!primacyData.isIs_album()){
+            //显示单张 封面
+            ImageView primacyImageView = new ImageView(ImageShowInfoActivity.this);
+            int height = GlideUtils.getImageHeightDp(ImageShowInfoActivity.this,
+                    primacyData.getSource().getHeight(),primacyData.getSource().getWidth(),24,1);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    height);
+            params.setMargins(DensityUtils.dp2px(ImageShowInfoActivity.this,12),
+                    DensityUtils.dp2px(ImageShowInfoActivity.this,4),
+                    DensityUtils.dp2px(ImageShowInfoActivity.this,12),
+                    DensityUtils.dp2px(ImageShowInfoActivity.this,4));
+            primacyImageView.setLayoutParams(params);
+            primacyImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                primacyImageView.setTransitionName("ToPreviewImageActivity");
+            }
+            GlideUtils.loadImageView(ImageShowInfoActivity.this,
+                    GlideUtils.setImageUrl(ImageShowInfoActivity.this,primacyData.getSource().getUrl(),GlideUtils.FULL_SCREEN),
+                    primacyImageView);
 
-        if (primacyData.getImages()!=null&&primacyData.getImages().size()!=0){
+            primacyImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-            for (int i = 0; i < primacyData.getImages().size(); i++) {
-                ImageShowInfoPrimacy.ImageShowInfoPrimacyImages primacyImage = primacyData.getImages().get(i);
-                ImageView primacyImageView = new ImageView(ImageShowInfoActivity.this);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.setMargins(DensityUtils.dp2px(ImageShowInfoActivity.this,12),
-                        DensityUtils.dp2px(ImageShowInfoActivity.this,4),
-                        DensityUtils.dp2px(ImageShowInfoActivity.this,12),
-                        DensityUtils.dp2px(ImageShowInfoActivity.this,4));
-                primacyImageView.setLayoutParams(params);
-                primacyImageView.setScaleType(ImageView.ScaleType.FIT_START);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    primacyImageView.setTransitionName("ToPreviewImageActivity");
+                    String url = primacyData.getSource().getUrl();
+                    PerviewImageUtils.startPerviewImage(ImageShowInfoActivity.this,previewImagesList,url,view);
+                }
+            });
+
+            headerImageLayout.addView(primacyImageView);
+            noImgText.setVisibility(View.GONE);
+        }else {
+            //显示多张
+            if (primacyData.getImages()!=null&&primacyData.getImages().size()!=0){
+
+                for (int i = 0; i < primacyData.getImages().size(); i++) {
+                    ImageShowInfoPrimacy.ImageShowInfoPrimacyImages primacyImage = primacyData.getImages().get(i);
+                    ImageView primacyImageView = new ImageView(ImageShowInfoActivity.this);
+                    int height = GlideUtils.getImageHeightDp(ImageShowInfoActivity.this,
+                            primacyData.getImages().get(i).getHeight(),primacyData.getImages().get(i).getWidth(),24,1);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                            height);
+                    params.setMargins(DensityUtils.dp2px(ImageShowInfoActivity.this,12),
+                            DensityUtils.dp2px(ImageShowInfoActivity.this,4),
+                            DensityUtils.dp2px(ImageShowInfoActivity.this,12),
+                            DensityUtils.dp2px(ImageShowInfoActivity.this,4));
+                    primacyImageView.setLayoutParams(params);
+                    primacyImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        primacyImageView.setTransitionName("ToPreviewImageActivity");
+                    }
+
+                    GlideUtils.loadImageView(ImageShowInfoActivity.this,
+                            GlideUtils.setImageUrl(ImageShowInfoActivity.this,primacyData.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            primacyImageView);
+
+                    final int finalI = i;
+                    primacyImageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            String url = primacyData.getImages().get(finalI).getUrl();
+                            PerviewImageUtils.startPerviewImage(ImageShowInfoActivity.this,previewImagesList,url,view);
+                        }
+                    });
+
+                    headerImageLayout.addView(primacyImageView);
                 }
 
-                GlideUtils.loadImageView(ImageShowInfoActivity.this,
-                        GlideUtils.setImageUrl(ImageShowInfoActivity.this,primacyData.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
-                        primacyImageView);
-
-                final int finalI = i;
-                primacyImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        String url = primacyData.getImages().get(finalI).getUrl();
-                        PerviewImageUtils.startPerviewImage(ImageShowInfoActivity.this,previewImagesList,url,view);
-                    }
-                });
-
-                headerImageLayout.addView(primacyImageView);
-
+                noImgText.setVisibility(View.GONE);
+            }else {
+                noImgText.setVisibility(View.VISIBLE);
             }
         }
+
+
+
 
         commentAdapter.addHeaderView(headerLayout);
 
@@ -325,9 +447,15 @@ public class ImageShowInfoActivity extends BaseActivity {
         if (previewImagesList == null||previewImagesList.size() == 0){
             previewImagesList = new ArrayList<>();
         }
+        if (primacyData.getImages()!=null&&primacyData.getImages().size()!=0){
 
-        for (int i = 0; i <primacyData.getImages().size() ; i++) {
-            previewImagesList.add(primacyData.getImages().get(i).getUrl());
+            for (int i = 0; i <primacyData.getImages().size() ; i++) {
+                previewImagesList.add(primacyData.getImages().get(i).getUrl());
+            }
+        }
+        if (primacyData.getSource()!=null&&primacyData.getSource().getUrl()!=null&&
+            primacyData.getSource().getUrl().length()!=0){
+            previewImagesList.add(primacyData.getSource().getUrl());
         }
     }
 
@@ -341,6 +469,14 @@ public class ImageShowInfoActivity extends BaseActivity {
     }
 
     private void setListener() {
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isRefresh =true;
+                setNet(NET_STATUS_MAIN_COMMENT);
+            }
+        });
 
         headerUserIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -383,6 +519,15 @@ public class ImageShowInfoActivity extends BaseActivity {
                 }
             }
         }, imageShowInfoListView);
+    }
+
+    private void setRefresh(){
+        commentAdapter.removeAllHeaderView();
+        isRefresh = false;
+        refreshLayout.setRefreshing(false);
+        commentAdapter.setNewData(commentMainList);
+        setPrimacyView();
+        ToastUtils.showShort(ImageShowInfoActivity.this,"刷新成功！");
     }
 
     private void setLoadMore() {

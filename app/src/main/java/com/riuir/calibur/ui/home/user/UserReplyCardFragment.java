@@ -27,6 +27,7 @@ import com.riuir.calibur.ui.home.user.adapter.ReleaseCardListAdapter;
 import com.riuir.calibur.ui.home.user.adapter.ReplyCardListAdapter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,7 +51,7 @@ public class UserReplyCardFragment extends BaseFragment {
 
     private UserReplyCardInfo.UserReplayCardInfoData replayCardInfoData;
     private List<UserReplyCardInfo.UserReplayCardInfoList> listCard;
-    private List<UserReplyCardInfo.UserReplayCardInfoList> baseListCard;
+    private List<UserReplyCardInfo.UserReplayCardInfoList> baseListCard = new ArrayList<>();
 
     private ReplyCardListAdapter adapter;
 
@@ -71,7 +72,9 @@ public class UserReplyCardFragment extends BaseFragment {
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
+        setListAdapter();
         isFirstLoad = true;
+        cardRefreshLayout.setRefreshing(true);
         setNet();
     }
 
@@ -84,6 +87,8 @@ public class UserReplyCardFragment extends BaseFragment {
                     listCard = response.body().getData().getList();
                     replayCardInfoData = response.body().getData();
                     if (isFirstLoad){
+                        isFirstLoad = true;
+                        cardRefreshLayout.setRefreshing(false);
                         baseListCard = response.body().getData().getList();
                         setListAdapter();
                     }
@@ -112,6 +117,10 @@ public class UserReplyCardFragment extends BaseFragment {
                         cardRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    if (isFirstLoad){
+                        isFirstLoad = true;
+                        cardRefreshLayout.setRefreshing(false);
+                    }
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -121,6 +130,10 @@ public class UserReplyCardFragment extends BaseFragment {
                     if (isRefresh){
                         cardRefreshLayout.setRefreshing(false);
                         isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = true;
+                        cardRefreshLayout.setRefreshing(false);
                     }
                 }
             }
@@ -135,6 +148,10 @@ public class UserReplyCardFragment extends BaseFragment {
                 if (isRefresh){
                     cardRefreshLayout.setRefreshing(false);
                     isRefresh = false;
+                }
+                if (isFirstLoad){
+                    isFirstLoad = true;
+                    cardRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -167,7 +184,6 @@ public class UserReplyCardFragment extends BaseFragment {
 
         //添加监听
         setListener();
-        isFirstLoad = false;
     }
 
     private void setListener() {

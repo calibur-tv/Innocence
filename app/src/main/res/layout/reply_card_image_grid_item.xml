@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="85dp"
+    android:padding="5dp"
+    >
 
     <ImageView
+        android:id="@+id/reply_card_add_image_btn"
+        android:background="@drawable/bg_edittext_normal"
+        android:src="@mipmap/ic_add_create_new_image"
+        android:scaleType="center"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:visibility="gone"/>
+    <ImageView
         android:id="@+id/reply_card_image_grid_item_image"
-        android:background="@color/color_FFEEEEEE"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:scaleType="centerCrop"
+        android:visibility="visible"
         />
     <ImageView
         android:id="@+id/reply_card_image_grid_item_image_delete"
@@ -18,5 +28,6 @@
         android:layout_alignTop="@id/reply_card_image_grid_item_image"
         android:layout_alignRight="@id/reply_card_image_grid_item_image"
         android:src="@mipmap/reply_card_image_delete"
+        android:visibility="visible"
         />
 </RelativeLayout>

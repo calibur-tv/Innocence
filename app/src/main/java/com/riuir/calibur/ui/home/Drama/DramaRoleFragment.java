@@ -5,20 +5,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
 import com.riuir.calibur.ui.home.role.adapter.RoleListAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +42,11 @@ public class DramaRoleFragment extends BaseFragment {
 
     @BindView(R.id.drama_role_list_view)
     RecyclerView roleListView;
+    @BindView(R.id.drama_role_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     private List<MainTrendingInfo.MainTrendingInfoList> dataList;
-    private List<MainTrendingInfo.MainTrendingInfoList> baseDataList;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseDataList = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData roleInfoData;
 
@@ -58,9 +65,11 @@ public class DramaRoleFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
-        isFirstLoad = true;
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
+        setAdapter();
+        isFirstLoad = true;
+        refreshLayout.setRefreshing(true);
         setNet();
 
     }
@@ -78,23 +87,85 @@ public class DramaRoleFragment extends BaseFragment {
                     dataList = response.body().getData().getList();
                     roleInfoData = response.body().getData();
                     if (isFirstLoad){
+                        isFirstLoad = false;
+                        refreshLayout.setRefreshing(false);
                         baseDataList = response.body().getData().getList();
                         setAdapter();
                     }
                     if (isLoadMore){
                         setLoadMore();
                     }
+                    if (isRefresh){
+                        setRefresh();
+                    }
 
                     for (MainTrendingInfo.MainTrendingInfoList hotItem :dataList){
                         seenIdList.add(hotItem.getId());
+                    }
+                }else if (response!=null&&!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                    ToastUtils.showShort(getContext(),info.getMessage());
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    if (isLoadMore){
+                        isLoadMore = false;
+                        roleListAdapter.loadMoreFail();
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                }else {
+                    ToastUtils.showShort(getContext(),"未知原因导致加载失败");
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    if (isLoadMore){
+                        isLoadMore = false;
+                        roleListAdapter.loadMoreFail();
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                        refreshLayout.setRefreshing(false);
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
+                ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                if (isFirstLoad){
+                    isFirstLoad = false;
+                    refreshLayout.setRefreshing(false);
+                }
+                if (isLoadMore){
+                    isLoadMore = false;
+                    roleListAdapter.loadMoreFail();
+                }
+                if (isRefresh){
+                    isRefresh = false;
+                    refreshLayout.setRefreshing(false);
+                }
             }
         });
+    }
+
+    private void setRefresh() {
+        isRefresh = false;
+        refreshLayout.setRefreshing(false);
+        roleListAdapter.setNewData(dataList);
+        ToastUtils.showShort(getContext(),"刷新成功");
     }
 
     private void setLoadMore() {
@@ -127,6 +198,14 @@ public class DramaRoleFragment extends BaseFragment {
             }
         }
 
+        if (isFirstLoad){
+            seenIdList.clear();
+            seenIds = "";
+        }
+        if (isRefresh){
+            seenIdList.clear();
+            seenIds = "";
+        }
         LogUtils.d("image_1","seenIds = "+seenIds );
     }
 
@@ -162,7 +241,7 @@ public class DramaRoleFragment extends BaseFragment {
 
         //添加监听
         setListener();
-        isFirstLoad = false;
+
 
     }
 
@@ -184,6 +263,13 @@ public class DramaRoleFragment extends BaseFragment {
                 setNet();
             }
         }, roleListView);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isRefresh = true;
+                setNet();
+            }
+        });
     }
 
 }

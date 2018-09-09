@@ -56,7 +56,7 @@ public class UserMainActivity extends BaseActivity {
     //viewpager Tab标题
     private List<String> titles = new ArrayList<>();
 
-    private UserFollowedBanguiFragment userFollowedBanguiFragment;
+    private UserFollowedBangumiFragment userFollowedBangumiFragment;
     private UserFollowedRoleFragment userFollowedRoleFragment;
     private UserFollowedImageFragment userFollowedImageFragment;
     private UserCardFragment userCardFragment;
@@ -203,10 +203,10 @@ public class UserMainActivity extends BaseActivity {
         public Fragment getItem(int position) {
             switch (titles.get(position)) {
                 case "番剧":
-                    if (userFollowedBanguiFragment == null) {
-                        userFollowedBanguiFragment = new UserFollowedBanguiFragment();
+                    if (userFollowedBangumiFragment == null) {
+                        userFollowedBangumiFragment = new UserFollowedBangumiFragment();
                     }
-                    return userFollowedBanguiFragment;
+                    return userFollowedBangumiFragment;
                 case "帖子":
                     if (userCardFragment == null) {
                         userCardFragment = new UserCardFragment();

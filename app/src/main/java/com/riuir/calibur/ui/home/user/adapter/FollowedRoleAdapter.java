@@ -41,7 +41,7 @@ public class FollowedRoleAdapter extends BaseQuickAdapter<MainTrendingInfo.MainT
         }
         helper.setText(R.id.user_followed_role_list_item_role_knight,"守护者："+loverName);
 //        helper.setText(R.id.drama_role_list_item_role_intro,item.getIntro());
-        helper.setText(R.id.user_followed_role_list_item_role_name,item.getBangumi().getName());
+        helper.setText(R.id.user_followed_role_list_item_role_anime_name,item.getBangumi().getName());
         helper.setText(R.id.user_followed_role_list_item_number,"贡献："+item.getHas_star());
 
 

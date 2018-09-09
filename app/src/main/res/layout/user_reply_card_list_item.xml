@@ -23,6 +23,7 @@
         android:layout_below="@id/user_reply_list_item_card_name"
         android:layout_marginTop="6dp"
         android:text="帖子内容"
+        android:padding="6dp"
         android:layout_marginLeft="10dp"
         android:textSize="14sp"
         android:maxLines="5"
@@ -35,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/user_reply_list_item_card_desc"
         android:orientation="vertical"
+        android:padding="6dp"
         android:layout_marginLeft="10dp"
         android:background="@color/color_FFD9E3ED"
         >
@@ -58,8 +60,7 @@
             <ImageView
                 android:id="@+id/user_reply_list_item_card_little_image_1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:minHeight="105dp"
+                android:layout_height="100dp"
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:visibility="invisible"
@@ -68,8 +69,7 @@
             <ImageView
                 android:id="@+id/user_reply_list_item_card_little_image_2"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:minHeight="105dp"
+                android:layout_height="100dp"
                 android:layout_weight="1"
                 android:layout_marginLeft="15dp"
                 android:scaleType="centerCrop"
@@ -79,8 +79,7 @@
             <ImageView
                 android:id="@+id/user_reply_list_item_card_little_image_3"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:minHeight="105dp"
+                android:layout_height="100dp"
                 android:layout_weight="1"
                 android:layout_marginLeft="15dp"
                 android:scaleType="centerCrop"

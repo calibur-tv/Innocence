@@ -18,6 +18,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ScreenUtils;
@@ -44,29 +45,70 @@ public class GlideUtils {
 
     //默认加载
     public static void loadImageView(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).into(mImageView);
+//        Glide.with(mContext).load(path).into(mImageView);
+        GlideApp.with(mContext).load(path).placeholder(R.mipmap.glide_place_holder_img).into(mImageView);
     }
 
-    //默认加载
+    //文件默认加载
     public static void loadImageViewFromFile(Context mContext, File file, ImageView mImageView) {
         Glide.with(mContext).load(file).into(mImageView);
     }
 
+
     //模糊加载
     public static void loadImageViewBlur(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).apply(bitmapTransform(new BlurTransformation(15))).into(mImageView);
+//        Glide.with(mContext).load(path).apply(bitmapTransform(new BlurTransformation(15))).into(mImageView);
+        //需要预加载图的话 将下行进行拼接
+        // .placeholder(R.mipmap.glide_place_holder_img)
+        GlideApp.with(mContext).load(path)
+                .apply(bitmapTransform(new BlurTransformation(10))).into(mImageView);
+    }
+    //文件模糊加载
+    public static void loadImageViewFromFileBlur(Context mContext, File file, ImageView mImageView) {
+//        Glide.with(mContext).load(file).into(mImageView);
+        GlideApp.with(mContext).load(file)
+                .apply(bitmapTransform(new BlurTransformation(10))).into(mImageView);
     }
 
     //圆形加载
     public static void loadImageViewCircle(Context mContext, String path, ImageView mImageView) {
-        Glide.with(mContext).load(path).apply(bitmapTransform(new CircleCrop())).into(mImageView);
+//        Glide.with(mContext).load(path).apply(bitmapTransform(new CircleCrop())).into(mImageView);
+        GlideApp.with(mContext).load(path).apply(bitmapTransform(new CircleCrop())).placeholder(R.mipmap.glide_place_holder_img).into(mImageView);
+    }
+    //文件圆形加载
+    public static void loadImageViewFromFileCircle(Context mContext, File file, ImageView mImageView) {
+//        Glide.with(mContext).load(file).into(mImageView);
+        GlideApp.with(mContext).load(file).apply(bitmapTransform(new CircleCrop())).into(mImageView);
     }
 
     //圆角加载
     public static void loadImageViewRoundedCorners(Context mContext, String path, ImageView mImageView,int rounds) {
-        Glide.with(mContext).load(path).apply(bitmapTransform(new RoundedCornersTransformation(DensityUtils.dp2px(mContext,rounds), 0, RoundedCornersTransformation.CornerType.ALL)))
+//        Glide.with(mContext).load(path)
+//                .apply(bitmapTransform(new RoundedCornersTransformation(DensityUtils.dp2px(mContext,rounds)
+//                        , 0, RoundedCornersTransformation.CornerType.ALL)))
+//                .into(mImageView);
+        GlideApp.with(mContext).load(path)
+                .placeholder(R.mipmap.glide_place_holder_img)
+                .apply(bitmapTransform(new RoundedCornersTransformation(DensityUtils.dp2px(mContext,rounds)
+                        , 0, RoundedCornersTransformation.CornerType.ALL)))
                 .into(mImageView);
+
     }
+
+    //圆角加载
+    public static void loadImageViewRoundedCornersForBangumi(Context mContext, String path, ImageView mImageView,int rounds) {
+//        Glide.with(mContext).load(path)
+//                .apply(bitmapTransform(new RoundedCornersTransformation(DensityUtils.dp2px(mContext,rounds)
+//                        , 0, RoundedCornersTransformation.CornerType.ALL)))
+//                .into(mImageView);
+        GlideApp.with(mContext).load(path)
+                .placeholder(R.mipmap.glide_place_holder_img)
+                .apply(bitmapTransform(new RoundedCornersTransformation(DensityUtils.dp2px(mContext,rounds)
+                        , 0, RoundedCornersTransformation.CornerType.LEFT)))
+                .into(mImageView);
+
+    }
+
     //圆角 centerCrop加载
     public static void loadImageViewCenterCropRoundedCorners(Context mContext, String path, ImageView mImageView,int rounds){
         RequestOptions myOptions = new RequestOptions()
@@ -79,7 +121,8 @@ public class GlideUtils {
 
     //preview加载
     public static void loadImageViewpreview(Context mContext, String path, final PhotoView photoView) {
-        GlideApp.with(mContext).load(path).into(new SimpleTarget() {
+        GlideApp.with(mContext).load(path).placeholder(R.mipmap.glide_place_holder_img)
+                .into(new SimpleTarget() {
 
             @Override
             public void onResourceReady(@NonNull Object resource, @Nullable Transition transition) {
@@ -256,6 +299,45 @@ public class GlideUtils {
 
         return imageUrl;
     }
+    //设置图片url地址 并且添加七牛云的图片处理
+    //只用作帖子列表页 处理图片过长问题
+    public static String setImageCropHeightUrl(Context context,String url,int width,int height){
+        int screenWidth = ScreenUtils.getScreenWidth(context);
+
+        if (url.contains(Constants.API_IMAGE_BASE_URL)){
+        }else {
+            url = Constants.API_IMAGE_BASE_URL+url;
+        }
+
+        String imageUrl = "";
+        if (height>(width)){
+            height = width/3*2;
+        }
+
+
+        imageUrl = url+"?imageMogr2/gravity/Center/crop/"+width+"x"+height
+                +"/thumbnail/"+(screenWidth*2)+"x";
+
+        LogUtils.d("activetrendingTTT","image url finish = "+imageUrl);
+
+
+        return imageUrl;
+    }
+    //处理相册封面图片大小  压缩
+    public static String setImageUrlForAlbum(Context context,String url,int ImageWidth){
+        int screenWidth = ScreenUtils.getScreenWidth(context);
+
+        if (url.contains(Constants.API_IMAGE_BASE_URL)){
+        }else {
+            url = Constants.API_IMAGE_BASE_URL+url;
+        }
+
+        String imageUrl = "";
+
+        imageUrl = url+"?imageMogr2/thumbnail/"+ImageWidth*2+"x";
+
+        return imageUrl;
+    }
 
     public static int getImageHeightDp(Context context,int pictureHeight,int pictureWidth,float padding,int pictureNumber){
         double screenWidth = DensityUtils.px2dp(context, ScreenUtils.getScreenWidth(context));
@@ -268,6 +350,26 @@ public class GlideUtils {
                 ",heigth = "+h+" , width = "+w);
 
         double height = (screenWidth/pictureNumber-padding)*m;
+
+        return DensityUtils.dp2px(context, (float) height);
+    }
+
+    //只用于帖子列表页 防止图片过高 所占面积过大
+    public static int getPostListImageHeightDp(Context context,int pictureHeight,int pictureWidth,float padding,int pictureNumber){
+        double screenWidth = DensityUtils.px2dp(context, ScreenUtils.getScreenWidth(context));
+
+        double h = pictureHeight;
+        double w = pictureWidth;
+        double m = h/w;
+
+        LogUtils.d("image_1","screenWidth = "+screenWidth+",m = "+m+
+                ",heigth = "+h+" , width = "+w);
+        double height;
+        if (h>w){
+            height = (screenWidth/pictureNumber-padding)/3*2;
+        }else {
+            height = (screenWidth/pictureNumber-padding)*m;
+        }
 
         return DensityUtils.dp2px(context, (float) height);
     }

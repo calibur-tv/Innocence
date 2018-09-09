@@ -35,6 +35,7 @@ public class AnimeListForTagsSearch {
     public class  AnimeListForTagsSearchList{
         private int total;
         private List<AnimeListForTagsSearchData> list;
+        private boolean noMore;
 
         public int getTotal() {
             return total;
@@ -52,11 +53,20 @@ public class AnimeListForTagsSearch {
             this.list = list;
         }
 
+        public boolean isNoMore() {
+            return noMore;
+        }
+
+        public void setNoMore(boolean noMore) {
+            this.noMore = noMore;
+        }
+
         @Override
         public String toString() {
             return "AnimeListForTagsSearchList{" +
                     "total=" + total +
                     ", list=" + list +
+                    ", noMore=" + noMore +
                     '}';
         }
     }

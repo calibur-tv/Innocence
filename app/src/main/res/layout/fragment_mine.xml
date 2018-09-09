@@ -1,199 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/theme_magic_sakura_primary"
-    >
+    android:background="@color/theme_magic_sakura_primary">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/color_FFFFFFFF"
+        android:background="@color/color_FFF4F4F4"
         >
         <RelativeLayout
             android:id="@+id/mine_fragment_mine_layout"
             android:layout_width="match_parent"
             android:background="@color/theme_magic_sakura_primary"
-            android:layout_height="120dp">
+            android:layout_height="125dp">
             <ImageView
+                android:id="@+id/mine_fragment_mine_banner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                />
+            <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/mine_fragment_mine_icon"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
+                android:src="@mipmap/glide_place_holder_img"
                 android:scaleType="centerCrop"
+                app:riv_border_width="2dp"
+                app:riv_border_color="@color/color_FFFFFFFF"
+                app:riv_oval="true"
                 />
             <TextView
                 android:id="@+id/mine_fragment_mine_name"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_height="wrap_content"
                 android:layout_alignTop="@id/mine_fragment_mine_icon"
                 android:layout_toRightOf="@id/mine_fragment_mine_icon"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="9dp"
                 android:gravity="center"
                 android:text="我的昵称"
-                android:textSize="16sp"
+                android:textSize="18sp"
+                android:textColor="@color/color_FFFFFFFF"
+                />
+            <TextView
+                android:id="@+id/mine_fragment_day_sign_in_btn"
+                android:layout_width="63dp"
+                android:layout_height="28dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:gravity="center"
+                android:text="签到"
+                android:background="@drawable/bg_follow_anime_btn"
+                android:textSize="15sp"
                 android:textColor="@color/color_FFFFFFFF"
                 />
             <TextView
                 android:id="@+id/mine_fragment_coin_number"
                 android:layout_width="wrap_content"
-                android:layout_height="25dp"
+                android:layout_height="wrap_content"
                 android:layout_alignLeft="@id/mine_fragment_mine_name"
-                android:layout_alignBottom="@id/mine_fragment_mine_icon"
+                android:layout_below="@id/mine_fragment_mine_name"
                 android:gravity="center"
-                android:text="金币：888"
-                android:textSize="14sp"
-                android:textColor="@color/color_FFFFFFFF"
-                />
-            <TextView
-                android:id="@+id/mine_fragment_day_sign_in_btn"
-                android:layout_width="70dp"
-                android:layout_height="25dp"
-                android:layout_toRightOf="@id/mine_fragment_coin_number"
-                android:layout_alignBottom="@id/mine_fragment_mine_icon"
-                android:layout_marginLeft="10dp"
-                android:gravity="center"
-                android:text="点击签到"
-                android:background="@drawable/bg_follow_anime_btn"
+                android:text="金币：0"
                 android:textSize="13sp"
                 android:textColor="@color/color_FFFFFFFF"
+                android:layout_marginTop="3dp"
                 />
+
             <TextView
-                android:id="@+id/mine_fragment_mine_more_btn"
+                android:id="@+id/mine_fragment_id_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/mine_fragment_coin_number"
+                android:layout_below="@id/mine_fragment_mine_name"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:text="邀请码：0"
+                android:textSize="13sp"
+                android:textColor="@color/color_FFFFFFFF"
+                android:layout_marginTop="3dp"
+                />
+
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/mine_fragment_tips_layout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginLeft="13dp"
+            android:layout_marginRight="13dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/bg_mine_tips"
+            >
+            <ImageView
+                android:id="@+id/mine_fragment_tips_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_mine_tips_coin"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="13dp"
+                />
+            <TextView
+                android:id="@+id/mine_fragment_tips_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="每日签到赚金币，1 金币 = 1 人民币，满 100 提现"
+                android:textColor="@color/theme_magic_sakura_primary"
+                android:layout_toRightOf="@id/mine_fragment_tips_icon"
+                android:layout_marginLeft="13dp"
+                android:layout_marginRight="44dp"
+                />
+            <TextView
+                android:id="@+id/mine_fragment_tips_close"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
-                android:text="〉"
+                android:text="×"
                 android:textSize="20sp"
-                android:textColor="@color/color_FFFFFFFF"
+                android:gravity="center"
+                android:textColor="@color/color_FFE0E0E0"
                 />
         </RelativeLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="每日签到赚金币，1 金币 = 1 人民币，满 100 可以提现哦(＾Ｕ＾)ノ~"
-            android:textColor="@color/color_FF9B9B9B"
-            />
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/color_FFDDDDDD"
+            android:background="@color/color_FFE2E2E2"
+            android:layout_marginTop="15dp"
             />
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/color_FFFFFFFF"
             >
             <RelativeLayout
                 android:id="@+id/mine_fragment_mine_home_layout"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginLeft="19dp"
                 >
                 <ImageView
                     android:id="@+id/mine_fragment_mine_home_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:src="@mipmap/mine_home_icon"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/ic_mine_homepage"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/mine_fragment_mine_home_icon"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/mine_fragment_mine_home_icon"
+                    android:layout_marginLeft="16dp"
                     android:text="我的主页"
-                    android:textSize="12sp"
-                    android:textColor="@color/color_FF9B9B9B"
+                    android:textSize="15sp"
+                    android:textColor="@color/color_FF333333"
                     />
+
             </RelativeLayout>
             <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/color_FFDDDDDD" />
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/color_FFE2E2E2"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="15dp"
+                />
             <RelativeLayout
-                android:id="@+id/mine_fragment_mine_collection_layout"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:id="@+id/mine_fragment_mine_draft_layout"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
                 android:layout_weight="1"
-                >
-                <ImageView
-                    android:id="@+id/mine_fragment_mine_collection_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:src="@mipmap/mine_collection_icon"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/mine_fragment_mine_collection_icon"
-                    android:text="我的番剧"
-                    android:textSize="12sp"
-                    android:textColor="@color/color_FF9B9B9B"
-                    />
-            </RelativeLayout>
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/color_FFDDDDDD" />
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/mine_fragment_mine_cardlayout"
-                >
-                <ImageView
-                    android:id="@+id/mine_fragment_mine_card_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:src="@mipmap/mine_card_icon"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/mine_fragment_mine_card_icon"
-                    android:text="我的帖子"
-                    android:textSize="12sp"
-                    android:textColor="@color/color_FF9B9B9B"
-                    />
-            </RelativeLayout>
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/color_FFDDDDDD" />
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_marginLeft="19dp"
                 >
                 <ImageView
                     android:id="@+id/mine_fragment_mine_draft_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:src="@mipmap/mine_draft_icon"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/ic_mine_draft"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/mine_fragment_mine_draft_icon"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/mine_fragment_mine_draft_icon"
+                    android:layout_marginLeft="16dp"
                     android:text="我的草稿"
-                    android:textSize="12sp"
-                    android:textColor="@color/color_FF9B9B9B"
+                    android:textSize="15sp"
+                    android:textColor="@color/color_FF333333"
                     />
             </RelativeLayout>
 
@@ -201,19 +204,32 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/color_FFDDDDDD"
+            android:background="@color/color_FFE2E2E2"
             />
-        <Button
+        <TextView
             android:id="@+id/mine_fragment_mine_user_log_off"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="24dp"
             android:layout_marginRight="14dp"
             android:layout_marginLeft="14dp"
+            android:layout_gravity="center_horizontal"
             android:text="注销登录"
+            android:textSize="12sp"
+            android:textColor="@color/color_FFC7C7C7"
+            />
+        <Button
+            android:id="@+id/mine_fragment_mine_user_reset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="14dp"
+            android:layout_marginLeft="14dp"
+            android:layout_marginTop="10dp"
+            android:text="加载失败，点击重新加载"
             android:textSize="16sp"
             android:textColor="@color/color_FFFFFFFF"
             android:background="@drawable/bg_login_button_normal"
+            android:visibility="gone"
             />
     </LinearLayout>
 

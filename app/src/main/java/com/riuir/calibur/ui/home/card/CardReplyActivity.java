@@ -54,7 +54,7 @@ public class CardReplyActivity extends BaseActivity  {
     ArrayList<String> imagesUrl;
 
     //调用系统相册-选择图片
-    public static final int IMAGE = 1;
+
 
     @Override
     protected int getContentViewId() {
@@ -107,7 +107,8 @@ public class CardReplyActivity extends BaseActivity  {
             public void onClick(View view) {
                 //相册
                 Intent intent = new Intent(CardReplyActivity.this, SelectorImagesActivity.class);
-                startActivityForResult(intent, IMAGE);
+                intent.putExtra("code",SelectorImagesActivity.POST_CODE);
+                startActivityForResult(intent, SelectorImagesActivity.POST_CODE);
             }
         });
         imageGridAdapter.setFooterView(view);
@@ -124,8 +125,8 @@ public class CardReplyActivity extends BaseActivity  {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //获取图片路径
-        if ( resultCode == IMAGE && data != null) {
-            imagesUrl = data.getStringArrayListExtra("selectionImageUrls");
+        if ( resultCode == SelectorImagesActivity.POST_CODE && data != null) {
+            imagesUrl = data.getStringArrayListExtra(SelectorImagesActivity.RESULT_LIST_NAME);
             if (imageGridAdapter.getData().size()+imagesUrl.size()>9){
                 ToastUtils.showShort(CardReplyActivity.this,"所选图片超出9张，自动保存本次所选");
                 imageGridAdapter.setNewData(imagesUrl);

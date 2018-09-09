@@ -5,13 +5,16 @@ import com.riuir.calibur.data.AnimeListForTagsSearch;
 import com.riuir.calibur.data.AnimeListForTimeLine;
 import com.riuir.calibur.data.AnimeNewListForWeek;
 import com.riuir.calibur.data.AnimeShowInfo;
+import com.riuir.calibur.data.album.ChooseImageAlbum;
 import com.riuir.calibur.data.anime.AnimeScoreInfo;
 import com.riuir.calibur.data.anime.AnimeShowVideosInfo;
 import com.riuir.calibur.data.GeeTestInfo;
 import com.riuir.calibur.data.MainCardInfo;
 import com.riuir.calibur.data.MainTrendingInfo;
 import com.riuir.calibur.data.anime.AnimeVideosActivityInfo;
+import com.riuir.calibur.data.anime.BangumiAllList;
 import com.riuir.calibur.data.anime.SearchAnimeInfo;
+import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.data.role.RoleFansListInfo;
 import com.riuir.calibur.data.role.RoleShowInfo;
 import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
@@ -37,6 +40,10 @@ public interface ApiGet {
     //搜索接口
     @GET("search/new")
     Call<SearchAnimeInfo> getCallSearch(@Query("q")String q,@Query("type")String type,@Query("page")int page);
+
+    //获取所有番剧列表
+    @GET("search/bangumis")
+    Call<BangumiAllList> getBangumiAllList();
     //获取最新帖子
     @GET("post/trending/news")
     Call<MainCardInfo> getCallMainCardNewGet(@Query("minId")int minId);
@@ -156,7 +163,16 @@ public interface ApiGet {
     @GET("user/{zone}/posts/reply")
     Call<UserReplyCardInfo> getCallUserReplyCard(@Path("zone") String zone, @Query("page")int page);
 
-    @GET("/user/notification/list")
+    //消息列表
+    @GET("user/notification/list")
     Call<UserNotificationInfo> getCallUserNotification(@Query("minId")int minId);
+
+    //获取七牛token
+    @GET("image/uptoken")
+    Call<QiniuUpToken> getCallQiniuUpToken();
+
+    //获取用户相册列表
+    @GET("image/album/users")
+    Call<ChooseImageAlbum> getUserAlbumList();
 
 }

@@ -44,7 +44,7 @@ public class DramaCardFragment extends BaseFragment {
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listActive;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainTrendingInfo.MainTrendingInfoList> baseListActive;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseListActive = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData mainTrendingInfoData;
 
@@ -68,7 +68,9 @@ public class DramaCardFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
+        setListAdapter();
         isFirstLoad = true;
+        cardRefreshLayout.setRefreshing(true);
         setNet();
     }
 
@@ -83,6 +85,8 @@ public class DramaCardFragment extends BaseFragment {
                     listActive = response.body().getData().getList();
                     mainTrendingInfoData = response.body().getData();
                     if (isFirstLoad){
+                        isFirstLoad = false;
+                        cardRefreshLayout.setRefreshing(false);
                         baseListActive = response.body().getData().getList();
                         setListAdapter();
                     }
@@ -96,7 +100,7 @@ public class DramaCardFragment extends BaseFragment {
                     for (MainTrendingInfo.MainTrendingInfoList hotItem :listActive){
                         seenIdList.add(hotItem.getId());
                     }
-                }else if (!response.isSuccessful()){
+                }else if (response!=null&&!response.isSuccessful()){
                     String errorStr = "";
                     try {
                         errorStr = response.errorBody().string();
@@ -115,6 +119,10 @@ public class DramaCardFragment extends BaseFragment {
                         cardRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        cardRefreshLayout.setRefreshing(false);
+                    }
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -124,6 +132,10 @@ public class DramaCardFragment extends BaseFragment {
                     if (isRefresh){
                         cardRefreshLayout.setRefreshing(false);
                         isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        cardRefreshLayout.setRefreshing(false);
                     }
                 }
 
@@ -141,6 +153,10 @@ public class DramaCardFragment extends BaseFragment {
                     cardRefreshLayout.setRefreshing(false);
                     isRefresh = false;
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                }
+                if (isFirstLoad){
+                    isFirstLoad = false;
+                    cardRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -194,6 +210,9 @@ public class DramaCardFragment extends BaseFragment {
 
 
         adapter = new DramaCardListAdapter(R.layout.main_card_list_item,baseListActive,getContext());
+        if (cardListView == null){
+            cardListView = rootView.findViewById(R.id.drama_fragment_card_active_list_view);
+        }
         cardListView.setLayoutManager(new LinearLayoutManager(App.instance()));
         adapter.setHasStableIds(true);
         /**
@@ -217,7 +236,7 @@ public class DramaCardFragment extends BaseFragment {
 
         //添加监听
         setListener();
-        isFirstLoad = false;
+
     }
 
     private void setListener() {

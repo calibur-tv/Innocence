@@ -29,6 +29,7 @@ import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
 import com.riuir.calibur.ui.home.user.adapter.FollowedRoleAdapter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -56,7 +57,7 @@ public class UserFollowedRoleFragment extends BaseFragment {
 
     private MainTrendingInfo.MainTrendingInfoData roleInfoData;
     private List<MainTrendingInfo.MainTrendingInfoList> roleInfoList;
-    private List<MainTrendingInfo.MainTrendingInfoList> baseRoleInfoList;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseRoleInfoList = new ArrayList<>();
 
     private FollowedRoleAdapter followedRoleAdapter;
 
@@ -70,10 +71,12 @@ public class UserFollowedRoleFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
-        isFirstLoad = true;
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
+        setAdapter();
+        isFirstLoad = true;
+        roleRefreshLayout.setRefreshing(true);
         setNet();
     }
 
@@ -87,6 +90,8 @@ public class UserFollowedRoleFragment extends BaseFragment {
                     roleInfoList = response.body().getData().getList();
 
                     if (isFirstLoad){
+                        isFirstLoad = false;
+                        roleRefreshLayout.setRefreshing(false);
                         baseRoleInfoList = response.body().getData().getList();
                         setAdapter();
                     }
@@ -117,6 +122,10 @@ public class UserFollowedRoleFragment extends BaseFragment {
                         roleRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        roleRefreshLayout.setRefreshing(false);
+                    }
 
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
@@ -127,6 +136,10 @@ public class UserFollowedRoleFragment extends BaseFragment {
                     if (isRefresh){
                         roleRefreshLayout.setRefreshing(false);
                         isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        roleRefreshLayout.setRefreshing(false);
                     }
                 }
             }
@@ -141,6 +154,10 @@ public class UserFollowedRoleFragment extends BaseFragment {
                 if (isRefresh){
                     roleRefreshLayout.setRefreshing(false);
                     isRefresh = false;
+                }
+                if (isFirstLoad){
+                    isFirstLoad = false;
+                    roleRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -180,7 +197,6 @@ public class UserFollowedRoleFragment extends BaseFragment {
 
         //添加监听
         setListener();
-        isFirstLoad = false;
     }
 
     private void setListener() {

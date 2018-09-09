@@ -28,6 +28,7 @@ import com.riuir.calibur.utils.GlideUtils;
 import com.riuir.calibur.ui.home.user.adapter.FollowedBangumiAdapter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,16 +39,20 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class UserFollowedBanguiFragment extends BaseFragment {
+public class UserFollowedBangumiFragment extends BaseFragment {
 
     @BindView(R.id.user_main_follow_bangumi_list_view)
     RecyclerView bangumiListView;
+    @BindView(R.id.user_main_follow_bangumi_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     private int userId;
     private String zone;
+    boolean isFirstLoad = false;
+    boolean isRefresh = false;
 
     private List<UserFollowedBangumiInfo.UserFollowedBangumiInfoData> bangumiInfoDatas;
-
+    private List<UserFollowedBangumiInfo.UserFollowedBangumiInfoData> baseBangumiInfoDatas = new ArrayList<>();
     FollowedBangumiAdapter bangumiAdapter;
 
     @Override
@@ -60,7 +65,9 @@ public class UserFollowedBanguiFragment extends BaseFragment {
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
-
+        setAdapter();
+        isFirstLoad = true;
+        refreshLayout.setRefreshing(true);
         setNet();
     }
 
@@ -70,7 +77,16 @@ public class UserFollowedBanguiFragment extends BaseFragment {
             public void onResponse(Call<UserFollowedBangumiInfo> call, Response<UserFollowedBangumiInfo> response) {
                 if (response!=null&&response.isSuccessful()){
                     bangumiInfoDatas = response.body().getData();
-                    setAdapter();
+                    if (isFirstLoad){
+                        isFirstLoad =false;
+                        refreshLayout.setRefreshing(false);
+                        baseBangumiInfoDatas = response.body().getData();
+                        setAdapter();
+                    }
+                    if (isRefresh){
+                        setRefresh();
+                    }
+
                 }else if (!response.isSuccessful()){
                     String errorStr = "";
                     try {
@@ -83,20 +99,51 @@ public class UserFollowedBanguiFragment extends BaseFragment {
                     if (info.getCode() == 40401){
                         ToastUtils.showShort(getContext(),"该用户不存在！");
                     }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                        refreshLayout.setRefreshing(false);
+                    }
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                        refreshLayout.setRefreshing(false);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<UserFollowedBangumiInfo> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络哟！");
+                if (isFirstLoad){
+                    isFirstLoad = false;
+                    refreshLayout.setRefreshing(false);
+                }
+                if (isRefresh){
+                    isRefresh = false;
+                    refreshLayout.setRefreshing(false);
+                }
             }
         });
     }
 
+    private void setRefresh() {
+        isRefresh = false;
+        refreshLayout.setRefreshing(false);
+        bangumiAdapter.setNewData(bangumiInfoDatas);
+        ToastUtils.showShort(getContext(),"刷新成功！");
+    }
+
     private void setAdapter() {
-        bangumiAdapter = new FollowedBangumiAdapter(R.layout.drama_timeline_list_item,bangumiInfoDatas,getContext());
+        bangumiAdapter = new FollowedBangumiAdapter(R.layout.drama_timeline_list_item,baseBangumiInfoDatas,getContext());
 
         bangumiListView.setLayoutManager(new LinearLayoutManager(App.instance()));
         bangumiAdapter.setHasStableIds(true);
@@ -125,6 +172,13 @@ public class UserFollowedBanguiFragment extends BaseFragment {
                 Intent intent = new Intent(getContext(), DramaActivity.class);
                 intent.putExtra("animeId",data.getId());
                 startActivity(intent);
+            }
+        });
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isRefresh = true;
+                setNet();
             }
         });
     }

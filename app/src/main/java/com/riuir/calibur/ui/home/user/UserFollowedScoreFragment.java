@@ -27,6 +27,7 @@ import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
 import com.riuir.calibur.ui.home.user.adapter.UserScoreListAdapter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -52,7 +53,7 @@ public class UserFollowedScoreFragment extends BaseFragment {
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listScore;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainTrendingInfo.MainTrendingInfoList> baseListScore;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseListScore = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData mainScoreInfoData;
 
@@ -75,7 +76,9 @@ public class UserFollowedScoreFragment extends BaseFragment {
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
+        setListAdapter();
         isFirstLoad = true;
+        scoreRefreshLayout.setRefreshing(true);
         setNet();
     }
 
@@ -89,6 +92,8 @@ public class UserFollowedScoreFragment extends BaseFragment {
                     listScore = response.body().getData().getList();
                     mainScoreInfoData = response.body().getData();
                     if (isFirstLoad){
+                        isFirstLoad = false;
+                        scoreRefreshLayout.setRefreshing(false);
                         baseListScore = response.body().getData().getList();
                         setListAdapter();
                     }
@@ -118,6 +123,10 @@ public class UserFollowedScoreFragment extends BaseFragment {
                         scoreRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        scoreRefreshLayout.setRefreshing(false);
+                    }
 
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
@@ -128,6 +137,10 @@ public class UserFollowedScoreFragment extends BaseFragment {
                     if (isRefresh){
                         scoreRefreshLayout.setRefreshing(false);
                         isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        scoreRefreshLayout.setRefreshing(false);
                     }
                 }
             }
@@ -142,6 +155,10 @@ public class UserFollowedScoreFragment extends BaseFragment {
                 if (isRefresh){
                     scoreRefreshLayout.setRefreshing(false);
                     isRefresh = false;
+                }
+                if (isFirstLoad){
+                    isFirstLoad = false;
+                    scoreRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -172,7 +189,7 @@ public class UserFollowedScoreFragment extends BaseFragment {
 
         //添加监听
         setListener();
-        isFirstLoad = false;
+
     }
 
     private void setPage() {

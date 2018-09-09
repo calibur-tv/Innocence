@@ -2,15 +2,27 @@ package com.riuir.calibur.ui.splash;
 
 import android.os.Message;
 
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
+import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.MineUserInfo;
+import com.riuir.calibur.data.anime.BangumiAllList;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.loginAndRegister.LoginActivity;
 import com.riuir.calibur.ui.loginAndRegister.RegisterActivity;
 import com.riuir.calibur.utils.Constants;
+
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SplashActivity extends BaseActivity {
 
@@ -25,18 +37,85 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
-
         AUTH_TOKEN = Constants.AUTH_TOKEN;
         isLogin = Constants.ISLOGIN;
 
-//        LogUtils.d("Bearer","token = "+AUTH_TOKEN);
+        LogUtils.d("Bearer","token = "+AUTH_TOKEN);
 
         if (isLogin){
-            handler.sendEmptyMessageDelayed(0,1500);
+            setNetToGetUserInfo();
         }else {
             handler.sendEmptyMessageDelayed(1,1500);
         }
     }
+
+    private void setNetToGetUserInfo() {
+        apiPost.getMineUserInfo().enqueue(new Callback<MineUserInfo>() {
+            @Override
+            public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
+                if (response!=null&&response.isSuccessful()){
+                    Constants.userInfoData = response.body().getData();
+                    BangumiAllListUtils.setBangumiAllList(SplashActivity.this,apiGet);
+                }else  if (!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+                    ToastUtils.showShort(SplashActivity.this,info.getMessage());
+
+                    startActivity(LoginActivity.class);
+                    finish();
+                }else {
+                    ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
+                    startActivity(LoginActivity.class);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MineUserInfo> call, Throwable t) {
+                ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
+                startActivity(LoginActivity.class);
+                finish();
+            }
+        });
+    }
+
+//    private void setAllBangumiData() {
+//        apiGet.getBangumiAllList().enqueue(new Callback<BangumiAllList>() {
+//            @Override
+//            public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
+//                if (response!=null&&response.isSuccessful()){
+//                    Constants.bangumiAllListData = response.body().getData();
+//                }else  if (!response.isSuccessful()){
+//                    String errorStr = "";
+//                    try {
+//                        errorStr = response.errorBody().string();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    Gson gson = new Gson();
+//                    Event<String> info =gson.fromJson(errorStr,Event.class);
+//                    ToastUtils.showShort(SplashActivity.this,info.getMessage());
+//
+//                }else {
+////                    ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
+//                }
+//                startActivity(MainActivity.class);
+//                finish();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<BangumiAllList> call, Throwable t) {
+//                startActivity(MainActivity.class);
+//                finish();
+//            }
+//        });
+//    }
 
     @Override
     protected void handler(Message msg) {

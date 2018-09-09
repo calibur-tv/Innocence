@@ -32,13 +32,42 @@ public class ScoreListAdapter  extends BaseQuickAdapter<MainTrendingInfo.MainTre
     protected void convert(BaseViewHolder helper, MainTrendingInfo.MainTrendingInfoList item) {
         ImageView animeIcon = helper.getView(R.id.main_score_list_item_user_icon);
         GlideUtils.loadImageViewCircle(context,item.getUser().getAvatar(),animeIcon);
-        helper.setText(R.id.main_score_list_item_anime_name,item.getBangumi().getName());
-        helper.setText(R.id.main_score_list_item_user_name_time,item.getUser().getNickname()+"·"+ TimeUtils.HowLongTimeForNow(item.getCreated_at()));
+        ImageView bangumiIcon = helper.getView(R.id.main_score_list_item_bangumi_icon);
+        GlideUtils.loadImageView(context,item.getBangumi().getAvatar(),bangumiIcon);
+        helper.setText(R.id.main_score_list_item_bangumi_name,item.getBangumi().getName());
+        helper.setText(R.id.main_score_list_item_user_name,item.getUser().getNickname());
+        helper.setText(R.id.main_score_list_item_time, TimeUtils.HowLongTimeForNow(item.getCreated_at()));
         helper.setText(R.id.main_score_list_item_title,item.getTitle());
         helper.setText(R.id.main_score_list_item_intro,item.getIntro());
-        helper.setText(R.id.main_score_list_item_like_count,"喜欢："+item.getLike_count());
-        helper.setText(R.id.main_score_list_item_comment_count,"评论："+item.getComment_count());
-        helper.setText(R.id.main_score_list_item_collection_count,"收藏：0");
+        helper.setText(R.id.main_score_list_item_zan_count,""+item.getLike_count());
+        helper.setText(R.id.main_score_list_item_reward_count,""+item.getReward_count());
+        helper.setText(R.id.main_score_list_item_comment_count,""+item.getComment_count());
+        helper.setText(R.id.main_score_list_item_marked_count,""+item.getMark_count());
+
+        if (item.isIs_creator()){
+            //原创显示打赏数
+            helper.setVisible(R.id.main_score_list_item_zan_count,false);
+            helper.setVisible(R.id.main_score_list_item_reward_count,true);
+            helper.setVisible(R.id.main_score_list_item_zan_icon,false);
+            helper.setVisible(R.id.main_score_list_item_reward_icon,true);
+        }else {
+            //非原创显示赞数
+            helper.setVisible(R.id.main_score_list_item_zan_count,true);
+            helper.setVisible(R.id.main_score_list_item_reward_count,false);
+            helper.setVisible(R.id.main_score_list_item_zan_icon,true);
+            helper.setVisible(R.id.main_score_list_item_reward_icon,false);
+        }
+
+        if (item.isLiked()){
+            helper.setImageResource(R.id.main_score_list_item_zan_icon,R.mipmap.ic_zan_active);
+        }else {
+            helper.setImageResource(R.id.main_score_list_item_zan_icon,R.mipmap.ic_zan_normal);
+        }
+        if (item.isMarked()){
+            helper.setImageResource(R.id.main_score_list_item_marked_icon,R.mipmap.ic_mark_active);
+        }else {
+            helper.setImageResource(R.id.main_score_list_item_marked_icon,R.mipmap.ic_mark_normal);
+        }
 
         float starNum = (float) ((double) item.getTotal()/2.0);
         LogUtils.d("score_fragment","starNum = "+starNum+",total = "+item.getTotal());

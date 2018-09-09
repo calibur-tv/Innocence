@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Calibur</string>
+    <string name="app_name">calibur</string>
     <string name="service_error">服务器出错</string>
     <string name="not_found">请求的资源不存在</string>
     <string name="timeout">请求超时</string>

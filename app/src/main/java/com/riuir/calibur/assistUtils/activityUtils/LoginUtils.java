@@ -14,6 +14,7 @@ public class LoginUtils {
     public static void ReLogin(Context context){
         Constants.ISLOGIN = false;
         Constants.AUTH_TOKEN = "";
+        Constants.userInfoData = null;
         SharedPreferencesUtils.put(App.instance(),"Authorization","");
         Intent intent = new Intent(context,LoginActivity.class);
         context.startActivity(intent);
@@ -23,6 +24,7 @@ public class LoginUtils {
     public static void CancelLogin(Context context, Activity activity){
         Constants.ISLOGIN = false;
         Constants.AUTH_TOKEN = "";
+        Constants.userInfoData = null;
         SharedPreferencesUtils.put(App.instance(),"Authorization","");
         Intent intent = new Intent(context,LoginActivity.class);
         context.startActivity(intent);

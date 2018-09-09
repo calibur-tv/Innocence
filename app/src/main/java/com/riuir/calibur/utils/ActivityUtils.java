@@ -56,10 +56,10 @@ public class ActivityUtils {
             );
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-            if (contentViewGroup == null) {
-                contentViewGroup = ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
-            }
-            contentViewGroup.setFitsSystemWindows(on);
+//            if (contentViewGroup == null) {
+//                contentViewGroup = ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
+//            }
+//            contentViewGroup.setFitsSystemWindows(on);
 
         } else if (Build.VERSION.SDK_INT >= 19) {
             //19表示4.4

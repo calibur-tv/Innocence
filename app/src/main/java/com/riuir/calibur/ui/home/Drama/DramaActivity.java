@@ -17,10 +17,14 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeShowInfo;
 import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.anime.AnimeFollowInfo;
+import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
+import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.io.IOException;
@@ -44,8 +48,11 @@ public class DramaActivity extends BaseActivity {
     TextView animeFollowCount;
     @BindView(R.id.drama_activity_anime_card_count)
     TextView animeCardCount;
+
     @BindView(R.id.drama_activity_anime_follow_btn)
     LinearLayout animeFollowBtn;
+    @BindView(R.id.drama_activity_anime_follow_btn_icon)
+    ImageView animeFollowBtnIcon;
     @BindView(R.id.drama_activity_anime_follow_btn_text)
     TextView animeFollowBtnText;
 
@@ -59,6 +66,8 @@ public class DramaActivity extends BaseActivity {
      ImageView backBtn;
 
     AnimeShowInfo.AnimeShowInfoData animeShowInfoData;
+
+    int followCount;
 
     /**
      * 获取当前屏幕的密度
@@ -99,7 +108,17 @@ public class DramaActivity extends BaseActivity {
                 finish();
             }
         });
+        animeFollowBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                animeFollowBtnText.setText("关注中");
+                animeFollowBtn.setClickable(false);
+                setFollowNet();
+            }
+        });
     }
+
+
 
     private void setView() {
         GlideUtils.loadImageView(DramaActivity.this,animeShowInfoData.getAvatar(),animeIcon);
@@ -107,19 +126,98 @@ public class DramaActivity extends BaseActivity {
                 GlideUtils.setImageUrl(DramaActivity.this,animeShowInfoData.getBanner(),GlideUtils.FULL_SCREEN),
                 animeBanner);
         animeName.setText(animeShowInfoData.getName());
-        animeFollowCount.setText(animeShowInfoData.getCount_like()+"");
+        followCount = animeShowInfoData.getFollow_users().getTotal();
+        animeFollowCount.setText(followCount+"");
+        animeCardCount.setText(animeShowInfoData.getCount_score()+"");
 
+        LogUtils.d("isfollowed","isfollowed = "+animeShowInfoData.isFollowed());
+        if (animeShowInfoData.isFollowed()){
+            animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_checked);
+            animeFollowBtnText.setText("已关注");
+        }else {
+            animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_normal);
+            animeFollowBtnText.setText("关注");
+        }
 
         setViewPager();
     }
 
+    private void setFollowNet() {
+        apiPost.getCallBangumiToggleFollow("bangumi",animeID).enqueue(new Callback<AnimeFollowInfo>() {
+            @Override
+            public void onResponse(Call<AnimeFollowInfo> call, Response<AnimeFollowInfo> response) {
+                if (response!=null&&response.isSuccessful()){
+                    if (response.body().isData()){
+                        //关注成功
+                        animeFollowBtnText.setText("已关注");
+                        animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_checked);
+                        ToastUtils.showShort(DramaActivity.this,"关注成功！");
+                        followCount++;
+                        animeFollowCount.setText(followCount+"");
+                    }else {
+                        //取消关注
+                        animeFollowBtnText.setText("关注");
+                        animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_normal);
+                        ToastUtils.showShort(DramaActivity.this,"取消关注成功");
+                        followCount--;
+                        animeFollowCount.setText(followCount+"");
+                    }
+
+                }else if (response!=null&&!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                    ToastUtils.showShort(DramaActivity.this,info.getMessage());
+                    if (animeShowInfoData.isFollowed()){
+                        animeFollowBtnText.setText("已关注");
+                    }else {
+                        animeFollowBtnText.setText("关注");
+                    }
+                }else {
+                    if (animeShowInfoData.isFollowed()){
+                        animeFollowBtnText.setText("已关注");
+                    }else {
+                        animeFollowBtnText.setText("关注");
+                    }
+                    ToastUtils.showShort(DramaActivity.this,"网络异常，操作失败了");
+                }
+                animeFollowBtn.setClickable(true);
+            }
+
+            @Override
+            public void onFailure(Call<AnimeFollowInfo> call, Throwable t) {
+                animeFollowBtn.setClickable(true);
+
+                if (animeShowInfoData.isFollowed()){
+                    animeFollowBtnText.setText("已关注");
+                }else {
+                    animeFollowBtnText.setText("关注");
+                }
+                ToastUtils.showShort(DramaActivity.this,"网络异常，操作失败了");
+            }
+        });
+    }
+
     private void setNet() {
-        apiGet.getCallAnimeShow(animeID).enqueue(new Callback<AnimeShowInfo>() {
+        LogUtils.d("animeId","animeId = "+animeID);
+        ApiGet mApiGet;
+        if (Constants.ISLOGIN){
+            mApiGet = apiGetHasAuth;
+        }else {
+            mApiGet = apiGet;
+        }
+        mApiGet.getCallAnimeShow(animeID).enqueue(new Callback<AnimeShowInfo>() {
             @Override
             public void onResponse(Call<AnimeShowInfo> call, Response<AnimeShowInfo> response) {
                 if (response!=null&&response.isSuccessful()){
                     if (response.body().getCode() == 0){
-                        LogUtils.d("animeId","animeId = "+animeID);
+                        LogUtils.d("animeId","11111re  = "+response.body().toString());
                         animeShowInfoData = response.body().getData();
                         setView();
                     }
@@ -149,7 +247,8 @@ public class DramaActivity extends BaseActivity {
         titles.add("帖子");
         if (animeShowInfoData.isHas_cartoon()){
             //添加漫画fragment
-            titles.add("漫画");
+            //TODO
+//            titles.add("漫画");
         }
         if (animeShowInfoData.isHas_video()){
             //添加视频fragment

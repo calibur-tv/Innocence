@@ -51,7 +51,7 @@ public class DramaImageFragment extends BaseFragment {
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listImage;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainTrendingInfo.MainTrendingInfoList> baseListImage;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseListImage = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData mainImageInfoData;
 
@@ -72,6 +72,8 @@ public class DramaImageFragment extends BaseFragment {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
         isFirstLoad = true;
+        imageRefreshLayout.setRefreshing(true);
+        setListAdapter();
         setNet();
     }
 
@@ -140,6 +142,8 @@ public class DramaImageFragment extends BaseFragment {
                     listImage = response.body().getData().getList();
                     mainImageInfoData = response.body().getData();
                     if (isFirstLoad){
+                        isFirstLoad = false;
+                        imageRefreshLayout.setRefreshing(false);
                         baseListImage = response.body().getData().getList();
                         setListAdapter();
                     }
@@ -173,6 +177,10 @@ public class DramaImageFragment extends BaseFragment {
                         imageRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    if (isFirstLoad){
+                        imageRefreshLayout.setRefreshing(false);
+                        isFirstLoad = false;
+                    }
 
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
@@ -183,6 +191,10 @@ public class DramaImageFragment extends BaseFragment {
                     if (isRefresh){
                         imageRefreshLayout.setRefreshing(false);
                         isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        imageRefreshLayout.setRefreshing(false);
+                        isFirstLoad = false;
                     }
                 }
             }
@@ -197,6 +209,10 @@ public class DramaImageFragment extends BaseFragment {
                 if (isRefresh){
                     imageRefreshLayout.setRefreshing(false);
                     isRefresh = false;
+                }
+                if (isFirstLoad){
+                    imageRefreshLayout.setRefreshing(false);
+                    isFirstLoad = false;
                 }
             }
         });
@@ -227,7 +243,7 @@ public class DramaImageFragment extends BaseFragment {
 
         //添加监听
         setListener();
-        isFirstLoad = false;
+
     }
 
     private void setLoadMore() {

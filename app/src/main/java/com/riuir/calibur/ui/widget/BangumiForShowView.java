@@ -49,6 +49,7 @@ public class BangumiForShowView extends RelativeLayout implements View.OnClickLi
         summary.setText(text);
     }
     public final void setImageView(Context context,String path){
+
         GlideUtils.loadImageView(context,path,imageView);
     }
 

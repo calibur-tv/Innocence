@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
@@ -38,6 +39,8 @@ public class DramaSeasonVideoFragment extends BaseFragment {
     MyPagerSlidingTabStrip dramaVideoPagerTab;
     @BindView(R.id.drama_video_view_pager)
     ViewPager dramaVideoViewPager;
+    @BindView(R.id.drama_video_pager_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     private int animeID;
 
@@ -48,6 +51,7 @@ public class DramaSeasonVideoFragment extends BaseFragment {
 
     private DramaVideoEpisodesFragment episodesFragment1,episodesFragment2,episodesFragment3,episodesFragment4,
                                         episodesFragment5,episodesFragment6,episodesFragment7,episodesFragment8,episodesFragment9,episodesFragment10;
+
 
     /**
      * 获取当前屏幕的密度
@@ -64,7 +68,19 @@ public class DramaSeasonVideoFragment extends BaseFragment {
         dm = getResources().getDisplayMetrics();
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         animeID = dramaActivity.getAnimeID();
+
+        refreshLayout.setRefreshing(true);
         setNet();
+        setListener();
+    }
+
+    private void setListener() {
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                setNet();
+            }
+        });
     }
 
     private void setNet() {
@@ -74,6 +90,9 @@ public class DramaSeasonVideoFragment extends BaseFragment {
                 if (response!=null&&response.isSuccessful()){
                     animeShowVideosInfoVideos = response.body().getData().getVideos();
                     setViewPager();
+                    refreshLayout.setRefreshing(false);
+                    refreshLayout.setEnabled(false);
+
                 }else if (!response.isSuccessful()){
                     String errorStr = "";
                     try {
@@ -84,14 +103,17 @@ public class DramaSeasonVideoFragment extends BaseFragment {
                     Gson gson = new Gson();
                     Event<String> info =gson.fromJson(errorStr,Event.class);
                     ToastUtils.showShort(getContext(),info.getMessage());
+                    refreshLayout.setRefreshing(false);
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
+                    refreshLayout.setRefreshing(false);
                 }
             }
 
             @Override
             public void onFailure(Call<AnimeShowVideosInfo> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络哟！");
+                refreshLayout.setRefreshing(false);
             }
         });
     }

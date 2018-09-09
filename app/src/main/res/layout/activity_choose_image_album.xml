@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.choose.ChooseImageAlbumActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:fitsSystemWindows="true"
+        android:background="@color/theme_magic_sakura_primary">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <ImageView
+                android:id="@+id/choose_image_album_back"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@mipmap/app_btn_back_white"
+                android:layout_centerVertical="true"
+                android:padding="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="选择相册"
+                android:layout_centerInParent="true"
+                android:textSize="18sp"
+                android:textColor="@color/color_FFFFFFFF"
+                />
+        </RelativeLayout>
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/choose_image_album_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/choose_image_album_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/color_FFFFFFFF"></android.support.v7.widget.RecyclerView>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
+</android.support.v4.widget.DrawerLayout>

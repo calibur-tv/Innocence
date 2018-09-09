@@ -3,11 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.user.UserFollowedBanguiFragment">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/user_main_follow_bangumi_list_view"
+    tools:context=".ui.home.user.UserFollowedBangumiFragment">
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/user_main_follow_bangumi_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/user_main_follow_bangumi_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </FrameLayout>

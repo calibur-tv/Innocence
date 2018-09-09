@@ -211,11 +211,6 @@ public class AnimeShowInfo {
         }
     }
 
-    public class AnimeInfoManagers{
-        private int is_leader;
-        private String created_at;
-        private AnimeInfoManagersUser user;
-    }
 
     public class AnimeInfoManagersUser{
         private int total;
@@ -224,7 +219,7 @@ public class AnimeShowInfo {
     }
 
     public class AnimeInfoManagersUserList{
-        private int is_leader;
+        private boolean is_leader;
         private String created_at;
         private AnimeInfoManagersUserListUser user;
     }

@@ -24,6 +24,7 @@ import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -54,7 +55,7 @@ public class UserFollowedImageFragment extends BaseFragment {
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listImage;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainTrendingInfo.MainTrendingInfoList> baseListImage;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseListImage = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData imageInfoData;
 
@@ -73,7 +74,9 @@ public class UserFollowedImageFragment extends BaseFragment {
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
+        setListAdapter();
         isFirstLoad = true;
+        imageRefreshLayout.setRefreshing(true);
         setNet();
     }
 
@@ -86,6 +89,8 @@ public class UserFollowedImageFragment extends BaseFragment {
                     listImage = response.body().getData().getList();
                     imageInfoData = response.body().getData();
                     if (isFirstLoad){
+                        isFirstLoad = false;
+                        imageRefreshLayout.setRefreshing(false);
                         baseListImage = response.body().getData().getList();
                         setListAdapter();
                     }
@@ -115,6 +120,10 @@ public class UserFollowedImageFragment extends BaseFragment {
                         imageRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        imageRefreshLayout.setRefreshing(false);
+                    }
 
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
@@ -125,6 +134,10 @@ public class UserFollowedImageFragment extends BaseFragment {
                     if (isRefresh){
                         imageRefreshLayout.setRefreshing(false);
                         isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        imageRefreshLayout.setRefreshing(false);
                     }
                 }
             }
@@ -139,6 +152,10 @@ public class UserFollowedImageFragment extends BaseFragment {
                 if (isRefresh){
                     imageRefreshLayout.setRefreshing(false);
                     isRefresh = false;
+                }
+                if (isFirstLoad){
+                    isFirstLoad = false;
+                    imageRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -178,7 +195,7 @@ public class UserFollowedImageFragment extends BaseFragment {
 
         //添加监听
         setListener();
-        isFirstLoad = false;
+
     }
 
     private void setListener() {

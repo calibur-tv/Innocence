@@ -1,47 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="150dp">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/color_FFDDDDDD"/>
-        <TextView
-            android:layout_marginTop="12dp"
-            android:layout_marginLeft="14dp"
-            android:layout_marginBottom="6dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="所属番剧"
-            android:textSize="14sp"
-            android:textColor="@color/color_FF9B9B9B"
-            />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/color_FFDDDDDD"/>
+    android:layout_height="100dp"
+    android:padding="15dp">
+    <ImageView
+        android:id="@+id/bangumi_view_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:scaleType="centerCrop"
+        />
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="108dp">
-            <ImageView
-                android:id="@+id/bangumi_view_image"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_margin="14dp"
-                android:scaleType="centerCrop"
-                />
+            android:layout_height="70dp"
+            android:padding="5dp"
+            android:layout_toRightOf="@id/bangumi_view_image"
+            android:background="@drawable/bg_bangumi_for_show_bg"
+            >
             <TextView
                 android:id="@+id/bangumi_view_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@id/bangumi_view_image"
-                android:layout_toRightOf="@id/bangumi_view_image"
-                android:layout_marginRight="14dp"
+                android:layout_marginLeft="5dp"
                 android:text="番剧名字"
                 android:maxLines="1"
                 android:textSize="16sp"
@@ -52,18 +32,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/bangumi_view_name"
-                android:layout_toRightOf="@id/bangumi_view_image"
-                android:layout_marginTop="6dp"
-                android:layout_marginRight="14dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginLeft="5dp"
                 android:text="番剧简介"
                 android:textColor="@color/color_FF7B7B7B"
-                android:textSize="14sp"
-                android:maxLines="3"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:maxLines="2"
                 />
         </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/color_FFDDDDDD"/>
-    </LinearLayout>
+
+
 </RelativeLayout>

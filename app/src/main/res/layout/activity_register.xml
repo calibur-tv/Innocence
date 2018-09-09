@@ -55,7 +55,7 @@
             android:paddingRight="15dp"
             android:maxLength="25"
             android:textSize="14sp"
-            android:hint="设置密码"
+            android:hint="设置密码(最多25位哦)"
             android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="35dp"

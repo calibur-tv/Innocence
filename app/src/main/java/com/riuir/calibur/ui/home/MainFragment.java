@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
+import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.utils.ActivityUtils;
 
 import butterknife.BindView;
@@ -34,6 +35,9 @@ public class MainFragment extends BaseFragment {
     MyPagerSlidingTabStrip mainCardTab;
     @BindView(R.id.main_card_view_pager)
     ViewPager mainCardViewPager;
+
+    @BindView(R.id.main_search_layout)
+    SearchLayout searchLayout;
 
     MainCardActiveFragment mainCardActiveFragment;
 //    MainCardHotFragment mainCardHotFragment;
@@ -60,11 +64,18 @@ public class MainFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
-        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
-        rootView.setPadding(0,stautsBarHeight,0,0);
         dm = getResources().getDisplayMetrics();
+//        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
+//        rootView.setPadding(0,stautsBarHeight,0,0);
         setViewPager();
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
+        rootView.setPadding(0,stautsBarHeight,0,0);
     }
 
     private void setViewPager() {

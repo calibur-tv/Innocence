@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -58,6 +59,7 @@ public class ScoreContentView extends LinearLayout{
         contentS= contents;
         previewImagesLists =previewImagesList;
 
+
         LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT);
         params.setMargins(DensityUtils.dp2px(context,12),
@@ -77,8 +79,17 @@ public class ScoreContentView extends LinearLayout{
                 }
                 if (contentS.get(i).getType().equals("img")){
                     ImageView primacyImageView = new ImageView(context);
-                    primacyImageView.setLayoutParams(params);
-                    primacyImageView.setScaleType(ImageView.ScaleType.FIT_START);
+                    int imgHeight = GlideUtils.getImageHeightDp(context,contentS.get(i).getHeight(),
+                            contentS.get(i).getWidth(),24,1);
+
+                    LayoutParams imgParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,imgHeight);
+                    imgParams.setMargins(DensityUtils.dp2px(context,12),
+                            DensityUtils.dp2px(context,4),
+                            DensityUtils.dp2px(context,12),
+                            DensityUtils.dp2px(context,4));
+
+                    primacyImageView.setLayoutParams(imgParams);
+                    primacyImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         primacyImageView.setTransitionName("ToPreviewImageActivity");
                     }

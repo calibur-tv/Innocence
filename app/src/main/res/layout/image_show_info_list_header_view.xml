@@ -69,7 +69,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        ></LinearLayout>
+        >
+        <TextView
+            android:id="@+id/image_show_info_list_header_card_no_img_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="还没有上传内容哦"
+            android:textColor="@color/color_FF333333"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            />
+    </LinearLayout>
 
     <com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView
         android:id="@+id/image_show_info_list_header_lfc_view"

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+    <RelativeLayout
+        android:id="@+id/search_layout_search_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/theme_magic_sakura_primary"
+        >
+        <TextView
+            android:id="@+id/search_layout_search_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_edittext_normal"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginBottom="@dimen/dp_10"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:paddingLeft="15dp"
+            android:hint="搜索番剧"
+            android:textSize="15sp"
+            android:gravity="center_vertical"
+            android:transitionName="ToSearchDramaActivity"
+            />
+        <ImageView
+            android:id="@+id/search_layout_search_btn"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:src="@mipmap/drama_search_icon"
+            android:layout_alignRight="@id/search_layout_search_edit_text"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginRight="11dp"
+            />
+    </RelativeLayout>
+</RelativeLayout>

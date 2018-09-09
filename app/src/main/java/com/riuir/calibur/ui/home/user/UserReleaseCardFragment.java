@@ -23,6 +23,7 @@ import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.user.adapter.ReleaseCardListAdapter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -46,7 +47,7 @@ public class UserReleaseCardFragment extends BaseFragment {
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listCard;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainTrendingInfo.MainTrendingInfoList> baseListCard;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseListCard = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData mainTrendingInfoData;
 
@@ -69,7 +70,9 @@ public class UserReleaseCardFragment extends BaseFragment {
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
+        setListAdapter();
         isFirstLoad = true;
+        cardRefreshLayout.setRefreshing(true);
         setNet();
     }
 
@@ -82,6 +85,8 @@ public class UserReleaseCardFragment extends BaseFragment {
                     listCard = response.body().getData().getList();
                     mainTrendingInfoData = response.body().getData();
                     if (isFirstLoad){
+                        isFirstLoad = false;
+                        cardRefreshLayout.setRefreshing(false);
                         baseListCard = response.body().getData().getList();
                         setListAdapter();
                     }
@@ -110,6 +115,10 @@ public class UserReleaseCardFragment extends BaseFragment {
                         cardRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        cardRefreshLayout.setRefreshing(false);
+                    }
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -119,6 +128,10 @@ public class UserReleaseCardFragment extends BaseFragment {
                     if (isRefresh){
                         cardRefreshLayout.setRefreshing(false);
                         isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        cardRefreshLayout.setRefreshing(false);
                     }
                 }
             }
@@ -133,6 +146,10 @@ public class UserReleaseCardFragment extends BaseFragment {
                 if (isRefresh){
                     cardRefreshLayout.setRefreshing(false);
                     isRefresh = false;
+                }
+                if (isFirstLoad){
+                    isFirstLoad = false;
+                    cardRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -195,7 +212,7 @@ public class UserReleaseCardFragment extends BaseFragment {
 
         //添加监听
         setListener();
-        isFirstLoad = false;
+
     }
 
     private void setListener() {

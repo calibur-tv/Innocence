@@ -1,5 +1,6 @@
 package com.riuir.calibur.app;
 
+import android.app.Activity;
 import android.app.Application;
 
 import com.orhanobut.logger.AndroidLogAdapter;
@@ -10,6 +11,8 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.utils.Constants;
+
+import java.util.List;
 
 /**
  * ************************************
@@ -22,6 +25,7 @@ import com.riuir.calibur.utils.Constants;
  */
 public class App extends Application  {
     private static App instance;
+
 
     @Override
     public void onCreate() {

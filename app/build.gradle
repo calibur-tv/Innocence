@@ -81,6 +81,7 @@ dependencies {
 
     //magic sakura
     implementation 'com.bilibili:magicasakura:0.1.8@aar'
+    //七牛
     implementation 'com.qiniu:qiniu-android-sdk:7.3.+'
 
     //ratingbar 评分
@@ -108,5 +109,9 @@ dependencies {
     implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
     //dialog
     implementation 'com.github.f0ris.sweetalert:library:1.5.1'
+    //UCrop
+    implementation 'com.github.yalantis:ucrop:2.2.2'
+    //switch
+    implementation 'com.github.zcweng:switch-button:0.0.3@aar'
 
 }

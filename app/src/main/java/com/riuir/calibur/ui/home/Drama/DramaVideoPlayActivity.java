@@ -35,6 +35,7 @@ import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
+import com.riuir.calibur.ui.widget.ReplyAndCommentView;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
@@ -67,7 +68,8 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     OrientationUtils orientationUtils;
 
-
+    @BindView(R.id.drama_video_play_comment_view)
+    ReplyAndCommentView commentView;
 
     @BindView(R.id.drama_video_play_other_site_info)
     TextView otherSiteInfo;
@@ -236,7 +238,19 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
         initVideo();
         setListener();
+        setCommentView();
 
+    }
+
+    private void setCommentView() {
+        commentView.setStatus(ReplyAndCommentView.STATUS_MAIN_COMMENT);
+        commentView.setApiPost(apiPost);
+        commentView.setCommentAdapter(commentAdapter);
+        commentView.setFromUserName("");
+        commentView.setId(videoId);
+        commentView.setType(ReplyAndCommentView.TYPE_VIDEO);
+        commentView.setTargetUserId(0);
+        commentView.setNetAndListener();
     }
 
     private void initVideo() {
@@ -297,9 +311,11 @@ public class DramaVideoPlayActivity extends BaseActivity {
         super.onConfigurationChanged(newConfig);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             recyclerView.setVisibility(View.VISIBLE);
+            commentView.setVisibility(View.VISIBLE);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
             recyclerView.setVisibility(View.GONE);
+            commentView.setVisibility(View.GONE);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }

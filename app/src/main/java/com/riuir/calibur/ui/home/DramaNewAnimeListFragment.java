@@ -134,7 +134,7 @@ public class DramaNewAnimeListFragment extends BaseFragment {
 
                     animeNewListForWeek = response.body();
                     setViewPagerAdapter();
-
+                    refreshLayout.setEnabled(false);
                 }else if (!response.isSuccessful()){
                     String errorStr = "";
                     try {

@@ -25,13 +25,25 @@
                 android:padding="10dp"
                 />
         </RelativeLayout>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/score_show_info_list_view"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/score_show_info_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/color_FFFFFFFF"
-            android:paddingBottom="10dp"
-            ></android.support.v7.widget.RecyclerView>
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/score_show_info_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/color_FFFFFFFF"
+                android:paddingBottom="10dp"
+                ></android.support.v7.widget.RecyclerView>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <com.riuir.calibur.ui.widget.ReplyAndCommentView
+            android:id="@+id/score_show_info_comment_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="45dp">
+        </com.riuir.calibur.ui.widget.ReplyAndCommentView>
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

@@ -31,4 +31,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"></android.support.v7.widget.RecyclerView>
+    <com.riuir.calibur.ui.widget.ReplyAndCommentView
+        android:id="@+id/drama_video_play_comment_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="45dp">
+    </com.riuir.calibur.ui.widget.ReplyAndCommentView>
 </LinearLayout>

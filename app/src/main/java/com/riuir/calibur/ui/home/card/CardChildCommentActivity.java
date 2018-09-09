@@ -35,6 +35,7 @@ import com.riuir.calibur.data.trending.TrendingChildCommentInfo;
 import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
+import com.riuir.calibur.ui.widget.ReplyAndCommentView;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
@@ -62,10 +63,12 @@ public class CardChildCommentActivity extends BaseActivity {
     LinearLayout commentImageLayout;
     @BindView(R.id.card_child_comment_header_child_comment_list)
     RecyclerView childCommentListView;
-    @BindView(R.id.card_reply_comment_edit)
-    EditText replyCommentEdit;
-    @BindView(R.id.card_reply_comment_button)
-    Button replyCommentBtn;
+//    @BindView(R.id.card_reply_comment_edit)
+//    EditText replyCommentEdit;
+//    @BindView(R.id.card_reply_comment_button)
+//    Button replyCommentBtn;
+    @BindView(R.id.card_child_comment_reply_layout)
+    ReplyAndCommentView replyView;
     @BindView(R.id.card_child_comment_back_btn)
     ImageView backBtn;
 
@@ -90,6 +93,7 @@ public class CardChildCommentActivity extends BaseActivity {
 
     private static final int NET_STATUS_GET_LIST = 0;
     private static final int NET_STATUS_REPLY_COMMENT = 1;
+
 
 
     @Override
@@ -170,7 +174,7 @@ public class CardChildCommentActivity extends BaseActivity {
 
         //TODO
         if (NET_STATUS == NET_STATUS_REPLY_COMMENT){
-            apiPost.geCalltReplyChildComment(commentId,commentReplyToUserId,commentReplyString).enqueue(new Callback<Event<String>>() {
+            apiPost.geCallReplyChildComment(commentId,commentReplyToUserId,commentReplyString).enqueue(new Callback<Event<String>>() {
                 @Override
                 public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
 
@@ -230,7 +234,20 @@ public class CardChildCommentActivity extends BaseActivity {
 
         childCommentListView.setAdapter(childCommentListAdapter);
 
+        setReplyView();
         setListener();
+    }
+
+    private void setReplyView() {
+        replyView.setStatus(ReplyAndCommentView.STATUS_SUB_COMMENT);
+        replyView.setApiPost(apiPost);
+        replyView.setChildCommentAdapter(childCommentListAdapter);
+        replyView.setFromUserName("");
+        replyView.setMainCommentid(commentId);
+        replyView.setType(type);
+        replyView.setTargetUserId(0);
+        replyView.setTargetUserMainId(mainComment.getFrom_user_id());
+        replyView.setNetAndListener();
     }
 
     private void setListener() {
@@ -249,24 +266,6 @@ public class CardChildCommentActivity extends BaseActivity {
         },childCommentListView);
 
 
-        replyCommentBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String [] commentReplyTexts = replyCommentEdit.getText().toString().split(":");
-                if (commentReplyTexts.length == 2){
-                    commentReplyString = commentReplyTexts[1];
-                }
-                if (commentReplyToUserId == 0){
-                    commentReplyToUserId = mainComment.getFrom_user_id();
-                }else {
-                }
-
-                if (commentReplyToUserName == null||commentReplyToUserName.equals("")){
-                    commentReplyToUserName = mainComment.getFrom_user_name();
-                }else {
-                }
-            }
-        });
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -280,7 +279,7 @@ public class CardChildCommentActivity extends BaseActivity {
 
     }
 
-    class CardChildCommentListAdapter extends BaseQuickAdapter<TrendingChildCommentInfo.TrendingChildCommentInfoList,BaseViewHolder>{
+    public class CardChildCommentListAdapter extends BaseQuickAdapter<TrendingChildCommentInfo.TrendingChildCommentInfoList,BaseViewHolder>{
 
 
         public CardChildCommentListAdapter(int layoutResId, @Nullable List<TrendingChildCommentInfo.TrendingChildCommentInfoList> data) {
@@ -337,16 +336,19 @@ public class CardChildCommentActivity extends BaseActivity {
             replyContent.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
-                    commentReplyToUserId = item.getFrom_user_id();
-                    commentReplyToUserName = item.getFrom_user_name();
-                    replyCommentEdit.setFocusable(true);
-                    replyCommentEdit.setFocusableInTouchMode(true);
-                    replyCommentEdit.requestFocus();
-                    replyCommentEdit.setText("回复 "+commentReplyToUserName+" :");
-                    replyCommentEdit.setSelection(replyCommentEdit.getText().toString().length());
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+//                    commentReplyToUserId = item.getFrom_user_id();
+//                    commentReplyToUserName = item.getFrom_user_name();
+//                    replyCommentEdit.setFocusable(true);
+//                    replyCommentEdit.setFocusableInTouchMode(true);
+//                    replyCommentEdit.requestFocus();
+//                    replyCommentEdit.setText("回复 "+commentReplyToUserName+" :");
+//                    replyCommentEdit.setSelection(replyCommentEdit.getText().toString().length());
+//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 
+                    replyView.setTargetUserId(item.getFrom_user_id());
+                    replyView.setFromUserName(item.getFrom_user_name());
+                    replyView.setRequestFocus();
                 }
 
                 @Override

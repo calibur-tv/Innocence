@@ -5,7 +5,8 @@
     <RelativeLayout
         android:id="@+id/drama_timeline_list_item_layout"
         android:layout_width="match_parent"
-        android:layout_height="120dp">
+        android:layout_height="120dp"
+        android:background="@color/color_FFFFFFFF">
         <ImageView
             android:id="@+id/drama_timeline_list_item_image"
             android:layout_marginLeft="15dp"

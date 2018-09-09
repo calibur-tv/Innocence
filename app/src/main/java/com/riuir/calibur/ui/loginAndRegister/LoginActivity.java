@@ -26,11 +26,13 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.GeeTestInfo;
 import com.riuir.calibur.data.params.VerificationCodeBody;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
+import com.riuir.calibur.ui.splash.SplashActivity;
 import com.riuir.calibur.utils.Constants;
 
 import org.json.JSONObject;
@@ -86,6 +88,7 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
+
         verificationCodeBodyGeeTest = new VerificationCodeBody.VerificationCodeBodyGeeTest();
 
         gt3GeetestUtilsBindLogin = new GT3GeetestUtilsBind(LoginActivity.this);
@@ -108,6 +111,8 @@ public class LoginActivity extends BaseActivity {
                     ToastUtils.showShort(LoginActivity.this,"请完善您的信息哟(＾Ｕ＾)ノ~");
                 }else {
                     //TODO
+                    loginBtn.setClickable(false);
+                    loginBtn.setText("登录中");
                     setNetWithOutGee();
 //                    setNet(NET_GEE_STATUS_captcha);
                 }
@@ -154,8 +159,9 @@ public class LoginActivity extends BaseActivity {
                         Constants.ISLOGIN = true;
                         Constants.AUTH_TOKEN = response.body().getData();
 
-                        startActivity(MainActivity.class);
-                        finish();
+                        BangumiAllListUtils.setBangumiAllList(LoginActivity.this,apiGet);
+//                        startActivity(MainActivity.class);
+//                        finish();
                     }
                 }else if (response!=null&&!response.isSuccessful()){
                     String errorStr = "";
@@ -172,12 +178,16 @@ public class LoginActivity extends BaseActivity {
                     ToastUtils.showShort(LoginActivity.this,"不明原因导致登录失败QAQ");
                     gt3GeetestUtilsBindLogin.gt3TestClose();
                 }
+                loginBtn.setClickable(true);
+                loginBtn.setText("登录");
             }
 
             @Override
             public void onFailure(Call<Event<String>> call, Throwable t) {
                 ToastUtils.showShort(LoginActivity.this,"请检查您的网络哟~");
                 gt3GeetestUtilsBindLogin.gt3TestClose();
+                loginBtn.setClickable(true);
+                loginBtn.setText("登录");
             }
         });
     }
@@ -252,8 +262,9 @@ public class LoginActivity extends BaseActivity {
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = response.body().getData();
 
-                            startActivity(MainActivity.class);
-                            finish();
+                            BangumiAllListUtils.setBangumiAllList(LoginActivity.this,apiGet);
+//                            startActivity(MainActivity.class);
+//                            finish();
                         }
                     }else if (response!=null&&!response.isSuccessful()){
                         String errorStr = "";
@@ -354,7 +365,14 @@ public class LoginActivity extends BaseActivity {
         gt3GeetestUtilsBindLogin.getGeetest(this,"","",null,bindListenerLogin);
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Constants.ISLOGIN){
+            finish();
+        }else {
+        }
+    }
 
     @Override
     public void onDestroy() {
@@ -364,6 +382,7 @@ public class LoginActivity extends BaseActivity {
         gt3GeetestUtilsBindLogin.cancelUtils();
         super.onDestroy();
     }
+
 
 
     @Override

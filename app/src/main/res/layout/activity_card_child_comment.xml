@@ -127,34 +127,11 @@
             </LinearLayout>
 
         </ScrollView>
-        <LinearLayout
+        <com.riuir.calibur.ui.widget.ReplyAndCommentView
+            android:id="@+id/card_child_comment_reply_layout"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
             android:background="@color/color_FFFFFFFF"
-            >
-            <EditText
-                android:id="@+id/card_reply_comment_edit"
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="6"
-                android:background="@drawable/bg_edittext_normal"
-                android:maxLength="50"
-                android:hint="回复："
-                android:textSize="12sp"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                />
-            <Button
-                android:id="@+id/card_reply_comment_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-
-                />
-        </LinearLayout>
+            android:minHeight="45dp"></com.riuir.calibur.ui.widget.ReplyAndCommentView>
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

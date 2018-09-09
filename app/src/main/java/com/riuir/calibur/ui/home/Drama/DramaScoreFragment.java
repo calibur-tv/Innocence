@@ -83,7 +83,7 @@ public class DramaScoreFragment extends BaseFragment {
     //用来动态改变RecyclerView的变量
     private List<MainTrendingInfo.MainTrendingInfoList> listScore;
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
-    private List<MainTrendingInfo.MainTrendingInfoList> baseListScore;
+    private List<MainTrendingInfo.MainTrendingInfoList> baseListScore = new ArrayList<>();
 
     private MainTrendingInfo.MainTrendingInfoData mainScoreInfoData;
 
@@ -108,7 +108,9 @@ public class DramaScoreFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
+        setListAdapter();
         isFirstLoad = true;
+        scoreRefreshLayout.setRefreshing(true);
         setNet(NET_LIST);
     }
 
@@ -148,13 +150,12 @@ public class DramaScoreFragment extends BaseFragment {
                         if (isFirstLoad){
                             baseListScore = response.body().getData().getList();
                             setNet(NET_PRIMACY);
-
                         }
                         if (isLoadMore){
                             setLoadMore();
                         }
                         if (isRefresh){
-                            setRefresh();
+                            setNet(NET_PRIMACY);
                         }
                         for (MainTrendingInfo.MainTrendingInfoList hotItem :listScore){
                             seenIdList.add(hotItem.getId());
@@ -179,6 +180,10 @@ public class DramaScoreFragment extends BaseFragment {
                             scoreRefreshLayout.setRefreshing(false);
                             isRefresh = false;
                         }
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            scoreRefreshLayout.setRefreshing(false);
+                        }
 
                     }else {
                         ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
@@ -189,6 +194,10 @@ public class DramaScoreFragment extends BaseFragment {
                         if (isRefresh){
                             scoreRefreshLayout.setRefreshing(false);
                             isRefresh = false;
+                        }
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            scoreRefreshLayout.setRefreshing(false);
                         }
                     }
                 }
@@ -204,6 +213,10 @@ public class DramaScoreFragment extends BaseFragment {
                         scoreRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        scoreRefreshLayout.setRefreshing(false);
+                    }
                 }
             });
         }
@@ -213,9 +226,15 @@ public class DramaScoreFragment extends BaseFragment {
                 @Override
                 public void onResponse(Call<AnimeScoreInfo> call, Response<AnimeScoreInfo> response) {
                     if (response!=null&&response.isSuccessful()){
-
                         animeScore = response.body().getData();
-                        setListAdapter();
+                        if (isFirstLoad){
+                            setListAdapter();
+                            isFirstLoad = false;
+                            scoreRefreshLayout.setRefreshing(false);
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
 
 
                     }else if (!response.isSuccessful()){
@@ -229,14 +248,38 @@ public class DramaScoreFragment extends BaseFragment {
                         Event<String> info =gson.fromJson(errorStr,Event.class);
 
                         ToastUtils.showShort(getContext(),info.getMessage());
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            scoreRefreshLayout.setRefreshing(false);
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                            scoreRefreshLayout.setRefreshing(false);
+                        }
                     }else {
-                        ToastUtils.showShort(getContext(),"请检查您的网络！");
+                        ToastUtils.showShort(getContext(),"未知原因导致加载失败！");
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            scoreRefreshLayout.setRefreshing(false);
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                            scoreRefreshLayout.setRefreshing(false);
+                        }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<AnimeScoreInfo> call, Throwable t) {
                     ToastUtils.showShort(getContext(),"请检查您的网络！");
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        scoreRefreshLayout.setRefreshing(false);
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                        scoreRefreshLayout.setRefreshing(false);
+                    }
                 }
             });
         }
@@ -277,9 +320,11 @@ public class DramaScoreFragment extends BaseFragment {
 
             peopleNum.setText("共"+animeScore.getCount()+"人评分");
             if (animeScore.getTotal()!=null){
-                allScore.setText(animeScore.getTotal());
-                float a = (float) Double.parseDouble(animeScore.getTotal())/20;
-                ratingBar.setStar(a);
+                allScore.setText((Double.parseDouble(animeScore.getTotal())/10)+"");
+                int a = (int) Double.parseDouble(animeScore.getTotal())/10;
+
+                float b = a/2f;
+                ratingBar.setStar(b);
             }
             setRadarChart();
 //        setPieChart();
@@ -472,7 +517,6 @@ public class DramaScoreFragment extends BaseFragment {
         setPrimacy();
         //添加监听
         setListener();
-        isFirstLoad = false;
     }
 
     private void setListener() {
@@ -522,8 +566,10 @@ public class DramaScoreFragment extends BaseFragment {
     }
 
     private void setRefresh() {
+        adapter.removeAllHeaderView();
         isRefresh = false;
         adapter.setNewData(listScore);
+        setPrimacy();
         scoreRefreshLayout.setRefreshing(false);
         ToastUtils.showShort(getContext(),"刷新成功！");
     }

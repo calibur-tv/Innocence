@@ -80,6 +80,12 @@ public class DramaSearchActivity extends BaseActivity {
         setEditListener();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        searchEdit.requestFocus();
+    }
+
     private void setEditListener() {
         searchEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override

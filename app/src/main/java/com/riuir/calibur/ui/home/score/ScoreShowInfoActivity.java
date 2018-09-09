@@ -3,6 +3,7 @@ package com.riuir.calibur.ui.home.score;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -40,7 +41,9 @@ import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
+import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
+import com.riuir.calibur.ui.widget.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.ScoreContentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.utils.Constants;
@@ -61,12 +64,14 @@ public class ScoreShowInfoActivity extends BaseActivity {
     private ScoreShowInfoPrimacy.ScoreShowInfoPrimacyData primacyData;
     private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
     private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData baseCommentMainData;
-    private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> baseCommentMainList;
+    private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> baseCommentMainList = new ArrayList<>();
+    private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> commentMainList;
     private ArrayList<String> previewImagesList;
 
     int fetchId = 0;
     boolean isLoadMore = false;
     boolean isFirstLoad = false;
+    boolean isRefresh = false;
 
     private CommentAdapter commentAdapter;
 
@@ -111,8 +116,12 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
     @BindView(R.id.score_show_info_list_view)
     RecyclerView scoreShowInfoListView;
+    @BindView(R.id.score_show_info_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
     @BindView(R.id.score_show_info_back_btn)
     ImageView backBtn;
+    @BindView(R.id.score_show_info_comment_view)
+    ReplyAndCommentView commentView;
 
     private static final int NET_STATUS_PRIMACY = 0;
     private static final int NET_STATUS_MAIN_COMMENT = 1;
@@ -127,7 +136,9 @@ public class ScoreShowInfoActivity extends BaseActivity {
         Intent intent = getIntent();
         scoreID = intent.getIntExtra("scoreID",0);
         setBackBtn();
+        setAdapter();
         isFirstLoad = true;
+        refreshLayout.setRefreshing(true);
         setNet(NET_STATUS_MAIN_COMMENT);
     }
 
@@ -147,8 +158,16 @@ public class ScoreShowInfoActivity extends BaseActivity {
                         primacyData = response.body().getData();
                         //两次网络请求都完成后开始加载数据
                         LogUtils.d("scoreInfo","222222");
-                        setAdapter();
-                        setPrimacyView();
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            refreshLayout.setRefreshing(false);
+                            setAdapter();
+                            setPrimacyView();
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+
                     }else if (response!=null&&response.isSuccessful()==false){
                         String errorStr = "";
                         try {
@@ -165,8 +184,22 @@ public class ScoreShowInfoActivity extends BaseActivity {
                         }else if (info.getCode() == 40401){
                             ToastUtils.showShort(ScoreShowInfoActivity.this,info.getMessage());
                         }
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                        }
+                        refreshLayout.setRefreshing(false);
                     }else {
                         ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                        }
+                        refreshLayout.setRefreshing(false);
                     }
                 }
 
@@ -174,6 +207,13 @@ public class ScoreShowInfoActivity extends BaseActivity {
                 public void onFailure(Call<ScoreShowInfoPrimacy> call, Throwable t) {
                     ToastUtils.showShort(ScoreShowInfoActivity.this,"请检查您的网络！");
                     LogUtils.d("scoreInfo","t = "+t.getMessage());
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                    }
+                    refreshLayout.setRefreshing(false);
                 }
             });
         }
@@ -187,8 +227,9 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
                     if (response!=null&&response.body()!=null&&response.body().getCode()==0){
                         commentMainData = response.body().getData();
+                        commentMainList = response.body().getData().getList();
                         if (isFirstLoad){
-                            isFirstLoad = false;
+//                            isFirstLoad = false;
                             baseCommentMainData = response.body().getData();
                             baseCommentMainList = response.body().getData().getList();
                             //第一次网络请求结束后 开始第二次网络请求
@@ -196,6 +237,10 @@ public class ScoreShowInfoActivity extends BaseActivity {
                         }
                         if (isLoadMore){
                             setLoadMore();
+                        }
+                        if (isRefresh){
+                            //第一次网络请求结束后 开始第二次网络请求
+                            setNet(NET_STATUS_PRIMACY);
                         }
                     }else  if (response!=null&&response.isSuccessful()==false){
                         String errorStr = "";
@@ -215,11 +260,27 @@ public class ScoreShowInfoActivity extends BaseActivity {
                             commentAdapter.loadMoreFail();
                             isLoadMore = false;
                         }
+                        if (isFirstLoad){
+                            refreshLayout.setRefreshing(false);
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            refreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
                     }else {
                         ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
                         if (isLoadMore){
                             commentAdapter.loadMoreFail();
                             isLoadMore = false;
+                        }
+                        if (isFirstLoad){
+                            refreshLayout.setRefreshing(false);
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            refreshLayout.setRefreshing(false);
+                            isRefresh = false;
                         }
                     }
                 }
@@ -230,6 +291,14 @@ public class ScoreShowInfoActivity extends BaseActivity {
                     if (isLoadMore){
                         commentAdapter.loadMoreFail();
                         isLoadMore = false;
+                    }
+                    if (isFirstLoad){
+                        refreshLayout.setRefreshing(false);
+                        isFirstLoad = false;
+                    }
+                    if (isRefresh){
+                        refreshLayout.setRefreshing(false);
+                        isRefresh = false;
                     }
                 }
             });
@@ -250,17 +319,27 @@ public class ScoreShowInfoActivity extends BaseActivity {
          */
         commentAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
 
-        if (commentMainData.isNoMore()){
-            commentAdapter.setEnableLoadMore(false);
-        }else {
-            //添加底部footer
-            commentAdapter.setEnableLoadMore(true);
-            commentAdapter.setLoadMoreView(new MyLoadMoreView());
-            commentAdapter.disableLoadMoreIfNotFullPage(scoreShowInfoListView);
-        }
+        //添加底部footer
+        commentAdapter.setEnableLoadMore(true);
+        commentAdapter.setLoadMoreView(new MyLoadMoreView());
+        commentAdapter.disableLoadMoreIfNotFullPage(scoreShowInfoListView);
+
+
 
         scoreShowInfoListView.setAdapter(commentAdapter);
+        setCommentView();
 
+    }
+
+    private void setCommentView() {
+        commentView.setStatus(ReplyAndCommentView.STATUS_MAIN_COMMENT);
+        commentView.setApiPost(apiPost);
+        commentView.setCommentAdapter(commentAdapter);
+        commentView.setFromUserName("");
+        commentView.setId(scoreID);
+        commentView.setType(ReplyAndCommentView.TYPE_SCORE);
+        commentView.setTargetUserId(0);
+        commentView.setNetAndListener();
     }
 
     private void setPrimacyView() {
@@ -539,7 +618,13 @@ public class ScoreShowInfoActivity extends BaseActivity {
     }
     private void setListener() {
 
-
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isRefresh = true;
+                setNet(NET_STATUS_MAIN_COMMENT);
+            }
+        });
 
         headerUserIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -597,6 +682,15 @@ public class ScoreShowInfoActivity extends BaseActivity {
                 previewImagesList.add(primacyData.getContent().get(i).getUrl());
             }
         }
+    }
+
+    private void setRefresh(){
+        commentAdapter.removeAllHeaderView();
+        isRefresh = false;
+        refreshLayout.setRefreshing(false);
+        commentAdapter.setNewData(commentMainList);
+        setPrimacyView();
+        ToastUtils.showShort(ScoreShowInfoActivity.this,"刷新成功！");
     }
 
     private void setLoadMore() {

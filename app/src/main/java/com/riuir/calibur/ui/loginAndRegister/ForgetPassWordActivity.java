@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.geetest.sdk.Bind.GT3GeetestBindListener;
 import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
+import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
@@ -22,6 +23,7 @@ import com.riuir.calibur.ui.home.MainActivity;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,7 +91,10 @@ public class ForgetPassWordActivity extends BaseActivity {
                 if (userNameStr==null||userNameStr.length() != 11){
                     ToastUtils.showShort(ForgetPassWordActivity.this,"请输入正确的手机号哟(＾Ｕ＾)ノ~");
                 }else {
-                    setNet(NET_GEE_STATUS_captcha);
+//                    setNet(NET_GEE_STATUS_captcha);
+                    sendMessageBtn.setText("发送中..");
+                    sendMessageBtn.setClickable(false);
+                    sendVerWithOutGee();
                 }
             }
         });
@@ -111,8 +116,49 @@ public class ForgetPassWordActivity extends BaseActivity {
                         ||verificationCodeStr==null||verificationCodeStr.length() == 0){
                     ToastUtils.showShort(ForgetPassWordActivity.this,"请完善您的信息哟(＾Ｕ＾)ノ~");
                 }else {
+                    reSetPassWordBtn.setText("重置密码中");
+                    reSetPassWordBtn.setClickable(false);
                     setNet(NET_reset_password);
                 }
+            }
+        });
+    }
+
+    private void sendVerWithOutGee(){
+        apiPostNoGeetest.getGeeTestSendValidateNoGee("forgot_password",userNameStr).enqueue(new Callback<Event<String>>() {
+            @Override
+            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
+                if (response!=null&&response.isSuccessful()){
+                    //发送成功
+                    ToastUtils.showShort(ForgetPassWordActivity.this,response.body().getData());
+                    reSetSendMessageBtnSecond = 60;
+                    handler.sendEmptyMessage(0);
+                }else if (!response.isSuccessful()){
+
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                    ToastUtils.showShort(ForgetPassWordActivity.this,info.getMessage());
+                    sendMessageBtn.setText("发送验证码");
+                    sendMessageBtn.setClickable(true);
+                }else {
+                    ToastUtils.showShort(ForgetPassWordActivity.this,"发送失败");
+                    sendMessageBtn.setText("发送验证码");
+                    sendMessageBtn.setClickable(true);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Event<String>> call, Throwable t) {
+                ToastUtils.showShort(ForgetPassWordActivity.this,"发送失败");
+                sendMessageBtn.setText("发送验证码");
+                sendMessageBtn.setClickable(true);
             }
         });
     }
@@ -211,26 +257,36 @@ public class ForgetPassWordActivity extends BaseActivity {
 
                     if (response!=null&&response.body()!=null){
                         LogUtils.d("resetPass",response.body().toString());
-                        if(response.body().getCode() == 0){
+                        if(response!=null&&response.isSuccessful()){
                             ToastUtils.showLong(ForgetPassWordActivity.this,"重置密码成功(＾Ｕ＾)ノ~");
                             finish();
-                        }else if (response.body().getCode() == 400){
-                            ToastUtils.showShort(ForgetPassWordActivity.this,response.body().getData());
-                        }else if (response.body().getCode() == 403){
-                            ToastUtils.showShort(ForgetPassWordActivity.this,response.body().getMessage());
+                        }else if (response!=null&&!response.isSuccessful()){
+                            String errorStr = "";
+                            try {
+                                errorStr = response.errorBody().string();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Gson gson = new Gson();
+                            Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                            ToastUtils.showShort(ForgetPassWordActivity.this,info.getMessage());
                         }else {
                             ToastUtils.showShort(ForgetPassWordActivity.this,"不明原因导致注册失败了");
                         }
                     }else {
                         ToastUtils.showShort(ForgetPassWordActivity.this,"不明原因导致注册失败了QAQ");
                     }
-
+                    reSetPassWordBtn.setText("重置密码");
+                    reSetPassWordBtn.setClickable(true);
 
                 }
 
                 @Override
                 public void onFailure(Call<Event<String>> call, Throwable t) {
                     ToastUtils.showShort(ForgetPassWordActivity.this,"请检查您的网络哟~");
+                    reSetPassWordBtn.setText("重置密码");
+                    reSetPassWordBtn.setClickable(true);
                 }
             });
         }
