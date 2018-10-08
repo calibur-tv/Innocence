@@ -1,19 +1,30 @@
 package com.riuir.calibur.ui.widget;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
-import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
-import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.DensityUtils;
+import com.riuir.calibur.assistUtils.ScreenUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.ui.home.MainActivity;
+import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
+import com.riuir.calibur.ui.home.image.CreateNewImageActivity;
+import com.riuir.calibur.utils.Constants;
 
 
 /**
@@ -32,7 +43,14 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
     private ImageView maintabDisIv;
     private TextView maintabDisTv;
     private ImageView maintabDisReddot;
+
     private ImageView maintabAdd;
+    private PopupWindow addPopupWindow;
+    private ImageView addPost;
+    private ImageView addImage;
+    private ImageView addScore;
+    private ImageView closePopup;
+
     private RelativeLayout maintabCircle;
     private ImageView maintabCircleIv;
     private TextView maintabCircleTv;
@@ -47,22 +65,29 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
     private ImageView maintabMineReddot;
     private OnSingleClickListener listener;
 
+    Context context;
+    Activity activity;
+
     public MainBottomBar(Context context) {
         super(context);
+        this.context = context;
         initView(context);
     }
 
     public MainBottomBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         initView(context);
     }
 
     public MainBottomBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.context = context;
         initView(context);
     }
 
     private void initView(Context context) {
+        activity = (Activity) context;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.layout_main_bottombar, this, true);
         maintabMenu = (LinearLayout) view.findViewById(R.id.maintab_menu);
@@ -91,6 +116,7 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         maintabMineTv = (TextView) view.findViewById(R.id.maintab_mine_tv);
         maintabMineReddot = (ImageView) view.findViewById(R.id.maintab_mine_reddot);
 
+        setBottomAdd();
         maintabAdd.setOnClickListener(this);
 
         maintabDis.setOnClickListener(this);
@@ -186,7 +212,8 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         int i = v.getId();
         if (i == R.id.maintab_add) {
             if (null != listener) {
-                listener.onClickAdd();
+//                listener.onClickAdd();
+                setAddListener();
             }
         } else if (i == R.id.maintab_dis) {
             reset();
@@ -215,8 +242,93 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         }
     }
 
+
+    private void setBottomAdd() {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.main_add_popup_window_layout,null,false);
+        addPopupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,true);
+        addPost = view.findViewById(R.id.main_add_popup_window_add_post);
+        addImage = view.findViewById(R.id.main_add_popup_window_add_image);
+        addScore = view.findViewById(R.id.main_add_popup_window_add_score);
+        closePopup = view.findViewById(R.id.main_add_popup_window_close);
+
+        // 设置PopupWindow的背景
+        addPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_popup_window_alpha_white));
+        // 设置PopupWindow是否能响应外部点击事件
+        addPopupWindow.setOutsideTouchable(true);
+        // 设置PopupWindow是否能响应点击事件,具体是其中的item的响应事件
+        addPopupWindow.setTouchable(true);
+
+        addPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                maintabAdd.setRotation(135);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(maintabAdd, pvhR);
+                animation.start();
+            }
+        });
+
+        setPopupClickListener();
+
+    }
+
+    private void setAddListener() {
+
+        addPopupWindow.showAtLocation(activity.findViewById(android.R.id.content), Gravity.TOP,
+                0,0);
+        maintabAdd.setRotation(0);
+        PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 135);
+        ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(maintabAdd, pvhR);
+        animation.start();
+        closePopup.setRotation(0);
+        ObjectAnimator animation1 = ObjectAnimator.ofPropertyValuesHolder(closePopup, pvhR);
+        animation1.start();
+
+    }
+
+    private void setPopupClickListener() {
+        addPost.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Constants.ISLOGIN){
+                    addPopupWindow.dismiss();
+                    Intent intent = new Intent(context, CardCreateNewActivity.class);
+                    context.startActivity(intent);
+                }else {
+                    ToastUtils.showShort(context,"登录状态才能发帖哦");
+                }
+            }
+        });
+        addImage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Constants.ISLOGIN){
+                    addPopupWindow.dismiss();
+                    Intent intent = new Intent(context, CreateNewImageActivity.class);
+                    context.startActivity(intent);
+                }else {
+                    ToastUtils.showShort(context,"登录状态才能发帖哦");
+                }
+            }
+        });
+        addScore.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ToastUtils.showShort(context,"开发中，敬请期待3");
+                addPopupWindow.dismiss();
+            }
+        });
+        closePopup.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addPopupWindow.dismiss();
+            }
+        });
+    }
+
     public interface OnSingleClickListener {
-        void onClickAdd();
 
         void onClickOne();
 
@@ -225,5 +337,7 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         void onClickThree();
 
         void onClickFour();
+
+
     }
 }

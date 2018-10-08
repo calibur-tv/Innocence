@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class Constants {
     //api总地址（前缀）
+    //正式地址 https://api.calibur.tv/
+    //测试地址 https://t-api.calibur.tv/
     public static final String API_BASE_URL = "https://api.calibur.tv/";
 
     //api图片地址（前缀）

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/maintab_menu"
     android:layout_width="match_parent"
     android:layout_height="54dp"
@@ -99,10 +100,13 @@
 
     <ImageView
         android:id="@+id/maintab_add"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:visibility="invisible"
-        android:src="@mipmap/maintab_new_normal" />
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:visibility="visible"
+        android:src="@mipmap/maintab_new_normal"
+        android:layout_gravity="center_vertical"
+        />
+
 
     <View
         android:layout_width="0dp"

@@ -35,6 +35,9 @@ public class UserMainInfo {
         private String banner;
         private String nickname;
         private String signature;
+        private int level;
+        private String sex;
+        private boolean sexSecret;
         private boolean faker;
 
         public int getId() {
@@ -91,6 +94,30 @@ public class UserMainInfo {
 
         public void setFaker(boolean faker) {
             this.faker = faker;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void setLevel(int level) {
+            this.level = level;
+        }
+
+        public String getSex() {
+            return sex;
+        }
+
+        public void setSex(String sex) {
+            this.sex = sex;
+        }
+
+        public boolean isSexSecret() {
+            return sexSecret;
+        }
+
+        public void setSexSecret(boolean sexSecret) {
+            this.sexSecret = sexSecret;
         }
 
         @Override

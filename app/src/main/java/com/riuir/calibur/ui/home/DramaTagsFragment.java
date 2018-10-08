@@ -24,6 +24,8 @@ import com.riuir.calibur.data.params.DramaTags;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaTagsSearchActivity;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaTagsAnimeListAdapter;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,7 +55,6 @@ public class DramaTagsFragment extends BaseFragment {
     //网络获取的tags总list
     List<DramaTags.DramaTagsData> tagsDataList = new ArrayList<>();
 
-
     boolean isTagsRefresh = false;
 
 
@@ -67,6 +68,7 @@ public class DramaTagsFragment extends BaseFragment {
     List<String> tagsNameList = new ArrayList<>();
     String tagsIDStr = "";
     String tagsNameStr = "";
+
 
     @Override
     protected int getContentViewID() {
@@ -113,6 +115,7 @@ public class DramaTagsFragment extends BaseFragment {
             @Override
             public void onFailure(Call<DramaTags> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络哟~");
+                LogUtils.d("AppNetErrorMessage","drama tag t = "+t.getMessage());
                 refreshLayout.setRefreshing(false);
             }
         });
@@ -137,11 +140,16 @@ public class DramaTagsFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 setTagsIdStr();
-                //跳转
-                Intent intent = new Intent(getContext(), DramaTagsSearchActivity.class);
-                intent.putExtra("tagsIDStr",tagsIDStr);
-                intent.putExtra("tagsNameStr",tagsNameStr);
-                startActivity(intent);
+                if (tagsIDStr.length() == 0||tagsNameStr.length() == 0){
+                    ToastUtils.showShort(getContext(),"请选择标签");
+                }else {
+                    //跳转
+                    Intent intent = new Intent(getContext(), DramaTagsSearchActivity.class);
+                    intent.putExtra("tagsIDStr",tagsIDStr);
+                    intent.putExtra("tagsNameStr",tagsNameStr);
+                    startActivity(intent);
+                }
+
             }
         });
 

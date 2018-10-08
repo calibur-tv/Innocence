@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
@@ -40,7 +41,7 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
     protected void convert(BaseViewHolder helper, final MainTrendingInfo.MainTrendingInfoList item) {
 
         helper.setText(R.id.main_card_list_item_user_name, item.getUser().getNickname());
-        helper.setText(R.id.main_card_list_item_anime_name, item.getBangumi().getName()+"·"+ TimeUtils.HowLongTimeForNow(item.getUpdated_at()));
+        helper.setText(R.id.main_card_list_item_anime_name, item.getBangumi().getName()+"·"+ TimeUtils.HowLongTimeForNow(item.getCreated_at()));
         helper.setText(R.id.main_card_list_item_card_title, item.getTitle());
 
 
@@ -54,7 +55,7 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
 
 
         if (item.isIs_creator()){
-            //原创显示打赏数
+            //原创显示投食数
             helper.setVisible(R.id.main_card_list_item_zan_count,false);
             helper.setVisible(R.id.main_card_list_item_reward_count,true);
             helper.setVisible(R.id.main_card_list_item_zan_icon,false);
@@ -79,12 +80,15 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
         }else {
             helper.setImageResource(R.id.main_card_list_item_marked_icon,R.mipmap.ic_mark_normal);
         }
-
-        GlideUtils.loadImageViewCircle(context, item.getUser().getAvatar(), (ImageView) helper.getView(R.id.main_card_list_item_user_icon));
+        ImageView userIcon = helper.getView(R.id.main_card_list_item_user_icon);
+        GlideUtils.loadImageViewCircle(context,
+                GlideUtils.setImageUrlForWidth(context,item.getUser().getAvatar(),userIcon.getLayoutParams().width),
+                userIcon);
         helper.addOnClickListener(R.id.main_card_list_item_user_icon);
 
-        ImageView bigOne, little1, little2, little3;
+        ImageView  little1, little2, little3;
         LinearLayout littleGroup;
+        RoundedImageView bigOne;
         bigOne = helper.getView(R.id.main_card_list_item_big_image);
         littleGroup = helper.getView(R.id.main_card_list_item_little_image_group);
         little1 = helper.getView(R.id.main_card_list_item_little_image_1);
@@ -98,16 +102,18 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
             bigOne.setVisibility(View.GONE);
         } else if (item.getImages().size() == 1) {
             littleGroup.setVisibility(View.GONE);
-
-            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
-
-            params.height = GlideUtils.getPostListImageHeightDp(context,Integer.parseInt(item.getImages().get(0).getHeight()),
-                    Integer.parseInt(item.getImages().get(0).getWidth()),30,1);
-            bigOne.setLayoutParams(params);
-
             bigOne.setVisibility(View.VISIBLE);
-            GlideUtils.loadImageViewRoundedCorners(context, GlideUtils.setImageCropHeightUrl(context,item.getImages().get(0).getUrl(),
-                    Integer.parseInt(item.getImages().get(0).getWidth()),Integer.parseInt(item.getImages().get(0).getHeight())), bigOne,15);
+
+//            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
+//
+//            params.height = GlideUtils.getPostListImageHeightDp(context,Integer.parseInt(item.getImages().get(0).getHeight()),
+//                    Integer.parseInt(item.getImages().get(0).getWidth()),30,1);
+//            bigOne.setLayoutParams(params);
+
+//            GlideUtils.loadImageViewRoundedCorners(context, GlideUtils.setImageCropHeightUrl(context,item.getImages().get(0).getUrl(),
+//                    Integer.parseInt(item.getImages().get(0).getWidth()),Integer.parseInt(item.getImages().get(0).getHeight())), bigOne,15);
+
+            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
 
         } else {
             littleGroup.setVisibility(View.VISIBLE);
@@ -115,25 +121,25 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
             little1.setVisibility(View.VISIBLE);
             little2.setVisibility(View.VISIBLE);
 
-            GlideUtils.loadImageViewRoundedCorners(context,
+            GlideUtils.loadImageView(context,
                     GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),
                             Integer.parseInt(item.getImages().get(0).getWidth())
                             ,Integer.parseInt(item.getImages().get(0).getHeight()))
-                    , little1,10);
-            GlideUtils.loadImageViewRoundedCorners(context,
+                    , little1);
+            GlideUtils.loadImageView(context,
                     GlideUtils.setImageUrl(context,item.getImages().get(1).getUrl(),
                             Integer.parseInt(item.getImages().get(1).getWidth())
                             ,Integer.parseInt(item.getImages().get(1).getHeight()))
-                    , little2,10);
+                    , little2);
             if (item.getImages().size() == 2) {
                 little3.setVisibility(View.INVISIBLE);
             } else {
                 little3.setVisibility(View.VISIBLE);
-                GlideUtils.loadImageViewRoundedCorners(context,
+                GlideUtils.loadImageView(context,
                         GlideUtils.setImageUrl(context,item.getImages().get(2).getUrl(),
                                 Integer.parseInt(item.getImages().get(2).getWidth())
                                 ,Integer.parseInt(item.getImages().get(2).getHeight()))
-                        , little3,10);
+                        , little3);
             }
 
         }

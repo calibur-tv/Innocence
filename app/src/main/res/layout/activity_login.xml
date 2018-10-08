@@ -5,84 +5,120 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/theme_magic_sakura_primary"
+    android:background="@color/color_FFFFFFFF"
     tools:context=".ui.loginAndRegister.LoginActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="153dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/img_sign_bg"
+            />
         <TextView
-            android:layout_marginTop="120dp"
+            android:layout_marginTop="22dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="登录"
             android:gravity="center"
             android:textSize="18sp"
-            android:textColor="@color/color_FFFFFFFF"
+            android:textColor="@color/theme_magic_sakura_primary"
             />
-        <EditText
-            android:layout_marginTop="40dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:hint="账号（手机号）"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="26dp"
+            android:layout_marginLeft="26dp"
+            android:layout_marginRight="26dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:maxLength="11"
-            android:textSize="14sp"
-            android:inputType="phone"
+            android:background="@drawable/bg_sign_register_edit"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_login_register_phone"
+                android:layout_gravity="center_vertical"
+                />
+            <EditText
+                android:hint="账号（手机号）"
+                android:maxLength="11"
+                android:textSize="14sp"
+                android:inputType="phone"
+                android:layout_marginLeft="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/login_username_edit"
+                android:background="@color/color_00FFFFFF"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:id="@+id/login_username_edit"
-            android:background="@drawable/bg_edittext_normal"/>
-        <EditText
-            android:layout_marginTop="30dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:hint="密码(最长25位)"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="26dp"
+            android:layout_marginRight="26dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:maxLength="25"
-            android:textSize="14sp"
-            android:inputType="textPassword"
-            android:id="@+id/login_password_edit"
-            android:background="@drawable/bg_edittext_normal"/>
+            android:background="@drawable/bg_sign_register_edit"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_login_register_password"
+                android:layout_gravity="center_vertical"
+                />
+            <EditText
+                android:layout_marginLeft="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="密码(最长25位)"
+                android:maxLength="25"
+                android:textSize="14sp"
+                android:inputType="textPassword"
+                android:id="@+id/login_password_edit"
+                android:background="@color/color_00FFFFFF"/>
+        </LinearLayout>
+
 
         <Button
             android:id="@+id/login_login_btn"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="35dp"
-            android:layout_marginLeft="30dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="26dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="26dp"
             android:background="@drawable/bg_login_button_normal"
             android:text="登录"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/color_FFFFFFFF"
             />
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:layout_marginLeft="30dp">
             <TextView
                 android:id="@+id/login_start_activity_forget_password_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="忘记密码"
-                android:textColor="@color/color_FFFFFFFF"
-                android:textSize="16sp"
-                android:layout_alignParentLeft="true"
+                android:layout_centerInParent="true"
+                android:textColor="@color/color_FF9B9B9B"
+                android:textSize="12sp"
                 />
             <TextView
                 android:id="@+id/login_start_activity_register_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="注册"
-                android:textColor="@color/color_FFFFFFFF"
+                android:textColor="@color/theme_magic_sakura_primary"
                 android:textSize="16sp"
                 android:layout_alignParentRight="true"
                 />

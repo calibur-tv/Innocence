@@ -3,6 +3,7 @@ package com.riuir.calibur.ui.home.Drama;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Message;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -24,6 +25,7 @@ import com.riuir.calibur.data.anime.AnimeFollowInfo;
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -48,6 +50,8 @@ public class DramaActivity extends BaseActivity {
     TextView animeFollowCount;
     @BindView(R.id.drama_activity_anime_card_count)
     TextView animeCardCount;
+    @BindView(R.id.drama_activity_more)
+    AppHeaderPopupWindows moreBtn;
 
     @BindView(R.id.drama_activity_anime_follow_btn)
     LinearLayout animeFollowBtn;
@@ -86,6 +90,9 @@ public class DramaActivity extends BaseActivity {
     //viewpager Tab标题
     private List<String> titles = new ArrayList<>();
 
+    private Call<AnimeShowInfo> animeShowInfoCall;
+    private Call<AnimeFollowInfo> animeFollowInfoCall;
+
     @Override
     protected int getContentViewId() {
         return R.layout.activity_drama;
@@ -102,6 +109,7 @@ public class DramaActivity extends BaseActivity {
     }
 
     private void setListener() {
+        moreBtn.setReportModelTag(AppHeaderPopupWindows.BANGUMI,animeID);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -143,7 +151,8 @@ public class DramaActivity extends BaseActivity {
     }
 
     private void setFollowNet() {
-        apiPost.getCallBangumiToggleFollow("bangumi",animeID).enqueue(new Callback<AnimeFollowInfo>() {
+        animeFollowInfoCall = apiPost.getCallBangumiToggleFollow("bangumi",animeID);
+        animeFollowInfoCall.enqueue(new Callback<AnimeFollowInfo>() {
             @Override
             public void onResponse(Call<AnimeFollowInfo> call, Response<AnimeFollowInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -192,16 +201,34 @@ public class DramaActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<AnimeFollowInfo> call, Throwable t) {
-                animeFollowBtn.setClickable(true);
-
-                if (animeShowInfoData.isFollowed()){
-                    animeFollowBtnText.setText("已关注");
+                if (call.isCanceled()){
                 }else {
-                    animeFollowBtnText.setText("关注");
+                    animeFollowBtn.setClickable(true);
+                    if (animeShowInfoData!=null){
+                        if (animeShowInfoData.isFollowed()){
+                            animeFollowBtnText.setText("已关注");
+                        }else {
+                            animeFollowBtnText.setText("关注");
+                        }
+                    }else {
+                        animeFollowBtnText.setText("关注");
+                    }
+
+                    ToastUtils.showShort(DramaActivity.this,"网络异常，操作失败了");
                 }
-                ToastUtils.showShort(DramaActivity.this,"网络异常，操作失败了");
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        if (animeShowInfoCall!=null){
+            animeShowInfoCall.cancel();
+        }
+        if (animeFollowInfoCall!=null){
+            animeFollowInfoCall.cancel();
+        }
+        super.onDestroy();
     }
 
     private void setNet() {
@@ -212,7 +239,8 @@ public class DramaActivity extends BaseActivity {
         }else {
             mApiGet = apiGet;
         }
-        mApiGet.getCallAnimeShow(animeID).enqueue(new Callback<AnimeShowInfo>() {
+        animeShowInfoCall = mApiGet.getCallAnimeShow(animeID);
+        animeShowInfoCall.enqueue(new Callback<AnimeShowInfo>() {
             @Override
             public void onResponse(Call<AnimeShowInfo> call, Response<AnimeShowInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -236,7 +264,10 @@ public class DramaActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<AnimeShowInfo> call, Throwable t) {
-                LogUtils.d("animeId","t = "+t.getMessage());
+                if (call.isCanceled()){
+                }else {
+                    LogUtils.d("animeId","t = "+t.getMessage());
+                }
             }
         });
     }
@@ -271,22 +302,22 @@ public class DramaActivity extends BaseActivity {
         dramaPagerTab.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         dramaPagerTab.setDividerColor(Color.TRANSPARENT);
-        dramaPagerTab.setBackgroundResource(R.color.theme_magic_sakura_primary);
+        dramaPagerTab.setBackgroundResource(R.color.color_FFFFFFFF);
         //设置underLine
-        dramaPagerTab.setUnderlineHeight(2);
-        dramaPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
+        dramaPagerTab.setUnderlineHeight(0);
+        dramaPagerTab.setUnderlineColorResource(R.color.color_FFFFFFFF);
         //设置Tab Indicator的高度
-        dramaPagerTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
+        dramaPagerTab.setIndicatorColorResource(R.color.theme_magic_sakura_primary);
         // 设置Tab Indicator的高度
-        dramaPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, dm));
+        dramaPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, dm));
         // 设置Tab标题文字的大小
         dramaPagerTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, dm));
-        //设置textclolo
-        dramaPagerTab.setTextColorResource(R.color.color_FFFFFFFF);
+        //设置textcolor
+        dramaPagerTab.setTextColorResource(R.color.color_FF5B5B5B);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
-        dramaPagerTab.setSelectedTextColorResource(R.color.color_FFFFFFFF);
+        dramaPagerTab.setSelectedTextColorResource(R.color.theme_magic_sakura_primary);
         //设置滚动条圆角（这是我自定义的一个方法，同时修改了滚动条长度，使其与文字等宽）
-        dramaPagerTab.setRoundRadius(3);
+        dramaPagerTab.setRoundRadius(2.5f);
 
         // 取消点击Tab时的背景色
         dramaPagerTab.setTabBackground(0);

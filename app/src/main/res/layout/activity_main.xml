@@ -19,16 +19,22 @@
             android:layout_alignParentTop="true"
             android:background="@color/color_FFFFFFFF"/>
 
-        <View
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/color_FFEEEEEE"
-            />
-        <com.riuir.calibur.ui.widget.MainBottomBar
-            android:id="@+id/maintab_bottombar"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:background="@color/color_FFFFFFFF"
-            android:layout_alignParentBottom="true"/>
+            android:layout_height="55dp"
+            android:background="@color/color_FFFFFFFF">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/color_FFEEEEEE"
+                />
+            <com.riuir.calibur.ui.widget.MainBottomBar
+                android:id="@+id/maintab_bottombar"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:background="@color/color_FFFFFFFF"
+                android:layout_alignParentBottom="true"/>
+        </RelativeLayout>
+        
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

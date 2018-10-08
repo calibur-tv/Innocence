@@ -18,7 +18,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Buffer;
 
-import static com.geetest.sdk.Bind.GT3GeetestUtilsBind.md5;
+
 
 //阻断，需要userToken Post请求方式
 public class AuthInterceptor implements Interceptor {

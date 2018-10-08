@@ -28,7 +28,9 @@ public class RoleFansListAdapter extends BaseQuickAdapter<RoleFansListInfo.RoleF
     @Override
     protected void convert(BaseViewHolder helper, RoleFansListInfo.RoleFansListInfoList item) {
         ImageView userIcon = helper.getView(R.id.role_fans_list_item_fans_icon);
-        GlideUtils.loadImageViewCircle(context,item.getAvatar(),userIcon);
+        GlideUtils.loadImageViewCircle(context,
+                GlideUtils.setImageUrlForWidth(context,item.getAvatar(),
+                        userIcon.getLayoutParams().width),userIcon);
         helper.setText(R.id.role_fans_list_item_fans_name,item.getNickname());
         helper.setText(R.id.role_fans_list_item_score,"应援次数:"+item.getScore());
     }

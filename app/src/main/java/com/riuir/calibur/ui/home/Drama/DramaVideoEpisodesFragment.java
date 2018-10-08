@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.riuir.calibur.R;
@@ -15,6 +16,7 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.data.anime.AnimeShowVideosInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaVideoEpisodesListAdapter;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 
 import java.util.List;
 
@@ -31,6 +33,8 @@ public class DramaVideoEpisodesFragment extends BaseFragment {
     DramaVideoEpisodesListAdapter adapter;
 
     List<AnimeShowVideosInfo.AnimeShowVideosInfoDataEpisodes> data;
+
+    AppListEmptyView emptyView;
 
     @Override
     protected int getContentViewID() {
@@ -63,9 +67,19 @@ public class DramaVideoEpisodesFragment extends BaseFragment {
          */
         adapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
         videoEpisodesListView.setAdapter(adapter);
-
+        setEmptyView();
         //添加监听
         setListener();
+    }
+
+    private void setEmptyView(){
+        if (data==null||data.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
     }
 
     private void setListener() {

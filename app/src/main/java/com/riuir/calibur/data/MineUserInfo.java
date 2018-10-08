@@ -44,9 +44,11 @@ public class MineUserInfo {
         private MinEUserInfoUpToken upToken;
         private boolean daySign;
         private int coin;
+        private int coin_from_sign;
         private boolean faker;
         private boolean is_admin;
         private int notification;
+        private MineUserInfoExp exp;
 
         public int getId() {
             return id;
@@ -176,6 +178,22 @@ public class MineUserInfo {
             this.notification = notification;
         }
 
+        public int getCoin_from_sign() {
+            return coin_from_sign;
+        }
+
+        public void setCoin_from_sign(int coin_from_sign) {
+            this.coin_from_sign = coin_from_sign;
+        }
+
+        public MineUserInfoExp getExp() {
+            return exp;
+        }
+
+        public void setExp(MineUserInfoExp exp) {
+            this.exp = exp;
+        }
+
         @Override
         public String toString() {
             return "MinEUserInfoData{" +
@@ -192,9 +210,11 @@ public class MineUserInfo {
                     ", upToken=" + upToken +
                     ", daySign=" + daySign +
                     ", coin=" + coin +
+                    ", coin_from_sign=" + coin_from_sign +
                     ", faker=" + faker +
                     ", is_admin=" + is_admin +
                     ", notification=" + notification +
+                    ", exp=" + exp +
                     '}';
         }
     }
@@ -224,6 +244,45 @@ public class MineUserInfo {
             return "MinEUserInfoUpToken{" +
                     "upToken='" + upToken + '\'' +
                     ", expiredAt=" + expiredAt +
+                    '}';
+        }
+    }
+
+    public class MineUserInfoExp implements Serializable{
+        private int level;
+        private int next_level_exp;
+        private int have_exp;
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void setLevel(int level) {
+            this.level = level;
+        }
+
+        public int getNext_level_exp() {
+            return next_level_exp;
+        }
+
+        public void setNext_level_exp(int next_level_exp) {
+            this.next_level_exp = next_level_exp;
+        }
+
+        public int getHave_exp() {
+            return have_exp;
+        }
+
+        public void setHave_exp(int have_exp) {
+            this.have_exp = have_exp;
+        }
+
+        @Override
+        public String toString() {
+            return "MineUserInfoExp{" +
+                    "level=" + level +
+                    ", next_level_exp=" + next_level_exp +
+                    ", have_exp=" + have_exp +
                     '}';
         }
     }

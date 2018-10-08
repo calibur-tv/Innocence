@@ -25,6 +25,8 @@ import com.riuir.calibur.ui.home.Drama.adapter.DramaScoreListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
 import com.riuir.calibur.ui.home.user.adapter.UserScoreListAdapter;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,6 +68,11 @@ public class UserFollowedScoreFragment extends BaseFragment {
 
     private UserScoreListAdapter adapter;
 
+    private Call<MainTrendingInfo> listCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_user_followed_score;
@@ -82,9 +89,18 @@ public class UserFollowedScoreFragment extends BaseFragment {
         setNet();
     }
 
+    @Override
+    public void onDestroy() {
+        if (listCall!=null){
+            listCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
         setPage();
-        apiGet.getFollowList("score","news",0,zone,page,take,0,"").enqueue(new Callback<MainTrendingInfo>() {
+        listCall = apiGet.getFollowList("score","news",0,zone,page,take,0,"");
+        listCall.enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 LogUtils.d("score_fragment","response = "+response+",data = "+response.body().getData());
@@ -93,9 +109,12 @@ public class UserFollowedScoreFragment extends BaseFragment {
                     mainScoreInfoData = response.body().getData();
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        scoreRefreshLayout.setRefreshing(false);
                         baseListScore = response.body().getData().getList();
-                        setListAdapter();
+                        if (scoreRefreshLayout!=null&&scoreListView!=null){
+                            scoreRefreshLayout.setRefreshing(false);
+                            setListAdapter();
+                            setEmptyView();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -127,6 +146,7 @@ public class UserFollowedScoreFragment extends BaseFragment {
                         isFirstLoad = false;
                         scoreRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
 
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
@@ -142,23 +162,28 @@ public class UserFollowedScoreFragment extends BaseFragment {
                         isFirstLoad = false;
                         scoreRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络！");
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isRefresh){
-                    scoreRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    isFirstLoad = false;
-                    scoreRefreshLayout.setRefreshing(false);
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(getContext(),"请检查您的网络！");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        scoreRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        scoreRefreshLayout.setRefreshing(false);
+                    }
+                    setFailedView();
                 }
             }
         });
@@ -231,6 +256,24 @@ public class UserFollowedScoreFragment extends BaseFragment {
                 setNet();
             }
         });
+    }
+
+    private void setEmptyView(){
+        if (baseListScore==null||baseListScore.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 下拉重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
     }
 
     private void setLoadMore() {

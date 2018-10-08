@@ -27,6 +27,8 @@ import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
 import com.riuir.calibur.ui.home.user.adapter.FollowedRoleAdapter;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +66,11 @@ public class UserFollowedRoleFragment extends BaseFragment {
     //page默认从0开始
     private int page = 0;
 
+    private Call<MainTrendingInfo> listCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_user_followed_role;
@@ -80,20 +87,31 @@ public class UserFollowedRoleFragment extends BaseFragment {
         setNet();
     }
 
+    @Override
+    public void onDestroy() {
+        if (listCall!=null){
+            listCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
         setPage();
-        apiGet.getFollowList("role","hot",0,zone,page,20,0,"").enqueue(new Callback<MainTrendingInfo>() {
+        listCall = apiGet.getFollowList("role","hot",0,zone,page,20,0,"");
+        listCall.enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
                     roleInfoData = response.body().getData();
                     roleInfoList = response.body().getData().getList();
-
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        roleRefreshLayout.setRefreshing(false);
                         baseRoleInfoList = response.body().getData().getList();
-                        setAdapter();
+                        if (roleRefreshLayout!=null&&roleListView!=null){
+                            roleRefreshLayout.setRefreshing(false);
+                            setAdapter();
+                            setEmptyView();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -126,7 +144,7 @@ public class UserFollowedRoleFragment extends BaseFragment {
                         isFirstLoad = false;
                         roleRefreshLayout.setRefreshing(false);
                     }
-
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -141,24 +159,30 @@ public class UserFollowedRoleFragment extends BaseFragment {
                         isFirstLoad = false;
                         roleRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络哟！");
-                if (isLoadMore){
-                    followedRoleAdapter.loadMoreFail();
-                    isLoadMore = false;
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(getContext(),"请检查您的网络哟！");
+                    if (isLoadMore){
+                        followedRoleAdapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        roleRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        roleRefreshLayout.setRefreshing(false);
+                    }
+                    setFailedView();
                 }
-                if (isRefresh){
-                    roleRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    isFirstLoad = false;
-                    roleRefreshLayout.setRefreshing(false);
-                }
+
             }
         });
     }
@@ -227,6 +251,24 @@ public class UserFollowedRoleFragment extends BaseFragment {
                 setNet();
             }
         });
+    }
+
+    private void setEmptyView(){
+        if (baseRoleInfoList==null||baseRoleInfoList.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            followedRoleAdapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 下拉重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        followedRoleAdapter.setEmptyView(failedView);
     }
 
     private void setLoadMore() {

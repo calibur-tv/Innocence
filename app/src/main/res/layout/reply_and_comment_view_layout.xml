@@ -35,9 +35,9 @@
             android:background="@drawable/bg_edittext_normal"
             android:maxLength="200"
             android:hint="回复："
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingRight="36dp"
             android:gravity="center_vertical"
             />
         <TextView

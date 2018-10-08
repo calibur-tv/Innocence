@@ -56,7 +56,15 @@ public interface ApiPost {
     @POST("door/message")
     Call<Event<String>> getGeeTestSendValidateNoGee(@Query("type") String type,@Query("phone_number")String phone_number);
 
-    @POST("door/user")
+    //举报接口
+    @POST("report/send")
+    Call<Event<String>> getCallReportSend(@Query("id")int id,@Query("model")String model,
+                                          @Query("type")int type,@Query("message")String message);
+    //反馈接口
+    @POST("user/feedback")
+    Call<Event<String>> getCallUserFeedback(@Query("type")int type,@Query("desc")String desc,@Query("ua")String ua);
+
+    @POST("door/refresh")
     Call<MineUserInfo> getMineUserInfo();
 
     @POST("door/logout")
@@ -72,7 +80,7 @@ public interface ApiPost {
     @POST("toggle/like")
     Call<TrendingToggleInfo> getTrendingToggleLike(@Query("type")String type,@Query("id")int postId);
 
-    //发送给帖子打赏
+    //发送给帖子投食
     @POST("toggle/reward")
     Call<TrendingToggleInfo> getTrendingToggleReward(@Query("type")String type,@Query("id")int postId);
 
@@ -95,7 +103,7 @@ public interface ApiPost {
     @POST("comment/main/create")
     Call<CreateMainCommentInfo> getCreateMainComment(@Body CreateMainComment createMainComment);
 
-    //新建字评论
+    //新建子评论
     @POST("comment/main/reply")
     Call<ReplyCommentInfo> getReplyComment(@Query("content")String content, @Query("type")String type,
                                            @Query("id")int id,@Query("targetUserId")int targetUserId);
@@ -103,19 +111,16 @@ public interface ApiPost {
 
     //新建帖子
     @POST("post/create")
-    Call<Event<Integer>> getCreatPost(@Body CreatePostParams createPostParams,
-                                      @Header("X-Auth-Time")String authTime,@Header("X-Auth-Value")String AuthValue);
+    Call<Event<Integer>> getCreatPost(@Body CreatePostParams createPostParams);
     //新建单张图
     @POST("image/single/upload")
-    Call<Event<Integer>> getCreateImageSingle(@Body CreateNewImageSingle createNewImageSingle,
-                                      @Header("X-Auth-Time")String authTime,@Header("X-Auth-Value")String AuthValue);
+    Call<Event<Integer>> getCreateImageSingle(@Body CreateNewImageSingle createNewImageSingle);
     //新建相册传图
     @POST("image/album/upload")
     Call<Event<Integer>> getCreateImageForAlbum(@Body CreateNewImageForAlbum createNewImageForAlbum);
     //新建相册
     @POST("image/album/create")
-    Call<CreateNewAlbumInfo> getCreateIAlbum(@Body CreateNewAlbum createNewAlbum,
-                                             @Header("X-Auth-Time")String authTime, @Header("X-Auth-Value")String AuthValue);
+    Call<CreateNewAlbumInfo> getCreateIAlbum(@Body CreateNewAlbum createNewAlbum);
 
     //回复帖子评论
     @POST("post/comment/{commentId}/reply")
@@ -128,4 +133,13 @@ public interface ApiPost {
     //上传头像或者banner
     @POST("user/setting/image")
     Call<Event<String>> getCallUpLoadUserAvatarAndBanner(@Query("type")String type,@Query("url")String url);
+
+    //删除帖子 相册 漫评
+    @POST("post/{postId}/deletePost")
+    Call<Event<String>> getCallDeletePost(@Path("postId")int postId);
+    @POST("image/album/delete")
+    Call<Event<String>> getCallDeleteAlbum(@Query("id") int id);
+    @POST("score/delete")
+    Call<Event<String>> getCallDeleteScore(@Query("id")int id);
+
 }

@@ -23,6 +23,8 @@ import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.ImageListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,6 +63,11 @@ public class DramaImageFragment extends BaseFragment {
     int bangumiID = 0;
 
     private ImageListAdapter adapter;
+
+    private Call<MainTrendingInfo> listCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
 
     @Override
     protected int getContentViewID() {
@@ -128,14 +135,27 @@ public class DramaImageFragment extends BaseFragment {
             seenIds = "";
             seenIdList.clear();
         }
+        if (isFirstLoad){
+            seenIds = "";
+            seenIdList.clear();
+        }
 
         LogUtils.d("image_1","seenIds = "+seenIds );
     }
 
 
+    @Override
+    public void onDestroy() {
+        if (listCall!=null){
+            listCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
         setSeendIdS();
-        apiGet.getFollowList("image","active",bangumiID,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
+        listCall = apiGet.getFollowList("image","active",bangumiID,"",0,0,0,seenIds);
+        listCall.enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -143,9 +163,12 @@ public class DramaImageFragment extends BaseFragment {
                     mainImageInfoData = response.body().getData();
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        imageRefreshLayout.setRefreshing(false);
                         baseListImage = response.body().getData().getList();
-                        setListAdapter();
+                        if (imageRefreshLayout!=null&&imageListView!=null){
+                            imageRefreshLayout.setRefreshing(false);
+                            setListAdapter();
+                            setEmptyView();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -181,6 +204,7 @@ public class DramaImageFragment extends BaseFragment {
                         imageRefreshLayout.setRefreshing(false);
                         isFirstLoad = false;
                     }
+                    setFailedView();
 
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
@@ -196,24 +220,30 @@ public class DramaImageFragment extends BaseFragment {
                         imageRefreshLayout.setRefreshing(false);
                         isFirstLoad = false;
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络！");
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(getContext(),"请检查您的网络！");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        imageRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        imageRefreshLayout.setRefreshing(false);
+                        isFirstLoad = false;
+                    }
+                    setFailedView();
                 }
-                if (isRefresh){
-                    imageRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    imageRefreshLayout.setRefreshing(false);
-                    isFirstLoad = false;
-                }
+
             }
         });
     }
@@ -243,6 +273,25 @@ public class DramaImageFragment extends BaseFragment {
 
         //添加监听
         setListener();
+
+    }
+
+    private void setEmptyView(){
+        if (baseListImage==null||baseListImage.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
 
     }
 

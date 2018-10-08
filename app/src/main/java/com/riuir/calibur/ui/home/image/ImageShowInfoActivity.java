@@ -32,9 +32,13 @@ import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -55,9 +59,10 @@ public class ImageShowInfoActivity extends BaseActivity {
     ImageView backBtn;
     @BindView(R.id.image_show_info_refresh_layout)
     SwipeRefreshLayout refreshLayout;
-
     @BindView(R.id.image_show_info_comment_view)
     ReplyAndCommentView commentView;
+    @BindView(R.id.image_show_info_list_header_card_more)
+    AppHeaderPopupWindows headerMore;
 
     private ImageShowInfoPrimacy.ImageShowInfoPrimacyData primacyData;
     private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
@@ -70,6 +75,8 @@ public class ImageShowInfoActivity extends BaseActivity {
     boolean isLoadMore = false;
     boolean isFirstLoad = false;
     boolean isRefresh = false;
+    boolean isOnlySeeMaster = false;
+    int onlySeeMaster = 0;
 
     private CommentAdapter commentAdapter;
 
@@ -81,7 +88,7 @@ public class ImageShowInfoActivity extends BaseActivity {
     ImageView headerUserIcon;
     TextView headerUserName;
     TextView headerTime;
-    TextView headerCardMore;
+
 
     TrendingLikeFollowCollectionView trendingLFCView;
 
@@ -92,12 +99,17 @@ public class ImageShowInfoActivity extends BaseActivity {
     private static final int NET_STATUS_PRIMACY = 0;
     private static final int NET_STATUS_MAIN_COMMENT = 1;
 
+    private Call<ImageShowInfoPrimacy> primacyCall;
+    private Call<TrendingShowInfoCommentMain> commentMainCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
+
     @Override
     protected int getContentViewId() {
         return R.layout.activity_image_show_info;
     }
-
-
 
     @Override
     protected void onInit() {
@@ -110,6 +122,17 @@ public class ImageShowInfoActivity extends BaseActivity {
         setNet(NET_STATUS_MAIN_COMMENT);
     }
 
+    @Override
+    public void onDestroy() {
+        if (primacyCall!=null){
+            primacyCall.cancel();
+        }
+        if (commentMainCall!=null){
+            commentMainCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet(int NET_STATUS){
         ApiGet mApiGet;
         if (Constants.ISLOGIN){
@@ -119,6 +142,7 @@ public class ImageShowInfoActivity extends BaseActivity {
         }
 
         if (NET_STATUS == NET_STATUS_PRIMACY){
+            primacyCall = mApiGet.getCallImageShowPrimacy(imageID);
             mApiGet.getCallImageShowPrimacy(imageID).enqueue(new Callback<ImageShowInfoPrimacy>() {
                 @Override
                 public void onResponse(Call<ImageShowInfoPrimacy> call, Response<ImageShowInfoPrimacy> response) {
@@ -127,9 +151,12 @@ public class ImageShowInfoActivity extends BaseActivity {
                         //两次网络请求都完成后开始加载数据
                         if (isFirstLoad){
                             isFirstLoad = false;
-                            refreshLayout.setRefreshing(false);
-                            setAdapter();
-                            setPrimacyView();
+                            if (refreshLayout!=null&&imageShowInfoListView!=null){
+                                refreshLayout.setRefreshing(false);
+                                setAdapter();
+                                setPrimacyView();
+                                setEmptyView();
+                            }
                         }
                         if (isRefresh){
                             setRefresh();
@@ -158,6 +185,7 @@ public class ImageShowInfoActivity extends BaseActivity {
                             isRefresh = false;
                         }
                         refreshLayout.setRefreshing(false);
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(ImageShowInfoActivity.this,"未知错误出现了！");
                         if (isFirstLoad){
@@ -167,25 +195,31 @@ public class ImageShowInfoActivity extends BaseActivity {
                             isRefresh = false;
                         }
                         refreshLayout.setRefreshing(false);
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ImageShowInfoPrimacy> call, Throwable t) {
-                    ToastUtils.showShort(ImageShowInfoActivity.this,"请检查您的网络！");
-                    if (isFirstLoad){
-                        isFirstLoad = false;
+                    if (call.isCanceled()){
+                    }else {
+                        ToastUtils.showShort(ImageShowInfoActivity.this,"请检查您的网络！");
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                        }
+                        refreshLayout.setRefreshing(false);
+                        setFailedView();
                     }
-                    if (isRefresh){
-                        isRefresh = false;
-                    }
-                    refreshLayout.setRefreshing(false);
                 }
             });
         }
         if (NET_STATUS == NET_STATUS_MAIN_COMMENT){
             setFetchID();
-            mApiGet.getCallMainComment("image",imageID,fetchId).enqueue(new Callback<TrendingShowInfoCommentMain>() {
+            commentMainCall = mApiGet.getCallMainComment("image",imageID,fetchId,onlySeeMaster);
+            commentMainCall.enqueue(new Callback<TrendingShowInfoCommentMain>() {
                 @Override
                 public void onResponse(Call<TrendingShowInfoCommentMain> call, Response<TrendingShowInfoCommentMain> response) {
                     if (response!=null&&response.body()!=null&&response.body().getCode()==0){
@@ -230,6 +264,7 @@ public class ImageShowInfoActivity extends BaseActivity {
                             refreshLayout.setRefreshing(false);
                             isRefresh = false;
                         }
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(ImageShowInfoActivity.this,"未知错误出现了！");
                         if (isLoadMore){
@@ -244,24 +279,29 @@ public class ImageShowInfoActivity extends BaseActivity {
                             refreshLayout.setRefreshing(false);
                             isRefresh = false;
                         }
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<TrendingShowInfoCommentMain> call, Throwable t) {
-                    ToastUtils.showShort(ImageShowInfoActivity.this,"请检查您的网络！");
-
-                    if (isLoadMore){
-                        commentAdapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isFirstLoad){
-                        refreshLayout.setRefreshing(false);
-                        isFirstLoad = false;
-                    }
-                    if (isRefresh){
-                        refreshLayout.setRefreshing(false);
-                        isRefresh = false;
+                    if (call.isCanceled()){
+                    }else {
+                        ToastUtils.showShort(ImageShowInfoActivity.this,"请检查您的网络！");
+                        LogUtils.d("AppNetErrorMessage","image show t = "+t.getMessage());
+                        if (isLoadMore){
+                            commentAdapter.loadMoreFail();
+                            isLoadMore = false;
+                        }
+                        if (isFirstLoad){
+                            refreshLayout.setRefreshing(false);
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            refreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
+                        setFailedView();
                     }
                 }
             });
@@ -292,7 +332,8 @@ public class ImageShowInfoActivity extends BaseActivity {
 
 
         imageShowInfoListView.setAdapter(commentAdapter);
-        setCommentView();
+        commentAdapter.setHeaderAndEmpty(true);
+
 
     }
 
@@ -302,6 +343,7 @@ public class ImageShowInfoActivity extends BaseActivity {
         commentView.setCommentAdapter(commentAdapter);
         commentView.setFromUserName("");
         commentView.setId(imageID);
+        commentView.setTitleId(primacyData.getUser().getId());
         commentView.setType(ReplyAndCommentView.TYPE_IMAGE);
         commentView.setTargetUserId(0);
         commentView.setNetAndListener();
@@ -314,9 +356,10 @@ public class ImageShowInfoActivity extends BaseActivity {
         headerUserIcon = headerLayout.findViewById(R.id.image_show_info_list_header_user_icon);
         headerUserName = headerLayout.findViewById(R.id.image_show_info_list_header_user_name);
         headerTime = headerLayout.findViewById(R.id.image_show_info_list_header_time);
-        headerCardMore = headerLayout.findViewById(R.id.image_show_info_list_header_card_more);
+
         headerImageLayout = headerLayout.findViewById(R.id.image_show_info_list_header_card_image_layout);
         noImgText = headerLayout.findViewById(R.id.image_show_info_list_header_card_no_img_text);
+
 
         /**
          * 先设置trendingLFCView的各项属性，再设置开启监听和网络
@@ -403,7 +446,7 @@ public class ImageShowInfoActivity extends BaseActivity {
                             DensityUtils.dp2px(ImageShowInfoActivity.this,12),
                             DensityUtils.dp2px(ImageShowInfoActivity.this,4));
                     primacyImageView.setLayoutParams(params);
-                    primacyImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    primacyImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         primacyImageView.setTransitionName("ToPreviewImageActivity");
                     }
@@ -440,6 +483,7 @@ public class ImageShowInfoActivity extends BaseActivity {
 
         setPreviewImageUrlList();
 
+        setCommentView();
         setListener();
     }
 
@@ -470,6 +514,7 @@ public class ImageShowInfoActivity extends BaseActivity {
 
     private void setListener() {
 
+        setHeaderMore();
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -505,6 +550,18 @@ public class ImageShowInfoActivity extends BaseActivity {
                 }
             }
         });
+        commentAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> dataList =  adapter.getData();
+                int commentId = dataList.get(position).getId();
+                Intent intent = new Intent(ImageShowInfoActivity.this,CardChildCommentActivity.class);
+                intent.putExtra("id",commentId);
+                intent.putExtra("mainComment",dataList.get(position));
+                intent.putExtra("type","image");
+                startActivity(intent);
+            }
+        });
 
         //上拉加载监听
         commentAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
@@ -519,6 +576,50 @@ public class ImageShowInfoActivity extends BaseActivity {
                 }
             }
         }, imageShowInfoListView);
+    }
+
+    private void setHeaderMore() {
+        headerMore.setReportModelTag(AppHeaderPopupWindows.IMAGE,primacyData.getId());
+        headerMore.setDeleteLayout(AppHeaderPopupWindows.IMAGE,primacyData.getId(),
+                primacyData.getUser().getId(),apiPost);
+        headerMore.initOnlySeeMaster(AppHeaderPopupWindows.IMAGE);
+        headerMore.setOnlySeeMasterClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isOnlySeeMaster){
+                    isOnlySeeMaster = false;
+                    onlySeeMaster = 0;
+                }else {
+                    isOnlySeeMaster = true;
+                    onlySeeMaster = 1;
+                }
+                headerMore.setIsOnlySeeMaster(isOnlySeeMaster);
+                //刷新
+                isRefresh = true;
+                setNet(NET_STATUS_MAIN_COMMENT);
+            }
+        });
+    }
+
+    private void setEmptyView(){
+        if (baseCommentMainList==null||baseCommentMainList.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(ImageShowInfoActivity.this);
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            commentAdapter.setEmptyView(emptyView);
+
+
+        }
+    }
+
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(ImageShowInfoActivity.this);
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        commentAdapter.setEmptyView(failedView);
     }
 
     private void setRefresh(){
@@ -550,6 +651,9 @@ public class ImageShowInfoActivity extends BaseActivity {
             fetchId = commentAdapter.getData().get(commentAdapter.getData().size()-1).getId();
         }
         if (isFirstLoad){
+            fetchId = 0;
+        }
+        if (isRefresh){
             fetchId = 0;
         }
         LogUtils.d("cardShow","fetchID = "+fetchId);

@@ -1,6 +1,9 @@
 package com.riuir.calibur.ui.loginAndRegister;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Message;
@@ -12,7 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONException;
+
 import com.geetest.sdk.Bind.GT3Geetest;
 import com.geetest.sdk.Bind.GT3GeetestBindListener;
 import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
@@ -34,6 +37,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.splash.SplashActivity;
 import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.geetest.GeetestUtils;
 
 import org.json.JSONObject;
 
@@ -76,8 +80,9 @@ public class LoginActivity extends BaseActivity {
     //跳转来登陆页面之前的activity的className
     String fromClassName;
 
-    private GeeTestInfo geeTestInfo;
-    private GeeTestInfo.GeeTest geeTest;
+    private LoginBroadCastReceiver loginBroadCastReceiver;
+    private IntentFilter intentFilter;
+
 
     private VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGeeTest;
 
@@ -93,10 +98,24 @@ public class LoginActivity extends BaseActivity {
 
         gt3GeetestUtilsBindLogin = new GT3GeetestUtilsBind(LoginActivity.this);
 
-        Intent intent = getIntent();
-        fromClassName = intent.getComponent().getClassName();
 
+//        Intent intent = getIntent();
+//        fromClassName = intent.getComponent().getClassName();
+
+        registerReceiver();
+        initBindListener();
         initOnClicklistener();
+
+    }
+
+
+
+    private void registerReceiver() {
+        //动态接受网络变化的广播接收器
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(GeetestUtils.FailAction);
+        loginBroadCastReceiver = new LoginBroadCastReceiver();
+        registerReceiver(loginBroadCastReceiver,intentFilter);
 
     }
 
@@ -113,8 +132,11 @@ public class LoginActivity extends BaseActivity {
                     //TODO
                     loginBtn.setClickable(false);
                     loginBtn.setText("登录中");
-                    setNetWithOutGee();
+//                    setNetWithOutGee();
 //                    setNet(NET_GEE_STATUS_captcha);
+                    GeetestUtils.setGeetestStart(LoginActivity.this,apiGet,bindListenerLogin,
+                            verificationCodeBodyGeeTest,
+                            gt3GeetestUtilsBindLogin);
                 }
             }
         });
@@ -133,111 +155,9 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
-    private void setNetWithOutGee(){
-
-
-
-        //自定义API2 登录
-        Map<String,Object> params = new HashMap<>();
-        params.put("access",userNameStr);
-        params.put("secret",passWordStr);
-//        params.put("geetest",verificationCodeBodyGeeTest);
-
-        LogUtils.d("loginActivity","geetest = "+verificationCodeBodyGeeTest.toString());
-        apiPostNoGeetest.getCallLogin(params).enqueue(new Callback<Event<String>>() {
-            @Override
-            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                if (response!=null&&response.isSuccessful()){
-
-                    int code = response.body().getCode();
-                    if (code == 0){
-                        gt3GeetestUtilsBindLogin.gt3TestFinish();
-                        // 登录成功
-                        ToastUtils.showShort(LoginActivity.this,"登录成功！✿✿ヽ(°▽°)ノ✿");
-                        //返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                        SharedPreferencesUtils.put(App.instance(),"Authorization",response.body().getData());
-                        Constants.ISLOGIN = true;
-                        Constants.AUTH_TOKEN = response.body().getData();
-
-                        BangumiAllListUtils.setBangumiAllList(LoginActivity.this,apiGet);
-//                        startActivity(MainActivity.class);
-//                        finish();
-                    }
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                    ToastUtils.showShort(LoginActivity.this,info.getMessage());
-                }else {
-                    ToastUtils.showShort(LoginActivity.this,"不明原因导致登录失败QAQ");
-                    gt3GeetestUtilsBindLogin.gt3TestClose();
-                }
-                loginBtn.setClickable(true);
-                loginBtn.setText("登录");
-            }
-
-            @Override
-            public void onFailure(Call<Event<String>> call, Throwable t) {
-                ToastUtils.showShort(LoginActivity.this,"请检查您的网络哟~");
-                gt3GeetestUtilsBindLogin.gt3TestClose();
-                loginBtn.setClickable(true);
-                loginBtn.setText("登录");
-            }
-        });
-    }
 
     private void setNet(int NET_STATUS){
-        if (NET_STATUS == NET_GEE_STATUS_captcha){
-            //自定义API1后 将API1的返回数据传给gt3GeetestUtils
-            apiGet.getCallGeeTestImageCaptcha().enqueue(new Callback<GeeTestInfo>() {
-                @Override
-                public void onResponse(Call<GeeTestInfo> call, Response<GeeTestInfo> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        geeTestInfo = response.body();
-                        geeTest = geeTestInfo.getData();
 
-                        verificationCodeBodyGeeTest.setSuccess(geeTest.getSuccess());
-                        verificationCodeBodyGeeTest.setPayload(geeTest.getPayload());
-                        JSONObject params = new JSONObject();
-                        try {
-                            params.put("success",geeTest.getSuccess());
-                            params.put("gt",geeTest.getGt());
-                            params.put("challenge",geeTest.getChallenge());
-                            params.put("new_captcha",true);
-                        } catch (org.json.JSONException e) {
-                            e.printStackTrace();
-                        }
-                        gt3GeetestUtilsBindLogin.gtSetApi1Json(params);
-                        initBind();
-
-                    }else if (response!=null&&!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                        ToastUtils.showShort(LoginActivity.this,info.getMessage());
-                    }else {
-                        ToastUtils.showShort(LoginActivity.this,"不明原因导致验证码发送失败QAQ");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<GeeTestInfo> call, Throwable t) {
-                    ToastUtils.showShort(LoginActivity.this,"请检查您的网络哟~");
-                }
-            });
-        }
         if (NET_STATUS == NET_GEE_STATUS_login){
 
             //自定义API2 登录
@@ -276,8 +196,13 @@ public class LoginActivity extends BaseActivity {
                         Gson gson = new Gson();
                         Event<String> info =gson.fromJson(errorStr,Event.class);
 
+                        loginBtn.setClickable(true);
+                        loginBtn.setText("登录");
                         ToastUtils.showShort(LoginActivity.this,info.getMessage());
+                        gt3GeetestUtilsBindLogin.gt3TestClose();
                     }else {
+                        loginBtn.setClickable(true);
+                        loginBtn.setText("登录");
                         ToastUtils.showShort(LoginActivity.this,"不明原因导致登录失败QAQ");
                         gt3GeetestUtilsBindLogin.gt3TestClose();
                     }
@@ -286,6 +211,8 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void onFailure(Call<Event<String>> call, Throwable t) {
                     ToastUtils.showShort(LoginActivity.this,"请检查您的网络哟~");
+                    loginBtn.setClickable(true);
+                    loginBtn.setText("登录");
                     gt3GeetestUtilsBindLogin.gt3TestClose();
                 }
             });
@@ -295,9 +222,12 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void initBindListener() {
+
         bindListenerLogin = new GT3GeetestBindListener() {
             @Override
             public void gt3CloseDialog(int i) {
+                loginBtn.setClickable(true);
+                loginBtn.setText("登录");
                 super.gt3CloseDialog(i);
             }
 
@@ -351,19 +281,29 @@ public class LoginActivity extends BaseActivity {
 
             }
 
-
-
             @Override
             public void gt3DialogOnError(String s) {
+                loginBtn.setClickable(true);
+                loginBtn.setText("登录");
                 super.gt3DialogOnError(s);
             }
         };
+
+
     }
 
-    private void initBind() {
-        initBindListener();
-        gt3GeetestUtilsBindLogin.getGeetest(this,"","",null,bindListenerLogin);
-    }
+//    private void initBind() {
+//        initBindListener();
+//
+//        // 开启LoadDialog 第二个参数为lang（语言，如果为null则为系统语言）
+//        gt3GeetestUtilsBindLogin.showLoadingDialog(this, null);
+//        // 设置是否可以点击Dialog灰色区域关闭验证码
+//        gt3GeetestUtilsBindLogin.setDialogTouch(false);
+//
+//        gt3GeetestUtilsBindLogin.getGeetest(LoginActivity.this,
+//                "",""
+//                ,null,bindListenerLogin);
+//    }
 
     @Override
     protected void onResume() {
@@ -380,6 +320,8 @@ public class LoginActivity extends BaseActivity {
          * 页面关闭时释放资源
          */
         gt3GeetestUtilsBindLogin.cancelUtils();
+        //取消动态网络变化广播接收器的注册
+        unregisterReceiver(loginBroadCastReceiver);
         super.onDestroy();
     }
 
@@ -397,5 +339,14 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void handler(Message msg) {
 
+    }
+
+    public class LoginBroadCastReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            loginBtn.setClickable(true);
+            loginBtn.setText("登录");
+        }
     }
 }

@@ -10,7 +10,7 @@
         android:layout_marginRight="6dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
-        android:scaleType="centerInside"
+        android:scaleType="centerCrop"
         />
     <TextView
         android:id="@+id/role_fans_list_item_fans_name"

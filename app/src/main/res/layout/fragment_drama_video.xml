@@ -6,26 +6,54 @@
     android:orientation="vertical"
     tools:context=".ui.home.Drama.DramaSeasonVideoFragment">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/drama_video_pager_refresh_layout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
-                android:id="@+id/drama_video_pager_tab"
-                android:layout_width="match_parent"
-                android:background="@color/theme_magic_sakura_primary"
-                android:layout_height="40dp"></com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
-            <android.support.v4.view.ViewPager
-                android:id="@+id/drama_video_view_pager"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
-                ></android.support.v4.view.ViewPager>
+            android:id="@+id/drama_video_pager_empty_view_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_centerInParent="true">
+            <ImageView
+                android:id="@+id/drama_video_pager_empty_view_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_no_content_empty_view"/>
+            <TextView
+                android:id="@+id/drama_video_pager_empty_view_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="这里空空如也"
+                android:layout_gravity="center_horizontal"
+                android:textSize="16sp"
+                android:textColor="@color/color_FF9B9B9B"
+                android:layout_marginTop="17dp"
+                />
         </LinearLayout>
-    </android.support.v4.widget.SwipeRefreshLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/drama_video_pager_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
+                    android:id="@+id/drama_video_pager_tab"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"></com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/drama_video_view_pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3"
+                    ></android.support.v4.view.ViewPager>
+            </LinearLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </RelativeLayout>
+
 
 </LinearLayout>

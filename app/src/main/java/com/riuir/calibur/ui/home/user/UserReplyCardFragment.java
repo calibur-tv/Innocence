@@ -25,6 +25,8 @@ import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.user.adapter.ReleaseCardListAdapter;
 import com.riuir.calibur.ui.home.user.adapter.ReplyCardListAdapter;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,6 +64,11 @@ public class UserReplyCardFragment extends BaseFragment {
     //page默认是0
     int page = 0;
 
+    Call<UserReplyCardInfo> replyCardInfoCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_user_reply_card;
@@ -80,17 +87,21 @@ public class UserReplyCardFragment extends BaseFragment {
 
     private void setNet() {
         setPage();
-        apiGet.getCallUserReplyCard(zone,page).enqueue(new Callback<UserReplyCardInfo>() {
+        replyCardInfoCall = apiGet.getCallUserReplyCard(zone,page);
+        replyCardInfoCall.enqueue(new Callback<UserReplyCardInfo>() {
             @Override
             public void onResponse(Call<UserReplyCardInfo> call, Response<UserReplyCardInfo> response) {
                 if (response!=null&&response.isSuccessful()){
                     listCard = response.body().getData().getList();
                     replayCardInfoData = response.body().getData();
                     if (isFirstLoad){
-                        isFirstLoad = true;
-                        cardRefreshLayout.setRefreshing(false);
+                        isFirstLoad = false;
                         baseListCard = response.body().getData().getList();
-                        setListAdapter();
+                        if (cardRefreshLayout!=null&&cardListView!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                            setListAdapter();
+                            setEmptyView();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -121,6 +132,7 @@ public class UserReplyCardFragment extends BaseFragment {
                         isFirstLoad = true;
                         cardRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -135,23 +147,28 @@ public class UserReplyCardFragment extends BaseFragment {
                         isFirstLoad = true;
                         cardRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<UserReplyCardInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络哟！");
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isRefresh){
-                    cardRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    isFirstLoad = true;
-                    cardRefreshLayout.setRefreshing(false);
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(getContext(),"请检查您的网络哟！");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        cardRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = true;
+                        cardRefreshLayout.setRefreshing(false);
+                    }
+                    setFailedView();
                 }
             }
         });
@@ -217,6 +234,24 @@ public class UserReplyCardFragment extends BaseFragment {
                 setNet();
             }
         });
+    }
+
+    private void setEmptyView(){
+        if (baseListCard==null||baseListCard.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 下拉重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
     }
 
     private void setLoadMore() {

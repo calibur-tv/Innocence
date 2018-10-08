@@ -7,13 +7,17 @@
     <color name="color_FFA9B3BD">#A9B3BD</color>
     <color name="color_FFB75EB7">#B75eb7</color>
     <color name="transprent">#00000000</color>
+    <color name="color_48000000">#48000000</color>
     <color name="color_FFFFFFFF">#FFFFFFFF</color>
+    <color name="color_CCFFFFFF">#CCFFFFFF</color>
     <color name="color_FFF4F4F4">#FFF4F4F4</color>
+    <color name="color_FFF3F3F3">#FFF3F3F3</color>
     <color name="color_00FFFFFF">#00FFFFFF</color>
     <color name="color_FF5B5B5B">#FF5B5B5B</color>
     <color name="color_FF7B7B7B">#FF7B7B7B</color>
     <color name="color_FF9B9B9B">#FF9B9B9B</color>
     <color name="color_FFC7C7C7">#FFC7C7C7</color>
+    <color name="color_FFDFDFDF">#FFDFDFDF</color>
     <color name="color_FF444444">#FF444444</color>
     <color name="color_FF333333">#FF333333</color>
     <color name="color_FFDDDDDD">#FFDDDDDD</color>
@@ -22,18 +26,26 @@
     <color name="color_FFE2E2E2">#FFE2E2E2</color>
     <color name="color_FF66CCFF">#FF66CCFF</color>
     <color name="color_FF44ADE5">#FF44ADFF</color>
+    <color name="color_FF6688AA">#FF6688AA</color>
     <color name="color_FF222222">#FF222222</color>
+    <color name="color_FF111111">#FF111111</color>
     <color name="color_77000000">#77000000</color>
     <color name="theme_magic_sakura_yellow">#F4EA2A</color>
     <color name="color_FFD9E3ED">#FFD9E3ED</color>
+
 
     <color name="color_radar_chart">#9CCD94</color>
     <color name="gold">#DBA202</color>
     <color name="silver">#ADADAD</color>
     <color name="copper">#BCA64C</color>
 
+    <color name="color_reward">#FFe6a23c</color>
+    <color name="color_like">#FFf56c6c</color>
+    <color name="color_mark">#FF67c23a</color>
+
     <color name="theme_magic_sakura_blue">#23ADE5</color>
     <color name="theme_magic_sakura_primary">#fb7784</color>
     <color name="theme_magic_sakura_primary_dark">#b85671</color>
     <color name="theme_magic_sakura_primary_trans">#99f0486c</color>
+
 </resources>

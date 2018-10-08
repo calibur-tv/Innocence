@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
@@ -21,6 +22,9 @@ import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaCardListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
+import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,6 +63,11 @@ public class DramaCardFragment extends BaseFragment {
     boolean isFirstLoad = false;
     int bangumiID = 0;
 
+    private Call<MainTrendingInfo> listCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_drama_card;
@@ -74,10 +83,18 @@ public class DramaCardFragment extends BaseFragment {
         setNet();
     }
 
-    private void setNet() {
+    @Override
+    public void onDestroy() {
+        if (listCall!=null){
+            listCall.cancel();
+        }
+        super.onDestroy();
+    }
 
+    private void setNet() {
         setSeendIdS();
-        apiGet.getFollowList("post","active",bangumiID,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
+        listCall = apiGet.getFollowList("post","active",bangumiID,"",0,0,0,seenIds);
+        listCall.enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
 
@@ -86,9 +103,12 @@ public class DramaCardFragment extends BaseFragment {
                     mainTrendingInfoData = response.body().getData();
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        cardRefreshLayout.setRefreshing(false);
                         baseListActive = response.body().getData().getList();
-                        setListAdapter();
+                        if (cardRefreshLayout!=null&&cardListView!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                            setListAdapter();
+                            setEmptyView();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -123,6 +143,7 @@ public class DramaCardFragment extends BaseFragment {
                         isFirstLoad = false;
                         cardRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -137,26 +158,29 @@ public class DramaCardFragment extends BaseFragment {
                         isFirstLoad = false;
                         cardRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
 
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
+                if (call.isCanceled()){
+                }else {
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        cardRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        cardRefreshLayout.setRefreshing(false);
+                    }
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                }
-                if (isRefresh){
-                    cardRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                }
-                if (isFirstLoad){
-                    isFirstLoad = false;
-                    cardRefreshLayout.setRefreshing(false);
+                    setFailedView();
                 }
             }
         });
@@ -181,8 +205,31 @@ public class DramaCardFragment extends BaseFragment {
             seenIds = "";
             seenIdList.clear();
         }
+        if (isFirstLoad){
+            seenIds = "";
+            seenIdList.clear();
+        }
 
         LogUtils.d("CardHot","seenIds = "+seenIds );
+    }
+
+    private void setEmptyView(){
+        if (baseListActive==null||baseListActive.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
     }
 
     private void setLoadMore() {

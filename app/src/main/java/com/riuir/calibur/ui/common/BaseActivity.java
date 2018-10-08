@@ -54,10 +54,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         apiGetHasAuth = NetService.getInstance().createServiceGetHasAuth();
 
         compositeDisposable = new CompositeDisposable();
-        //状态栏透明
         setHandler();
 
         setContentView(getContentViewId());
+        //状态栏透明
         ActivityUtils.setTranslucentStatus(this, true);
         unbinder = ButterKnife.bind(this);
         mInflater = LayoutInflater.from(this);

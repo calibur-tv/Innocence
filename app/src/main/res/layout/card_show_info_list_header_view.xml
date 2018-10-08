@@ -50,16 +50,18 @@
             android:layout_toRightOf="@id/card_show_info_list_header_user_icon"
             android:layout_alignBottom="@id/card_show_info_list_header_user_icon"
             />
-        <TextView
-            android:id="@+id/card_show_info_list_header_card_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="···"
-            android:textSize="15sp"
-            android:paddingRight="8dp"
-            android:paddingLeft="8dp"
-            android:layout_alignParentRight="true"
-            />
+        <!--<TextView-->
+            <!--android:id="@+id/card_show_info_list_header_card_more"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="···"-->
+            <!--android:textSize="15sp"-->
+            <!--android:paddingRight="8dp"-->
+            <!--android:paddingLeft="8dp"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:visibility="gone"-->
+            <!--/>-->
+
         <TextView
             android:id="@+id/card_show_info_list_header_card_see_count"
             android:layout_width="wrap_content"

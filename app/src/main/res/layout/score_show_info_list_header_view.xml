@@ -63,6 +63,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             />
+
     </RelativeLayout>
 
     <LinearLayout
@@ -346,6 +347,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_gravity="center"
+        android:visibility="gone"
         ></com.github.mikephil.charting.charts.RadarChart>
     <com.riuir.calibur.ui.widget.ScoreContentView
         android:id="@+id/score_show_info_list_header_score_content_layout"

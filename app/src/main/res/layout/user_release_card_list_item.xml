@@ -38,7 +38,6 @@
         android:textSize="11sp"
         android:textColor="@color/color_FF9B9B9B"
         android:layout_alignBottom="@id/user_release_list_item_bangumi_icon"
-        app:layout_constraintTop_toBottomOf="@id/user_release_list_item_card_name"
         android:layout_toRightOf="@id/user_release_list_item_bangumi_icon"
         />
     <TextView
@@ -64,14 +63,16 @@
         android:layout_alignRight="@id/user_release_list_item_card_name"
         android:orientation="vertical"
         >
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/user_release_list_item_big_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="fitStart"
             android:visibility="gone"
             android:layout_marginTop="10dp"
             android:transitionName="preview_card_picture"
+            android:scaleType="centerCrop"
+            app:riv_oval="false"
+            app:riv_corner_radius="15dp"
             />
         <LinearLayout
             android:id="@+id/user_release_list_item_little_image_group"
@@ -81,34 +82,40 @@
             android:layout_marginTop="10dp"
             android:visibility="gone"
             >
-            <ImageView
+            <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/user_release_list_item_little_image_1"
                 android:layout_width="0dp"
                 android:layout_height="108dp"
                 android:layout_weight="1"
-                android:scaleType="centerInside"
+                android:scaleType="centerCrop"
                 android:visibility="invisible"
                 android:transitionName="preview_card_picture"
+                app:riv_oval="false"
+                app:riv_corner_radius="10dp"
                 />
-            <ImageView
+            <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/user_release_list_item_little_image_2"
                 android:layout_width="0dp"
                 android:layout_height="108dp"
                 android:layout_weight="1"
                 android:layout_marginLeft="5dp"
-                android:scaleType="centerInside"
+                android:scaleType="centerCrop"
                 android:visibility="invisible"
                 android:transitionName="preview_card_picture"
+                app:riv_oval="false"
+                app:riv_corner_radius="10dp"
                 />
-            <ImageView
+            <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/user_release_list_item_little_image_3"
                 android:layout_width="0dp"
                 android:layout_height="108dp"
                 android:layout_weight="1"
                 android:layout_marginLeft="5dp"
-                android:scaleType="centerInside"
+                android:scaleType="centerCrop"
                 android:visibility="invisible"
                 android:transitionName="preview_card_picture"
+                app:riv_oval="false"
+                app:riv_corner_radius="10dp"
                 />
         </LinearLayout>
 

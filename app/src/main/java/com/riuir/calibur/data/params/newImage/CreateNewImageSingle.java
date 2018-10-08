@@ -1,5 +1,7 @@
 package com.riuir.calibur.data.params.newImage;
 
+import com.riuir.calibur.data.params.VerificationCodeBody;
+
 public class CreateNewImageSingle {
     private int bangumi_id;
     private String name;
@@ -9,6 +11,7 @@ public class CreateNewImageSingle {
     private int height;
     private String size;
     private String type;
+    private VerificationCodeBody.VerificationCodeBodyGeeTest geetest;
 
     public int getBangumi_id() {
         return bangumi_id;
@@ -72,5 +75,28 @@ public class CreateNewImageSingle {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public VerificationCodeBody.VerificationCodeBodyGeeTest getGeetest() {
+        return geetest;
+    }
+
+    public void setGeetest(VerificationCodeBody.VerificationCodeBodyGeeTest geetest) {
+        this.geetest = geetest;
+    }
+
+    @Override
+    public String toString() {
+        return "CreateNewImageSingle{" +
+                "bangumi_id=" + bangumi_id +
+                ", name='" + name + '\'' +
+                ", is_creator=" + is_creator +
+                ", url='" + url + '\'' +
+                ", width=" + width +
+                ", height=" + height +
+                ", size='" + size + '\'' +
+                ", type='" + type + '\'' +
+                ", geetest=" + geetest +
+                '}';
     }
 }

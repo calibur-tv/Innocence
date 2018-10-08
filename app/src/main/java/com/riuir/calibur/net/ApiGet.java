@@ -14,6 +14,7 @@ import com.riuir.calibur.data.MainTrendingInfo;
 import com.riuir.calibur.data.anime.AnimeVideosActivityInfo;
 import com.riuir.calibur.data.anime.BangumiAllList;
 import com.riuir.calibur.data.anime.SearchAnimeInfo;
+import com.riuir.calibur.data.check.AppVersionCheck;
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.data.role.RoleFansListInfo;
 import com.riuir.calibur.data.role.RoleShowInfo;
@@ -136,7 +137,7 @@ public interface ApiGet {
 
     //获取各种主评论
     @GET("comment/main/list")
-    Call<TrendingShowInfoCommentMain> getCallMainComment(@Query("type")String type, @Query("id")int id, @Query("fetchId")int fetchId);
+    Call<TrendingShowInfoCommentMain> getCallMainComment(@Query("type")String type, @Query("id")int id, @Query("fetchId")int fetchId,@Query("onlySeeMaster")int onlySeeMaster);
 
     //获取各种子评论
     @GET("comment/sub/list")
@@ -174,5 +175,8 @@ public interface ApiGet {
     //获取用户相册列表
     @GET("image/album/users")
     Call<ChooseImageAlbum> getUserAlbumList();
+
+    @GET("app/version/check")
+    Call<AppVersionCheck> getCallAppVersionCheck(@Query("type")int type,@Query("version")String version);
 
 }

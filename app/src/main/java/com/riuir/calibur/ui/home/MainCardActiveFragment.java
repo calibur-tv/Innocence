@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
@@ -24,6 +25,8 @@ import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.CardActiveListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
@@ -63,6 +66,9 @@ public class MainCardActiveFragment extends BaseFragment {
     boolean isLoadMore = false;
     boolean isRefresh = false;
     boolean isFirstLoad = false;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
 
     @Override
     protected int getContentViewID() {
@@ -104,7 +110,7 @@ public class MainCardActiveFragment extends BaseFragment {
                     if (isRefresh){
                         setRefresh();
                     }
-
+                    setEmptyView();
                     for (MainTrendingInfo.MainTrendingInfoList hotItem :listActive){
                         seenIdList.add(hotItem.getId());
                     }
@@ -130,6 +136,7 @@ public class MainCardActiveFragment extends BaseFragment {
                     if (isFirstLoad){
                         mainCardHotRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了");
                     if (isLoadMore){
@@ -143,13 +150,14 @@ public class MainCardActiveFragment extends BaseFragment {
                     if (isFirstLoad){
                         mainCardHotRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
 
-                LogUtils.d("cardHot","t = "+t);
+                LogUtils.d("AppNetErrorMessage","mainCardList t = "+t.getMessage());
                 ToastUtils.showShort(getContext(),"请检查您的网络！");
                 if (isLoadMore){
                     adapter.loadMoreFail();
@@ -162,6 +170,7 @@ public class MainCardActiveFragment extends BaseFragment {
                 if (isFirstLoad){
                     mainCardHotRefreshLayout.setRefreshing(false);
                 }
+                setFailedView();
             }
         });
     }
@@ -241,6 +250,24 @@ public class MainCardActiveFragment extends BaseFragment {
     private void  setFirstData(){
         isFirstLoad = false;
         adapter.addData(baseListActive);
+    }
+    private void setEmptyView(){
+        if (baseListActive==null||baseListActive.size()==0){
+            if (emptyView == null) {
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+       adapter.setEmptyView(failedView);
+
     }
 
     private void setListener() {

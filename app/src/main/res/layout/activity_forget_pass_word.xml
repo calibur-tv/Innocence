@@ -4,120 +4,165 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/theme_magic_sakura_primary"
     tools:context=".ui.loginAndRegister.ForgetPassWordActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:fitsSystemWindows="true"
+        android:background="@color/theme_magic_sakura_primary"
         >
-        <TextView
-            android:layout_marginTop="120dp"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="忘记密码"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textColor="@color/color_FFFFFFFF"
-            />
-        <EditText
-            android:layout_marginTop="40dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:hint="账号（手机号）"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:maxLength="11"
-            android:textSize="14sp"
-            android:inputType="phone"
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:id="@+id/forget_username_edit"
-            android:background="@drawable/bg_edittext_normal"/>
-
-        <EditText
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:hint="新的密码 (这次可不要弄丢了哦)"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:maxLength="25"
-            android:textSize="14sp"
-            android:inputType="textPassword"
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:id="@+id/forget_new_password_edit"
-            android:background="@drawable/bg_edittext_normal"/>
+            android:layout_height="50dp">
+            <TextView
+                android:layout_marginTop="120dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="忘记密码"
+                android:layout_centerInParent="true"
+                android:textSize="18sp"
+                android:textColor="@color/color_FFFFFFFF"
+                />
+            <ImageView
+                android:id="@+id/forget_start_activity_login_btn"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@mipmap/app_btn_back_white"
+                android:padding="@dimen/dp_10"
+                android:layout_centerVertical="true"
+                />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-
-            android:background="@drawable/bg_edittext_normal"
-            android:orientation="horizontal"
+            android:layout_height="match_parent"
+            android:background="@color/color_FFFFFFFF"
+            android:orientation="vertical"
             >
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:background="@null"
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="26dp"
+                android:layout_marginLeft="26dp"
+                android:layout_marginRight="26dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:maxLength="8"
-                android:textSize="14sp"
-                android:hint="输入验证码"
-                android:id="@+id/forget_verification_code_edit"
-                />
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/color_FFDDDDDD"
-                />
-            <TextView
-                android:id="@+id/forget_send_verification_code_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="发送验证码"
-                android:gravity="center"
-                android:textColor="@color/theme_magic_sakura_primary"
+                android:background="@drawable/bg_sign_register_edit"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_login_register_phone"
+                    android:layout_gravity="center_vertical"
+                    />
+                <EditText
+                    android:hint="账号（手机号）"
+                    android:layout_marginLeft="5dp"
+                    android:maxLength="11"
+                    android:textSize="14sp"
+                    android:inputType="phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:id="@+id/forget_username_edit"
+                    android:background="@color/color_00FFFFFF"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="26dp"
+                android:layout_marginRight="26dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:background="@drawable/bg_sign_register_edit"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_login_register_password"
+                    android:layout_gravity="center_vertical"
+                    />
+                <EditText
+                    android:hint="新的密码 (长度6-16位)"
+                    android:maxLength="16"
+                    android:textSize="14sp"
+                    android:inputType="textPassword"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/forget_new_password_edit"
+                    android:background="@color/color_00FFFFFF"/>
+                <ImageView
+                    android:id="@+id/forget_new_password_visibility"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@mipmap/ic_login_register_password_visibility"
+                    android:layout_gravity="center_vertical"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="26dp"
+                android:layout_marginRight="26dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:background="@drawable/bg_sign_register_edit"
+                android:orientation="horizontal"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_register_invitation"
+                    android:layout_gravity="center_vertical"
+                    />
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="@null"
+                    android:layout_marginLeft="5dp"
+                    android:maxLength="8"
+                    android:textSize="14sp"
+                    android:hint="输入验证码"
+                    android:id="@+id/forget_verification_code_edit"
+                    />
+                <TextView
+                    android:id="@+id/forget_send_verification_code_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="发送验证码"
+                    android:gravity="center"
+                    android:textColor="@color/theme_magic_sakura_primary"
+                    />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/forget_reset_password_btn"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginRight="26dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="26dp"
+                android:background="@drawable/bg_login_button_normal"
+                android:text="重置密码"
+                android:textSize="16sp"
+                android:textColor="@color/color_FFFFFFFF"
                 />
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/forget_reset_password_btn"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="35dp"
-            android:layout_marginLeft="30dp"
-            android:background="@drawable/bg_login_button_normal"
-            android:text="重置密码"
-            android:textSize="18sp"
-            android:textColor="@color/color_FFFFFFFF"
-            />
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="30dp">
-
-            <TextView
-                android:id="@+id/forget_start_activity_login_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="登录"
-                android:textColor="@color/color_FFFFFFFF"
-                android:textSize="16sp"
-                android:layout_alignParentRight="true"
-                />
-        </RelativeLayout>
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

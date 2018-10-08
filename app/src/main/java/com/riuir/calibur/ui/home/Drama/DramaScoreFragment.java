@@ -48,6 +48,8 @@ import com.riuir.calibur.ui.home.Drama.adapter.DramaScoreListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.adapter.ScoreListAdapter;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -99,6 +101,12 @@ public class DramaScoreFragment extends BaseFragment {
     private static final int NET_LIST = 0;
     private static final int NET_PRIMACY = 1;
 
+    private Call<MainTrendingInfo> listCall;
+    private Call<AnimeScoreInfo> primacyCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_drama_score;
@@ -133,29 +141,57 @@ public class DramaScoreFragment extends BaseFragment {
             seenIds = "";
             seenIdList.clear();
         }
+        if (isFirstLoad){
+            seenIds = "";
+            seenIdList.clear();
+        }
 
         LogUtils.d("image_1","seenIds = "+seenIds );
+    }
+
+    @Override
+    public void onDestroy() {
+        if (listCall!=null){
+            listCall.cancel();
+        }
+        if (primacyCall!=null){
+            primacyCall.cancel();
+        }
+        super.onDestroy();
     }
 
     private void setNet(int NET_STATUS) {
         if (NET_STATUS == NET_LIST){
             setSeendIdS();
-            apiGet.getFollowList("score","active",bangumiID,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
+            listCall = apiGet.getFollowList("score","active",bangumiID,"",0,0,0,seenIds);
+            listCall.enqueue(new Callback<MainTrendingInfo>() {
                 @Override
                 public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
 
                     if (response!=null&&response.isSuccessful()){
-                        listScore = response.body().getData().getList();
+
                         mainScoreInfoData = response.body().getData();
+                        listScore = response.body().getData().getList();
                         if (isFirstLoad){
                             baseListScore = response.body().getData().getList();
-                            setNet(NET_PRIMACY);
+                            if (baseListScore!=null&&baseListScore.size()!=0){
+                                setNet(NET_PRIMACY);
+                            }else {
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
+                            setEmptyView();
                         }
                         if (isLoadMore){
                             setLoadMore();
                         }
                         if (isRefresh){
-                            setNet(NET_PRIMACY);
+                            if (listScore!=null&&listScore.size()!=0){
+                                setNet(NET_PRIMACY);
+                            }else {
+                                scoreRefreshLayout.setRefreshing(false);
+                                isRefresh = false;
+                                ToastUtils.showShort(getContext(),"刷新成功！");
+                            }
                         }
                         for (MainTrendingInfo.MainTrendingInfoList hotItem :listScore){
                             seenIdList.add(hotItem.getId());
@@ -184,7 +220,7 @@ public class DramaScoreFragment extends BaseFragment {
                             isFirstLoad = false;
                             scoreRefreshLayout.setRefreshing(false);
                         }
-
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                         if (isLoadMore){
@@ -199,43 +235,51 @@ public class DramaScoreFragment extends BaseFragment {
                             isFirstLoad = false;
                             scoreRefreshLayout.setRefreshing(false);
                         }
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                    ToastUtils.showShort(getContext(),"请检查您的网络！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        scoreRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        scoreRefreshLayout.setRefreshing(false);
+                    if (call.isCanceled()){
+                    }else {
+                        ToastUtils.showShort(getContext(),"请检查您的网络！");
+                        if (isLoadMore){
+                            adapter.loadMoreFail();
+                            isLoadMore = false;
+                        }
+                        if (isRefresh){
+                            scoreRefreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            scoreRefreshLayout.setRefreshing(false);
+                        }
+                        setFailedView();
                     }
                 }
             });
         }
 
         if (NET_STATUS == NET_PRIMACY){
-            apiGet.getCallAnimeShowAllScore(bangumiID).enqueue(new Callback<AnimeScoreInfo>() {
+            primacyCall = apiGet.getCallAnimeShowAllScore(bangumiID);
+            primacyCall.enqueue(new Callback<AnimeScoreInfo>() {
                 @Override
                 public void onResponse(Call<AnimeScoreInfo> call, Response<AnimeScoreInfo> response) {
                     if (response!=null&&response.isSuccessful()){
                         animeScore = response.body().getData();
                         if (isFirstLoad){
-                            setListAdapter();
                             isFirstLoad = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null&&scoreListView!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                                setListAdapter();
+                                setPrimacy();
+                            }
                         }
                         if (isRefresh){
                             setRefresh();
                         }
-
 
                     }else if (!response.isSuccessful()){
                         String errorStr = "";
@@ -256,6 +300,7 @@ public class DramaScoreFragment extends BaseFragment {
                             isRefresh = false;
                             scoreRefreshLayout.setRefreshing(false);
                         }
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(getContext(),"未知原因导致加载失败！");
                         if (isFirstLoad){
@@ -266,19 +311,24 @@ public class DramaScoreFragment extends BaseFragment {
                             isRefresh = false;
                             scoreRefreshLayout.setRefreshing(false);
                         }
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<AnimeScoreInfo> call, Throwable t) {
-                    ToastUtils.showShort(getContext(),"请检查您的网络！");
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        scoreRefreshLayout.setRefreshing(false);
-                    }
-                    if (isRefresh){
-                        isRefresh = false;
-                        scoreRefreshLayout.setRefreshing(false);
+                    if (call.isCanceled()){
+                    }else {
+                        ToastUtils.showShort(getContext(),"请检查您的网络！");
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            scoreRefreshLayout.setRefreshing(false);
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                            scoreRefreshLayout.setRefreshing(false);
+                        }
+                        setFailedView();
                     }
                 }
             });
@@ -514,7 +564,7 @@ public class DramaScoreFragment extends BaseFragment {
         adapter.disableLoadMoreIfNotFullPage(scoreListView);
 
         scoreListView.setAdapter(adapter);
-        setPrimacy();
+
         //添加监听
         setListener();
     }
@@ -549,6 +599,25 @@ public class DramaScoreFragment extends BaseFragment {
                 setNet(NET_LIST);
             }
         });
+    }
+
+    private void setEmptyView(){
+        if (baseListScore==null||baseListScore.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
+
     }
 
     private void setLoadMore() {

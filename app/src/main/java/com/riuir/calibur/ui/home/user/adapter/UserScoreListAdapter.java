@@ -41,7 +41,9 @@ public class UserScoreListAdapter extends BaseQuickAdapter<MainTrendingInfo.Main
             userTitleLayout.setVisibility(View.GONE);
         }else {
             ImageView animeIcon = helper.getView(R.id.main_score_list_item_user_icon);
-            GlideUtils.loadImageViewCircle(context, item.getBangumi().getAvatar(), animeIcon);
+            GlideUtils.loadImageViewCircle(context,
+                    GlideUtils.setImageUrl(context,item.getBangumi().getAvatar(),
+                            animeIcon.getLayoutParams().width), animeIcon);
             helper.setText(R.id.main_score_list_item_user_name, item.getUser().getNickname());
         }
         helper.setText(R.id.main_score_list_item_bangumi_name,item.getBangumi().getName());
@@ -54,7 +56,7 @@ public class UserScoreListAdapter extends BaseQuickAdapter<MainTrendingInfo.Main
         helper.setText(R.id.main_score_list_item_marked_count,""+item.getMark_count());
 
         if (item.isIs_creator()){
-            //原创显示打赏数
+            //原创显示投食数
             helper.setVisible(R.id.main_score_list_item_zan_count,false);
             helper.setVisible(R.id.main_score_list_item_reward_count,true);
             helper.setVisible(R.id.main_score_list_item_zan_icon,false);

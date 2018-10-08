@@ -4,19 +4,23 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bm.library.PhotoView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
@@ -46,7 +50,39 @@ public class GlideUtils {
     //默认加载
     public static void loadImageView(Context mContext, String path, ImageView mImageView) {
 //        Glide.with(mContext).load(path).into(mImageView);
-        GlideApp.with(mContext).load(path).placeholder(R.mipmap.glide_place_holder_img).into(mImageView);
+        GlideApp.with(mContext).load(path).placeholder(R.mipmap.glide_load_place_holder_gray).into(mImageView);
+    }
+
+    //详情页加载
+    public static void loadImageViewForShowInfo(final Context mContext, final String path, final ImageView mImageView) {
+//        Glide.with(mContext).load(path).into(mImageView);
+        GlideApp.with(mContext).load(path).timeout(30000).listener(new RequestListener<Drawable>() {
+
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+
+                LogUtils.d("glideListener","failed------------");
+                mImageView.setBackground(mContext.getResources().getDrawable(R.drawable.glide_load_error));
+                mImageView.setClickable(true);
+                mImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mImageView.setClickable(false);
+                        mImageView.setBackground(mContext.getResources().getDrawable(R.drawable.glide_load_ing));
+                        loadImageViewForShowInfo(mContext,path,mImageView);
+                    }
+                });
+                return true;
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                LogUtils.d("glideListener","ready------------");
+                mImageView.setBackground(mContext.getResources().getDrawable(R.mipmap.glide_load_place_holder_gray));
+                mImageView.setClickable(true);
+                return false;
+            }
+        }).into(mImageView);
     }
 
     //文件默认加载
@@ -73,7 +109,7 @@ public class GlideUtils {
     //圆形加载
     public static void loadImageViewCircle(Context mContext, String path, ImageView mImageView) {
 //        Glide.with(mContext).load(path).apply(bitmapTransform(new CircleCrop())).into(mImageView);
-        GlideApp.with(mContext).load(path).apply(bitmapTransform(new CircleCrop())).placeholder(R.mipmap.glide_place_holder_img).into(mImageView);
+        GlideApp.with(mContext).load(path).apply(bitmapTransform(new CircleCrop())).placeholder(R.mipmap.glide_load_place_holder_gray).into(mImageView);
     }
     //文件圆形加载
     public static void loadImageViewFromFileCircle(Context mContext, File file, ImageView mImageView) {
@@ -88,12 +124,14 @@ public class GlideUtils {
 //                        , 0, RoundedCornersTransformation.CornerType.ALL)))
 //                .into(mImageView);
         GlideApp.with(mContext).load(path)
-                .placeholder(R.mipmap.glide_place_holder_img)
+                .placeholder(R.mipmap.glide_load_place_holder_gray)
                 .apply(bitmapTransform(new RoundedCornersTransformation(DensityUtils.dp2px(mContext,rounds)
                         , 0, RoundedCornersTransformation.CornerType.ALL)))
                 .into(mImageView);
 
     }
+
+
 
     //圆角加载
     public static void loadImageViewRoundedCornersForBangumi(Context mContext, String path, ImageView mImageView,int rounds) {
@@ -102,7 +140,7 @@ public class GlideUtils {
 //                        , 0, RoundedCornersTransformation.CornerType.ALL)))
 //                .into(mImageView);
         GlideApp.with(mContext).load(path)
-                .placeholder(R.mipmap.glide_place_holder_img)
+                .placeholder(R.mipmap.glide_load_place_holder_gray)
                 .apply(bitmapTransform(new RoundedCornersTransformation(DensityUtils.dp2px(mContext,rounds)
                         , 0, RoundedCornersTransformation.CornerType.LEFT)))
                 .into(mImageView);
@@ -121,7 +159,7 @@ public class GlideUtils {
 
     //preview加载
     public static void loadImageViewpreview(Context mContext, String path, final PhotoView photoView) {
-        GlideApp.with(mContext).load(path).placeholder(R.mipmap.glide_place_holder_img)
+        GlideApp.with(mContext).load(path).placeholder(R.mipmap.glide_load_place_holder_gray)
                 .into(new SimpleTarget() {
 
             @Override
@@ -232,6 +270,7 @@ public class GlideUtils {
     public static void GuideClearDiskCache(Context mContext) {
         //理磁盘缓存 需要在子线程中执行
         Glide.get(mContext).clearDiskCache();
+
     }
 
     //清理内存缓存
@@ -257,18 +296,41 @@ public class GlideUtils {
 
         String imageUrl = "";
         if (style == FULL_SCREEN){
-            imageUrl = url+"?imageMogr2/thumbnail/"+screenWidth*2+"x";
+            imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/"+screenWidth+"x";
         } else if (style == THIRD_SCREEN){
-            imageUrl = url+"?imageMogr2/thumbnail/"+((screenWidth*2)/3)+"x";
+            imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/"+(screenWidth/3)+"x";
         } else if (style == HALF_SCREEN){
-            imageUrl = url+"?imageMogr2/thumbnail/"+screenWidth+"x";
+            imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/"+screenWidth/2+"x";
         }else if (style == THIRD_SCREEN_CENTER_CROP){
-            imageUrl = url+"?imageMogr2/gravity/Center/crop/"+((screenWidth*2)/3)+"x"+((screenWidth*2)/3);
+            imageUrl = url+"?imageMogr2/auto-orient/strip/gravity/Center/crop/"+(screenWidth/3)+"x"+(screenWidth/3);
         }else {
             imageUrl = url;
         }
+
+//        if (imageUrl.contains("gif")){
+//        }else {
+//            imageUrl = imageUrl+"/format/webp";
+//        }
         LogUtils.d("activetrending","image url finish = "+imageUrl);
 
+
+        return imageUrl;
+    }
+
+    //设置图片url地址 并且添加七牛云的图片处理
+    public static String setImageUrlForWidth(Context context,String url,int width){
+
+
+        if (url.contains(Constants.API_IMAGE_BASE_URL)){
+        }else {
+            url = Constants.API_IMAGE_BASE_URL+url;
+        }
+
+        String imageUrl = "";
+
+        imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/"+width+"x/format/webp";
+
+        LogUtils.d("activetrendingWWW","image url finish = "+imageUrl);
 
         return imageUrl;
     }
@@ -291,8 +353,8 @@ public class GlideUtils {
             px = width;
         }
 
-        imageUrl = url+"?imageMogr2/gravity/Center/crop/"+px+"x"+px
-                    +"/thumbnail/"+((screenWidth*2)/3)+"x";
+        imageUrl = url+"?imageMogr2/auto-orient/strip/gravity/Center/crop/"+px+"x"+px
+                    +"/thumbnail/"+(screenWidth/3)+"x/format/webp";
 
         LogUtils.d("activetrendingTTT","image url finish = "+imageUrl);
 
@@ -310,13 +372,16 @@ public class GlideUtils {
         }
 
         String imageUrl = "";
-        if (height>(width)){
+        if (height>width){
             height = width/3*2;
         }
+        if (width<=(screenWidth*2)){
+            imageUrl = url+"?imageMogr2/gravity/Center/crop/"+(width)+"x"+(height);
+        }else {
+            imageUrl = url+"?imageMogr2/gravity/Center/crop/"+(width)+"x"+(height)
+                    +"/thumbnail/"+(screenWidth*2)+"x";
+        }
 
-
-        imageUrl = url+"?imageMogr2/gravity/Center/crop/"+width+"x"+height
-                +"/thumbnail/"+(screenWidth*2)+"x";
 
         LogUtils.d("activetrendingTTT","image url finish = "+imageUrl);
 

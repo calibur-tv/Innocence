@@ -41,6 +41,8 @@ public class ChooseImageAlbumActivity extends BaseActivity {
     List<ChooseImageAlbum.ChooseImageAlbumData> baseAlbumList = new ArrayList<>();
     List<ChooseImageAlbum.ChooseImageAlbumData> albumList;
 
+    Call<ChooseImageAlbum> callImageAlbum;
+
     ChooseImageAlbumAdapter albumAdapter;
 
     boolean isFirst = false;
@@ -82,8 +84,17 @@ public class ChooseImageAlbumActivity extends BaseActivity {
         setListener();
     }
 
+    @Override
+    public void onDestroy() {
+        if (callImageAlbum!=null){
+            callImageAlbum.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
-        apiGetHasAuth.getUserAlbumList().enqueue(new Callback<ChooseImageAlbum>() {
+        callImageAlbum =  apiGetHasAuth.getUserAlbumList();
+        callImageAlbum.enqueue(new Callback<ChooseImageAlbum>() {
             @Override
             public void onResponse(Call<ChooseImageAlbum> call, Response<ChooseImageAlbum> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -132,16 +143,19 @@ public class ChooseImageAlbumActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<ChooseImageAlbum> call, Throwable t) {
-                if (isFirst){
-                    isFirst = false;
-                    refreshLayout.setRefreshing(false);
+                if (call.isCanceled()){
+                }else {
+                    if (isFirst){
+                        isFirst = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    LogUtils.d("chooseAlbum"," t = "+t.getMessage());
+                    ToastUtils.showShort(ChooseImageAlbumActivity.this,"请检查您的网络！");
                 }
-                if (isRefresh){
-                    isRefresh = false;
-                    refreshLayout.setRefreshing(false);
-                }
-                LogUtils.d("chooseAlbum"," t = "+t.getMessage());
-                ToastUtils.showShort(ChooseImageAlbumActivity.this,"请检查您的网络！");
             }
         });
     }

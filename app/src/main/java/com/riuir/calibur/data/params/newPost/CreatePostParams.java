@@ -1,6 +1,7 @@
 package com.riuir.calibur.data.params.newPost;
 
 import com.riuir.calibur.data.params.QiniuImageParams;
+import com.riuir.calibur.data.params.VerificationCodeBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ public class CreatePostParams {
     private String content;
     private ArrayList<QiniuImageParams.QiniuImageParamsData> images;
     private boolean is_creator;
+    private VerificationCodeBody.VerificationCodeBodyGeeTest geetest;
 
     public int getBangumiId() {
         return bangumiId;
@@ -52,6 +54,14 @@ public class CreatePostParams {
         this.is_creator = is_creator;
     }
 
+    public VerificationCodeBody.VerificationCodeBodyGeeTest getGeetest() {
+        return geetest;
+    }
+
+    public void setGeetest(VerificationCodeBody.VerificationCodeBodyGeeTest geetest) {
+        this.geetest = geetest;
+    }
+
     @Override
     public String toString() {
         return "CreatePostParams{" +
@@ -60,6 +70,7 @@ public class CreatePostParams {
                 ", content='" + content + '\'' +
                 ", images=" + images +
                 ", is_creator=" + is_creator +
+                ", geetest=" + geetest +
                 '}';
     }
 }

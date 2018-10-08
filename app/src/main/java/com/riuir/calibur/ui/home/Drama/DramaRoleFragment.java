@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
@@ -22,6 +23,8 @@ import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
 import com.riuir.calibur.ui.home.role.adapter.RoleListAdapter;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,6 +61,10 @@ public class DramaRoleFragment extends BaseFragment {
     boolean isFirstLoad = false;
     int bangumiID = 0;
 
+    private Call<MainTrendingInfo> listCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_drama_role;
@@ -74,13 +81,18 @@ public class DramaRoleFragment extends BaseFragment {
 
     }
 
-    private void setView() {
-
+    @Override
+    public void onDestroy() {
+        if (listCall!=null){
+            listCall.cancel();
+        }
+        super.onDestroy();
     }
 
     private void setNet() {
         setSeendIdS();
-        apiGet.getFollowList("role","hot",bangumiID,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
+        listCall = apiGet.getFollowList("role","hot",bangumiID,"",0,0,0,seenIds);
+        listCall.enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -88,9 +100,12 @@ public class DramaRoleFragment extends BaseFragment {
                     roleInfoData = response.body().getData();
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        refreshLayout.setRefreshing(false);
                         baseDataList = response.body().getData().getList();
-                        setAdapter();
+                        if (refreshLayout!=null&&roleListView!=null){
+                            refreshLayout.setRefreshing(false);
+                            setAdapter();
+                            setEmptyView();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -125,6 +140,7 @@ public class DramaRoleFragment extends BaseFragment {
                         isRefresh = false;
                         refreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败");
                     if (isFirstLoad){
@@ -139,26 +155,50 @@ public class DramaRoleFragment extends BaseFragment {
                         isRefresh = false;
                         refreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                if (isFirstLoad){
-                    isFirstLoad = false;
-                    refreshLayout.setRefreshing(false);
-                }
-                if (isLoadMore){
-                    isLoadMore = false;
-                    roleListAdapter.loadMoreFail();
-                }
-                if (isRefresh){
-                    isRefresh = false;
-                    refreshLayout.setRefreshing(false);
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    if (isLoadMore){
+                        isLoadMore = false;
+                        roleListAdapter.loadMoreFail();
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    setFailedView();
                 }
             }
         });
+    }
+
+    private void setEmptyView(){
+        if (baseDataList==null||baseDataList.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            roleListAdapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        roleListAdapter.setEmptyView(failedView);
+
     }
 
     private void setRefresh() {

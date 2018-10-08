@@ -6,6 +6,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +20,8 @@ import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaTagsAnimeListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +53,7 @@ public class DramaTagsSearchActivity extends BaseActivity {
     boolean isLoadMore = false;
     boolean isFirstLoad = false;
 
+    Call<AnimeListForTagsSearch> callTagsSearch;
 
     DramaTagsAnimeListAdapter adapter;
 
@@ -57,6 +61,9 @@ public class DramaTagsSearchActivity extends BaseActivity {
     String tagsNameStr;
 
     int page;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
 
     @Override
     protected int getContentViewId() {
@@ -75,9 +82,18 @@ public class DramaTagsSearchActivity extends BaseActivity {
         setNet();
     }
 
+    @Override
+    public void onDestroy() {
+        if (callTagsSearch!=null){
+            callTagsSearch.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
         setPage();
-        apiGet.getCallSearchDramaForTags(tagsIDStr,page+"").enqueue(new Callback<AnimeListForTagsSearch>() {
+        callTagsSearch = apiGet.getCallSearchDramaForTags(tagsIDStr,page+"");
+        callTagsSearch.enqueue(new Callback<AnimeListForTagsSearch>() {
                 @Override
                 public void onResponse(Call<AnimeListForTagsSearch> call, Response<AnimeListForTagsSearch> response) {
                     if (response!=null&&response.isSuccessful()){
@@ -88,6 +104,7 @@ public class DramaTagsSearchActivity extends BaseActivity {
                             refreshLayout.setRefreshing(false);
                             isFirstLoad = false;
                             setAdapter();
+                            setEmptyView();
                         }
                         if (isRefresh){
                             setRefresh();
@@ -114,6 +131,7 @@ public class DramaTagsSearchActivity extends BaseActivity {
                             isLoadMore = false;
                             adapter.loadMoreFail();
                         }
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(DramaTagsSearchActivity.this,"未知错误导致加载失败");
                         if (isRefresh){
@@ -124,20 +142,25 @@ public class DramaTagsSearchActivity extends BaseActivity {
                             isLoadMore = false;
                             adapter.loadMoreFail();
                         }
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<AnimeListForTagsSearch> call, Throwable t) {
-                    ToastUtils.showShort(DramaTagsSearchActivity.this,"请检查您的网络哟~");
-                    LogUtils.d("tagSearch","t = "+t.getMessage());
-                    if (isRefresh){
-                        isRefresh = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    if (isLoadMore){
-                        isLoadMore = false;
-                        adapter.loadMoreFail();
+                    if (call.isCanceled()){
+                    }else {
+                        ToastUtils.showShort(DramaTagsSearchActivity.this,"请检查您的网络哟~");
+                        LogUtils.d("tagSearch","t = "+t.getMessage());
+                        if (isRefresh){
+                            isRefresh = false;
+                            refreshLayout.setRefreshing(false);
+                        }
+                        if (isLoadMore){
+                            isLoadMore = false;
+                            adapter.loadMoreFail();
+                        }
+                        setFailedView();
                     }
                 }
             });
@@ -181,6 +204,13 @@ public class DramaTagsSearchActivity extends BaseActivity {
     }
 
     private void seyListener() {
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         //下拉刷新监听
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -207,6 +237,25 @@ public class DramaTagsSearchActivity extends BaseActivity {
                 startActivity(intent);
             }
         });
+
+    }
+
+    private void setEmptyView(){
+        if (baseAnimeListForTagsSearchesData==null||baseAnimeListForTagsSearchesData.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(DramaTagsSearchActivity.this);
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 下拉重试
+        if (failedView == null){
+            failedView = new AppListFailedView(DramaTagsSearchActivity.this);
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
 
     }
 

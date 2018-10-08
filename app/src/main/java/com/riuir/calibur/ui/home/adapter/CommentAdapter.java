@@ -34,7 +34,8 @@ import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
 import com.riuir.calibur.data.trending.TrendingToggleInfo;
 import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
-import com.riuir.calibur.ui.loginAndRegister.LoginActivity;
+
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -77,6 +78,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
         final LinearLayout commentUpvoteCheckBtn;
         final ImageView commentUpvoteCheckIcon;
         final TextView commentUpvoteCheckText;
+        AppHeaderPopupWindows headerMore;
 
         helper.setText(R.id.card_show_info_list_comment_item_user_name,item.getFrom_user_name());
         GlideUtils.loadImageViewCircle(context,item.getFrom_user_avatar(),
@@ -84,7 +86,17 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
         helper.addOnClickListener(R.id.card_show_info_list_comment_item_user_icon);
         helper.setText(R.id.card_show_info_list_comment_item_comment_info,"第"+item.getFloor_count()+"楼·"+ TimeUtils.HowLongTimeForNow(item.getCreated_at()));
         helper.setText(R.id.card_show_info_list_comment_item_comment, Html.fromHtml(item.getContent()));
-        helper.addOnClickListener(R.id.card_show_info_list_comment_item_card_more);
+        headerMore = helper.getView(R.id.card_show_info_list_comment_item_card_more);
+
+        if (type.equals(TYPE_POST)){
+            headerMore.setReportModelTag(AppHeaderPopupWindows.POST_COMMENT,item.getId());
+        }else if (type.equals(TYPE_IMAGE)){
+            headerMore.setReportModelTag(AppHeaderPopupWindows.IMAGE_COMMENT,item.getId());
+        }else if (type.equals(TYPE_SCORE)){
+            headerMore.setReportModelTag(AppHeaderPopupWindows.SCORE_COMMENT,item.getId());
+        }else if (type.equals(TYPE_VIDEO)){
+            headerMore.setReportModelTag(AppHeaderPopupWindows.VIDEO_COMMENT,item.getId());
+        }
 
         ImageView commentMainImageView1 = helper.getView(R.id.card_show_info_list_comment_item_image1);
         ImageView commentMainImageView2 = helper.getView(R.id.card_show_info_list_comment_item_image2);
@@ -111,14 +123,13 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
         commentUpvoteCheckIcon = helper.getView(R.id.card_show_info_list_comment_item_upovte_icon);
         commentUpvoteCheckText = helper.getView(R.id.card_show_info_list_comment_item_upovte_text);
 
-
-
         if (item.isLiked()){
             commentUpvoteCheckIcon.setImageResource(R.mipmap.ic_zan_active);
         }else {
             commentUpvoteCheckIcon.setImageResource(R.mipmap.ic_zan_normal);
         }
 
+        commentUpvoteCheckText.setText(item.getLike_count()+"");
         commentUpvoteCheckBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -131,20 +142,22 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                                 if (response.body().isData()){
                                     ToastUtils.showShort(context,"点赞成功");
                                     commentUpvoteCheckIcon.setImageResource(R.mipmap.ic_zan_active);
+                                    item.setLike_count(item.getLike_count()+1);
                                 }else {
                                     ToastUtils.showShort(context,"取消赞成功");
                                     commentUpvoteCheckIcon.setImageResource(R.mipmap.ic_zan_normal);
+                                    item.setLike_count(item.getLike_count()-1);
                                 }
                             }else {
                                 ToastUtils.showShort(context,"点赞/取消点赞失败了");
                             }
-                            commentUpvoteCheckText.setText("赞");
+                            commentUpvoteCheckText.setText(item.getLike_count()+"");
                         }
 
                         @Override
                         public void onFailure(Call<TrendingToggleInfo> call, Throwable t) {
                             ToastUtils.showShort(context,"点赞/取消点赞失败了");
-                            commentUpvoteCheckText.setText("赞");
+                            commentUpvoteCheckText.setText(item.getLike_count()+"");
                         }
                     });
                 }else {

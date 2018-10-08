@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -36,6 +37,9 @@ import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -71,7 +75,7 @@ public class CardShowInfoActivity extends BaseActivity {
     ImageView headerUserIcon;
     TextView headerUserName;
     TextView headerCardInfo;
-    TextView headerCardMore;
+
     TextView headerCardSeeCount;
     TextView headerCardContent;
 
@@ -85,6 +89,8 @@ public class CardShowInfoActivity extends BaseActivity {
     boolean isLoadMore = false;
     boolean isFirstLoad = false;
     boolean isRefresh = false;
+    boolean isOnlySeeMaster = false;
+    int onlySeeMaster = 0;
 
 
     @BindView(R.id.card_show_info_list_view)
@@ -95,6 +101,14 @@ public class CardShowInfoActivity extends BaseActivity {
     ReplyAndCommentView commentView;
     @BindView(R.id.card_show_info_refresh_layout)
     SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.card_show_info_list_header_card_more)
+    AppHeaderPopupWindows headerCardMore;
+
+    private Call<CardShowInfoPrimacy> primacyCall;
+    private Call<TrendingShowInfoCommentMain> commentMainCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
 
     @Override
     protected int getContentViewId() {
@@ -114,6 +128,17 @@ public class CardShowInfoActivity extends BaseActivity {
         setNet(NET_STATUS_MAIN_COMMENT);
     }
 
+    @Override
+    public void onDestroy() {
+        if (primacyCall!=null){
+            primacyCall.cancel();
+        }
+        if (commentMainCall!=null){
+            commentMainCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet(int NET_STATUS) {
         ApiGet mApiGet;
         LogUtils.d("cardShow","isLogin = "+Constants.ISLOGIN);
@@ -123,8 +148,8 @@ public class CardShowInfoActivity extends BaseActivity {
             mApiGet = apiGet;
         }
         if (NET_STATUS == NET_STATUS_PRIMACY){
-
-            mApiGet.getCallCardShowPrimacy(cardID).enqueue(new Callback<CardShowInfoPrimacy>() {
+            primacyCall = mApiGet.getCallCardShowPrimacy(cardID);
+            primacyCall.enqueue(new Callback<CardShowInfoPrimacy>() {
                 @Override
                 public void onResponse(Call<CardShowInfoPrimacy> call, Response<CardShowInfoPrimacy> response) {
                     if (response!=null&&response.body()!=null&&response.isSuccessful()){
@@ -132,9 +157,12 @@ public class CardShowInfoActivity extends BaseActivity {
                         if (isFirstLoad){
                             //两次网络请求都完成后开始加载数据
                             isFirstLoad = false;
-                            setAdapter();
-                            setPrimacyView();
-                            refreshLayout.setRefreshing(false);
+                            if (refreshLayout!=null&&cardShowInfoListView!=null){
+                                refreshLayout.setRefreshing(false);
+                                setAdapter();
+                                setPrimacyView();
+                                setEmptyView();
+                            }
                         }
                         if (isRefresh){
 
@@ -164,6 +192,7 @@ public class CardShowInfoActivity extends BaseActivity {
                             isRefresh = false;
                         }
                         refreshLayout.setRefreshing(false);
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(CardShowInfoActivity.this,"未知错误出现了！");
                         refreshLayout.setRefreshing(false);
@@ -173,26 +202,34 @@ public class CardShowInfoActivity extends BaseActivity {
                         if (isRefresh){
                             isRefresh = false;
                         }
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<CardShowInfoPrimacy> call, Throwable t) {
-                    ToastUtils.showShort(CardShowInfoActivity.this,"网络异常，请稍后再试！");
-                    refreshLayout.setRefreshing(false);
-                    if (isFirstLoad){
-                        isFirstLoad = false;
+                    if (call.isCanceled()){
+                    }else {
+                        ToastUtils.showShort(CardShowInfoActivity.this,"网络异常，请稍后再试！");
+                        LogUtils.d("AppNetErrorMessage","cardShow primacy t = "+t.getMessage());
+                        refreshLayout.setRefreshing(false);
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                        }
+                        setFailedView();
                     }
-                    if (isRefresh){
-                        isRefresh = false;
-                    }
+
                 }
             });
         }
 
         if (NET_STATUS == NET_STATUS_MAIN_COMMENT){
             setFetchID();
-            mApiGet.getCallMainComment("post",cardID,fetchId).enqueue(new Callback<TrendingShowInfoCommentMain>() {
+            commentMainCall = mApiGet.getCallMainComment("post",cardID,fetchId,onlySeeMaster);
+            commentMainCall.enqueue(new Callback<TrendingShowInfoCommentMain>() {
                 @Override
                 public void onResponse(Call<TrendingShowInfoCommentMain> call, Response<TrendingShowInfoCommentMain> response) {
                     if (response!=null&&response.body()!=null&&response.body().getCode()==0){
@@ -239,6 +276,7 @@ public class CardShowInfoActivity extends BaseActivity {
                             refreshLayout.setRefreshing(false);
                             isRefresh = false;
                         }
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(CardShowInfoActivity.this,"未知错误出现了！");
                         if (isLoadMore){
@@ -253,28 +291,53 @@ public class CardShowInfoActivity extends BaseActivity {
                             refreshLayout.setRefreshing(false);
                             isRefresh = false;
                         }
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<TrendingShowInfoCommentMain> call, Throwable t) {
-                    ToastUtils.showShort(CardShowInfoActivity.this,"未知错误出现了！");
-
-                    if (isLoadMore){
-                        commentAdapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isFirstLoad){
-                        refreshLayout.setRefreshing(false);
-                        isFirstLoad = false;
-                    }
-                    if (isRefresh){
-                        refreshLayout.setRefreshing(false);
-                        isRefresh = false;
+                    if (call.isCanceled()){
+                    }else {
+                        ToastUtils.showShort(CardShowInfoActivity.this,"未知错误出现了！");
+                        LogUtils.d("AppNetErrorMessage","cardShow list t = "+t.getMessage());
+                        if (isLoadMore){
+                            commentAdapter.loadMoreFail();
+                            isLoadMore = false;
+                        }
+                        if (isFirstLoad){
+                            refreshLayout.setRefreshing(false);
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            refreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
+                        setFailedView();
                     }
                 }
             });
         }
+    }
+
+    private void setEmptyView(){
+        if (baseCommentMainList==null||baseCommentMainList.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(CardShowInfoActivity.this);
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            commentAdapter.setEmptyView(emptyView);
+        }
+    }
+
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(CardShowInfoActivity.this);
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        }
+        commentAdapter.setEmptyView(failedView);
     }
 
 
@@ -298,7 +361,9 @@ public class CardShowInfoActivity extends BaseActivity {
         refreshLayout.setRefreshing(false);
         commentAdapter.removeAllHeaderView();
         commentAdapter.setNewData(commentMainList);
-        setPrimacyView();
+        if (primacyData!=null){
+            setPrimacyView();
+        }
         ToastUtils.showShort(CardShowInfoActivity.this,"刷新成功！");
     }
 
@@ -307,6 +372,9 @@ public class CardShowInfoActivity extends BaseActivity {
             fetchId = commentAdapter.getData().get(commentAdapter.getData().size()-1).getId();
         }
         if (isFirstLoad){
+            fetchId = 0;
+        }
+        if (isRefresh){
             fetchId = 0;
         }
         LogUtils.d("cardShow","fetchID = "+fetchId);
@@ -319,7 +387,6 @@ public class CardShowInfoActivity extends BaseActivity {
         headerUserIcon = headerLayout.findViewById(R.id.card_show_info_list_header_user_icon);
         headerUserName = headerLayout.findViewById(R.id.card_show_info_list_header_user_name);
         headerCardInfo = headerLayout.findViewById(R.id.card_show_info_list_header_card_info);
-        headerCardMore = headerLayout.findViewById(R.id.card_show_info_list_header_card_more);
         headerCardSeeCount = headerLayout.findViewById(R.id.card_show_info_list_header_card_see_count);
         headerCardContent = headerLayout.findViewById(R.id.card_show_info_list_header_card_content);
         headerImageLayout = headerLayout.findViewById(R.id.card_show_info_list_header_card_image_layout);
@@ -386,7 +453,7 @@ public class CardShowInfoActivity extends BaseActivity {
                     primacyImageView.setTransitionName("ToPreviewImageActivity");
                 }
                 primacyImageView.setLayoutParams(params);
-                primacyImageView.setScaleType(ImageView.ScaleType.FIT_START);
+                primacyImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
                 GlideUtils.loadImageView(CardShowInfoActivity.this,
                         GlideUtils.setImageUrl(CardShowInfoActivity.this,primacyData.getPost().getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
@@ -413,6 +480,7 @@ public class CardShowInfoActivity extends BaseActivity {
 
         setPreviewImageUrlList();
 
+        setCommentView();
         setListener();
     }
 
@@ -437,6 +505,7 @@ public class CardShowInfoActivity extends BaseActivity {
 
     private void setListener() {
 
+        setHeaderMore();
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -529,6 +598,18 @@ public class CardShowInfoActivity extends BaseActivity {
                 }
             }
         });
+        commentAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> dataList =  adapter.getData();
+                int commentId = dataList.get(position).getId();
+                Intent intent = new Intent(CardShowInfoActivity.this,CardChildCommentActivity.class);
+                intent.putExtra("id",commentId);
+                intent.putExtra("mainComment",dataList.get(position));
+                intent.putExtra("type","post");
+                startActivity(intent);
+            }
+        });
 
         //上拉加载监听
         commentAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
@@ -543,6 +624,29 @@ public class CardShowInfoActivity extends BaseActivity {
                 }
             }
         }, cardShowInfoListView);
+    }
+
+    private void setHeaderMore() {
+        headerCardMore.setReportModelTag(AppHeaderPopupWindows.POST,primacyData.getPost().getId());
+        headerCardMore.setDeleteLayout(AppHeaderPopupWindows.POST,primacyData.getPost().getId(),
+                primacyData.getUser().getId(),apiPost);
+        headerCardMore.initOnlySeeMaster(AppHeaderPopupWindows.POST);
+        headerCardMore.setOnlySeeMasterClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isOnlySeeMaster){
+                    isOnlySeeMaster = false;
+                    onlySeeMaster = 0;
+                }else {
+                    isOnlySeeMaster = true;
+                    onlySeeMaster = 1;
+                }
+                headerCardMore.setIsOnlySeeMaster(isOnlySeeMaster);
+                //刷新
+                isRefresh = true;
+                setNet(NET_STATUS_MAIN_COMMENT);
+            }
+        });
     }
 
     private void setAdapter() {
@@ -565,14 +669,14 @@ public class CardShowInfoActivity extends BaseActivity {
         commentAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
 
 
+
         //添加底部footer
         commentAdapter.setEnableLoadMore(true);
         commentAdapter.setLoadMoreView(new MyLoadMoreView());
         commentAdapter.disableLoadMoreIfNotFullPage(cardShowInfoListView);
 
-
         cardShowInfoListView.setAdapter(commentAdapter);
-        setCommentView();
+        commentAdapter.setHeaderAndEmpty(true);
 
     }
 
@@ -582,6 +686,7 @@ public class CardShowInfoActivity extends BaseActivity {
         commentView.setCommentAdapter(commentAdapter);
         commentView.setFromUserName("");
         commentView.setId(cardID);
+        commentView.setTitleId(primacyData.getUser().getId());
         commentView.setType(ReplyAndCommentView.TYPE_POST);
         commentView.setTargetUserId(0);
         commentView.setNetAndListener();

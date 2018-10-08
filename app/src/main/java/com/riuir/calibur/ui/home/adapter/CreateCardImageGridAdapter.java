@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -30,7 +31,7 @@ public class CreateCardImageGridAdapter  extends BaseQuickAdapter<String,BaseVie
     @Override
     protected void convert(BaseViewHolder helper, String item) {
         ImageView delete = helper.getView(R.id.reply_card_image_grid_item_image_delete);
-        ImageView add = helper.getView(R.id.reply_card_add_image_btn);
+        RelativeLayout add = helper.getView(R.id.reply_card_add_image_btn);
         ImageView img = helper.getView(R.id.reply_card_image_grid_item_image);
         if (item.equals("add")){
             delete.setVisibility(View.GONE);

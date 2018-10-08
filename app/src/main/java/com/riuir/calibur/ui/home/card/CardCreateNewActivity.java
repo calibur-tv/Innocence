@@ -1,8 +1,13 @@
 package com.riuir.calibur.ui.home.card;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -13,6 +18,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.geetest.sdk.Bind.GT3GeetestBindListener;
+import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
 import com.google.gson.Gson;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.qiniu.android.http.ResponseInfo;
@@ -24,19 +31,24 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.PermissionUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.params.VerificationCodeBody;
 import com.riuir.calibur.data.params.newPost.CreatePostParams;
 import com.riuir.calibur.data.params.QiniuImageParams;
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.choose.ChooseNewCardBangumiActivity;
 import com.riuir.calibur.ui.home.adapter.CreateCardImageGridAdapter;
+
 import com.riuir.calibur.ui.widget.SelectorImagesActivity;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 import com.riuir.calibur.utils.QiniuUtils;
+import com.riuir.calibur.utils.geetest.GeetestUtils;
 import com.suke.widget.SwitchButton;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +65,7 @@ public class CardCreateNewActivity extends BaseActivity {
 
 
     @BindView(R.id.card_create_new_activity_send)
-    Button sendBtn;
+    TextView sendBtn;
     @BindView(R.id.card_create_new_activity_cancel)
     ImageView cancelBtn;
     @BindView(R.id.card_create_new_activity_post_content_edit)
@@ -68,6 +80,8 @@ public class CardCreateNewActivity extends BaseActivity {
     RoundedImageView chooseBangumiIcon;
     @BindView(R.id.card_create_new_activity_choose_bangumi_name)
     TextView chooseBangumiName;
+    @BindView(R.id.card_create_new_activity_choose_bangumi_choose_btn)
+    TextView chooseBangumiBtn;
 
     @BindView(R.id.card_create_new_activity_post_is_creator)
     SwitchButton isCreatorBtn;
@@ -79,6 +93,7 @@ public class CardCreateNewActivity extends BaseActivity {
     ArrayList<String> baseImagesUrl;
     ArrayList<String> imagesUrl;
 
+    List<String> baseUrlList = new ArrayList<>();
     List<String> urlList = new ArrayList<>();
     int urlTag = 0;
 
@@ -86,7 +101,7 @@ public class CardCreateNewActivity extends BaseActivity {
 
     CreateCardImageGridAdapter imageGridAdapter;
 
-    SweetAlertDialog cancelDialog;
+    AlertDialog cancelDialog;
     SweetAlertDialog upLoadDialog;
 
     int bangumiId;
@@ -95,9 +110,17 @@ public class CardCreateNewActivity extends BaseActivity {
 
     ArrayList<QiniuImageParams.QiniuImageParamsData> qiniuImageParamsDataList = new ArrayList<>();
     CreatePostParams createPostParams;
-
+    //七牛
     Configuration config;
     UploadManager uploadManager;
+
+    //极验
+    GT3GeetestUtilsBind gt3GeetestUtilsBind;
+    GT3GeetestBindListener bindListener;
+    private VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGeeTest;
+
+    private CreateCardBroadCastReceiver receiver;
+    private IntentFilter intentFilter;
     @Override
     protected int getContentViewId() {
         return R.layout.activity_card_create_new;
@@ -113,9 +136,99 @@ public class CardCreateNewActivity extends BaseActivity {
         setUserInfo();
         setView();
         PermissionUtils.chekReadAndWritePermission(CardCreateNewActivity.this);
+
+        registerReceiver();
+        gt3GeetestUtilsBind = new GT3GeetestUtilsBind(this);
+        verificationCodeBodyGeeTest = new VerificationCodeBody.VerificationCodeBodyGeeTest();
+        initGeetestBindListener();
         setListener();
         config = QiniuUtils.getQiniuConfig();
         uploadManager = new UploadManager(config);
+
+    }
+
+    private void registerReceiver() {
+        receiver = new CreateCardBroadCastReceiver();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(GeetestUtils.FailAction);
+        registerReceiver(receiver,intentFilter);
+    }
+
+    @Override
+    public void onDestroy() {
+        gt3GeetestUtilsBind.cancelUtils();
+        unregisterReceiver(receiver);
+        super.onDestroy();
+    }
+
+    private void initGeetestBindListener() {
+        bindListener = new GT3GeetestBindListener() {
+            @Override
+            public void gt3CloseDialog(int i) {
+                super.gt3CloseDialog(i);
+                setUpLoadDiaLogFail("");
+            }
+
+            @Override
+            public void gt3DialogReady() {
+                super.gt3DialogReady();
+            }
+
+            //用户是否自定义二次验证
+            @Override
+            public boolean gt3SetIsCustom() {
+                return true;
+            }
+
+            @Override
+            public void gt3GeetestStatisticsJson(JSONObject jsonObject) {
+                super.gt3GeetestStatisticsJson(jsonObject);
+            }
+
+            /**
+             * 自定义二次验证，也就是当gtSetIsCustom为ture时才执行
+             * 拿到第二个url（API2）需要的数据
+             * 在该回调里面自行请求api2
+             * 对api2的结果进行处理
+             * status 如果是true执行自定义接口2请求
+             */
+            @Override
+            public void gt3GetDialogResult(boolean status, String result) {
+//
+                if (status){
+                    //基本使用方法：
+
+                    // 1.取出该接口返回的三个参数用于自定义二次验证
+                    JSONObject res_json = null;
+                    try {
+                        res_json = new JSONObject(result);
+                        verificationCodeBodyGeeTest.setGeetest_challenge(res_json.getString("geetest_challenge"));
+                        verificationCodeBodyGeeTest.setGeetest_validate(res_json.getString("geetest_validate"));
+                        verificationCodeBodyGeeTest.setGeetest_seccode(res_json.getString("geetest_seccode"));
+                    } catch (org.json.JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    LogUtils.d("registerLog","verificationCodeBodyGeeTest = "+verificationCodeBodyGeeTest.toString());
+                    //检查和验证完成 开启上传
+                    upLoadDialog = new SweetAlertDialog(CardCreateNewActivity.this,SweetAlertDialog.PROGRESS_TYPE);
+                    upLoadDialog.setTitle("上传中...");
+                    upLoadDialog.setContentText("您的帖子正在上传中...");
+                    upLoadDialog.setCancelable(false);
+                    upLoadDialog.show();
+                    gt3GeetestUtilsBind.gt3TestFinish();
+                    getQiniuToken();
+
+                }
+
+            }
+
+            @Override
+            public void gt3DialogOnError(String s) {
+                super.gt3DialogOnError(s);
+                setUpLoadDiaLogFail("");
+            }
+        };
 
     }
 
@@ -136,37 +249,57 @@ public class CardCreateNewActivity extends BaseActivity {
         if (Constants.userInfoData!=null){
             userId = Constants.userInfoData.getId();
         }else {
-            ToastUtils.showShort(this,"请检查您的网络");
+            ToastUtils.showShort(this,"用户数据异常丢失，请重启APP");
             finish();
         }
     }
 
     private void setCancelListener() {
-        cancelDialog = new SweetAlertDialog(CardCreateNewActivity.this, SweetAlertDialog.WARNING_TYPE);
-        cancelDialog.setTitleText("退出发帖")
-                .setContentText("退出的话，已编辑的数据不会保存哦")
-                .setCancelText("取消")
-                .setConfirmText("退出")
-                .showCancelButton(true)
-                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//        cancelDialog = new SweetAlertDialog(CardCreateNewActivity.this, SweetAlertDialog.WARNING_TYPE);
+//        cancelDialog.setTitleText("退出发帖")
+//                .setContentText("退出的话，已编辑的数据不会保存哦")
+//                .setCancelText("取消")
+//                .setConfirmText("退出")
+//                .showCancelButton(true)
+//                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//                    @Override
+//                    public void onClick(SweetAlertDialog sDialog) {
+//                        sDialog.cancel();
+//                    }
+//                })
+//                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+//                    @Override
+//                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+//                        finish();
+//                    }
+//                })
+//                .show();
+
+        cancelDialog = new AlertDialog.Builder(this)
+                .setTitle("退出发帖")
+                .setMessage("如果退出，此次编辑的内容不会保存，确定退出？")
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(SweetAlertDialog sDialog) {
-                        sDialog.cancel();
+                    public void onClick(DialogInterface dialog, int which) {
+                        cancelDialog.cancel();
                     }
                 })
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                    public void onClick(DialogInterface dialog, int which) {
+                        cancelDialog.dismiss();
                         finish();
                     }
                 })
-                .show();
+                .create();
+        cancelDialog.show();
+
     }
 
     private void setListener() {
 
 
-        chooseBangumiLayout.setOnClickListener(new View.OnClickListener() {
+        chooseBangumiBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(CardCreateNewActivity.this, ChooseNewCardBangumiActivity.class);
@@ -223,7 +356,7 @@ public class CardCreateNewActivity extends BaseActivity {
 
 
     private void setBangumi() {
-        GlideUtils.loadImageViewCircle(CardCreateNewActivity.this,bangumiAvatar,chooseBangumiIcon);
+        GlideUtils.loadImageView(CardCreateNewActivity.this,bangumiAvatar,chooseBangumiIcon);
         chooseBangumiName.setText(bangumiName);
     }
 
@@ -232,14 +365,12 @@ public class CardCreateNewActivity extends BaseActivity {
         if (titleEdit.getText()!=null&&titleEdit.getText().toString().length()!=0&&
                 cardContentEdit.getText()!=null&&cardContentEdit.getText().toString().length()!=0&&
                 bangumiId!=0){
-            //检查完成 开启上传
-            upLoadDialog = new SweetAlertDialog(CardCreateNewActivity.this,SweetAlertDialog.PROGRESS_TYPE);
-            upLoadDialog.setTitle("上传中...");
-            upLoadDialog.setContentText("您的帖子正在上传中...");
-            upLoadDialog.setCancelable(false);
-            upLoadDialog.show();
             sendBtn.setClickable(false);
-            getQiniuToken();
+            sendBtn.setTextColor(getResources().getColor(R.color.color_FFEEEEEE));
+            GeetestUtils.setGeetestStart(CardCreateNewActivity.this,apiGet,bindListener,
+                    verificationCodeBodyGeeTest,
+                    gt3GeetestUtilsBind);
+
         }else {
             if (bangumiId == 0){
                 ToastUtils.showShort(CardCreateNewActivity.this,"请选择所属番剧");
@@ -266,17 +397,17 @@ public class CardCreateNewActivity extends BaseActivity {
                     Gson gson = new Gson();
                     Event<String> info =gson.fromJson(errorStr,Event.class);
                     ToastUtils.showShort(CardCreateNewActivity.this,info.getMessage());
-                    setUpLoadDiaLogFail();
+                    setUpLoadDiaLogFail(info.getMessage());
                 }else {
                     ToastUtils.showShort(CardCreateNewActivity.this,"未知错误导致上传失败");
-                    setUpLoadDiaLogFail();
+                    setUpLoadDiaLogFail("返回值为空");
                 }
             }
 
             @Override
             public void onFailure(Call<QiniuUpToken> call, Throwable t) {
-                ToastUtils.showShort(CardCreateNewActivity.this,"网络异常，请稍后再试");
-                setUpLoadDiaLogFail();
+                ToastUtils.showShort(CardCreateNewActivity.this,"网络异常，请稍后再试 \n t = "+t.getMessage());
+                setUpLoadDiaLogFail(t.getMessage());
             }
         });
     }
@@ -294,7 +425,8 @@ public class CardCreateNewActivity extends BaseActivity {
             urlList.clear();
         }
 
-        urlList = imageGridAdapter.getData();
+        baseUrlList = imageGridAdapter.getData();
+        urlList = baseUrlList;
         urlList.remove("add");
         if (urlList!=null&&urlList.size()!=0){
             //有图片 上传图片
@@ -331,11 +463,15 @@ public class CardCreateNewActivity extends BaseActivity {
                         }
                         LogUtils.d("newCardCreate","icon url = "+params.getData().getUrl());
                     }else if(info.isCancelled()){
-                        ToastUtils.showShort(CardCreateNewActivity.this,"取消上传");
-                        setUpLoadDiaLogFail();
+                        ToastUtils.showLong(CardCreateNewActivity.this,"取消上传");
+                        setUpLoadDiaLogFail("取消上传");
                     }else if (info.isNetworkBroken()){
-                        ToastUtils.showShort(CardCreateNewActivity.this,"网络异常，请稍后再试");
-                        setUpLoadDiaLogFail();
+                        ToastUtils.showLong(CardCreateNewActivity.this,"网络异常，请稍后再试");
+                        setUpLoadDiaLogFail("网络异常，请稍后再试");
+                    }else{
+                        ToastUtils.showLong(CardCreateNewActivity.this,"其他原因导致取消上传 \n info = "+info.error);
+
+                        setUpLoadDiaLogFail(info.error);
                     }
                 }
             },null);
@@ -349,10 +485,10 @@ public class CardCreateNewActivity extends BaseActivity {
         createPostParams.setImages(qiniuImageParamsDataList);
         createPostParams.setIs_creator(isCreator);
         createPostParams.setTitle(titleEdit.getText().toString());
+        createPostParams.setGeetest(verificationCodeBodyGeeTest);
         //TODO 越过geetest
-        long time = System.currentTimeMillis()/1000;
-        apiPost.getCreatPost(createPostParams,
-                time+"",time+"Dark-Flame-Master").enqueue(new Callback<Event<Integer>>() {
+//        long time = System.currentTimeMillis()/1000;
+        apiPost.getCreatPost(createPostParams).enqueue(new Callback<Event<Integer>>() {
             @Override
             public void onResponse(Call<Event<Integer>> call, Response<Event<Integer>> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -374,6 +510,11 @@ public class CardCreateNewActivity extends BaseActivity {
                                 }
                             })
                             .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                    ToastUtils.showShort(CardCreateNewActivity.this,"发帖成功，经验+4!");
+                    Intent intent = new Intent(MineFragment.EXPCHANGE);
+                    intent.putExtra("expChangeNum",4);
+                    sendBroadcast(intent);
+
                 }else if (response!=null&&!response.isSuccessful()){
                     String errorStr = "";
                     try {
@@ -384,26 +525,31 @@ public class CardCreateNewActivity extends BaseActivity {
                     Gson gson = new Gson();
                     Event<String> info =gson.fromJson(errorStr,Event.class);
                     ToastUtils.showShort(CardCreateNewActivity.this,info.getMessage());
-                    setUpLoadDiaLogFail();
+                    setUpLoadDiaLogFail(info.getMessage());
                 }else {
                     ToastUtils.showShort(CardCreateNewActivity.this,"未知错误导致上传失败");
-                    setUpLoadDiaLogFail();
+                    setUpLoadDiaLogFail("返回值为空");
                 }
             }
 
             @Override
             public void onFailure(Call<Event<Integer>> call, Throwable t) {
-                ToastUtils.showShort(CardCreateNewActivity.this,"网络异常，请稍后再试");
-                setUpLoadDiaLogFail();
+                ToastUtils.showShort(CardCreateNewActivity.this,"网络异常，请稍后再试 \n t = "+t.getMessage());
+                setUpLoadDiaLogFail(t.getMessage());
             }
         });
-
     }
 
-    private void setUpLoadDiaLogFail(){
+    private void setUpLoadDiaLogFail(String error){
         if (upLoadDialog!=null){
+            String content = "";
+            if (error.contains("mimeType")){
+                content = "所选部分图片格式不支持,\n 只支持jpg,jpeg,png,gif格式上传";
+            }else {
+                content = "因网络原因，帖子上传失败了";
+            }
             upLoadDialog.setTitleText("上传失败!")
-                    .setContentText("因网络原因，帖子上传失败了QAQ")
+                    .setContentText(content)
                     .setConfirmText("确定")
                     .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
@@ -413,8 +559,11 @@ public class CardCreateNewActivity extends BaseActivity {
                     })
                     .changeAlertType(SweetAlertDialog.ERROR_TYPE);
         }
+        urlTag = 0;
         sendBtn.setClickable(true);
-        urlList.add("add");
+        sendBtn.setTextColor(getResources().getColor(R.color.color_FFFFFFFF));
+//        urlList.remove("add");
+//        urlList.add("add");
     }
 
     @Override
@@ -435,6 +584,7 @@ public class CardCreateNewActivity extends BaseActivity {
             imagesUrl = data.getStringArrayListExtra(SelectorImagesActivity.RESULT_LIST_NAME);
 
             imageGridAdapter.remove(imageGridAdapter.getData().size()-1);
+
             if (imageGridAdapter.getData().size()+imagesUrl.size()>9){
                 ToastUtils.showShort(CardCreateNewActivity.this,"所选图片超出9张，自动保存本次所选");
                 imageGridAdapter.setNewData(imagesUrl);
@@ -470,5 +620,11 @@ public class CardCreateNewActivity extends BaseActivity {
         }
     }
 
+    public class CreateCardBroadCastReceiver extends BroadcastReceiver{
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setUpLoadDiaLogFail("");
+        }
+    }
 }

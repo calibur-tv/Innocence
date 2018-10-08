@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
         android:id="@+id/drama_timeline_list_item_layout"
         android:layout_width="match_parent"
@@ -11,11 +12,13 @@
         android:paddingTop="18dp"
         android:paddingBottom="6dp"
         >
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/drama_new_week_pager_item_list_image"
             android:layout_width="match_parent"
             android:layout_height="130dp"
-            android:scaleType="centerInside"
+            android:scaleType="centerCrop"
+            app:riv_oval="false"
+            app:riv_corner_radius="10dp"
             />
         <TextView
             android:id="@+id/drama_new_week_pager_item_list_name"

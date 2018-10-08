@@ -4,15 +4,31 @@
     android:layout_height="85dp"
     android:padding="5dp"
     >
-
-    <ImageView
+    <RelativeLayout
         android:id="@+id/reply_card_add_image_btn"
-        android:background="@drawable/bg_edittext_normal"
-        android:src="@mipmap/ic_add_create_new_image"
-        android:scaleType="center"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:visibility="gone"/>
+        android:background="@drawable/bg_selected_img_add"
+        android:visibility="gone"
+        >
+        <ImageView
+            android:src="@mipmap/ic_add_create_new_image"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="23dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:text="图片"
+            android:textColor="@color/theme_magic_sakura_primary"
+            android:textSize="12sp"
+            />
+    </RelativeLayout>
     <ImageView
         android:id="@+id/reply_card_image_grid_item_image"
         android:layout_width="75dp"

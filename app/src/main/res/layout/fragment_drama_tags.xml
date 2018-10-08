@@ -41,6 +41,7 @@
                         android:text="选择你喜欢的标签"
                         />
                 </RelativeLayout>
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/drama_tags_tags_grid"
                     android:layout_width="match_parent"

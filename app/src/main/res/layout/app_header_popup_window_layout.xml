@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/app_header_popup_window_btn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:src="@mipmap/app_btn_more_white"
+        android:padding="12dp"
+        android:gravity="center"
+        android:shadowColor="@color/color_FF333333"
+        android:shadowDx="0.5"
+        android:shadowDy="0.5"
+        android:shadowRadius="2"
+        />
+</RelativeLayout>

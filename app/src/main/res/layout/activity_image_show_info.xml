@@ -23,7 +23,15 @@
                 android:layout_height="40dp"
                 android:src="@mipmap/app_btn_back_white"
                 android:padding="10dp"
-
+                android:layout_centerVertical="true"
+                />
+            <com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows
+                android:id="@+id/image_show_info_list_header_card_more"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:textSize="15sp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 />
         </RelativeLayout>
         <android.support.v4.widget.SwipeRefreshLayout

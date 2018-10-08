@@ -33,7 +33,8 @@ public class DramaScoreListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
     @Override
     protected void convert(BaseViewHolder helper, MainTrendingInfo.MainTrendingInfoList item) {
         ImageView userIcon = helper.getView(R.id.main_score_list_item_user_icon);
-        GlideUtils.loadImageViewCircle(context, item.getUser().getAvatar(), userIcon);
+        GlideUtils.loadImageViewCircle(context, GlideUtils.setImageUrlForWidth(context,item.getUser().getAvatar(),
+                userIcon.getLayoutParams().width), userIcon);
 
         RelativeLayout bangUmiLayout = helper.getView(R.id.main_score_list_item_bangumi_layout);
         if (item.getBangumi()==null){
@@ -54,7 +55,7 @@ public class DramaScoreListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
         helper.setText(R.id.main_score_list_item_marked_count,""+item.getMark_count());
 
         if (item.isIs_creator()){
-            //原创显示打赏数
+            //原创显示投食数
             helper.setVisible(R.id.main_score_list_item_zan_count,false);
             helper.setVisible(R.id.main_score_list_item_reward_count,true);
             helper.setVisible(R.id.main_score_list_item_zan_icon,false);

@@ -6,16 +6,17 @@ import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
+
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MineUserInfo;
-import com.riuir.calibur.data.anime.BangumiAllList;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
-import com.riuir.calibur.ui.loginAndRegister.LoginActivity;
-import com.riuir.calibur.ui.loginAndRegister.RegisterActivity;
+
+import com.riuir.calibur.ui.loginAndRegister.LoginAndRegisterActivity;
+
 import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
@@ -63,15 +64,16 @@ public class SplashActivity extends BaseActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    LogUtils.d("splashError","error = "+errorStr);
                     Gson gson = new Gson();
                     Event<String> info =gson.fromJson(errorStr,Event.class);
                     ToastUtils.showShort(SplashActivity.this,info.getMessage());
 
-                    startActivity(LoginActivity.class);
+                    startActivity(LoginAndRegisterActivity.class);
                     finish();
                 }else {
                     ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
-                    startActivity(LoginActivity.class);
+                    startActivity(LoginAndRegisterActivity.class);
                     finish();
                 }
             }
@@ -79,7 +81,8 @@ public class SplashActivity extends BaseActivity {
             @Override
             public void onFailure(Call<MineUserInfo> call, Throwable t) {
                 ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
-                startActivity(LoginActivity.class);
+                LogUtils.d("AppNetErrorMessage","splash t = "+t.getMessage());
+                startActivity(LoginAndRegisterActivity.class);
                 finish();
             }
         });
@@ -125,7 +128,7 @@ public class SplashActivity extends BaseActivity {
                 finish();
                 return;
             case 1:
-                startActivity(LoginActivity.class);
+                startActivity(LoginAndRegisterActivity.class);
                 finish();
                 return;
         }

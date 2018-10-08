@@ -1,5 +1,7 @@
 package com.riuir.calibur.data.params.newImage;
 
+import com.riuir.calibur.data.params.VerificationCodeBody;
+
 public class CreateNewAlbum {
     private int bangumi_id;
     private String name;
@@ -11,6 +13,7 @@ public class CreateNewAlbum {
     private String size;
     private String type;
     private int part;
+    private VerificationCodeBody.VerificationCodeBodyGeeTest geetest;
 
 
     public int getBangumi_id() {
@@ -93,6 +96,14 @@ public class CreateNewAlbum {
         this.part = part;
     }
 
+    public VerificationCodeBody.VerificationCodeBodyGeeTest getGeetest() {
+        return geetest;
+    }
+
+    public void setGeetest(VerificationCodeBody.VerificationCodeBodyGeeTest geetest) {
+        this.geetest = geetest;
+    }
+
     @Override
     public String toString() {
         return "CreateNewAlbum{" +
@@ -106,6 +117,7 @@ public class CreateNewAlbum {
                 ", size='" + size + '\'' +
                 ", type='" + type + '\'' +
                 ", part=" + part +
+                ", geetest=" + geetest +
                 '}';
     }
 }

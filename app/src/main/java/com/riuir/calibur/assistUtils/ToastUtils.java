@@ -31,8 +31,12 @@ public class ToastUtils
      */
     public static void showShort(Context context, CharSequence message)
     {
-        if (isShow)
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        try {
+            if (isShow)
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -55,8 +59,12 @@ public class ToastUtils
      */
     public static void showLong(Context context, CharSequence message)
     {
-        if (isShow)
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        try {
+            if (isShow)
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

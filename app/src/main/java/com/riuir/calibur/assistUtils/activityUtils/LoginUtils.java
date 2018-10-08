@@ -6,7 +6,8 @@ import android.content.Intent;
 
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
-import com.riuir.calibur.ui.loginAndRegister.LoginActivity;
+
+import com.riuir.calibur.ui.loginAndRegister.LoginAndRegisterActivity;
 import com.riuir.calibur.utils.Constants;
 
 public class LoginUtils {
@@ -16,7 +17,7 @@ public class LoginUtils {
         Constants.AUTH_TOKEN = "";
         Constants.userInfoData = null;
         SharedPreferencesUtils.put(App.instance(),"Authorization","");
-        Intent intent = new Intent(context,LoginActivity.class);
+        Intent intent = new Intent("calibur.activity.loginAndRegister");
         context.startActivity(intent);
 
     }
@@ -26,8 +27,8 @@ public class LoginUtils {
         Constants.AUTH_TOKEN = "";
         Constants.userInfoData = null;
         SharedPreferencesUtils.put(App.instance(),"Authorization","");
-        Intent intent = new Intent(context,LoginActivity.class);
-        context.startActivity(intent);
+        Intent intent = new Intent("calibur.activity.loginAndRegister");
+        activity.startActivity(intent);
         activity.finish();
     }
 

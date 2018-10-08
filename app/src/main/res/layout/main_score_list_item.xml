@@ -9,13 +9,14 @@
         android:id="@+id/main_score_list_item_user_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/main_score_list_item_user_icon"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginTop="14dp"
             android:layout_marginLeft="14dp"
-            android:scaleType="centerInside"
+            android:scaleType="centerCrop"
+            app:riv_oval="true"
             />
         <TextView
             android:id="@+id/main_score_list_item_user_name"
@@ -94,25 +95,37 @@
         android:layout_height="70dp"
         android:layout_margin="15dp"
         android:layout_below="@id/main_score_list_item_intro"
-        android:background="@drawable/bg_bangumi_for_show_bg"
         >
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/main_score_list_item_bangumi_icon"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            app:riv_corner_radius_bottom_left="6dp"
+            app:riv_corner_radius_top_left="6dp"
+            app:riv_corner_radius_bottom_right="0dp"
+            app:riv_corner_radius_top_right="0dp"
+            app:riv_border_width="0dp"
+            app:riv_oval="false"
             android:scaleType="centerCrop"
             />
-        <TextView
-            android:id="@+id/main_score_list_item_bangumi_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="13dp"
-            android:text="番剧名"
-            android:textSize="16sp"
-            android:textColor="@color/color_FF333333"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_toRightOf="@id/main_score_list_item_bangumi_icon"
-            />
+            android:background="@drawable/bg_bangumi_for_show_bg"
+            >
+            <TextView
+                android:id="@+id/main_score_list_item_bangumi_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="13dp"
+                android:text="番剧名"
+                android:textSize="16sp"
+                android:textColor="@color/color_FF333333"
+                />
+        </RelativeLayout>
+
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"

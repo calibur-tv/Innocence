@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <ImageView
         android:id="@+id/main_card_list_item_user_icon"
         android:layout_width="40dp"
@@ -78,14 +79,16 @@
         app:layout_constraintRight_toRightOf="@id/main_card_list_item_user_name"
         android:orientation="vertical"
         >
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/main_card_list_item_big_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="centerInside"
+            android:layout_height="170dp"
             android:visibility="gone"
             android:layout_marginTop="10dp"
             android:transitionName="preview_card_picture"
+            android:scaleType="centerCrop"
+            app:riv_corner_radius="15dp"
+            app:riv_border_width="0dp"
             />
         <LinearLayout
             android:id="@+id/main_card_list_item_little_image_group"
@@ -95,15 +98,18 @@
             android:layout_marginTop="10dp"
             android:visibility="gone"
             >
-            <ImageView
+            <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/main_card_list_item_little_image_1"
                 android:layout_width="0dp"
                 android:layout_height="108dp"
                 android:layout_weight="1"
                 android:visibility="invisible"
                 android:transitionName="preview_card_picture"
+                android:scaleType="centerCrop"
+                app:riv_corner_radius="10dp"
+                app:riv_border_width="0dp"
                 />
-            <ImageView
+            <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/main_card_list_item_little_image_2"
                 android:layout_width="0dp"
                 android:layout_height="108dp"
@@ -111,8 +117,11 @@
                 android:layout_marginLeft="5dp"
                 android:visibility="invisible"
                 android:transitionName="preview_card_picture"
+                android:scaleType="centerCrop"
+                app:riv_corner_radius="10dp"
+                app:riv_border_width="0dp"
                 />
-            <ImageView
+            <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/main_card_list_item_little_image_3"
                 android:layout_width="0dp"
                 android:layout_height="108dp"
@@ -120,6 +129,9 @@
                 android:layout_marginLeft="5dp"
                 android:visibility="invisible"
                 android:transitionName="preview_card_picture"
+                android:scaleType="centerCrop"
+                app:riv_corner_radius="10dp"
+                app:riv_border_width="0dp"
                 />
         </LinearLayout>
 

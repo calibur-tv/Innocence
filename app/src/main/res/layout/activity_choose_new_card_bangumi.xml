@@ -20,7 +20,7 @@
                 android:id="@+id/choose_new_card_bangumi_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="选择关注的番剧"
+                android:text="选择番剧"
                 android:layout_centerInParent="true"
                 android:textSize="16sp"
                 android:textColor="@color/color_FFFFFFFF"
@@ -30,7 +30,7 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:padding="12dp"
-                android:src="@mipmap/create_new_icon_cancel"/>
+                android:src="@mipmap/app_btn_back_white"/>
         </RelativeLayout>
         <RelativeLayout
             android:id="@+id/choose_new_card_bangumi_search_layout"
@@ -44,7 +44,7 @@
             <EditText
                 android:id="@+id/choose_new_card_bangumi_search_edit_text"
                 android:layout_width="match_parent"
-                android:layout_height="36dp"
+                android:layout_height="30dp"
                 android:background="@drawable/bg_edittext_normal"
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="15dp"

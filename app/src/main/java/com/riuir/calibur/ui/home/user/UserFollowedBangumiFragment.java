@@ -24,6 +24,8 @@ import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.user.UserFollowedBangumiInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.GlideUtils;
 import com.riuir.calibur.ui.home.user.adapter.FollowedBangumiAdapter;
 
@@ -55,6 +57,11 @@ public class UserFollowedBangumiFragment extends BaseFragment {
     private List<UserFollowedBangumiInfo.UserFollowedBangumiInfoData> baseBangumiInfoDatas = new ArrayList<>();
     FollowedBangumiAdapter bangumiAdapter;
 
+    private Call<UserFollowedBangumiInfo> bangumiInfoCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_user_followed_bangui;
@@ -71,17 +78,29 @@ public class UserFollowedBangumiFragment extends BaseFragment {
         setNet();
     }
 
+    @Override
+    public void onDestroy() {
+        if (bangumiInfoCall!=null){
+            bangumiInfoCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
-        apiGet.getCallUserFollowedBangumi(zone).enqueue(new Callback<UserFollowedBangumiInfo>() {
+        bangumiInfoCall = apiGet.getCallUserFollowedBangumi(zone);
+        bangumiInfoCall.enqueue(new Callback<UserFollowedBangumiInfo>() {
             @Override
             public void onResponse(Call<UserFollowedBangumiInfo> call, Response<UserFollowedBangumiInfo> response) {
                 if (response!=null&&response.isSuccessful()){
                     bangumiInfoDatas = response.body().getData();
                     if (isFirstLoad){
                         isFirstLoad =false;
-                        refreshLayout.setRefreshing(false);
                         baseBangumiInfoDatas = response.body().getData();
-                        setAdapter();
+                        if (refreshLayout!=null&&bangumiListView!=null){
+                            refreshLayout.setRefreshing(false);
+                            setAdapter();
+                            setEmptyView();
+                        }
                     }
                     if (isRefresh){
                         setRefresh();
@@ -107,6 +126,7 @@ public class UserFollowedBangumiFragment extends BaseFragment {
                         isRefresh = false;
                         refreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isFirstLoad){
@@ -117,22 +137,46 @@ public class UserFollowedBangumiFragment extends BaseFragment {
                         isRefresh = false;
                         refreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<UserFollowedBangumiInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络哟！");
-                if (isFirstLoad){
-                    isFirstLoad = false;
-                    refreshLayout.setRefreshing(false);
-                }
-                if (isRefresh){
-                    isRefresh = false;
-                    refreshLayout.setRefreshing(false);
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(getContext(),"请检查您的网络哟！");
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    if (isRefresh){
+                        isRefresh = false;
+                        refreshLayout.setRefreshing(false);
+                    }
+                    setFailedView();
                 }
             }
         });
+    }
+
+    private void setEmptyView(){
+        if (baseBangumiInfoDatas==null||baseBangumiInfoDatas.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            bangumiAdapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 下拉重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        bangumiAdapter.setEmptyView(failedView);
+
     }
 
     private void setRefresh() {

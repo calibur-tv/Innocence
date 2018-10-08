@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,8 +32,11 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaSearchAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -46,6 +50,8 @@ public class DramaSearchActivity extends BaseActivity {
     EditText searchEdit;
     @BindView(R.id.drama_search_activity_btn)
     ImageView searchBtn;
+    @BindView(R.id.drama_search_activity_back)
+    ImageView backBtn;
 
     @BindView(R.id.drama_search_activity_list_view)
     RecyclerView listView;
@@ -65,9 +71,15 @@ public class DramaSearchActivity extends BaseActivity {
 
     private SearchAnimeInfo.SearchAnimeInfoData searchData;
     private List<SearchAnimeInfo.SearchAnimeInfoList> searchList;
-    private List<SearchAnimeInfo.SearchAnimeInfoList> baseSearchList;
+    private List<SearchAnimeInfo.SearchAnimeInfoList> baseSearchList = new ArrayList<>();
 
     DramaSearchAdapter adapter;
+
+    private Call<SearchAnimeInfo> searchCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
 
     @Override
     protected int getContentViewId() {
@@ -78,6 +90,8 @@ public class DramaSearchActivity extends BaseActivity {
     protected void onInit() {
         searchEdit.requestFocus();
         setEditListener();
+        setListAdapter();
+        setEmptyView();
     }
 
     @Override
@@ -94,6 +108,7 @@ public class DramaSearchActivity extends BaseActivity {
                     KeyBoardUtils.closeKeybord(searchEdit,DramaSearchActivity.this);
                     editContent = searchEdit.getText().toString();
                     if (TextUtils.isEmpty(editContent)){
+                        ToastUtils.showShort(DramaSearchActivity.this,"搜索内容为空，请输入搜索内容哦");
                         return true;
                     }
                     searchBtn.setClickable(false);
@@ -125,6 +140,12 @@ public class DramaSearchActivity extends BaseActivity {
                 }
             }
         });
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
     }
 
@@ -143,7 +164,8 @@ public class DramaSearchActivity extends BaseActivity {
     private void setNet() {
         searchEdit.clearFocus();
         setPage();
-        apiGet.getCallSearch(editContent,"bangumi",page).enqueue(new Callback<SearchAnimeInfo>() {
+        searchCall = apiGet.getCallSearch(editContent,"bangumi",page);
+        searchCall.enqueue(new Callback<SearchAnimeInfo>() {
             @Override
             public void onResponse(Call<SearchAnimeInfo> call, Response<SearchAnimeInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -151,7 +173,11 @@ public class DramaSearchActivity extends BaseActivity {
                     searchList = response.body().getData().getList();
                     if (isFirstLoad){
                         baseSearchList = response.body().getData().getList();
-                        setListAdapter();
+                        if (listView!=null){
+//                            setListAdapter();
+                            setSearchFinish();
+                            setEmptyView();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -179,6 +205,7 @@ public class DramaSearchActivity extends BaseActivity {
                         refreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(DramaSearchActivity.this,"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -189,24 +216,28 @@ public class DramaSearchActivity extends BaseActivity {
                         refreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<SearchAnimeInfo> call, Throwable t) {
-                ToastUtils.showShort(DramaSearchActivity.this,"请检查您的网络！");
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isRefresh){
-                    refreshLayout.setRefreshing(false);
-                    isRefresh = false;
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(DramaSearchActivity.this,"请检查您的网络！");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        refreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    setFailedView();
                 }
             }
         });
     }
-
 
 
 
@@ -227,7 +258,6 @@ public class DramaSearchActivity extends BaseActivity {
         //开启上拉加载更多
         adapter.setEnableLoadMore(true);
 
-
         //添加底部footer
         adapter.setLoadMoreView(new MyLoadMoreView());
         adapter.disableLoadMoreIfNotFullPage(listView);
@@ -236,8 +266,8 @@ public class DramaSearchActivity extends BaseActivity {
 
         //添加监听
         setListener();
-        searchBtn.setClickable(true);
-        isFirstLoad = false;
+//        searchBtn.setClickable(true);
+//        isFirstLoad = false;
     }
 
     private void setListener() {
@@ -268,10 +298,47 @@ public class DramaSearchActivity extends BaseActivity {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                isRefresh = true;
-                setNet();
+                if (TextUtils.isEmpty(editContent)){
+                    ToastUtils.showShort(DramaSearchActivity.this,"搜索内容为空，请输入搜索内容哦");
+                    refreshLayout.setRefreshing(false);
+                }else {
+                    isRefresh = true;
+                    KeyBoardUtils.closeKeybord(searchEdit,DramaSearchActivity.this);
+                    setNet();
+                }
             }
         });
+    }
+
+    private void setEmptyView(){
+
+        if (baseSearchList==null||baseSearchList.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(DramaSearchActivity.this);
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(DramaSearchActivity.this);
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+
+        adapter.setEmptyView(failedView);
+
+
+    }
+
+    private void setSearchFinish() {
+        isFirstLoad = false;
+        searchBtn.setClickable(true);
+        adapter.setNewData(baseSearchList);
+        if (baseSearchList.size() == 0){
+            ToastUtils.showShort(DramaSearchActivity.this,"没有找到内容呢，试试搜索别的吧");
+        }
     }
 
     private void setRefresh() {

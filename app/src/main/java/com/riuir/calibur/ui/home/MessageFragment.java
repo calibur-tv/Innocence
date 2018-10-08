@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
@@ -26,6 +27,8 @@ import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
 import com.riuir.calibur.ui.widget.SearchLayout;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
 
@@ -71,6 +74,9 @@ public class MessageFragment extends BaseFragment {
     SearchLayout searchLayout;
 
     UserMessageAdapter adapter;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
 
     private final int MESSAGE_TYPE_POST_LIKE = 1,MESSAGE_TYPE_POST_REWARD = 2,MESSAGE_TYPE_POST_MARK = 3,
             MESSAGE_TYPE_POST_COMMENT = 4,MESSAGE_TYPE_POST_REPLY = 5,MESSAGE_TYPE_IMAGE_LIKE = 6,MESSAGE_TYPE_IMAGE_REWARD = 7,
@@ -141,7 +147,7 @@ public class MessageFragment extends BaseFragment {
                         if (isRefresh){
                             setRefresh();
                         }
-
+                        setEmptyView();
                     }else if (!response.isSuccessful()){
                         String errorStr = "";
                         try {
@@ -162,6 +168,7 @@ public class MessageFragment extends BaseFragment {
                             isRefresh = false;
                         }
 
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                         if (isLoadMore){
@@ -172,13 +179,14 @@ public class MessageFragment extends BaseFragment {
                             messageRefreshLayout.setRefreshing(false);
                             isRefresh = false;
                         }
-
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<UserNotificationInfo> call, Throwable t) {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
+                    LogUtils.d("AppNetErrorMessage","message t = "+t.getMessage());
                     if (isLoadMore){
                         adapter.loadMoreFail();
                         isLoadMore = false;
@@ -187,7 +195,7 @@ public class MessageFragment extends BaseFragment {
                         messageRefreshLayout.setRefreshing(false);
                         isRefresh = false;
                     }
-
+                    setFailedView();
                 }
             });
         }else {
@@ -353,6 +361,25 @@ public class MessageFragment extends BaseFragment {
                 break;
         }
     }
+
+    private void setEmptyView(){
+        if (baseNotificationList==null||baseNotificationList.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 下拉重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
+    }
+
 
     private void setRefresh() {
         isRefresh = false;

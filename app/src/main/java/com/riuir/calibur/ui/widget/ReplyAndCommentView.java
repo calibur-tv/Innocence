@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -27,8 +28,10 @@ import com.riuir.calibur.data.params.QiniuImageParams;
 import com.riuir.calibur.data.trending.CreateMainCommentInfo;
 import com.riuir.calibur.data.trending.ReplyCommentInfo;
 import com.riuir.calibur.net.ApiPost;
+import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
+import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +53,8 @@ public class ReplyAndCommentView extends LinearLayout {
     int status;
     //创建主评论需要的id
     int id;
+    //发布主题的用户的id
+    int titleId;
     //回复评论的id
     int mainCommentid;
     int targetUserId;
@@ -106,6 +111,10 @@ public class ReplyAndCommentView extends LinearLayout {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setTitleId(int titleId){
+        this.titleId = titleId;
     }
 
     public void setType(String type) {
@@ -227,7 +236,14 @@ public class ReplyAndCommentView extends LinearLayout {
                         }else {
                             commentAdapter.addData(0,createMainCommentInfo.getData());
                         }
-                        ToastUtils.showShort(getContext(),"评论成功！");
+                        if (Constants.userInfoData!=null&&Constants.userInfoData.getId()!=titleId){
+                            ToastUtils.showShort(getContext(),"评论成功,经验+2！");
+                            Intent intent = new Intent(MineFragment.EXPCHANGE);
+                            intent.putExtra("expChangeNum",2);
+                            context.sendBroadcast(intent);
+                        }else {
+                            ToastUtils.showShort(getContext(),"评论成功！");
+                        }
                         editRC.setText("");
                         editRC.clearFocus();
 
@@ -267,7 +283,14 @@ public class ReplyAndCommentView extends LinearLayout {
                     if (response!=null&&response.isSuccessful()){
                         replyCommentInfo = response.body();
                         childCommentAdapter.addData(replyCommentInfo.getData());
-                        ToastUtils.showShort(getContext(),"回复成功！");
+                        if (Constants.userInfoData!=null&&Constants.userInfoData.getId()!=targetUserId){
+                            ToastUtils.showShort(getContext(),"回复成功,经验+1！");
+                            Intent intent = new Intent(MineFragment.EXPCHANGE);
+                            intent.putExtra("expChangeNum",1);
+                            context.sendBroadcast(intent);
+                        }else {
+                            ToastUtils.showShort(getContext(),"回复成功！");
+                        }
                         editRC.setText("");
                         editRC.clearFocus();
                     }else if (response!=null&&!response.isSuccessful()){

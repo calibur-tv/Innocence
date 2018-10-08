@@ -30,8 +30,9 @@ public class ScoreListAdapter  extends BaseQuickAdapter<MainTrendingInfo.MainTre
 
     @Override
     protected void convert(BaseViewHolder helper, MainTrendingInfo.MainTrendingInfoList item) {
-        ImageView animeIcon = helper.getView(R.id.main_score_list_item_user_icon);
-        GlideUtils.loadImageViewCircle(context,item.getUser().getAvatar(),animeIcon);
+        ImageView userIcon = helper.getView(R.id.main_score_list_item_user_icon);
+        GlideUtils.loadImageViewCircle(context, GlideUtils.setImageUrl(context,item.getUser().getAvatar(),
+                userIcon.getLayoutParams().width),userIcon);
         ImageView bangumiIcon = helper.getView(R.id.main_score_list_item_bangumi_icon);
         GlideUtils.loadImageView(context,item.getBangumi().getAvatar(),bangumiIcon);
         helper.setText(R.id.main_score_list_item_bangumi_name,item.getBangumi().getName());
@@ -45,7 +46,7 @@ public class ScoreListAdapter  extends BaseQuickAdapter<MainTrendingInfo.MainTre
         helper.setText(R.id.main_score_list_item_marked_count,""+item.getMark_count());
 
         if (item.isIs_creator()){
-            //原创显示打赏数
+            //原创显示投食数
             helper.setVisible(R.id.main_score_list_item_zan_count,false);
             helper.setVisible(R.id.main_score_list_item_reward_count,true);
             helper.setVisible(R.id.main_score_list_item_zan_icon,false);

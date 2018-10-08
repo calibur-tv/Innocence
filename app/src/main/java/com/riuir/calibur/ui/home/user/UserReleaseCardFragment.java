@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
@@ -21,6 +22,8 @@ import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.user.adapter.ReleaseCardListAdapter;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,6 +63,11 @@ public class UserReleaseCardFragment extends BaseFragment {
     //page默认是0
     int page = 0;
 
+    private Call<MainTrendingInfo> listCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_user_release_card;
@@ -76,9 +84,18 @@ public class UserReleaseCardFragment extends BaseFragment {
         setNet();
     }
 
+    @Override
+    public void onDestroy() {
+        if (listCall!=null){
+            listCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
         setPage();
-        apiGet.getFollowList("post","news",0,zone,page,20,0,"").enqueue(new Callback<MainTrendingInfo>() {
+        listCall = apiGet.getFollowList("post","news",0,zone,page,20,0,"");
+        listCall.enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -86,9 +103,12 @@ public class UserReleaseCardFragment extends BaseFragment {
                     mainTrendingInfoData = response.body().getData();
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        cardRefreshLayout.setRefreshing(false);
                         baseListCard = response.body().getData().getList();
-                        setListAdapter();
+                        if (cardRefreshLayout!=null&&cardListView!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                            setListAdapter();
+                            setEmptyView();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -119,6 +139,7 @@ public class UserReleaseCardFragment extends BaseFragment {
                         isFirstLoad = false;
                         cardRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -133,32 +154,54 @@ public class UserReleaseCardFragment extends BaseFragment {
                         isFirstLoad = false;
                         cardRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络哟！");
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isRefresh){
-                    cardRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    isFirstLoad = false;
-                    cardRefreshLayout.setRefreshing(false);
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(getContext(),"请检查您的网络哟！");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        cardRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        cardRefreshLayout.setRefreshing(false);
+                    }
+                    setFailedView();
                 }
             }
         });
 
     }
 
+    private void setEmptyView(){
+        if (baseListCard==null||baseListCard.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 下拉重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
+    }
+
     private void setLoadMore() {
         isLoadMore = false;
-
         if (mainTrendingInfoData.isNoMore()) {
             adapter.addData(listCard);
             //数据全部加载完毕

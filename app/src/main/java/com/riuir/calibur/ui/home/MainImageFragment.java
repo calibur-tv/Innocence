@@ -29,6 +29,8 @@ import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.io.IOException;
@@ -66,6 +68,9 @@ public class MainImageFragment extends BaseFragment {
     boolean isFirstLoad = false;
 
     private ImageListAdapter adapter;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
 
     @Override
     protected int getContentViewID() {
@@ -159,7 +164,7 @@ public class MainImageFragment extends BaseFragment {
                     for (MainTrendingInfo.MainTrendingInfoList hotItem :listImage){
                         seenIdList.add(hotItem.getId());
                     }
-
+                    setEmptyView();
                 }else if (!response.isSuccessful()){
                     String errorStr = "";
                     try {
@@ -182,6 +187,7 @@ public class MainImageFragment extends BaseFragment {
                     if (isFirstLoad){
                         mainImageRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -195,12 +201,14 @@ public class MainImageFragment extends BaseFragment {
                     if (isFirstLoad){
                         mainImageRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络！");
+                LogUtils.d("AppNetErrorMessage","mainImageList t = "+t.getMessage());
                 if (isLoadMore){
                     adapter.loadMoreFail();
                     isLoadMore = false;
@@ -212,6 +220,7 @@ public class MainImageFragment extends BaseFragment {
                 if (isFirstLoad){
                     mainImageRefreshLayout.setRefreshing(false);
                 }
+                setFailedView();
             }
         });
     }
@@ -246,6 +255,25 @@ public class MainImageFragment extends BaseFragment {
     private void setFirstData(){
         isFirstLoad = false;
         adapter.addData(baseListImage);
+    }
+
+    private void setEmptyView(){
+        if (baseListImage==null||baseListImage.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
+
     }
 
     private void setLoadMore() {

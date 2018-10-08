@@ -89,7 +89,7 @@ public class ScoreContentView extends LinearLayout{
                             DensityUtils.dp2px(context,4));
 
                     primacyImageView.setLayoutParams(imgParams);
-                    primacyImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    primacyImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         primacyImageView.setTransitionName("ToPreviewImageActivity");
                     }

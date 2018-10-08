@@ -20,6 +20,7 @@ import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.user.UserMainInfo;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.io.IOException;
@@ -39,6 +40,8 @@ public class UserMainActivity extends BaseActivity {
     ImageView userIcon;
     @BindView(R.id.user_main_activity_user_name)
     TextView userName;
+    @BindView(R.id.user_main_activity_user_level)
+    TextView userLevel;
     @BindView(R.id.user_main_activity_user_signature)
     TextView userSignature;
     @BindView(R.id.user_main_activity_pager_tab)
@@ -47,6 +50,8 @@ public class UserMainActivity extends BaseActivity {
     ViewPager userMainPager;
     @BindView(R.id.user_main_info_back_btn)
     ImageView backBtn;
+    @BindView(R.id.user_main_info_more)
+    AppHeaderPopupWindows moreBtn;
 
     int userId;
     String zone;
@@ -62,6 +67,7 @@ public class UserMainActivity extends BaseActivity {
     private UserCardFragment userCardFragment;
     private UserFollowedScoreFragment userFollowedScoreFragment;
 
+    private Call<UserMainInfo> userMainInfoCall;
     /**
      * 获取当前屏幕的密度
      */
@@ -79,12 +85,22 @@ public class UserMainActivity extends BaseActivity {
         Intent intent = getIntent();
         userId = intent.getIntExtra("userId",0);
         zone = intent.getStringExtra("zone");
+
         setListener();
         setNet();
     }
 
+    @Override
+    public void onDestroy() {
+        if (userMainInfoCall!=null){
+            userMainInfoCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
-        apiGet.getCallUserMainInfo(zone).enqueue(new Callback<UserMainInfo>() {
+        userMainInfoCall = apiGet.getCallUserMainInfo(zone);
+        userMainInfoCall.enqueue(new Callback<UserMainInfo>() {
             @Override
             public void onResponse(Call<UserMainInfo> call, Response<UserMainInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -109,16 +125,23 @@ public class UserMainActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<UserMainInfo> call, Throwable t) {
-                ToastUtils.showShort(UserMainActivity.this,"请检查您的网络哦！");
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(UserMainActivity.this,"请检查您的网络哦！");
+                }
             }
         });
     }
 
     private void setView() {
         GlideUtils.loadImageViewBlur(UserMainActivity.this,
-                GlideUtils.setImageUrl(UserMainActivity.this,userData.getBanner(),GlideUtils.FULL_SCREEN),bannerImg);
-        GlideUtils.loadImageViewCircle(UserMainActivity.this,userData.getAvatar(),userIcon);
+                GlideUtils.setImageUrl(UserMainActivity.this,
+                                userData.getBanner(),GlideUtils.FULL_SCREEN),bannerImg);
+        GlideUtils.loadImageView(UserMainActivity.this,
+                GlideUtils.setImageUrlForWidth(UserMainActivity.this,userData.getAvatar(),
+                        userIcon.getLayoutParams().width),userIcon);
         userName.setText(userData.getNickname());
+        userLevel.setText("Lv"+userData.getLevel());
         userSignature.setText(userData.getSignature());
 
         setViewPager();
@@ -131,6 +154,7 @@ public class UserMainActivity extends BaseActivity {
                 finish();
             }
         });
+        moreBtn.setReportModelTag(AppHeaderPopupWindows.USER,userId);
     }
 
     @Override
@@ -162,22 +186,22 @@ public class UserMainActivity extends BaseActivity {
         userMainPagerTab.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         userMainPagerTab.setDividerColor(Color.TRANSPARENT);
-        userMainPagerTab.setBackgroundResource(R.color.theme_magic_sakura_primary);
+        userMainPagerTab.setBackgroundResource(R.color.color_FFFFFFFF);
         //设置underLine
-        userMainPagerTab.setUnderlineHeight(2);
-        userMainPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
+        userMainPagerTab.setUnderlineHeight(0);
+        userMainPagerTab.setUnderlineColorResource(R.color.color_FFFFFFFF);
         //设置Tab Indicator的高度
-        userMainPagerTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
+        userMainPagerTab.setIndicatorColorResource(R.color.theme_magic_sakura_primary);
         // 设置Tab Indicator的高度
-        userMainPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, dm));
+        userMainPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, dm));
         // 设置Tab标题文字的大小
         userMainPagerTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, dm));
         //设置textclolo
-        userMainPagerTab.setTextColorResource(R.color.color_FFFFFFFF);
+        userMainPagerTab.setTextColorResource(R.color.color_FF5B5B5B);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
-        userMainPagerTab.setSelectedTextColorResource(R.color.color_FFFFFFFF);
+        userMainPagerTab.setSelectedTextColorResource(R.color.theme_magic_sakura_primary);
         //设置滚动条圆角（这是我自定义的一个方法，同时修改了滚动条长度，使其与文字等宽）
-        userMainPagerTab.setRoundRadius(3);
+        userMainPagerTab.setRoundRadius(2.5f);
 
         // 取消点击Tab时的背景色
         userMainPagerTab.setTabBackground(0);

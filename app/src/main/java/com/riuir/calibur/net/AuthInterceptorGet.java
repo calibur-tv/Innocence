@@ -20,7 +20,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Buffer;
 
-import static com.geetest.sdk.Bind.GT3GeetestUtilsBind.md5;
+
 
 //阻断，不需要usertoken  get请求方式
 public class AuthInterceptorGet implements Interceptor {

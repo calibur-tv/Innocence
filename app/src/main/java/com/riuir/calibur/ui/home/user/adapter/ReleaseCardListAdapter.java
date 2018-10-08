@@ -66,7 +66,7 @@ public class ReleaseCardListAdapter extends BaseQuickAdapter<MainTrendingInfo.Ma
             bigOne.setLayoutParams(params);
 
             bigOne.setVisibility(View.VISIBLE);
-            GlideUtils.loadImageViewRoundedCorners(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne,15);
+            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
 
 
         } else {
@@ -74,25 +74,25 @@ public class ReleaseCardListAdapter extends BaseQuickAdapter<MainTrendingInfo.Ma
             bigOne.setVisibility(View.GONE);
             little1.setVisibility(View.VISIBLE);
             little2.setVisibility(View.VISIBLE);
-            GlideUtils.loadImageViewRoundedCorners(context,
+            GlideUtils.loadImageView(context,
                     GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),
                             Integer.parseInt(item.getImages().get(0).getWidth())
                             ,Integer.parseInt(item.getImages().get(0).getHeight()))
-                    , little1,10);
-            GlideUtils.loadImageViewRoundedCorners(context,
+                    , little1);
+            GlideUtils.loadImageView(context,
                     GlideUtils.setImageUrl(context,item.getImages().get(1).getUrl(),
                             Integer.parseInt(item.getImages().get(1).getWidth())
                             ,Integer.parseInt(item.getImages().get(1).getHeight()))
-                    , little2,10);
+                    , little2);
             if (item.getImages().size() == 2) {
                 little3.setVisibility(View.INVISIBLE);
             } else {
                 little3.setVisibility(View.VISIBLE);
-                GlideUtils.loadImageViewRoundedCorners(context,
+                GlideUtils.loadImageView(context,
                         GlideUtils.setImageUrl(context,item.getImages().get(2).getUrl(),
                                 Integer.parseInt(item.getImages().get(2).getWidth())
                                 ,Integer.parseInt(item.getImages().get(2).getHeight()))
-                        , little3,10);
+                        , little3);
             }
 
 

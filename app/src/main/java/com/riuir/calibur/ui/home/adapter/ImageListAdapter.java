@@ -32,7 +32,7 @@ public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTren
     @Override
     protected void convert(BaseViewHolder helper, MainTrendingInfo.MainTrendingInfoList item) {
 
-        ImageView img = (ImageView) helper.getView(R.id.main_image_list_item_image);
+        ImageView img = helper.getView(R.id.main_image_list_item_image);
 
         ViewGroup.LayoutParams params = img.getLayoutParams();
 
@@ -40,9 +40,9 @@ public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTren
         params.height =  GlideUtils.getImageHeightDp(context,item.getSource().getHeight(),item.getSource().getWidth(),21.0f,2);
         img.setLayoutParams(params);
 
-        GlideUtils.loadImageViewRoundedCorners(context,
+        GlideUtils.loadImageView(context,
                 GlideUtils.setImageUrl(mContext,item.getSource().getUrl(),GlideUtils.HALF_SCREEN),
-                img,15);
+                img);
         helper.setText(R.id.main_image_list_item_image_name,item.getName());
 
     }

@@ -23,7 +23,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.PermissionUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.card.CardReplyActivity;
+
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.io.File;
@@ -131,8 +131,10 @@ public class SelectorImagesActivity extends BaseActivity {
                 ContentResolver mContentResolver = SelectorImagesActivity.this.getContentResolver();
                 Cursor mCursor = mContentResolver.query(mImageUri, null,
                         MediaStore.MediaColumns.MIME_TYPE + "=? or "//设置条件，类似于SQL中的where
+                                + MediaStore.MediaColumns.MIME_TYPE + "=? or "
+                                + MediaStore.MediaColumns.MIME_TYPE + "=? or "
                                 + MediaStore.MediaColumns.MIME_TYPE + "=?", new String[]{
-                                "image/jpeg", "image/png"},//第三个参数里“？”代表的数据
+                                "image/jpeg", "image/png","image/jpg","image.gif"},//第三个参数里“？”代表的数据
                         MediaStore.MediaColumns.DATE_MODIFIED);//按照什么进行排序
 
                 allImageUrls.clear();
@@ -179,7 +181,9 @@ public class SelectorImagesActivity extends BaseActivity {
 
     private void setAdapter() {
         gridViewAdpter = new ImageGridViewAdpter();
-        imageGridView.setAdapter(gridViewAdpter);
+        if (imageGridView!=null){
+            imageGridView.setAdapter(gridViewAdpter);
+        }
     }
 
     class ImageGridViewAdpter extends BaseAdapter{
@@ -244,6 +248,12 @@ public class SelectorImagesActivity extends BaseActivity {
                             viewHolder.checkBox.setChecked(false);
                             ToastUtils.showShort(SelectorImagesActivity.this,"最多只能选择"+maxNum+"张图哦");
                         }else {
+                            //循环遍历 避免重复添加
+                            for (int j = 0; j < selectorImageUrls.size(); j++) {
+                                if (selectorImageUrls.get(j).equals(allImageUrls.get(i))){
+                                    return;
+                                }
+                            }
                             selectorImageUrls.add(allImageUrls.get(i));
                         }
                     }else {

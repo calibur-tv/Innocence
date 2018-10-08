@@ -1,5 +1,7 @@
 package com.riuir.calibur.data.anime;
 
+import com.riuir.calibur.data.trending.CardShowInfoPrimacy;
+
 import java.util.Arrays;
 
 public class AnimeVideosActivityInfo {
@@ -35,6 +37,9 @@ public class AnimeVideosActivityInfo {
         private AnimeVideosActivityInfoBangumi bangumi;
         private AnimeVideosActivityInfoSeason season;
         private AnimeShowVideosInfo.AnimeShowVideosInfoData list;
+        private boolean ip_blocked;
+        private boolean must_reward;
+        private int need_min_level;
 
         public AnimeVideosActivityInfoInfo getInfo() {
             return info;
@@ -68,6 +73,30 @@ public class AnimeVideosActivityInfo {
             this.list = list;
         }
 
+        public boolean isIp_blocked() {
+            return ip_blocked;
+        }
+
+        public void setIp_blocked(boolean ip_blocked) {
+            this.ip_blocked = ip_blocked;
+        }
+
+        public boolean isMust_reward() {
+            return must_reward;
+        }
+
+        public void setMust_reward(boolean must_reward) {
+            this.must_reward = must_reward;
+        }
+
+        public int getNeed_min_level() {
+            return need_min_level;
+        }
+
+        public void setNeed_min_level(int need_min_level) {
+            this.need_min_level = need_min_level;
+        }
+
         @Override
         public String toString() {
             return "AnimeVideosActivityInfoData{" +
@@ -75,6 +104,9 @@ public class AnimeVideosActivityInfo {
                     ", bangumi=" + bangumi +
                     ", season=" + season +
                     ", list=" + list +
+                    ", ip_blocked=" + ip_blocked +
+                    ", must_reward=" + must_reward +
+                    ", need_min_level=" + need_min_level +
                     '}';
         }
     }
@@ -88,6 +120,14 @@ public class AnimeVideosActivityInfo {
         private int part;
         private String poster;
         private boolean other_site;
+        private boolean is_creator;
+        private boolean liked;
+        private boolean marked;
+        private boolean rewarded;
+
+        private CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser like_users;
+        private CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser reward_users;
+        private CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser mark_users;
 
         public int getId() {
             return id;
@@ -153,6 +193,62 @@ public class AnimeVideosActivityInfo {
             this.other_site = other_site;
         }
 
+        public boolean isIs_creator() {
+            return is_creator;
+        }
+
+        public void setIs_creator(boolean is_creator) {
+            this.is_creator = is_creator;
+        }
+
+        public boolean isLiked() {
+            return liked;
+        }
+
+        public void setLiked(boolean liked) {
+            this.liked = liked;
+        }
+
+        public boolean isMarked() {
+            return marked;
+        }
+
+        public void setMarked(boolean marked) {
+            this.marked = marked;
+        }
+
+        public boolean isRewarded() {
+            return rewarded;
+        }
+
+        public void setRewarded(boolean rewarded) {
+            this.rewarded = rewarded;
+        }
+
+        public CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser getLike_users() {
+            return like_users;
+        }
+
+        public void setLike_users(CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser like_users) {
+            this.like_users = like_users;
+        }
+
+        public CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser getReward_users() {
+            return reward_users;
+        }
+
+        public void setReward_users(CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser reward_users) {
+            this.reward_users = reward_users;
+        }
+
+        public CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser getMark_users() {
+            return mark_users;
+        }
+
+        public void setMark_users(CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser mark_users) {
+            this.mark_users = mark_users;
+        }
+
         @Override
         public String toString() {
             return "AnimeVideosActivityInfoInfo{" +
@@ -164,6 +260,13 @@ public class AnimeVideosActivityInfo {
                     ", part=" + part +
                     ", poster='" + poster + '\'' +
                     ", other_site=" + other_site +
+                    ", is_creator=" + is_creator +
+                    ", liked=" + liked +
+                    ", marked=" + marked +
+                    ", rewarded=" + rewarded +
+                    ", like_users=" + like_users +
+                    ", reward_users=" + reward_users +
+                    ", mark_users=" + mark_users +
                     '}';
         }
     }
@@ -173,6 +276,7 @@ public class AnimeVideosActivityInfo {
         private String name;
         private String avatar;
         private String summary;
+        private boolean others_site_video;
         private boolean followed;
 
         public int getId() {
@@ -230,7 +334,7 @@ public class AnimeVideosActivityInfo {
         private String[] name;
         private int[] part;
         private String[] time;
-        private int re;
+//        private int[] re;
 
         public String[] getName() {
             return name;
@@ -256,13 +360,13 @@ public class AnimeVideosActivityInfo {
             this.time = time;
         }
 
-        public int getRe() {
-            return re;
-        }
-
-        public void setRe(int re) {
-            this.re = re;
-        }
+//        public int[] getRe() {
+//            return re;
+//        }
+//
+//        public void setRe(int[] re) {
+//            this.re = re;
+//        }
 
         @Override
         public String toString() {
@@ -270,7 +374,7 @@ public class AnimeVideosActivityInfo {
                     "name=" + Arrays.toString(name) +
                     ", part=" + Arrays.toString(part) +
                     ", time=" + Arrays.toString(time) +
-                    ", re=" + re +
+//                    ", re=" + re +
                     '}';
         }
     }

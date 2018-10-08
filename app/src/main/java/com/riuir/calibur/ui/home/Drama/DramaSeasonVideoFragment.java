@@ -11,6 +11,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
@@ -41,7 +45,12 @@ public class DramaSeasonVideoFragment extends BaseFragment {
     ViewPager dramaVideoViewPager;
     @BindView(R.id.drama_video_pager_refresh_layout)
     SwipeRefreshLayout refreshLayout;
-
+    @BindView(R.id.drama_video_pager_empty_view_layout)
+    LinearLayout emptyLayout;
+    @BindView(R.id.drama_video_pager_empty_view_icon)
+    ImageView emptyIcon;
+    @BindView(R.id.drama_video_pager_empty_view_text)
+    TextView emptyText;
     private int animeID;
 
     List<AnimeShowVideosInfo.AnimeShowVideosInfoVideos> animeShowVideosInfoVideos;
@@ -57,6 +66,8 @@ public class DramaSeasonVideoFragment extends BaseFragment {
      * 获取当前屏幕的密度
      */
     private DisplayMetrics dm;
+
+    private  Call<AnimeShowVideosInfo> videosInfoCall;
 
     @Override
     protected int getContentViewID() {
@@ -83,15 +94,28 @@ public class DramaSeasonVideoFragment extends BaseFragment {
         });
     }
 
+    @Override
+    public void onDestroy() {
+        if (videosInfoCall!=null){
+            videosInfoCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
-        apiGet.getCallAnimeShowVideos(animeID).enqueue(new Callback<AnimeShowVideosInfo>() {
+        videosInfoCall = apiGet.getCallAnimeShowVideos(animeID);
+        videosInfoCall.enqueue(new Callback<AnimeShowVideosInfo>() {
             @Override
             public void onResponse(Call<AnimeShowVideosInfo> call, Response<AnimeShowVideosInfo> response) {
                 if (response!=null&&response.isSuccessful()){
                     animeShowVideosInfoVideos = response.body().getData().getVideos();
-                    setViewPager();
-                    refreshLayout.setRefreshing(false);
-                    refreshLayout.setEnabled(false);
+
+                    if (dramaVideoViewPager!=null&&refreshLayout!=null){
+                        setViewPager();
+                        refreshLayout.setRefreshing(false);
+                        refreshLayout.setEnabled(false);
+                    }
+                    setEmptyView();
 
                 }else if (!response.isSuccessful()){
                     String errorStr = "";
@@ -104,18 +128,42 @@ public class DramaSeasonVideoFragment extends BaseFragment {
                     Event<String> info =gson.fromJson(errorStr,Event.class);
                     ToastUtils.showShort(getContext(),info.getMessage());
                     refreshLayout.setRefreshing(false);
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     refreshLayout.setRefreshing(false);
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<AnimeShowVideosInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络哟！");
-                refreshLayout.setRefreshing(false);
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(getContext(),"请检查您的网络哟！");
+                    refreshLayout.setRefreshing(false);
+                    setFailedView();
+                }
             }
         });
+    }
+
+    private void setEmptyView(){
+        if (animeShowVideosInfoVideos.size()==0){
+            emptyLayout.setVisibility(View.VISIBLE);
+            emptyIcon.setImageResource(R.mipmap.ic_no_content_empty_view);
+            emptyText.setText("这里空空如也");
+        }
+    }
+    private void setFailedView(){
+        emptyLayout.setVisibility(View.VISIBLE);
+        emptyIcon.setImageResource(R.mipmap.ic_failed_empty_view);
+        emptyText.setText("加载失败，下拉重试");
+    }
+    private void setHideEmptyView(){
+        if (animeShowVideosInfoVideos.size()!=0){
+            emptyLayout.setVisibility(View.GONE);
+        }
     }
 
     private void setViewPager() {
@@ -134,6 +182,7 @@ public class DramaSeasonVideoFragment extends BaseFragment {
         dramaVideoPagerTab.setViewPager(dramaVideoViewPager);
         dramaVideoViewPager.setOffscreenPageLimit(5);
         setDramaTabs();
+        setHideEmptyView();
     }
 
     private void setDramaTabs() {
@@ -141,22 +190,22 @@ public class DramaSeasonVideoFragment extends BaseFragment {
         dramaVideoPagerTab.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         dramaVideoPagerTab.setDividerColor(Color.TRANSPARENT);
-        dramaVideoPagerTab.setBackgroundResource(R.color.theme_magic_sakura_primary);
+        dramaVideoPagerTab.setBackgroundResource(R.color.color_FFFFFFFF);
         //设置underLine
-        dramaVideoPagerTab.setUnderlineHeight(2);
-        dramaVideoPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
+        dramaVideoPagerTab.setUnderlineHeight(0);
+        dramaVideoPagerTab.setUnderlineColorResource(R.color.color_FFFFFFFF);
         //设置Tab Indicator的高度
-        dramaVideoPagerTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
+        dramaVideoPagerTab.setIndicatorColorResource(R.color.theme_magic_sakura_primary);
         // 设置Tab Indicator的高度
-        dramaVideoPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, dm));
+        dramaVideoPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, dm));
         // 设置Tab标题文字的大小
         dramaVideoPagerTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, dm));
         //设置textclolo
-        dramaVideoPagerTab.setTextColorResource(R.color.color_FFFFFFFF);
+        dramaVideoPagerTab.setTextColorResource(R.color.color_FF5B5B5B);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
-        dramaVideoPagerTab.setSelectedTextColorResource(R.color.color_FFFFFFFF);
+        dramaVideoPagerTab.setSelectedTextColorResource(R.color.theme_magic_sakura_primary);
         //设置滚动条圆角（这是我自定义的一个方法，同时修改了滚动条长度，使其与文字等宽）
-        dramaVideoPagerTab.setRoundRadius(3);
+        dramaVideoPagerTab.setRoundRadius(2.5f);
 
         // 取消点击Tab时的背景色
         dramaVideoPagerTab.setTabBackground(0);

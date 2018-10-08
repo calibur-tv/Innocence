@@ -1,40 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.home.Drama.DramaVideoPlayActivity">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
-        android:id="@+id/drama_video_play_player"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
-        <TextView
-            android:id="@+id/drama_video_play_other_site_info"
-            android:layout_width="wrap_content"
+        android:fitsSystemWindows="true"
+        android:background="@color/color_FF111111"
+        android:orientation="vertical">
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/drama_video_play_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@color/color_FFFFFFFF"
+                >
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1.2">
+                    <com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+                        android:id="@+id/drama_video_play_player"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        />
+                    <TextView
+                        android:id="@+id/drama_video_play_other_site_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="30dp"
+                        android:text="因版权等相关问题，该视频无法播放"
+                        android:textColor="@color/color_FFFFFFFF"
+                        android:textSize="15sp"
+                        android:visibility="gone"
+                        />
+                </RelativeLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/drama_video_play_recycle_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"></android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <com.riuir.calibur.ui.widget.ReplyAndCommentView
+            android:id="@+id/drama_video_play_comment_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="因版权等相关问题，该视频无法播放"
-            android:textColor="@color/color_FFFFFFFF"
-            android:textSize="16sp"
-            android:visibility="gone"
-            />
-    </RelativeLayout>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/drama_video_play_recycle_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"></android.support.v7.widget.RecyclerView>
-    <com.riuir.calibur.ui.widget.ReplyAndCommentView
-        android:id="@+id/drama_video_play_comment_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="45dp">
-    </com.riuir.calibur.ui.widget.ReplyAndCommentView>
-</LinearLayout>
+            android:minHeight="45dp">
+        </com.riuir.calibur.ui.widget.ReplyAndCommentView>
+    </LinearLayout>
+
+</android.support.v4.widget.DrawerLayout>

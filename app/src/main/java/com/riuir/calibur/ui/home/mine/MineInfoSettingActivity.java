@@ -41,7 +41,7 @@ import com.riuir.calibur.data.params.QiniuImageParams;
 import com.riuir.calibur.data.params.UpUserSetting;
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.card.CardReplyActivity;
+
 import com.riuir.calibur.ui.widget.SelectorImagesActivity;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
@@ -126,6 +126,8 @@ public class MineInfoSettingActivity extends BaseActivity {
     QiniuImageParams.QiniuImageParamsData iconImageQiniu;
     QiniuImageParams.QiniuImageParamsData bannerImageQiniu;
 
+    Call<Event<String>> uploadCall;
+
     @Override
     protected int getContentViewId() {
         return R.layout.activity_mine_info_setting;
@@ -146,6 +148,14 @@ public class MineInfoSettingActivity extends BaseActivity {
 
         setView();
         setListener();
+    }
+
+    @Override
+    public void onDestroy() {
+        if(uploadCall!=null){
+            uploadCall.cancel();
+        }
+        super.onDestroy();
     }
 
     private void setView() {
@@ -172,9 +182,8 @@ public class MineInfoSettingActivity extends BaseActivity {
             birthdaySwitch.setChecked(false);
         }
         if (userData.getBirthday()!=null&&userData.getBirthday().length()!=0){
-            LogUtils.d("mineSetting","bir = "+userData.getBirthday());
             String birStr = TimeUtils.getTimestamp2Date(
-                    TimeUtils.getDate2Timestamp(userData.getBirthday(),
+                    TimeUtils.getDate2Timestamp(userData.getBirthday()+"",
                             "yyyy-MM-dd HH:mm:ss"),
                     "yyyy年MM月dd日");
             birthdayChoose.setText(birStr);
@@ -289,7 +298,9 @@ public class MineInfoSettingActivity extends BaseActivity {
                 },cYear,cMonth,cDay);
         //设置起始日期和结束日期
         DatePicker datePicker = datePic.getDatePicker();
-        //datePicker.setMinDate();
+        long min = TimeUtils.getDate2Timestamp("1970-01-01 08:00:00","yyyy-MM-dd HH:mm:ss");
+        LogUtils.d("birthday111","birthday222 = "+min);
+        datePicker.setMinDate(min);
         datePicker.setMaxDate(System.currentTimeMillis());
 
     }
@@ -406,9 +417,10 @@ public class MineInfoSettingActivity extends BaseActivity {
 
         upNickName = nameEdit.getText().toString();
 
-        upBirthday = TimeUtils.getDate2Timestamp(birthdayChoose.getText().toString(),
-                "yyyy年MM月dd日")/1000;
+        upBirthday = TimeUtils.getDate2Timestamp(birthdayChoose.getText().toString()+" 08时00分00秒",
+                "yyyy年MM月dd日 HH时mm分ss秒")/1000;
 
+        LogUtils.d("birthday111","birthday111 = "+upBirthday);
         birth_secret = isBirthdaySecret;
         sex_secret = isSexSecret;
 
@@ -420,8 +432,8 @@ public class MineInfoSettingActivity extends BaseActivity {
         upUserSetting.setBirth_secret(birth_secret);
         upUserSetting.setSex_secret(sex_secret);
 
-
-        apiPost.getCallUPLoadUserSetting(upUserSetting).enqueue(new Callback<Event<String>>() {
+        uploadCall = apiPost.getCallUPLoadUserSetting(upUserSetting);
+        uploadCall.enqueue(new Callback<Event<String>>() {
             @Override
             public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -452,9 +464,12 @@ public class MineInfoSettingActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<Event<String>> call, Throwable t) {
-                ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
-                finishBtn.setClickable(true);
-                finishBtn.setText("保存");
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
+                    finishBtn.setClickable(true);
+                    finishBtn.setText("保存");
+                }
             }
         });
 

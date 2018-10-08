@@ -6,33 +6,47 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.card.CardCreateNewActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:background="@color/theme_magic_sakura_primary">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            android:background="@color/theme_magic_sakura_primary"
+            android:layout_marginBottom="60dp"
             android:orientation="vertical">
             <RelativeLayout
                 android:id="@+id/card_create_new_activity_title_layout"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:background="@color/theme_magic_sakura_primary">
-                <TextView
-                    android:id="@+id/card_create_new_activity_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="发帖"
-                    android:layout_centerInParent="true"
-                    android:textSize="18sp"
-                    android:textColor="@color/color_FFFFFFFF"
-                    />
                 <ImageView
                     android:id="@+id/card_create_new_activity_cancel"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:padding="12dp"
                     android:src="@mipmap/app_btn_back_white"/>
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginRight="15dp"
+                    android:text="发贴"
+                    android:textSize="18sp"
+                    android:textColor="@color/color_FFFFFFFF"
+                    />
+                <TextView
+                    android:id="@+id/card_create_new_activity_send"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:text="发布"
+                    android:textSize="18sp"
+                    android:textColor="@color/color_FFFFFFFF"
+                    android:layout_alignParentRight="true"
+                    />
             </RelativeLayout>
             <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
@@ -56,85 +70,15 @@
                         android:hint="请输入标题（最多40字）"
                         android:maxLength="40"
                         android:textSize="14sp"
-                        android:background="@drawable/bg_edittext_normal"
+                        android:background="@color/color_FFFFFFFF"
                         />
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
-                        android:background="@color/theme_magic_sakura_primary"
+                        android:background="@color/color_FFEEEEEE"
+                        android:layout_marginLeft="17dp"
+                        android:layout_marginRight="17dp"
                         />
-                    <RelativeLayout
-                        android:id="@+id/card_create_new_activity_choose_bangumi_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
-                        >
-                        <com.makeramen.roundedimageview.RoundedImageView
-                            android:id="@+id/card_create_new_activity_choose_bangumi_icon"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_centerVertical="true"
-                            app:riv_border_color="@color/theme_magic_sakura_primary"
-                            app:riv_border_width="1dp"
-                            android:src="@mipmap/glide_place_holder_img"
-                            app:riv_oval="true"
-                            />
-                        <TextView
-                            android:id="@+id/card_create_new_activity_choose_bangumi_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toRightOf="@id/card_create_new_activity_choose_bangumi_icon"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="30dp"
-                            android:text="请选择番剧"
-                            android:textColor="@color/color_FF5B5B5B"
-                            android:textSize="14sp"
-                            android:maxLines="1"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:text="〉"
-                            android:layout_alignParentRight="true"
-                            android:gravity="center"
-                            android:textSize="16sp"
-                            android:textColor="@color/theme_magic_sakura_primary"
-                            />
-                    </RelativeLayout>
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
-                        android:background="@color/theme_magic_sakura_primary"
-                        />
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:text="原创："
-                            android:gravity="center"
-                            android:textColor="@color/color_FF5B5B5B"
-                            android:textSize="14sp"
-                            />
-                        <com.suke.widget.SwitchButton
-                            android:id="@+id/card_create_new_activity_post_is_creator"
-                            android:layout_width="wrap_content"
-                            android:layout_height="35dp"
-                            app:sb_show_indicator="false"
-                            app:sb_checked_color="@color/theme_magic_sakura_primary"
-                            />
-                    </LinearLayout>
 
                     <EditText
                         android:id="@+id/card_create_new_activity_post_content_edit"
@@ -145,13 +89,14 @@
                         android:layout_marginBottom="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:minHeight="140dp"
                         android:lineSpacingExtra="5dp"
                         android:hint="请输入内容（最多1000字）"
                         android:maxLength="1000"
                         android:gravity="top"
                         android:textSize="14sp"
-                        android:background="@drawable/bg_edittext_normal"
+                        android:background="@color/color_FFFFFFFF"
                         />
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/card_create_new_activity_image_grid"
@@ -159,22 +104,85 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
+                        android:layout_marginBottom="10dp"
                         ></android.support.v7.widget.RecyclerView>
-                    <Button
-                        android:id="@+id/card_create_new_activity_send"
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:background="@drawable/bg_login_button_normal"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginBottom="30dp"
-                        android:text="发帖"
-                        android:textSize="16sp"
-                        android:textColor="@color/color_FFFFFFFF"
-                        />
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
         </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/card_create_new_activity_choose_bangumi_layout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:paddingLeft="17dp"
+            android:paddingRight="17dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/color_FFFFFFFF"
+            >
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/color_FFEEEEEE"
+                />
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:id="@+id/card_create_new_activity_choose_bangumi_icon"
+                android:layout_width="24dp"
+                android:layout_height="32dp"
+                android:layout_centerVertical="true"
+                app:riv_border_color="@color/theme_magic_sakura_primary"
+                app:riv_border_width="0dp"
+                android:src="@mipmap/glide_place_holder_img"
+                />
+            <TextView
+                android:id="@+id/card_create_new_activity_choose_bangumi_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/card_create_new_activity_choose_bangumi_icon"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:text="请选择番剧"
+                android:textColor="@color/color_FF333333"
+                android:textSize="13sp"
+                android:maxLines="1"
+                />
+            <TextView
+                android:id="@+id/card_create_new_activity_choose_bangumi_choose_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="选择"
+                android:layout_toRightOf="@id/card_create_new_activity_choose_bangumi_name"
+                android:layout_marginLeft="5dp"
+                android:gravity="center"
+                android:textSize="13sp"
+                android:textColor="@color/theme_magic_sakura_primary"
+                />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_alignParentRight="true"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="原创"
+                    android:gravity="center"
+                    android:textColor="@color/color_FF333333"
+                    android:textSize="14sp"
+                    android:layout_marginRight="5dp"
+                    />
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/card_create_new_activity_post_is_creator"
+                    android:layout_width="48dp"
+                    android:layout_height="28dp"
+                    app:sb_show_indicator="false"
+                    app:sb_checked_color="@color/theme_magic_sakura_primary"
+                    />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
 
 </android.support.v4.widget.DrawerLayout>

@@ -83,22 +83,22 @@ public class UserCardFragment extends BaseFragment {
         userCardPagerTab.setShouldExpand(true);
         // 设置Tab的分割线是透明的
         userCardPagerTab.setDividerColor(Color.TRANSPARENT);
-        userCardPagerTab.setBackgroundResource(R.color.theme_magic_sakura_primary);
+        userCardPagerTab.setBackgroundResource(R.color.color_FFFFFFFF);
         //设置underLine
-        userCardPagerTab.setUnderlineHeight(2);
-        userCardPagerTab.setUnderlineColorResource(R.color.theme_magic_sakura_primary);
+        userCardPagerTab.setUnderlineHeight(0);
+        userCardPagerTab.setUnderlineColorResource(R.color.color_FFFFFFFF);
         //设置Tab Indicator的高度
-        userCardPagerTab.setIndicatorColorResource(R.color.color_FFFFFFFF);
+        userCardPagerTab.setIndicatorColorResource(R.color.theme_magic_sakura_primary);
         // 设置Tab Indicator的高度
-        userCardPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, dm));
+        userCardPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, dm));
         // 设置Tab标题文字的大小
         userCardPagerTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, dm));
         //设置textclolo
-        userCardPagerTab.setTextColorResource(R.color.color_FFFFFFFF);
+        userCardPagerTab.setTextColorResource(R.color.color_FF5B5B5B);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
-        userCardPagerTab.setSelectedTextColorResource(R.color.color_FFFFFFFF);
+        userCardPagerTab.setSelectedTextColorResource(R.color.theme_magic_sakura_primary);
         //设置滚动条圆角（这是我自定义的一个方法，同时修改了滚动条长度，使其与文字等宽）
-        userCardPagerTab.setRoundRadius(3);
+        userCardPagerTab.setRoundRadius(2.5f);
 
         // 取消点击Tab时的背景色
         userCardPagerTab.setTabBackground(0);

@@ -72,9 +72,15 @@ public class RoleListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTrend
         }
 
         if (item.getLover()!=null&&item.getLover().getAvatar()!=null){
-            GlideUtils.loadImageViewCircle(context,item.getLover().getAvatar(), (ImageView) helper.getView(R.id.drama_role_list_item_role_knight_icon));
+            ImageView knightIcon = helper.getView(R.id.drama_role_list_item_role_knight_icon);
+            GlideUtils.loadImageViewCircle(context,
+                    GlideUtils.setImageUrlForWidth(context,item.getLover().getAvatar(),knightIcon.getLayoutParams().width),
+                    knightIcon);
         }
-        GlideUtils.loadImageViewCircle(context,item.getAvatar(), (ImageView) helper.getView(R.id.drama_role_list_item_image));
+
+        GlideUtils.loadImageViewCircle(context,
+                GlideUtils.setImageUrlForWidth(context,item.getAvatar(),imageView.getLayoutParams().width),
+                imageView);
 
     }
 }

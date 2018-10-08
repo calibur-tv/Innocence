@@ -1,27 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.home.user.UserMainActivity">
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
-        <RelativeLayout
+        android:layout_height="280dp"
+        android:orientation="vertical">
+
+        <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            >
-            <ImageView
-                android:id="@+id/user_main_activity_banner"
+            android:layout_height="240dp"
+            android:minHeight="60dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:background="@color/theme_magic_sakura_primary"
-                />
+                >
+                <ImageView
+                    android:id="@+id/user_main_activity_banner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="@color/theme_magic_sakura_primary"
+                    />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/color_48000000"
+                    />
+                <com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows
+                    android:id="@+id/user_main_info_more"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="30dp"
+                    ></com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows>
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/user_main_activity_user_icon"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:scaleType="centerCrop"
+                    app:riv_oval="true"
+                    app:riv_border_width="2dp"
+                    app:riv_border_color="@color/color_FFFFFFFF"
+                    />
+                <TextView
+                    android:id="@+id/user_main_activity_user_name"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="用户昵称"
+                    android:textColor="@color/color_FFFFFFFF"
+                    android:textSize="15sp"
+                    android:layout_below="@id/user_main_activity_user_icon"
+                    android:layout_centerHorizontal="true"
+                    />
+                <TextView
+                    android:id="@+id/user_main_activity_user_level"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lv0"
+                    android:textColor="@color/color_FFFFFFFF"
+                    android:textSize="13sp"
+                    android:layout_below="@id/user_main_activity_user_name"
+                    android:layout_centerHorizontal="true"
+                    />
+                <TextView
+                    android:id="@+id/user_main_activity_user_signature"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:text="用户签名"
+                    android:maxLines="2"
+                    android:gravity="center"
+                    android:textColor="@color/color_FFFFFFFF"
+                    android:textSize="13sp"
+                    android:layout_below="@id/user_main_activity_user_level"
+                    android:layout_centerHorizontal="true"
+                    />
+            </RelativeLayout>
             <ImageView
                 android:id="@+id/user_main_info_back_btn"
                 android:layout_width="40dp"
@@ -29,54 +97,32 @@
                 android:src="@mipmap/app_btn_back_white"
                 android:padding="10dp"
                 android:layout_marginTop="20dp"
+                app:layout_collapseMode="pin"
                 />
+        </android.support.design.widget.CollapsingToolbarLayout>
 
-            <ImageView
-                android:id="@+id/user_main_activity_user_icon"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginTop="30dp"
-                android:layout_centerHorizontal="true"
-                android:scaleType="centerInside"
-                />
-            <TextView
-                android:id="@+id/user_main_activity_user_name"
-                android:layout_marginTop="6dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="用户昵称"
-                android:textColor="@color/color_FFFFFFFF"
-                android:textSize="15sp"
-                android:layout_below="@id/user_main_activity_user_icon"
-                android:layout_centerHorizontal="true"
-                />
-            <TextView
-                android:id="@+id/user_main_activity_user_signature"
-                android:layout_marginTop="6dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="14dp"
-                android:layout_marginRight="14dp"
-                android:text="用户签名"
-                android:maxLines="2"
-                android:gravity="center"
-                android:textColor="@color/color_FFFFFFFF"
-                android:textSize="13sp"
-                android:layout_below="@id/user_main_activity_user_name"
-                android:layout_centerHorizontal="true"
-                />
-        </RelativeLayout>
         <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
             android:id="@+id/user_main_activity_pager_tab"
             android:layout_width="match_parent"
-            android:background="@color/theme_magic_sakura_primary"
-            android:layout_height="40dp"></com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
+            android:layout_height="40dp"
+            android:background="@color/color_FFFFFFFF">
+        </com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <android.support.v4.view.ViewPager
             android:id="@+id/user_main_activity_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
+            android:layout_height="match_parent"
             ></android.support.v4.view.ViewPager>
-    </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 
-</android.support.v4.widget.DrawerLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

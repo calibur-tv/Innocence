@@ -1,9 +1,11 @@
 package com.riuir.calibur.ui.widget;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +16,13 @@ import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.data.trending.TrendingToggleInfo;
 import com.riuir.calibur.net.ApiPost;
-import com.riuir.calibur.ui.loginAndRegister.LoginActivity;
+import com.riuir.calibur.ui.home.MineFragment;
+
 import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
@@ -56,6 +60,10 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
     private static final int NET_STATUS_TOGGLE_LIKE = 0;
     private static final int NET_STATUS_TOGGLE_COLLENTION = 1;
     private static final int NET_STATUS_TOGGLE_REWARDED = 2;
+
+    private OnLFCNetFinish onLFCNetFinish;
+
+    private  AlertDialog rewardDialog;
 
     public TrendingLikeFollowCollectionView(Context context) {
         super(context);
@@ -143,31 +151,30 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
             public void onClick(View view) {
                 if (Constants.ISLOGIN){
                     if (rewarded){
-                        ToastUtils.showShort(context,"只能打赏一次哦，您已经打赏过了，请勿重复打赏~");
+                        ToastUtils.showShort(context,"只能投食一次哦，您已经投食过了，请勿重复投食~");
                     }else {
 
-                        SweetAlertDialog dialog = new SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE);
-                        dialog.setTitleText("打赏")
-                                .setContentText("确认打赏将会消耗您1金币哦")
-                                .setCancelText("取消")
-                                .setConfirmText("确定")
-                                .showCancelButton(true)
-                                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        rewardDialog = new AlertDialog.Builder(context)
+                                .setTitle("投食")
+                                .setMessage("确认投食将会消耗您1金币哦")
+                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                                     @Override
-                                    public void onClick(SweetAlertDialog sDialog) {
-                                        sDialog.cancel();
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        rewardDialog.dismiss();
                                     }
                                 })
-                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                     @Override
-                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    public void onClick(DialogInterface dialog, int which) {
                                         rewardedBtn.setClickable(false);
-                                        sweetAlertDialog.cancel();
                                         setNetToToggle(NET_STATUS_TOGGLE_REWARDED);
-                                        rewardedBtn.setText("打赏中");
+                                        rewardedBtn.setText("投食中");
+                                        rewardDialog.dismiss();
+
                                     }
                                 })
-                                .show();
+                                .create();
+                        rewardDialog.show();
                     }
                 }else {
                     LoginUtils.ReLogin(context);
@@ -287,9 +294,15 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
                     if (response != null && response.isSuccessful()) {
                         if (response.body().getCode() == 0) {
                             if (response.body().isData()){
-                                ToastUtils.showShort(context, "打赏成功，消耗1金币");
+                                ToastUtils.showShort(context, "投食成功，消耗1金币");
                                 rewarded = true;
                                 rewardedBtn.setCompoundDrawables(leftDrawLightLike,null,null,null);
+                                LogUtils.d("testCoin","coin reward 1 = "+Constants.userInfoData.getCoin());
+                                Constants.userInfoData.setCoin(Constants.userInfoData.getCoin()-1);
+                                Intent intent = new Intent(MineFragment.COINCHANGE);
+                                context.sendBroadcast(intent);
+                                LogUtils.d("testCoin","coin reward 2 = "+Constants.userInfoData.getCoin());
+                                onLFCNetFinish.onRewardFinish();
                             }else {
                                 ToastUtils.showShort(context,response.body().getMessage());
                             }
@@ -312,14 +325,14 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
                         }
                     }
                     rewardedBtn.setClickable(true);
-                    rewardedBtn.setText("打赏");
+                    rewardedBtn.setText("投食");
                 }
 
                 @Override
                 public void onFailure(Call<TrendingToggleInfo> call, Throwable t) {
                     ToastUtils.showShort(context, "请检查您的网络");
                     rewardedBtn.setClickable(true);
-                    rewardedBtn.setText("打赏");
+                    rewardedBtn.setText("投食");
                 }
             });
         }
@@ -352,5 +365,17 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
     }
     public final void startListenerAndNet(){
         setListener();
+    }
+
+
+    public void setOnLFCNetFinish(OnLFCNetFinish onLFCNetFinish){
+        this.onLFCNetFinish = onLFCNetFinish;
+    }
+
+    public interface OnLFCNetFinish{
+        //需要的时候解开注释 同时给对应的类添加这两个方法
+//        void onLikedFinish();
+//        void onCollectedFinish();
+        void onRewardFinish();
     }
 }

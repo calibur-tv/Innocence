@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,11 +42,15 @@ import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.ScoreContentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -72,6 +77,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
     boolean isLoadMore = false;
     boolean isFirstLoad = false;
     boolean isRefresh = false;
+    boolean isOnlySeeMaster = false;
+    int onlySeeMaster = 0;
 
     private CommentAdapter commentAdapter;
 
@@ -120,11 +127,19 @@ public class ScoreShowInfoActivity extends BaseActivity {
     SwipeRefreshLayout refreshLayout;
     @BindView(R.id.score_show_info_back_btn)
     ImageView backBtn;
+    @BindView(R.id.score_show_info_list_header_more)
+    AppHeaderPopupWindows headerMore;
     @BindView(R.id.score_show_info_comment_view)
     ReplyAndCommentView commentView;
 
     private static final int NET_STATUS_PRIMACY = 0;
     private static final int NET_STATUS_MAIN_COMMENT = 1;
+
+    private Call<ScoreShowInfoPrimacy> primacyCall;
+    private Call<TrendingShowInfoCommentMain> commentMainCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
 
     @Override
     protected int getContentViewId() {
@@ -142,6 +157,17 @@ public class ScoreShowInfoActivity extends BaseActivity {
         setNet(NET_STATUS_MAIN_COMMENT);
     }
 
+    @Override
+    public void onDestroy() {
+        if (primacyCall!=null){
+            primacyCall.cancel();
+        }
+        if (commentMainCall!=null){
+            commentMainCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet(int NET_STATUS){
         ApiGet mApiGet;
         if (Constants.ISLOGIN){
@@ -149,20 +175,25 @@ public class ScoreShowInfoActivity extends BaseActivity {
         }else {
             mApiGet = apiGet;
         }
-        LogUtils.d("scoreInfo","000000");
+
         if (NET_STATUS == NET_STATUS_PRIMACY){
-            mApiGet.getCallScoreShowPrimacy(scoreID).enqueue(new Callback<ScoreShowInfoPrimacy>() {
+            primacyCall = mApiGet.getCallScoreShowPrimacy(scoreID);
+            primacyCall.enqueue(new Callback<ScoreShowInfoPrimacy>() {
                 @Override
                 public void onResponse(Call<ScoreShowInfoPrimacy> call, Response<ScoreShowInfoPrimacy> response) {
                     if (response!=null&&response.isSuccessful()){
                         primacyData = response.body().getData();
                         //两次网络请求都完成后开始加载数据
-                        LogUtils.d("scoreInfo","222222");
+
                         if (isFirstLoad){
                             isFirstLoad = false;
-                            refreshLayout.setRefreshing(false);
-                            setAdapter();
-                            setPrimacyView();
+                            if (refreshLayout!=null&&scoreShowInfoListView!=null){
+                                refreshLayout.setRefreshing(false);
+                                setAdapter();
+                                setPrimacyView();
+                                setEmptyView();
+
+                            }
                         }
                         if (isRefresh){
                             setRefresh();
@@ -191,6 +222,7 @@ public class ScoreShowInfoActivity extends BaseActivity {
                             isRefresh = false;
                         }
                         refreshLayout.setRefreshing(false);
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
                         if (isFirstLoad){
@@ -200,28 +232,33 @@ public class ScoreShowInfoActivity extends BaseActivity {
                             isRefresh = false;
                         }
                         refreshLayout.setRefreshing(false);
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ScoreShowInfoPrimacy> call, Throwable t) {
-                    ToastUtils.showShort(ScoreShowInfoActivity.this,"请检查您的网络！");
-                    LogUtils.d("scoreInfo","t = "+t.getMessage());
-                    if (isFirstLoad){
-                        isFirstLoad = false;
+                    if (call.isCanceled()){
+                    }else {
+                        ToastUtils.showShort(ScoreShowInfoActivity.this,"请检查您的网络！");
+                        LogUtils.d("AppNetErrorMessage","score show t = "+t.getMessage());
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            isRefresh = false;
+                        }
+                        refreshLayout.setRefreshing(false);
+                        setFailedView();
                     }
-                    if (isRefresh){
-                        isRefresh = false;
-                    }
-                    refreshLayout.setRefreshing(false);
                 }
             });
         }
 
         if (NET_STATUS == NET_STATUS_MAIN_COMMENT){
             setFetchID();
-            LogUtils.d("scoreInfo","111111");
-            mApiGet.getCallMainComment("score",scoreID,fetchId).enqueue(new Callback<TrendingShowInfoCommentMain>() {
+            commentMainCall = mApiGet.getCallMainComment("score",scoreID,fetchId,onlySeeMaster);
+            commentMainCall.enqueue(new Callback<TrendingShowInfoCommentMain>() {
                 @Override
                 public void onResponse(Call<TrendingShowInfoCommentMain> call, Response<TrendingShowInfoCommentMain> response) {
 
@@ -268,6 +305,7 @@ public class ScoreShowInfoActivity extends BaseActivity {
                             refreshLayout.setRefreshing(false);
                             isRefresh = false;
                         }
+                        setFailedView();
                     }else {
                         ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
                         if (isLoadMore){
@@ -282,24 +320,30 @@ public class ScoreShowInfoActivity extends BaseActivity {
                             refreshLayout.setRefreshing(false);
                             isRefresh = false;
                         }
+                        setFailedView();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<TrendingShowInfoCommentMain> call, Throwable t) {
-                    ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
-                    if (isLoadMore){
-                        commentAdapter.loadMoreFail();
-                        isLoadMore = false;
+                    if (call.isCanceled()){
+                    }else {
+                        ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
+                        if (isLoadMore){
+                            commentAdapter.loadMoreFail();
+                            isLoadMore = false;
+                        }
+                        if (isFirstLoad){
+                            refreshLayout.setRefreshing(false);
+                            isFirstLoad = false;
+                        }
+                        if (isRefresh){
+                            refreshLayout.setRefreshing(false);
+                            isRefresh = false;
+                        }
+                        setFailedView();
                     }
-                    if (isFirstLoad){
-                        refreshLayout.setRefreshing(false);
-                        isFirstLoad = false;
-                    }
-                    if (isRefresh){
-                        refreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
+
                 }
             });
         }
@@ -327,7 +371,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
 
         scoreShowInfoListView.setAdapter(commentAdapter);
-        setCommentView();
+        commentAdapter.setHeaderAndEmpty(true);
+
 
     }
 
@@ -337,6 +382,7 @@ public class ScoreShowInfoActivity extends BaseActivity {
         commentView.setCommentAdapter(commentAdapter);
         commentView.setFromUserName("");
         commentView.setId(scoreID);
+        commentView.setTitleId(primacyData.getUser().getId());
         commentView.setType(ReplyAndCommentView.TYPE_SCORE);
         commentView.setTargetUserId(0);
         commentView.setNetAndListener();
@@ -350,8 +396,9 @@ public class ScoreShowInfoActivity extends BaseActivity {
         headerUserName = headerLayout.findViewById(R.id.score_show_info_list_header_user_name);
         headerTime = headerLayout.findViewById(R.id.score_show_info_list_header_time);
         headerScoreTotal = headerLayout.findViewById(R.id.score_show_info_list_header_total_score);
-        headerScoreTotal.setText(primacyData.getTotal()+"分");
 
+
+        headerScoreTotal.setText(primacyData.getTotal()+"分");
         scoreTitleLol = headerLayout.findViewById(R.id.score_show_info_list_header_score_lol_title);
         scoreTitleCry = headerLayout.findViewById(R.id.score_show_info_list_header_score_cry_title);
         scoreTitleFight = headerLayout.findViewById(R.id.score_show_info_list_header_score_fight_title);
@@ -452,11 +499,12 @@ public class ScoreShowInfoActivity extends BaseActivity {
 //        scoreShowInfoListView.getLayoutManager().smoothScrollToPosition(scoreShowInfoListView,null,0);
         RecyclerViewUtils.setScorllToTop(scoreShowInfoListView);
 
-
+        setCommentView();
         setListener();
     }
 
     private void setRadarChart() {
+
         scoreRadarChart.getDescription().setEnabled(false);
 
         scoreRadarChart.setWebLineWidth(1f);
@@ -618,6 +666,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
     }
     private void setListener() {
 
+        setHeaderMore();
+
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -655,6 +705,18 @@ public class ScoreShowInfoActivity extends BaseActivity {
                 }
             }
         });
+        commentAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> dataList =  adapter.getData();
+                int commentId = dataList.get(position).getId();
+                Intent intent = new Intent(ScoreShowInfoActivity.this,CardChildCommentActivity.class);
+                intent.putExtra("id",commentId);
+                intent.putExtra("mainComment",dataList.get(position));
+                intent.putExtra("type","score");
+                startActivity(intent);
+            }
+        });
 
         //上拉加载监听
         commentAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
@@ -671,6 +733,29 @@ public class ScoreShowInfoActivity extends BaseActivity {
         }, scoreShowInfoListView);
     }
 
+    private void setHeaderMore() {
+        headerMore.setReportModelTag(AppHeaderPopupWindows.SCORE,primacyData.getId());
+        headerMore.setDeleteLayout(AppHeaderPopupWindows.SCORE,primacyData.getId(),
+                primacyData.getUser().getId(),apiPost);
+        headerMore.initOnlySeeMaster(AppHeaderPopupWindows.SCORE);
+        headerMore.setOnlySeeMasterClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isOnlySeeMaster){
+                    isOnlySeeMaster = false;
+                    onlySeeMaster = 0;
+                }else {
+                    isOnlySeeMaster = true;
+                    onlySeeMaster = 1;
+                }
+                headerMore.setIsOnlySeeMaster(isOnlySeeMaster);
+                //刷新
+                isRefresh = true;
+                setNet(NET_STATUS_MAIN_COMMENT);
+            }
+        });
+    }
+
 
     private void setPreviewImageUrlList() {
         if (previewImagesList == null||previewImagesList.size() == 0){
@@ -682,6 +767,30 @@ public class ScoreShowInfoActivity extends BaseActivity {
                 previewImagesList.add(primacyData.getContent().get(i).getUrl());
             }
         }
+    }
+
+    private void setEmptyView(){
+        if (baseCommentMainList==null||baseCommentMainList.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(ScoreShowInfoActivity.this);
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            commentAdapter.setEmptyView(emptyView);
+
+
+        }
+    }
+
+    private void setFailedView(){
+        //加载失败 点击重试
+        if (failedView == null){
+            failedView = new AppListFailedView(ScoreShowInfoActivity.this);
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        }
+
+        commentAdapter.setEmptyView(failedView);
+
     }
 
     private void setRefresh(){
@@ -713,6 +822,9 @@ public class ScoreShowInfoActivity extends BaseActivity {
             fetchId = commentAdapter.getData().get(commentAdapter.getData().size()-1).getId();
         }
         if (isFirstLoad){
+            fetchId = 0;
+        }
+        if (isRefresh){
             fetchId = 0;
         }
         LogUtils.d("cardShow","fetchID = "+fetchId);

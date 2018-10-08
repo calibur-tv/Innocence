@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -15,7 +16,7 @@ public class BangumiForShowView extends RelativeLayout implements View.OnClickLi
 
     private TextView name;
     private TextView summary;
-    private ImageView imageView;
+    private RoundedImageView imageView;
 
     public BangumiForShowView(Context context) {
         super(context);

@@ -29,6 +29,7 @@ import com.chad.library.adapter.base.loadmore.LoadMoreView;
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
+import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 
@@ -39,6 +40,8 @@ import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.view.ChildListView;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.GlideUtils;
 
 
@@ -75,6 +78,9 @@ public class DramaTimelineFragment extends BaseFragment {
 
     int year = TimeUtils.getYear();
     int howLongYear = 1;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
 
     @Override
     protected int getContentViewID() {
@@ -113,6 +119,7 @@ public class DramaTimelineFragment extends BaseFragment {
                     if (isLoadMore){
                         setLoadMore();
                     }
+                    setEmptyView();
                 }else if (response!=null&&!response.isSuccessful()){
                     String errorStr = "";
                     try {
@@ -135,12 +142,28 @@ public class DramaTimelineFragment extends BaseFragment {
                     if (isFirstLoad){
                         timeLineRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
+                }else {
+                    if (isRefresh){
+                        timeLineRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isFirstLoad){
+                        timeLineRefreshLayout.setRefreshing(false);
+                    }
+                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了");
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<AnimeListForTimeLine> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                LogUtils.d("AppNetErrorMessage","drama time line t = "+t.getMessage());
                 if (isRefresh){
                     timeLineRefreshLayout.setRefreshing(false);
                     isRefresh = false;
@@ -152,8 +175,27 @@ public class DramaTimelineFragment extends BaseFragment {
                 if (isFirstLoad){
                     timeLineRefreshLayout.setRefreshing(false);
                 }
+                setFailedView();
             }
         });
+    }
+
+    private void setEmptyView(){
+        if (baseTimeLineList==null||baseTimeLineList.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 下拉重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
     }
 
     private void setLoadMore() {
@@ -291,8 +333,11 @@ public class DramaTimelineFragment extends BaseFragment {
                     final AnimeListForTimeLine.AnimeInfo itemChild = (AnimeListForTimeLine.AnimeInfo) item;
                     helper.setText(R.id.drama_timeline_list_item_name,itemChild.getName());
                     helper.setText(R.id.drama_timeline_list_item_summary,itemChild.getSummary());
-                    GlideUtils.loadImageViewRoundedCorners(getContext(),itemChild.getAvatar(),
-                            (ImageView) helper.getView(R.id.drama_timeline_list_item_image),6);
+                    ImageView imageView = helper.getView(R.id.drama_timeline_list_item_image);
+                    LogUtils.d("timelineAvatar","width = "+imageView.getLayoutParams().width);
+                    GlideUtils.loadImageViewRoundedCorners(getContext(),
+                            GlideUtils.setImageUrlForWidth(getContext(),itemChild.getAvatar(), imageView.getLayoutParams().width),
+                            imageView,6);
 
                     helper.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override

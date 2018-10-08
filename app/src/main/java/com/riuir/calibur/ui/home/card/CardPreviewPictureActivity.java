@@ -40,9 +40,17 @@ public class CardPreviewPictureActivity extends BaseActivity {
         Intent intent = getIntent();
         selectImageUrl = intent.getStringExtra("imageUrl");
         previewImaegUrlList = intent.getStringArrayListExtra("previewImagesList");
+        setLog();
         setAdapter();
         setListener();
     }
+
+    private void setLog() {
+        for (int i = 0; i < previewImaegUrlList.size(); i++) {
+            LogUtils.d("perImage","list "+i+" url = "+previewImaegUrlList.get(i));
+        }
+    }
+
 
     private void setListener() {
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +100,8 @@ public class CardPreviewPictureActivity extends BaseActivity {
             photoView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             photoView.setLayoutParams(params);
-            GlideUtils.loadImageViewpreview(CardPreviewPictureActivity.this,url,photoView);
+            GlideUtils.loadImageViewpreview(CardPreviewPictureActivity.this,
+                    GlideUtils.setImageUrl(CardPreviewPictureActivity.this,url,GlideUtils.FULL_SCREEN),photoView);
             photoView.enable();
 
             photoView.setOnClickListener(new View.OnClickListener() {

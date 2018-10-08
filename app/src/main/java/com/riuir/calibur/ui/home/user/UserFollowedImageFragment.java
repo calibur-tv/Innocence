@@ -22,6 +22,8 @@ import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.ImageListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +66,10 @@ public class UserFollowedImageFragment extends BaseFragment {
     //page默认从0开始
     private int page = 0;
 
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
+
+    private Call<MainTrendingInfo> listCall;
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_user_followed_image;
@@ -80,9 +86,18 @@ public class UserFollowedImageFragment extends BaseFragment {
         setNet();
     }
 
+    @Override
+    public void onDestroy() {
+        if (listCall!=null){
+            listCall.cancel();
+        }
+        super.onDestroy();
+    }
+
     private void setNet() {
         setPage();
-        apiGet.getFollowList("image","news",0,zone,page,20,0,"").enqueue(new Callback<MainTrendingInfo>() {
+        listCall = apiGet.getFollowList("image","news",0,zone,page,20,0,"");
+        listCall.enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -90,9 +105,12 @@ public class UserFollowedImageFragment extends BaseFragment {
                     imageInfoData = response.body().getData();
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        imageRefreshLayout.setRefreshing(false);
                         baseListImage = response.body().getData().getList();
-                        setListAdapter();
+                        if (imageRefreshLayout!=null&&imageListView!=null){
+                            imageRefreshLayout.setRefreshing(false);
+                            setListAdapter();
+                            setEmptyView();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -125,6 +143,7 @@ public class UserFollowedImageFragment extends BaseFragment {
                         imageRefreshLayout.setRefreshing(false);
                     }
 
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
                     if (isLoadMore){
@@ -139,23 +158,28 @@ public class UserFollowedImageFragment extends BaseFragment {
                         isFirstLoad = false;
                         imageRefreshLayout.setRefreshing(false);
                     }
+                    setFailedView();
                 }
             }
 
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络！");
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isRefresh){
-                    imageRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    isFirstLoad = false;
-                    imageRefreshLayout.setRefreshing(false);
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(getContext(),"请检查您的网络！");
+                    if (isLoadMore){
+                        adapter.loadMoreFail();
+                        isLoadMore = false;
+                    }
+                    if (isRefresh){
+                        imageRefreshLayout.setRefreshing(false);
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        imageRefreshLayout.setRefreshing(false);
+                    }
+                    setFailedView();
                 }
             }
         });
@@ -229,6 +253,25 @@ public class UserFollowedImageFragment extends BaseFragment {
             }
         });
     }
+
+    private void setEmptyView(){
+        if (baseListImage==null||baseListImage.size()==0){
+            if (emptyView == null){
+                emptyView = new AppListEmptyView(getContext());
+                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            adapter.setEmptyView(emptyView);
+        }
+    }
+    private void setFailedView(){
+        //加载失败 下拉重试
+        if (failedView == null){
+            failedView = new AppListFailedView(getContext());
+            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        adapter.setEmptyView(failedView);
+    }
+
 
     private void setLoadMore() {
         isLoadMore = false;

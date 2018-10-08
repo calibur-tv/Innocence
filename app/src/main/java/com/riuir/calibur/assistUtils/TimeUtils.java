@@ -88,15 +88,30 @@ public  class TimeUtils {
 
         if (fromYear<toYear){
             int year = toYear-fromYear;
-            return year+"年前";
+            if(year == 1){
+                return "去年";
+            }else {
+                return year+"年前";
+            }
+
         }else{
             if (fromMonth<toMonth){
                 int month = toMonth-fromMonth;
-                return month+"月前";
+                if (month == 1){
+                    return "上个月";
+                }else {
+                    return month+"月前";
+                }
+
             }else{
                 if (fromDay < toDay){
                     int day = toDay-fromDay;
-                    return day+"天前";
+                    if (day == 1){
+                        return "昨天";
+                    }else {
+                        return day+"天前";
+                    }
+
                 }else{
                     if (fromHour<toHour){
                         int hour = toHour-fromHour;

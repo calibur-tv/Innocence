@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.data.MainTrendingInfo;
@@ -44,7 +45,8 @@ public class DramaCardListAdapter extends BaseQuickAdapter<MainTrendingInfo.Main
         helper.addOnClickListener(R.id.main_card_list_item_user_icon);
         GlideUtils.loadImageViewCircle(context, item.getUser().getAvatar(), (ImageView) helper.getView(R.id.main_card_list_item_user_icon));
 
-        ImageView bigOne, little1, little2, little3;
+        ImageView  little1, little2, little3;
+        RoundedImageView bigOne;
         LinearLayout littleGroup;
         bigOne = helper.getView(R.id.main_card_list_item_big_image);
         littleGroup = helper.getView(R.id.main_card_list_item_little_image_group);
@@ -60,16 +62,20 @@ public class DramaCardListAdapter extends BaseQuickAdapter<MainTrendingInfo.Main
         } else if (item.getImages().size() == 1) {
             littleGroup.setVisibility(View.GONE);
             bigOne.setVisibility(View.VISIBLE);
-            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
 
-            params.height = GlideUtils.getPostListImageHeightDp(context,Integer.parseInt(item.getImages().get(0).getHeight()),
-                    Integer.parseInt(item.getImages().get(0).getWidth()),30,1);
+            /**
+             * 七牛剪裁 动态设置高度模式
+             */
+//            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
+//
+//            params.height = GlideUtils.getPostListImageHeightDp(context,Integer.parseInt(item.getImages().get(0).getHeight()),
+//                    Integer.parseInt(item.getImages().get(0).getWidth()),30,1);
+//
+//            bigOne.setLayoutParams(params);
+//            GlideUtils.loadImageViewRoundedCorners(context, GlideUtils.setImageCropHeightUrl(context,item.getImages().get(0).getUrl(),
+//                    Integer.parseInt(item.getImages().get(0).getWidth()),Integer.parseInt(item.getImages().get(0).getHeight())), bigOne,15);
 
-            bigOne.setLayoutParams(params);
-
-            GlideUtils.loadImageViewRoundedCorners(context, GlideUtils.setImageCropHeightUrl(context,item.getImages().get(0).getUrl(),
-                    Integer.parseInt(item.getImages().get(0).getWidth()),Integer.parseInt(item.getImages().get(0).getHeight())), bigOne,15);
-//            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
+            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
 
         } else {
             littleGroup.setVisibility(View.VISIBLE);

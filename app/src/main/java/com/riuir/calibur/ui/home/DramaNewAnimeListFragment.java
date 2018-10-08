@@ -17,6 +17,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -54,6 +56,13 @@ public class DramaNewAnimeListFragment extends BaseFragment {
     @BindView(R.id.drama_new_anime_list_refresh_layout)
     SwipeRefreshLayout refreshLayout;
 
+    @BindView(R.id.drama_new_anime_list_empty_view_layout)
+    LinearLayout emptyLayout;
+    @BindView(R.id.drama_new_anime_list_empty_view_icon)
+    ImageView emptyIcon;
+    @BindView(R.id.drama_new_anime_list_empty_view_text)
+    TextView emptyText;
+
     AnimeNewListForWeek animeNewListForWeek;
 
     NewAnimeListViewPagerAdapter newAnimeListViewPagerAdapter;
@@ -86,6 +95,28 @@ public class DramaNewAnimeListFragment extends BaseFragment {
         });
     }
 
+    private void setEmptyView(){
+        if (animeNewListForWeek == null||
+                animeNewListForWeek.getData() == null||
+                animeNewListForWeek.getData().size()==0){
+            emptyLayout.setVisibility(View.VISIBLE);
+            emptyIcon.setImageResource(R.mipmap.ic_no_content_empty_view);
+            emptyText.setText("这里空空如也");
+        }
+    }
+    private void setFailedView(){
+        emptyLayout.setVisibility(View.VISIBLE);
+        emptyIcon.setImageResource(R.mipmap.ic_failed_empty_view);
+        emptyText.setText("加载失败，下拉重试");
+    }
+    private void setHideEmptyView(){
+        if (animeNewListForWeek !=null&&
+                animeNewListForWeek.getData()!=null&&
+                animeNewListForWeek.getData().size()!=0){
+            emptyLayout.setVisibility(View.GONE);
+        }
+    }
+
     private void setViewPagerAdapter() {
         newAnimeListViewPagerAdapter = new NewAnimeListViewPagerAdapter();
 
@@ -95,7 +126,7 @@ public class DramaNewAnimeListFragment extends BaseFragment {
         newAnimeViewPager.setAdapter(newAnimeListViewPagerAdapter);
         pagerSlidingTabStrip.setViewPager(newAnimeViewPager);
         setDramaTabs();
-
+        setHideEmptyView();
     }
 
 
@@ -132,6 +163,7 @@ public class DramaNewAnimeListFragment extends BaseFragment {
             public void onResponse(Call<AnimeNewListForWeek> call, Response<AnimeNewListForWeek> response) {
                 if (response!=null&&response.isSuccessful()){
 
+                    setEmptyView();
                     animeNewListForWeek = response.body();
                     setViewPagerAdapter();
                     refreshLayout.setEnabled(false);
@@ -146,19 +178,20 @@ public class DramaNewAnimeListFragment extends BaseFragment {
                     Event<String> info =gson.fromJson(errorStr,Event.class);
 
                     ToastUtils.showShort(getContext(),info.getMessage());
-
+                    setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-
+                    setFailedView();
                 }
-
                 refreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<AnimeNewListForWeek> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络！");
+                LogUtils.d("AppNetErrorMessage","drama new anime list t = "+t.getMessage());
                 refreshLayout.setRefreshing(false);
+                setFailedView();
             }
         });
     }
@@ -234,7 +267,9 @@ public class DramaNewAnimeListFragment extends BaseFragment {
             helper.setText(R.id.drama_new_week_pager_item_list_name,item.getName());
             helper.setText(R.id.drama_new_week_pager_item_list_part,"更新至第"+item.getReleased_part()+"集");
 
-            GlideUtils.loadImageViewRoundedCorners(getContext(),item.getAvatar(), (ImageView) helper.getView(R.id.drama_new_week_pager_item_list_image),10);
+            GlideUtils.loadImageView(getContext(),
+                    GlideUtils.setImageUrl(getContext(),item.getAvatar(),GlideUtils.THIRD_SCREEN),
+                    (ImageView) helper.getView(R.id.drama_new_week_pager_item_list_image));
 
         }
     }

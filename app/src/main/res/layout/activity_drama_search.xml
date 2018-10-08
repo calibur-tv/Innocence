@@ -20,13 +20,21 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             >
+            <ImageView
+                android:id="@+id/drama_search_activity_back"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@mipmap/app_btn_back_white"
+                android:padding="10dp"
+                android:layout_centerVertical="true"
+                />
             <EditText
                 android:id="@+id/drama_search_activity_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
                 android:background="@drawable/bg_edittext_normal"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="45dp"
                 android:layout_marginRight="15dp"
                 android:paddingLeft="15dp"
                 android:hint="搜索番剧"
