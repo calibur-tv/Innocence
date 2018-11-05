@@ -36,8 +36,13 @@ public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTren
 
         ViewGroup.LayoutParams params = img.getLayoutParams();
 
-
-        params.height =  GlideUtils.getImageHeightDp(context,item.getSource().getHeight(),item.getSource().getWidth(),21.0f,2);
+        double screenHeight =  ScreenUtils.getScreenHeight(context);
+        int height = GlideUtils.getImageHeightDp(context,item.getSource().getHeight(),item.getSource().getWidth(),21.0f,2);
+        if (height>(screenHeight*0.75)){
+            params.height = (int) (screenHeight*0.75);
+        }else {
+            params.height = height;
+        }
         img.setLayoutParams(params);
 
         GlideUtils.loadImageView(context,

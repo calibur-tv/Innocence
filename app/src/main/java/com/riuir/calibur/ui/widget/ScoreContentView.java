@@ -74,6 +74,7 @@ public class ScoreContentView extends LinearLayout{
                     textView.setLayoutParams(params);
                     textView.setText(Html.fromHtml(contentS.get(i).getText()));
                     textView.setTextColor(getResources().getColor(R.color.color_FF7B7B7B));
+                    textView.setTextIsSelectable(true);
                     textView.setTextSize(14);
                     layout.addView(textView);
                 }

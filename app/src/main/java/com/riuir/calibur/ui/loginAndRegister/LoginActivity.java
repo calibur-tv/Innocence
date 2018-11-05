@@ -53,6 +53,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * 已弃用
+ */
+
 public class LoginActivity extends BaseActivity {
 
     private static final int NET_GEE_STATUS_captcha = 0;
@@ -134,9 +138,10 @@ public class LoginActivity extends BaseActivity {
                     loginBtn.setText("登录中");
 //                    setNetWithOutGee();
 //                    setNet(NET_GEE_STATUS_captcha);
-                    GeetestUtils.setGeetestStart(LoginActivity.this,apiGet,bindListenerLogin,
-                            verificationCodeBodyGeeTest,
-                            gt3GeetestUtilsBindLogin);
+
+//                    GeetestUtils.setGeetestStart(LoginActivity.this,apiGet,bindListenerLogin,
+//                            verificationCodeBodyGeeTest,
+//                            gt3GeetestUtilsBindLogin);
                 }
             }
         });

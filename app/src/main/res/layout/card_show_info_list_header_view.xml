@@ -2,12 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     >
     <TextView
         android:id="@+id/card_show_info_list_header_card_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="帖子标题标题标题"
+        android:text="帖子标题加载中..."
         android:textSize="18sp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
@@ -36,6 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="用户昵称"
+            android:lines="1"
             android:textColor="@color/color_FF7B7B7B"
             android:textSize="15sp"
             android:layout_toRightOf="@id/card_show_info_list_header_user_icon"
@@ -90,9 +93,10 @@
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:paddingTop="6dp"
-        android:paddingBottom="6dp"
+        android:paddingBottom="10dp"
         android:layout_marginTop="10dp"
-        android:text="帖子内容帖子内容帖子内容帖子内容帖子内容帖子内容帖子内容帖子内容"
+        android:textIsSelectable="true"
+        android:text="帖子内容加载中..."
         />
     <LinearLayout
         android:id="@+id/card_show_info_list_header_card_image_layout"
@@ -100,6 +104,59 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         ></LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/card_show_info_list_header_card_tag_layout"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal"
+        android:padding="3dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        >
+        <TextView
+            android:id="@+id/card_show_info_list_header_card_tag_1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/bg_post_list_tag_gray"
+            android:text="标签"
+            android:textSize="12sp"
+            android:textColor="@color/color_FF333333"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:gravity="center"
+            android:visibility="gone"
+            />
+        <TextView
+            android:id="@+id/card_show_info_list_header_card_tag_2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/bg_post_list_tag_gray"
+            android:text="标签"
+            android:textSize="12sp"
+            android:textColor="@color/color_FF333333"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:gravity="center"
+            android:visibility="gone"
+            />
+        <TextView
+            android:id="@+id/card_show_info_list_header_card_tag_3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_post_list_tag_gray"
+            android:text="标签"
+            android:textSize="12sp"
+            android:textColor="@color/color_FF333333"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:gravity="center"
+            android:visibility="gone"
+            />
+    </LinearLayout>
 
     <com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView
         android:id="@+id/card_show_info_list_header_lfc_view"

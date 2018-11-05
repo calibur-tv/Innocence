@@ -134,7 +134,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="14dp"
         android:layout_marginRight="14dp"
-        android:text="粉丝：共有0个粉丝，收获了0个金币"
+        android:text="粉丝：共有0个粉丝，收获了0个团子"
         android:textSize="12sp"
         android:layout_marginBottom="8dp"
         android:textColor="@color/color_FF5B5B5B"

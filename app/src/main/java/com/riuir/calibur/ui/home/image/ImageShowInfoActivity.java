@@ -33,6 +33,7 @@ import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
+import com.riuir.calibur.ui.home.image.adapter.HeaderImageShowAdapter;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
@@ -41,6 +42,7 @@ import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +66,8 @@ public class ImageShowInfoActivity extends BaseActivity {
     @BindView(R.id.image_show_info_list_header_card_more)
     AppHeaderPopupWindows headerMore;
 
+    int primacyId;
+
     private ImageShowInfoPrimacy.ImageShowInfoPrimacyData primacyData;
     private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
     private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData baseCommentMainData;
@@ -80,18 +84,27 @@ public class ImageShowInfoActivity extends BaseActivity {
 
     private CommentAdapter commentAdapter;
 
-
-    LinearLayout headerLayout;
+//    LinearLayout headerLayout;
+    @BindView(R.id.image_show_info_list_header_card_image_layout)
     LinearLayout headerImageLayout;
+    @BindView(R.id.image_show_info_list_header_card_image_list)
+    RecyclerView headerImageList;
+    @BindView(R.id.image_show_info_list_header_card_no_img_text)
     TextView noImgText;
+    @BindView(R.id.image_show_info_list_header_card_title)
     TextView headerCardTitle;
+    @BindView(R.id.image_show_info_list_header_user_icon)
     ImageView headerUserIcon;
+    @BindView(R.id.image_show_info_list_header_user_name)
     TextView headerUserName;
+    @BindView(R.id.image_show_info_list_header_time)
     TextView headerTime;
 
+    HeaderImageShowAdapter headerImageShowAdapter;
 
+    @BindView(R.id.image_show_info_list_header_lfc_view)
     TrendingLikeFollowCollectionView trendingLFCView;
-
+    @BindView(R.id.image_show_info_list_header_bangumi_view)
     BangumiForShowView headerBangumiView;
 
     private int imageID;
@@ -119,6 +132,8 @@ public class ImageShowInfoActivity extends BaseActivity {
         setAdapter();
         isFirstLoad = true;
         refreshLayout.setRefreshing(true);
+        imageShowInfoListView.setNestedScrollingEnabled(false);
+        headerImageList.setNestedScrollingEnabled(false);
         setNet(NET_STATUS_MAIN_COMMENT);
     }
 
@@ -184,7 +199,9 @@ public class ImageShowInfoActivity extends BaseActivity {
                         if (isRefresh){
                             isRefresh = false;
                         }
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                         setFailedView();
                     }else {
                         ToastUtils.showShort(ImageShowInfoActivity.this,"未知错误出现了！");
@@ -194,7 +211,9 @@ public class ImageShowInfoActivity extends BaseActivity {
                         if (isRefresh){
                             isRefresh = false;
                         }
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                         setFailedView();
                     }
                 }
@@ -204,13 +223,16 @@ public class ImageShowInfoActivity extends BaseActivity {
                     if (call.isCanceled()){
                     }else {
                         ToastUtils.showShort(ImageShowInfoActivity.this,"请检查您的网络！");
+                        CrashReport.postCatchedException(t);
                         if (isFirstLoad){
                             isFirstLoad = false;
                         }
                         if (isRefresh){
                             isRefresh = false;
                         }
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                         setFailedView();
                     }
                 }
@@ -257,11 +279,15 @@ public class ImageShowInfoActivity extends BaseActivity {
                             isLoadMore = false;
                         }
                         if (isFirstLoad){
-                            refreshLayout.setRefreshing(false);
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                            }
                             isFirstLoad = false;
                         }
                         if (isRefresh){
-                            refreshLayout.setRefreshing(false);
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                            }
                             isRefresh = false;
                         }
                         setFailedView();
@@ -272,11 +298,15 @@ public class ImageShowInfoActivity extends BaseActivity {
                             isLoadMore = false;
                         }
                         if (isFirstLoad){
-                            refreshLayout.setRefreshing(false);
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                            }
                             isFirstLoad = false;
                         }
                         if (isRefresh){
-                            refreshLayout.setRefreshing(false);
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                            }
                             isRefresh = false;
                         }
                         setFailedView();
@@ -288,17 +318,22 @@ public class ImageShowInfoActivity extends BaseActivity {
                     if (call.isCanceled()){
                     }else {
                         ToastUtils.showShort(ImageShowInfoActivity.this,"请检查您的网络！");
-                        LogUtils.d("AppNetErrorMessage","image show t = "+t.getMessage());
+                        LogUtils.v("AppNetErrorMessage","image show t = "+t.getMessage());
+                        CrashReport.postCatchedException(t);
                         if (isLoadMore){
                             commentAdapter.loadMoreFail();
                             isLoadMore = false;
                         }
                         if (isFirstLoad){
-                            refreshLayout.setRefreshing(false);
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                            }
                             isFirstLoad = false;
                         }
                         if (isRefresh){
-                            refreshLayout.setRefreshing(false);
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                            }
                             isRefresh = false;
                         }
                         setFailedView();
@@ -307,11 +342,15 @@ public class ImageShowInfoActivity extends BaseActivity {
             });
         }
 
-
     }
 
     private void setAdapter() {
-        commentAdapter = new CommentAdapter(R.layout.card_show_info_list_comment_item,baseCommentMainList,ImageShowInfoActivity.this,apiPost,CommentAdapter.TYPE_IMAGE);
+
+        if (primacyData!=null){
+            primacyId = primacyData.getUser().getId();
+        }
+        commentAdapter = new CommentAdapter(R.layout.card_show_info_list_comment_item,baseCommentMainList,
+                ImageShowInfoActivity.this,apiPost,CommentAdapter.TYPE_IMAGE,primacyId);
         imageShowInfoListView.setLayoutManager(new LinearLayoutManager(ImageShowInfoActivity.this));
         commentAdapter.setHasStableIds(true);
         /**
@@ -330,11 +369,8 @@ public class ImageShowInfoActivity extends BaseActivity {
         commentAdapter.setLoadMoreView(new MyLoadMoreView());
         commentAdapter.disableLoadMoreIfNotFullPage(imageShowInfoListView);
 
-
         imageShowInfoListView.setAdapter(commentAdapter);
         commentAdapter.setHeaderAndEmpty(true);
-
-
     }
 
     private void setCommentView() {
@@ -350,22 +386,23 @@ public class ImageShowInfoActivity extends BaseActivity {
     }
 
     private void setPrimacyView() {
-        headerLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.image_show_info_list_header_view,null);
-
-        headerCardTitle = headerLayout.findViewById(R.id.image_show_info_list_header_card_title);
-        headerUserIcon = headerLayout.findViewById(R.id.image_show_info_list_header_user_icon);
-        headerUserName = headerLayout.findViewById(R.id.image_show_info_list_header_user_name);
-        headerTime = headerLayout.findViewById(R.id.image_show_info_list_header_time);
-
-        headerImageLayout = headerLayout.findViewById(R.id.image_show_info_list_header_card_image_layout);
-        noImgText = headerLayout.findViewById(R.id.image_show_info_list_header_card_no_img_text);
+//        headerLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.image_show_info_list_header_view,null);
+//
+//        headerCardTitle = headerLayout.findViewById(R.id.image_show_info_list_header_card_title);
+//        headerUserIcon = headerLayout.findViewById(R.id.image_show_info_list_header_user_icon);
+//        headerUserName = headerLayout.findViewById(R.id.image_show_info_list_header_user_name);
+//        headerTime = headerLayout.findViewById(R.id.image_show_info_list_header_time);
+//
+//        headerImageLayout = headerLayout.findViewById(R.id.image_show_info_list_header_card_image_layout);
+//        headerImageList = headerLayout.findViewById(R.id.image_show_info_list_header_card_image_list);
+//        noImgText = headerLayout.findViewById(R.id.image_show_info_list_header_card_no_img_text);
 
 
         /**
          * 先设置trendingLFCView的各项属性，再设置开启监听和网络
          * 顺序不可颠倒
          */
-        trendingLFCView = headerLayout.findViewById(R.id.image_show_info_list_header_lfc_view);
+//        trendingLFCView = headerLayout.findViewById(R.id.image_show_info_list_header_lfc_view);
         trendingLFCView.setType("image");
         trendingLFCView.setApiPost(apiPost);
         trendingLFCView.setID(imageID);
@@ -376,7 +413,7 @@ public class ImageShowInfoActivity extends BaseActivity {
         trendingLFCView.startListenerAndNet();
 
         //所属番剧操作
-        headerBangumiView = headerLayout.findViewById(R.id.image_show_info_list_header_bangumi_view);
+//        headerBangumiView = headerLayout.findViewById(R.id.image_show_info_list_header_bangumi_view);
         LogUtils.d("cardShowHeader","header Data = "+primacyData.toString());
         headerBangumiView.setName(primacyData.getBangumi().getName());
         headerBangumiView.setSummary(primacyData.getBangumi().getSummary());
@@ -430,56 +467,43 @@ public class ImageShowInfoActivity extends BaseActivity {
 
             headerImageLayout.addView(primacyImageView);
             noImgText.setVisibility(View.GONE);
+            headerImageList.setVisibility(View.GONE);
         }else {
+            noImgText.setVisibility(View.GONE);
+            headerImageList.setVisibility(View.VISIBLE);
             //显示多张
             if (primacyData.getImages()!=null&&primacyData.getImages().size()!=0){
 
-                for (int i = 0; i < primacyData.getImages().size(); i++) {
-                    ImageShowInfoPrimacy.ImageShowInfoPrimacyImages primacyImage = primacyData.getImages().get(i);
-                    ImageView primacyImageView = new ImageView(ImageShowInfoActivity.this);
-                    int height = GlideUtils.getImageHeightDp(ImageShowInfoActivity.this,
-                            primacyData.getImages().get(i).getHeight(),primacyData.getImages().get(i).getWidth(),24,1);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                            height);
-                    params.setMargins(DensityUtils.dp2px(ImageShowInfoActivity.this,12),
-                            DensityUtils.dp2px(ImageShowInfoActivity.this,4),
-                            DensityUtils.dp2px(ImageShowInfoActivity.this,12),
-                            DensityUtils.dp2px(ImageShowInfoActivity.this,4));
-                    primacyImageView.setLayoutParams(params);
-                    primacyImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        primacyImageView.setTransitionName("ToPreviewImageActivity");
-                    }
-
-                    GlideUtils.loadImageView(ImageShowInfoActivity.this,
-                            GlideUtils.setImageUrl(ImageShowInfoActivity.this,primacyData.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
-                            primacyImageView);
-
-                    final int finalI = i;
-                    primacyImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            String url = primacyData.getImages().get(finalI).getUrl();
-                            PerviewImageUtils.startPerviewImage(ImageShowInfoActivity.this,previewImagesList,url,view);
+                headerImageShowAdapter = new HeaderImageShowAdapter(R.layout.image_show_info_header_image_list_adapter,
+                        primacyData.getImages(),ImageShowInfoActivity.this);
+                headerImageList.setLayoutManager(new LinearLayoutManager(ImageShowInfoActivity.this));
+                headerImageShowAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                    @Override
+                    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                        switch (view.getId()){
+                            case R.id.image_show_info_header_image_list_adapter_image:
+                                ImageShowInfoPrimacy.ImageShowInfoPrimacyImages item =
+                                        (ImageShowInfoPrimacy.ImageShowInfoPrimacyImages) adapter.getItem(position);
+                                String url = item.getUrl();
+                                PerviewImageUtils.startPerviewImage(ImageShowInfoActivity.this,previewImagesList,url,view);
+                                break;
+                            default:
+                                break;
                         }
-                    });
+                    }
+                });
+                headerImageShowAdapter.setHasStableIds(true);
+                headerImageList.setAdapter(headerImageShowAdapter);
 
-                    headerImageLayout.addView(primacyImageView);
-                }
-
-                noImgText.setVisibility(View.GONE);
             }else {
                 noImgText.setVisibility(View.VISIBLE);
+                headerImageList.setVisibility(View.GONE);
             }
         }
 
+//        commentAdapter.addHeaderView(headerLayout);
 
-
-
-        commentAdapter.addHeaderView(headerLayout);
-
-        RecyclerViewUtils.setScorllToTop(imageShowInfoListView);
+//        RecyclerViewUtils.setScorllToTop(imageShowInfoListView);
 
         setPreviewImageUrlList();
 
@@ -491,8 +515,11 @@ public class ImageShowInfoActivity extends BaseActivity {
         if (previewImagesList == null||previewImagesList.size() == 0){
             previewImagesList = new ArrayList<>();
         }
-        if (primacyData.getImages()!=null&&primacyData.getImages().size()!=0){
+        if (previewImagesList.size()!=0){
+            previewImagesList.clear();
+        }
 
+        if (primacyData.getImages()!=null&&primacyData.getImages().size()!=0){
             for (int i = 0; i <primacyData.getImages().size() ; i++) {
                 previewImagesList.add(primacyData.getImages().get(i).getUrl());
             }
@@ -580,8 +607,9 @@ public class ImageShowInfoActivity extends BaseActivity {
 
     private void setHeaderMore() {
         headerMore.setReportModelTag(AppHeaderPopupWindows.IMAGE,primacyData.getId());
+        headerMore.setShareLayout(primacyData.getName(),AppHeaderPopupWindows.IMAGE,primacyData.getId(),"");
         headerMore.setDeleteLayout(AppHeaderPopupWindows.IMAGE,primacyData.getId(),
-                primacyData.getUser().getId(),apiPost);
+                primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
         headerMore.initOnlySeeMaster(AppHeaderPopupWindows.IMAGE);
         headerMore.setOnlySeeMasterClick(new View.OnClickListener() {
             @Override
@@ -597,6 +625,12 @@ public class ImageShowInfoActivity extends BaseActivity {
                 //刷新
                 isRefresh = true;
                 setNet(NET_STATUS_MAIN_COMMENT);
+            }
+        });
+        headerMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+            @Override
+            public void deleteFinish() {
+                finish();
             }
         });
     }
@@ -625,8 +659,13 @@ public class ImageShowInfoActivity extends BaseActivity {
     private void setRefresh(){
         commentAdapter.removeAllHeaderView();
         isRefresh = false;
-        refreshLayout.setRefreshing(false);
+        if (refreshLayout!=null){
+            refreshLayout.setRefreshing(false);
+        }
         commentAdapter.setNewData(commentMainList);
+        if (headerImageLayout!=null){
+            headerImageLayout.removeAllViews();
+        }
         setPrimacyView();
         ToastUtils.showShort(ImageShowInfoActivity.this,"刷新成功！");
     }

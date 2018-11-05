@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
+import com.riuir.calibur.ui.widget.BannerLoopView;
 import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.utils.ActivityUtils;
 
@@ -50,7 +51,7 @@ public class MainFragment extends BaseFragment {
      */
     private DisplayMetrics dm;
 
-    public static Fragment newInstance() {
+    public static MainFragment newInstance() {
         MainFragment mainFragment = new MainFragment();
         Bundle b = new Bundle();
         mainFragment.setArguments(b);

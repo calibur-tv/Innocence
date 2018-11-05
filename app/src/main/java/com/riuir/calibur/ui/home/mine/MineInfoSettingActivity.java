@@ -42,12 +42,16 @@ import com.riuir.calibur.data.params.UpUserSetting;
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.ui.common.BaseActivity;
 
+import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
 import com.riuir.calibur.ui.widget.SelectorImagesActivity;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 import com.riuir.calibur.utils.QiniuUtils;
+import com.riuir.calibur.utils.album.MyAlbumUtils;
 import com.suke.widget.SwitchButton;
+import com.tencent.bugly.crashreport.CrashReport;
 import com.yalantis.ucrop.UCrop;
+import com.yanzhenjie.album.AlbumFile;
 
 import org.json.JSONObject;
 
@@ -56,6 +60,7 @@ import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.zip.Inflater;
 
 import butterknife.BindView;
@@ -96,6 +101,9 @@ public class MineInfoSettingActivity extends BaseActivity {
     //七牛config
     Configuration config;
     UploadManager uploadManager;
+
+    QiniuUtils qiniuUtils;
+    MyAlbumUtils myAlbumUtils;
 
     MineUserInfo.MinEUserInfoData userData;
 
@@ -141,6 +149,8 @@ public class MineInfoSettingActivity extends BaseActivity {
             userData = Constants.userInfoData;
         }
 
+        qiniuUtils = new QiniuUtils();
+        myAlbumUtils = new MyAlbumUtils();
         config = QiniuUtils.getQiniuConfig();
         uploadManager = new UploadManager(config);
         //检查权限
@@ -298,10 +308,10 @@ public class MineInfoSettingActivity extends BaseActivity {
                 },cYear,cMonth,cDay);
         //设置起始日期和结束日期
         DatePicker datePicker = datePic.getDatePicker();
-        long min = TimeUtils.getDate2Timestamp("1970-01-01 08:00:00","yyyy-MM-dd HH:mm:ss");
+        long min = TimeUtils.getDate2Timestamp("1978-01-01 08:00:00","yyyy-MM-dd HH:mm:ss");
         LogUtils.d("birthday111","birthday222 = "+min);
         datePicker.setMinDate(min);
-        datePicker.setMaxDate(System.currentTimeMillis());
+        datePicker.setMaxDate(System.currentTimeMillis()-311040000000l);
 
     }
 
@@ -351,9 +361,13 @@ public class MineInfoSettingActivity extends BaseActivity {
             public void onClick(View view) {
                 //相册
                 if (picturePermission){
-                    Intent intent = new Intent(MineInfoSettingActivity.this, SelectorImagesActivity.class);
-                    intent.putExtra("code",SelectorImagesActivity.ICON_CODE);
-                    startActivityForResult(intent, SelectorImagesActivity.ICON_CODE);
+                    myAlbumUtils.setChooseImage(MineInfoSettingActivity.this,1);
+                    myAlbumUtils.setOnChooseImageFinishListener(new MyAlbumUtils.OnChooseImageFinishListener() {
+                        @Override
+                        public void onFinish(ArrayList<AlbumFile> albumFiles) {
+                            setChooseFinishImageLoad(albumFiles,"avatar");
+                        }
+                    });
                 }else {
                     ToastUtils.showShort(MineInfoSettingActivity.this,"未取得授权，无法选择图片");
                 }
@@ -365,9 +379,13 @@ public class MineInfoSettingActivity extends BaseActivity {
             public void onClick(View view) {
                 //相册
                 if (picturePermission){
-                    Intent intent = new Intent(MineInfoSettingActivity.this, SelectorImagesActivity.class);
-                    intent.putExtra("code",SelectorImagesActivity.BANNER_CODE);
-                    startActivityForResult(intent, SelectorImagesActivity.BANNER_CODE);
+                    myAlbumUtils.setChooseImage(MineInfoSettingActivity.this,1);
+                    myAlbumUtils.setOnChooseImageFinishListener(new MyAlbumUtils.OnChooseImageFinishListener() {
+                        @Override
+                        public void onFinish(ArrayList<AlbumFile> albumFiles) {
+                            setChooseFinishImageLoad(albumFiles,"banner");
+                        }
+                    });
                 }else {
                     ToastUtils.showShort(MineInfoSettingActivity.this,"未取得授权，无法选择图片");
                 }
@@ -387,16 +405,19 @@ public class MineInfoSettingActivity extends BaseActivity {
         finishBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finishBtn.setClickable(false);
-                finishBtn.setText("上传中");
                 setCheck();
             }
         });
     }
 
     private void setCheck(){
-        if (nameEdit.getText().toString()!=null&&nameEdit.getText().toString().length()!=0){
+        if (nameEdit.getText().toString()!=null&&nameEdit.getText().toString().length()!=0&&
+                !nameEdit.getText().toString().contains("\n")&&!nameEdit.getText().toString().contains(" ")){
+            finishBtn.setClickable(false);
+            finishBtn.setText("上传中");
             setUpLoadInfo();
+        }else {
+            ToastUtils.showShort(MineInfoSettingActivity.this,"您的昵称格式不符合规范");
         }
     }
 
@@ -467,6 +488,7 @@ public class MineInfoSettingActivity extends BaseActivity {
                 if (call.isCanceled()){
                 }else {
                     ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
+                    CrashReport.postCatchedException(t);
                     finishBtn.setClickable(true);
                     finishBtn.setText("保存");
                 }
@@ -479,133 +501,46 @@ public class MineInfoSettingActivity extends BaseActivity {
 
     private void getQiniuTokenAvatar(){
 
-        apiGetHasAuth.getCallQiniuUpToken().enqueue(new Callback<QiniuUpToken>() {
-            @Override
-            public void onResponse(Call<QiniuUpToken> call, Response<QiniuUpToken> response) {
-                if (response!=null&&response.isSuccessful()){
-                    Constants.QINIU_TOKEN = response.body().getData().getUpToken();
-                    setUpLoadImageAvatar();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(MineInfoSettingActivity.this,info.getMessage());
-                }else {
-                    ToastUtils.showShort(MineInfoSettingActivity.this,"未知错误导致上传失败");
-                }
-            }
+        List<String> avatarUrlList = new ArrayList<>();
+        avatarUrlList.add(iconUrl);
+        qiniuUtils.getQiniuUpToken(apiGetHasAuth,MineInfoSettingActivity.this,avatarUrlList,userData.getId());
 
+        qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
-            public void onFailure(Call<QiniuUpToken> call, Throwable t) {
-                ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
+            public void onFailed(String fialMessage) {
             }
         });
+        qiniuUtils.setOnQiniuUploadSuccessedListnener(new QiniuUtils.OnQiniuUploadSuccessedListnener() {
+            @Override
+            public void onUploadSuccess(ArrayList<QiniuImageParams.QiniuImageParamsData> imageParamsDataList) {
+                iconImageQiniu = imageParamsDataList.get(0);
+                setUpLoadImageNet("avatar");
+            }
+        });
+
     }
 
     private void getQiniuTokenBanner(){
 
-        apiGetHasAuth.getCallQiniuUpToken().enqueue(new Callback<QiniuUpToken>() {
-            @Override
-            public void onResponse(Call<QiniuUpToken> call, Response<QiniuUpToken> response) {
-                if (response!=null&&response.isSuccessful()){
-                    Constants.QINIU_TOKEN = response.body().getData().getUpToken();
-                    setUpLoadImageBanner();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(MineInfoSettingActivity.this,info.getMessage());
-                }else {
-                    ToastUtils.showShort(MineInfoSettingActivity.this,"未知错误导致上传失败");
-                }
-            }
+        List<String> bannerUrlList = new ArrayList<>();
+        bannerUrlList.add(bannerUrl);
+        qiniuUtils.getQiniuUpToken(apiGetHasAuth,MineInfoSettingActivity.this,bannerUrlList,userData.getId());
 
+        qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
-            public void onFailure(Call<QiniuUpToken> call, Throwable t) {
-                ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
+            public void onFailed(String fialMessage) {
             }
         });
-    }
-
-    private void setUpLoadImageAvatar() {
-        if (config == null){
-            config = QiniuUtils.getQiniuConfig();
-        }
-        if (uploadManager==null){
-            // 重用uploadManager。一般地，只需要创建一个uploadManager对象
-            uploadManager = new UploadManager(config);
-        }
-
-        if (iconUrl !=null&&iconUrl.length()!=0){
-            //上传icon
-            String iconkey = QiniuUtils.getQiniuUpKey(userData.getId(),"avatar",iconUrl);
-            if (iconkey!=null){
-                uploadManager.put(iconFile, iconkey, Constants.QINIU_TOKEN, new UpCompletionHandler() {
-                    @Override
-                    public void complete(String key, ResponseInfo info, JSONObject response) {
-                        LogUtils.d("mineSetting","icon isOk = "+info.isOK());
-                        if (info.isOK()){
-                            Gson gson = new Gson();
-                            QiniuImageParams params = gson.fromJson(response.toString(),QiniuImageParams.class);
-                            iconImageQiniu = params.getData();
-                            setUpLoadImageNet("avatar");
-                            LogUtils.d("mineSetting","icon url = "+iconImageQiniu.getUrl());
-                        }else if(info.isCancelled()){
-                            ToastUtils.showShort(MineInfoSettingActivity.this,"取消上传");
-                        }else if (info.isNetworkBroken()){
-                            ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
-                        }
-                    }
-                },null);
+        qiniuUtils.setOnQiniuUploadSuccessedListnener(new QiniuUtils.OnQiniuUploadSuccessedListnener() {
+            @Override
+            public void onUploadSuccess(ArrayList<QiniuImageParams.QiniuImageParamsData> imageParamsDataList) {
+                bannerImageQiniu = imageParamsDataList.get(0);
+                setUpLoadImageNet("banner");
             }
-        }
+        });
 
     }
 
-    private void setUpLoadImageBanner() {
-        if (config == null){
-            config = QiniuUtils.getQiniuConfig();
-        }
-        if (uploadManager==null){
-            // 重用uploadManager。一般地，只需要创建一个uploadManager对象
-            uploadManager = new UploadManager(config);
-        }
-
-        if (bannerUrl !=null&&bannerUrl.length()!=0){
-            //上传banner
-            String bannerkey = QiniuUtils.getQiniuUpKey(userData.getId(),"banner",bannerUrl);
-            if (bannerkey!=null){
-                uploadManager.put(bannerFile, bannerkey, Constants.QINIU_TOKEN, new UpCompletionHandler() {
-                    @Override
-                    public void complete(String key, ResponseInfo info, JSONObject response) {
-                        if (info.isOK()){
-                            Gson gson = new Gson();
-                            QiniuImageParams params = gson.fromJson(response.toString(),QiniuImageParams.class);
-                            bannerImageQiniu = params.getData();
-                            setUpLoadImageNet("banner");
-                            LogUtils.d("mineSetting","banner url = "+bannerImageQiniu.getUrl());
-                        }else if(info.isCancelled()){
-                            ToastUtils.showShort(MineInfoSettingActivity.this,"取消上传");
-                        }else if (info.isNetworkBroken()){
-                            ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
-                        }
-                    }
-                },null);
-            }
-
-        }
-
-    }
 
     private void setUpLoadImageNet(final String type){
         String url = "";
@@ -651,6 +586,7 @@ public class MineInfoSettingActivity extends BaseActivity {
             @Override
             public void onFailure(Call<Event<String>> call, Throwable t) {
                 ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
+                CrashReport.postCatchedException(t);
             }
         });
     }
@@ -658,16 +594,7 @@ public class MineInfoSettingActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //获取icon路径
-        if ( resultCode == SelectorImagesActivity.ICON_CODE && data != null) {
-            iconImagesUrl = data.getStringArrayListExtra(SelectorImagesActivity.RESULT_LIST_NAME);
-            setIconResult();
-        }
-        //获取banner路径
-        if ( resultCode == SelectorImagesActivity.BANNER_CODE && data != null) {
-            bannerImagesUrl = data.getStringArrayListExtra(SelectorImagesActivity.RESULT_LIST_NAME);
-            setBannerResult();
-        }
+
         //剪裁后返回剪裁好了的图
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             if (data!=null){
@@ -681,6 +608,26 @@ public class MineInfoSettingActivity extends BaseActivity {
         }
 
     }
+
+    private void setChooseFinishImageLoad(ArrayList<AlbumFile> albumFiles,String type){
+        if (type.equals("avatar")){
+            if (iconImagesUrl == null){
+                iconImagesUrl = new ArrayList<>();
+            }
+            iconImagesUrl.clear();
+            iconImagesUrl.add(albumFiles.get(0).getPath());
+            setIconResult();
+        }else if (type.equals("banner")){
+            if (bannerImagesUrl == null){
+                bannerImagesUrl = new ArrayList<>();
+            }
+            bannerImagesUrl.clear();
+            bannerImagesUrl.add(albumFiles.get(0).getPath());
+            setBannerResult();
+        }
+
+    }
+
 
     //选择icon之后调用，并且启动剪裁图片
     private void setIconResult() {
@@ -717,6 +664,7 @@ public class MineInfoSettingActivity extends BaseActivity {
             bannerUrl = file.getPath();
             bannerFile= file;
             getQiniuTokenBanner();
+
         }
         if (isIcon){
             iconUrl = file.getPath();
@@ -736,7 +684,6 @@ public class MineInfoSettingActivity extends BaseActivity {
                 } else {
                     // 权限被用户拒绝了，可以提示用户,关闭界面等等。
                     ToastUtils.showShort(MineInfoSettingActivity.this, "未取得授权，无法设置头像或背景图");
-
                     picturePermission = false;
                 }
                 return;

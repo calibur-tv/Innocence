@@ -22,6 +22,22 @@
             android:textColor="@color/color_FFFFFFFF"
             />
     </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_FFFFFFFF">
+        <TextView
+            android:id="@+id/main_user_message_set_all_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全部设为已读"
+            android:textSize="12sp"
+            android:paddingTop="8dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="30dp"
+            android:textColor="@color/color_FF9B9B9B"
+            />
+    </RelativeLayout>
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/main_user_message_refresh_layout"
         android:layout_width="match_parent"

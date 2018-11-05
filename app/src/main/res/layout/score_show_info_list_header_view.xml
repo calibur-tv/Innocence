@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
     <TextView
         android:id="@+id/score_show_info_list_header_card_title"
         android:layout_width="match_parent"
@@ -37,6 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="用户昵称"
+            android:lines="1"
             android:textColor="@color/color_FF7B7B7B"
             android:textSize="15sp"
             android:layout_toRightOf="@id/score_show_info_list_header_user_icon"

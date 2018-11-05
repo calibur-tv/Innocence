@@ -27,7 +27,9 @@ import com.riuir.calibur.data.GeeTestInfo;
 import com.riuir.calibur.data.params.VerificationCodeBody;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
+import com.riuir.calibur.ui.home.image.CreateImageAlbumActivity;
 import com.riuir.calibur.utils.geetest.GeetestUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.json.JSONObject;
 
@@ -36,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,7 +72,6 @@ public class ForgetPassWordActivity extends BaseActivity {
     TextView sendMessageBtn;
 
     GT3GeetestUtilsBind gt3GeetestUtilsBindForgetPassword;
-    GT3GeetestBindListener bindListenerForgetPassword;
 
     int reSetSendMessageBtnSecond = 0;
 
@@ -78,9 +80,10 @@ public class ForgetPassWordActivity extends BaseActivity {
 
     private VerificationCodeBody verificationCodebodyBody;
     private VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGeeTest;
+    GeetestUtils geetestUtils;
 
-    private IntentFilter intentFilter;
-    private ForgetPassWordBroadCastReceiver receiver;
+//    private IntentFilter intentFilter;
+//    private ForgetPassWordBroadCastReceiver receiver;
 
     @Override
     protected int getContentViewId() {
@@ -93,16 +96,35 @@ public class ForgetPassWordActivity extends BaseActivity {
         verificationCodeBodyGeeTest = new VerificationCodeBody.VerificationCodeBodyGeeTest();
 
         gt3GeetestUtilsBindForgetPassword = new GT3GeetestUtilsBind(ForgetPassWordActivity.this);
-        registerReceiver();
-        initBindListener();
+//        registerReceiver();
         initOnClicklistener();
     }
 
-    private void registerReceiver() {
-        receiver = new ForgetPassWordBroadCastReceiver();
-        intentFilter = new IntentFilter();
-        intentFilter.addAction(GeetestUtils.FailAction);
-        registerReceiver(receiver,intentFilter);
+//    private void registerReceiver() {
+//        receiver = new ForgetPassWordBroadCastReceiver();
+//        intentFilter = new IntentFilter();
+//        intentFilter.addAction(GeetestUtils.FailAction);
+//        registerReceiver(receiver,intentFilter);
+//    }
+
+    private void setGeeTestUtils() {
+        geetestUtils = new GeetestUtils();
+        geetestUtils.setGeetestStart(ForgetPassWordActivity.this,apiGet,
+                gt3GeetestUtilsBindForgetPassword);
+        geetestUtils.setOnGeetestFailedListener(new GeetestUtils.OnGeetestFailedListener() {
+            @Override
+            public void onFailed(String failedMessage) {
+                handler.sendEmptyMessage(1);
+            }
+        });
+        geetestUtils.setOnGeetestSuccessListener(new GeetestUtils.OnGeetestSuccessListener() {
+            @Override
+            public void onSuccess(VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGee) {
+                verificationCodeBodyGeeTest = verificationCodeBodyGee;
+                gt3GeetestUtilsBindForgetPassword.gt3TestFinish();
+                setNet(NET_GEE_STATUS_sendMessage);
+            }
+        });
     }
 
     private void initOnClicklistener() {
@@ -117,9 +139,7 @@ public class ForgetPassWordActivity extends BaseActivity {
                     sendMessageBtn.setClickable(false);
 //                    setNet(NET_GEE_STATUS_captcha);
 //                    sendVerWithOutGee();
-                    GeetestUtils.setGeetestStart(ForgetPassWordActivity.this,apiGet,bindListenerForgetPassword,
-                            verificationCodeBodyGeeTest,
-                            gt3GeetestUtilsBindForgetPassword);
+                    setGeeTestUtils();
                 }
             }
         });
@@ -209,7 +229,8 @@ public class ForgetPassWordActivity extends BaseActivity {
                 @Override
                 public void onFailure(Call<Event<String>> call, Throwable t) {
                     ToastUtils.showShort(ForgetPassWordActivity.this,"请检查您的网络哟");
-                    LogUtils.d("AppNetErrorMessage","forgetPassWord code  t = "+t.getMessage());
+                    LogUtils.v("AppNetErrorMessage","forgetPassWord code  t = "+t.getMessage());
+                    CrashReport.postCatchedException(t);
                     handler.sendEmptyMessage(1);
                 }
             });
@@ -257,7 +278,8 @@ public class ForgetPassWordActivity extends BaseActivity {
                 @Override
                 public void onFailure(Call<Event<String>> call, Throwable t) {
                     ToastUtils.showShort(ForgetPassWordActivity.this,"请检查您的网络哟~");
-                    LogUtils.d("AppNetErrorMessage","forgetPassWord t = "+t.getMessage());
+                    LogUtils.v("AppNetErrorMessage","forgetPassWord t = "+t.getMessage());
+                    CrashReport.postCatchedException(t);
                     reSetPassWordBtn.setText("重置密码");
                     reSetPassWordBtn.setClickable(true);
                 }
@@ -266,73 +288,6 @@ public class ForgetPassWordActivity extends BaseActivity {
 
     }
 
-    private void initBindListener() {
-        bindListenerForgetPassword = new GT3GeetestBindListener() {
-            @Override
-            public void gt3CloseDialog(int i) {
-                super.gt3CloseDialog(i);
-                handler.sendEmptyMessage(1);
-            }
-
-            @Override
-            public void gt3DialogReady() {
-                super.gt3DialogReady();
-            }
-
-            //用户是否自定义二次验证
-            @Override
-            public boolean gt3SetIsCustom() {
-                return true;
-            }
-
-            @Override
-            public void gt3GeetestStatisticsJson(JSONObject jsonObject) {
-                super.gt3GeetestStatisticsJson(jsonObject);
-            }
-
-            /**
-             * 自定义二次验证，也就是当gtSetIsCustom为ture时才执行
-             * 拿到第二个url（API2）需要的数据
-             * 在该回调里面自行请求api2
-             * 对api2的结果进行处理
-             * status 如果是true执行自定义接口2请求
-             */
-            @Override
-            public void gt3GetDialogResult(boolean status, String result) {
-//
-                if (status){
-                    //基本使用方法：
-
-                    // 1.取出该接口返回的三个参数用于自定义二次验证
-                    JSONObject res_json = null;
-                    try {
-                        res_json = new JSONObject(result);
-
-                        verificationCodeBodyGeeTest.setGeetest_challenge(res_json.getString("geetest_challenge"));
-                        verificationCodeBodyGeeTest.setGeetest_validate(res_json.getString("geetest_validate"));
-                        verificationCodeBodyGeeTest.setGeetest_seccode(res_json.getString("geetest_seccode"));
-
-
-                    } catch (org.json.JSONException e) {
-                        e.printStackTrace();
-                    }
-                    LogUtils.d("registerLog","verificationCodeBodyGeeTest = "+verificationCodeBodyGeeTest.toString());
-                    gt3GeetestUtilsBindForgetPassword.gt3TestFinish();
-                    setNet(NET_GEE_STATUS_sendMessage);
-
-                }
-
-            }
-
-
-
-            @Override
-            public void gt3DialogOnError(String s) {
-                super.gt3DialogOnError(s);
-                handler.sendEmptyMessage(1);
-            }
-        };
-    }
 
 
     @Override
@@ -384,15 +339,15 @@ public class ForgetPassWordActivity extends BaseActivity {
     @Override
     public void onDestroy() {
         //取消动态网络变化广播接收器的注册
-        unregisterReceiver(receiver);
+//        unregisterReceiver(receiver);
         super.onDestroy();
     }
 
-    public class ForgetPassWordBroadCastReceiver extends BroadcastReceiver{
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            handler.sendEmptyMessage(1);
-        }
-    }
+//    public class ForgetPassWordBroadCastReceiver extends BroadcastReceiver{
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            handler.sendEmptyMessage(1);
+//        }
+//    }
 }

@@ -81,6 +81,7 @@ public class UserFollowedRoleFragment extends BaseFragment {
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
+        baseRoleInfoList.clear();
         setAdapter();
         isFirstLoad = true;
         roleRefreshLayout.setRefreshing(true);
@@ -255,19 +256,17 @@ public class UserFollowedRoleFragment extends BaseFragment {
 
     private void setEmptyView(){
         if (baseRoleInfoList==null||baseRoleInfoList.size()==0){
-            if (emptyView == null){
-                emptyView = new AppListEmptyView(getContext());
-                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+            emptyView = new AppListEmptyView(getContext());
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
             followedRoleAdapter.setEmptyView(emptyView);
         }
     }
     private void setFailedView(){
         //加载失败 下拉重试
-        if (failedView == null){
-            failedView = new AppListFailedView(getContext());
-            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
+        failedView = new AppListFailedView(getContext());
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
         followedRoleAdapter.setEmptyView(failedView);
     }
 

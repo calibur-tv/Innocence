@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.anime.BangumiAllList;
@@ -13,6 +15,7 @@ import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.splash.SplashActivity;
 import com.riuir.calibur.utils.Constants;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 
@@ -28,7 +31,7 @@ public class BangumiAllListUtils {
             public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
                 if (response!=null&&response.isSuccessful()){
                     Constants.bangumiAllListData = response.body().getData();
-                    LogUtils.d("bangumiAllList","re = "+Constants.bangumiAllListData);
+                    SharedPreferencesUtils.put(context,"bangumiAllListData",response.body().getData());
                 }else  if (!response.isSuccessful()){
                     String errorStr = "";
                     try {
@@ -37,11 +40,13 @@ public class BangumiAllListUtils {
                         e.printStackTrace();
                     }
                     Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(context,info.getMessage());
-
+                    Event<String> info = null;
+                    try {
+                        info = gson.fromJson(errorStr,Event.class);
+                    } catch (JsonSyntaxException e) {
+                        e.printStackTrace();
+                    }
                 }else {
-//                    ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
                 }
                 Intent intent = new Intent(context,MainActivity.class);
                 activity.startActivity(intent);
@@ -50,6 +55,8 @@ public class BangumiAllListUtils {
 
             @Override
             public void onFailure(Call<BangumiAllList> call, Throwable t) {
+                LogUtils.v("AppNetErrorMessage","splash t = "+t.getMessage());
+                CrashReport.postCatchedException(t);
                 Intent intent = new Intent(context,MainActivity.class);
                 activity.startActivity(intent);
                 activity.finish();

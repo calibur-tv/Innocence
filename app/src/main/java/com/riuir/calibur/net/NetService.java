@@ -43,10 +43,10 @@ public class NetService {
             .addInterceptor(new AuthInterceptor())
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
             //请求超时时间
-            .readTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
             //请求失败是否重新请求
             .retryOnConnectionFailure(true)
-            .connectTimeout(30,TimeUnit.SECONDS)
+            .connectTimeout(10,TimeUnit.SECONDS)
             .build();
 
     /**
@@ -61,10 +61,10 @@ public class NetService {
             .addInterceptor(new AuthInterceptorPostNoAuth())
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
             //请求超时时间
-            .readTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
             //请求失败是否重新请求
             .retryOnConnectionFailure(true)
-            .connectTimeout(30,TimeUnit.SECONDS)
+            .connectTimeout(10,TimeUnit.SECONDS)
             .build();
 
     /**
@@ -80,10 +80,10 @@ public class NetService {
             .addInterceptor(new AuthWithOutGeetest())
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
             //请求超时时间
-            .readTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
             //请求失败是否重新请求
             .retryOnConnectionFailure(true)
-            .connectTimeout(30,TimeUnit.SECONDS)
+            .connectTimeout(10,TimeUnit.SECONDS)
             .build();
 
     /**
@@ -94,17 +94,17 @@ public class NetService {
     private OkHttpClient clientGet = new OkHttpClient.Builder()
             .addInterceptor(new AuthInterceptorGet())
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
-            .readTimeout(10,TimeUnit.SECONDS)
+            .readTimeout(20,TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
-            .connectTimeout(30,TimeUnit.SECONDS)
+            .connectTimeout(10,TimeUnit.SECONDS)
             .build();
 
     private OkHttpClient clientGetHasAuth = new OkHttpClient.Builder()
             .addInterceptor(new AuthInterceptorGetHasAuth())
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
-            .readTimeout(10,TimeUnit.SECONDS)
+            .readTimeout(20,TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
-            .connectTimeout(30,TimeUnit.SECONDS)
+            .connectTimeout(10,TimeUnit.SECONDS)
             .build();
 
     /**

@@ -35,7 +35,7 @@
         <RelativeLayout
             android:id="@+id/choose_new_card_bangumi_search_layout"
             android:layout_width="match_parent"
-            android:layout_height="46dp"
+            android:layout_height="52dp"
             android:background="@color/theme_magic_sakura_primary"
             android:orientation="horizontal"
             android:focusable="true"
@@ -44,9 +44,9 @@
             <EditText
                 android:id="@+id/choose_new_card_bangumi_search_edit_text"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="36dp"
                 android:background="@drawable/bg_edittext_normal"
-                android:layout_marginTop="5dp"
+                android:layout_centerVertical="true"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:paddingLeft="15dp"
@@ -66,7 +66,7 @@
                 android:src="@mipmap/drama_search_icon"
                 android:layout_alignRight="@id/choose_new_card_bangumi_search_edit_text"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="5dp"
+                android:layout_centerVertical="true"
                 />
 
             <TextView
@@ -80,7 +80,7 @@
                 android:gravity="center"
                 android:textSize="20sp"
                 android:textColor="@color/color_FF9B9B9B"
-                android:visibility="gone"
+                android:visibility="visible"
                 />
         </RelativeLayout>
         <android.support.v7.widget.RecyclerView

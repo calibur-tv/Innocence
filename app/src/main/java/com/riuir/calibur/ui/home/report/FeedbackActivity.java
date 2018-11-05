@@ -17,6 +17,7 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.VersionUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 
@@ -108,9 +109,9 @@ public class FeedbackActivity extends BaseActivity {
             @Override
             public void onFailure(Call<Event<String>> call, Throwable t) {
                 if (call.isCanceled()){
-
                 }else {
                     ToastUtils.showShort(FeedbackActivity.this,"请检查您的网络");
+                    CrashReport.postCatchedException(t);
                     setReportFailed();
                 }
             }

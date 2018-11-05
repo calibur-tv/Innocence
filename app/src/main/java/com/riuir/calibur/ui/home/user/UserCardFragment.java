@@ -65,12 +65,12 @@ public class UserCardFragment extends BaseFragment {
     }
 
     private void setViewPager() {
-
+        titles.clear();
+        userReleaseCardFragment = null;
+        userReplyCardFragment = null;
         //添加帖子fragment
         titles.add("TA的主题帖");
-
         titles.add("TA回复的");
-
 
         userCardPager.setAdapter(new UserCardPagerAdapter(getChildFragmentManager()));
         userCardPagerTab.setViewPager(userCardPager);
@@ -141,4 +141,5 @@ public class UserCardFragment extends BaseFragment {
         }
 
     }
+
 }

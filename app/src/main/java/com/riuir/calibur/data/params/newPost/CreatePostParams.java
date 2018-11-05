@@ -13,6 +13,7 @@ public class CreatePostParams {
     private ArrayList<QiniuImageParams.QiniuImageParamsData> images;
     private boolean is_creator;
     private VerificationCodeBody.VerificationCodeBodyGeeTest geetest;
+    private List<Integer> tags;
 
     public int getBangumiId() {
         return bangumiId;
@@ -62,6 +63,14 @@ public class CreatePostParams {
         this.geetest = geetest;
     }
 
+    public List<Integer> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Integer> tags) {
+        this.tags = tags;
+    }
+
     @Override
     public String toString() {
         return "CreatePostParams{" +
@@ -71,6 +80,7 @@ public class CreatePostParams {
                 ", images=" + images +
                 ", is_creator=" + is_creator +
                 ", geetest=" + geetest +
+                ", tags=" + tags +
                 '}';
     }
 }

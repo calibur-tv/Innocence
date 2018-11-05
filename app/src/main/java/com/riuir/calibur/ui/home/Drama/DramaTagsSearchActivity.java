@@ -22,6 +22,7 @@ import com.riuir.calibur.ui.home.Drama.adapter.DramaTagsAnimeListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -152,6 +153,7 @@ public class DramaTagsSearchActivity extends BaseActivity {
                     }else {
                         ToastUtils.showShort(DramaTagsSearchActivity.this,"请检查您的网络哟~");
                         LogUtils.d("tagSearch","t = "+t.getMessage());
+                        CrashReport.postCatchedException(t);
                         if (isRefresh){
                             isRefresh = false;
                             refreshLayout.setRefreshing(false);
@@ -242,19 +244,15 @@ public class DramaTagsSearchActivity extends BaseActivity {
 
     private void setEmptyView(){
         if (baseAnimeListForTagsSearchesData==null||baseAnimeListForTagsSearchesData.size()==0){
-            if (emptyView == null){
-                emptyView = new AppListEmptyView(DramaTagsSearchActivity.this);
-                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+            emptyView = new AppListEmptyView(DramaTagsSearchActivity.this);
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             adapter.setEmptyView(emptyView);
         }
     }
     private void setFailedView(){
         //加载失败 下拉重试
-        if (failedView == null){
-            failedView = new AppListFailedView(DramaTagsSearchActivity.this);
-            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
+        failedView = new AppListFailedView(DramaTagsSearchActivity.this);
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         adapter.setEmptyView(failedView);
 
     }

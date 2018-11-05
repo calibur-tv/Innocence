@@ -33,6 +33,7 @@ import com.riuir.calibur.data.params.VerificationCodeBody;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.geetest.GeetestUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.json.JSONObject;
 
@@ -71,11 +72,12 @@ public class LoginFragment extends BaseFragment {
 
     GT3GeetestUtilsBind gt3GeetestUtilsBindLogin;
     GT3GeetestBindListener bindListenerLogin;
+    GeetestUtils geetestUtils;
 
 
 
-    private LoginBroadCastReceiver loginBroadCastReceiver;
-    private IntentFilter intentFilter;
+//    private LoginBroadCastReceiver loginBroadCastReceiver;
+//    private IntentFilter intentFilter;
 
 
     private VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGeeTest;
@@ -91,18 +93,40 @@ public class LoginFragment extends BaseFragment {
 
         gt3GeetestUtilsBindLogin = new GT3GeetestUtilsBind(getContext());
 
-        registerReceiver();
-        initBindListener();
+//        registerReceiver();
         initOnClickListener();
     }
 
-    private void registerReceiver() {
-        //动态接受网络变化的广播接收器
-        intentFilter = new IntentFilter();
-        intentFilter.addAction(GeetestUtils.FailAction);
-        loginBroadCastReceiver = new LoginBroadCastReceiver();
-        getActivity().registerReceiver(loginBroadCastReceiver,intentFilter);
+//    private void registerReceiver() {
+//        //动态接受网络变化的广播接收器
+//        intentFilter = new IntentFilter();
+//        intentFilter.addAction(GeetestUtils.FailAction);
+//        loginBroadCastReceiver = new LoginBroadCastReceiver();
+//        getActivity().registerReceiver(loginBroadCastReceiver,intentFilter);
+//
+//    }
 
+    private void setGeeTestUtils() {
+        geetestUtils = new GeetestUtils();
+        geetestUtils.setGeetestStart(getContext(),apiGet,
+                gt3GeetestUtilsBindLogin);
+        geetestUtils.setOnGeetestFailedListener(new GeetestUtils.OnGeetestFailedListener() {
+            @Override
+            public void onFailed(String failedMessage) {
+                if (loginBtn!=null){
+                    loginBtn.setClickable(true);
+                    loginBtn.setText("登录");
+                }
+            }
+        });
+        geetestUtils.setOnGeetestSuccessListener(new GeetestUtils.OnGeetestSuccessListener() {
+            @Override
+            public void onSuccess(VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGee) {
+                verificationCodeBodyGeeTest = verificationCodeBodyGee;
+                gt3GeetestUtilsBindLogin.gt3TestFinish();
+                setNet(NET_GEE_STATUS_login);
+            }
+        });
     }
 
     private void initOnClickListener() {
@@ -121,9 +145,7 @@ public class LoginFragment extends BaseFragment {
                     loginBtn.setText("登录中...");
 //                    setNetWithOutGee();
 //                    setNet(NET_GEE_STATUS_captcha);
-                    GeetestUtils.setGeetestStart(getContext(),apiGet,bindListenerLogin,
-                            verificationCodeBodyGeeTest,
-                            gt3GeetestUtilsBindLogin);
+                    setGeeTestUtils();
                 }
             }
         });
@@ -203,7 +225,8 @@ public class LoginFragment extends BaseFragment {
                 @Override
                 public void onFailure(Call<Event<String>> call, Throwable t) {
                     ToastUtils.showShort(getContext(),"请检查您的网络哟~");
-                    LogUtils.d("AppNetErrorMessage","login t = "+t.getMessage());
+                    LogUtils.v("AppNetErrorMessage","login t = "+t.getMessage());
+                    CrashReport.postCatchedException(t);
                     loginBtn.setClickable(true);
                     loginBtn.setText("登录");
                 }
@@ -212,69 +235,6 @@ public class LoginFragment extends BaseFragment {
 
     }
 
-    private void initBindListener() {
-
-        bindListenerLogin = new GT3GeetestBindListener() {
-            @Override
-            public void gt3CloseDialog(int i) {
-                super.gt3CloseDialog(i);
-            }
-
-            @Override
-            public void gt3DialogReady() {
-                super.gt3DialogReady();
-            }
-
-            //用户是否自定义二次验证
-            @Override
-            public boolean gt3SetIsCustom() {
-                return true;
-            }
-
-            @Override
-            public void gt3GeetestStatisticsJson(JSONObject jsonObject) {
-                super.gt3GeetestStatisticsJson(jsonObject);
-            }
-
-            /**
-             * 自定义二次验证，也就是当gtSetIsCustom为ture时才执行
-             * 拿到第二个url（API2）需要的数据
-             * 在该回调里面自行请求api2
-             * 对api2的结果进行处理
-             * status 如果是true执行自定义接口2请求
-             */
-            @Override
-            public void gt3GetDialogResult(boolean status, String result) {
-//
-                if (status){
-                    //基本使用方法：
-
-                    // 1.取出该接口返回的三个参数用于自定义二次验证
-                    JSONObject res_json = null;
-                    try {
-                        res_json = new JSONObject(result);
-
-                        verificationCodeBodyGeeTest.setGeetest_challenge(res_json.getString("geetest_challenge"));
-                        verificationCodeBodyGeeTest.setGeetest_validate(res_json.getString("geetest_validate"));
-                        verificationCodeBodyGeeTest.setGeetest_seccode(res_json.getString("geetest_seccode"));
-
-
-                    } catch (org.json.JSONException e) {
-                        e.printStackTrace();
-                    }
-                    LogUtils.d("registerLog","verificationCodeBodyGeeTest = "+verificationCodeBodyGeeTest.toString());
-                    gt3GeetestUtilsBindLogin.gt3TestFinish();
-                    setNet(NET_GEE_STATUS_login);
-                }
-            }
-
-            @Override
-            public void gt3DialogOnError(String s) {
-                super.gt3DialogOnError(s);
-            }
-        };
-
-    }
 
     @Override
     public void onDestroy() {
@@ -283,7 +243,7 @@ public class LoginFragment extends BaseFragment {
          */
         gt3GeetestUtilsBindLogin.cancelUtils();
         //取消动态网络变化广播接收器的注册
-        getActivity().unregisterReceiver(loginBroadCastReceiver);
+//        getActivity().unregisterReceiver(loginBroadCastReceiver);
         super.onDestroy();
     }
 
@@ -299,12 +259,12 @@ public class LoginFragment extends BaseFragment {
     }
 
 
-    public class LoginBroadCastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            loginBtn.setClickable(true);
-            loginBtn.setText("登录");
-        }
-    }
+//    public class LoginBroadCastReceiver extends BroadcastReceiver {
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            loginBtn.setClickable(true);
+//            loginBtn.setText("登录");
+//        }
+//    }
 }

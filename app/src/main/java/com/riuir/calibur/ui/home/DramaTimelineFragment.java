@@ -43,6 +43,7 @@ import com.riuir.calibur.ui.view.ChildListView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 
 import java.io.IOException;
@@ -109,9 +110,10 @@ public class DramaTimelineFragment extends BaseFragment {
 
                     year -= howLongYear;
                     if (isFirstLoad){
-                        setFirstData();
-                        timeLineRefreshLayout.setRefreshing(false);
-
+                        if (timeLineRefreshLayout!=null&&adapter!=null){
+                            setFirstData();
+                            timeLineRefreshLayout.setRefreshing(false);
+                        }
                     }
                     if (isRefresh){
                         setRefresh();
@@ -132,7 +134,9 @@ public class DramaTimelineFragment extends BaseFragment {
 
                     ToastUtils.showShort(getContext(),info.getMessage());
                     if (isRefresh){
-                        timeLineRefreshLayout.setRefreshing(false);
+                        if (timeLineRefreshLayout!=null){
+                            timeLineRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isLoadMore){
@@ -140,12 +144,16 @@ public class DramaTimelineFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isFirstLoad){
-                        timeLineRefreshLayout.setRefreshing(false);
+                        if (timeLineRefreshLayout!=null){
+                            timeLineRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }else {
                     if (isRefresh){
-                        timeLineRefreshLayout.setRefreshing(false);
+                        if (timeLineRefreshLayout!=null){
+                            timeLineRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isLoadMore){
@@ -153,7 +161,9 @@ public class DramaTimelineFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isFirstLoad){
-                        timeLineRefreshLayout.setRefreshing(false);
+                        if (timeLineRefreshLayout!=null){
+                            timeLineRefreshLayout.setRefreshing(false);
+                        }
                     }
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了");
                     setFailedView();
@@ -163,9 +173,12 @@ public class DramaTimelineFragment extends BaseFragment {
             @Override
             public void onFailure(Call<AnimeListForTimeLine> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                LogUtils.d("AppNetErrorMessage","drama time line t = "+t.getMessage());
+                LogUtils.v("AppNetErrorMessage","drama time line t = "+t.getMessage());
+                CrashReport.postCatchedException(t);
                 if (isRefresh){
-                    timeLineRefreshLayout.setRefreshing(false);
+                    if (timeLineRefreshLayout!=null){
+                        timeLineRefreshLayout.setRefreshing(false);
+                    }
                     isRefresh = false;
                 }
                 if (isLoadMore){
@@ -173,7 +186,9 @@ public class DramaTimelineFragment extends BaseFragment {
                     isLoadMore = false;
                 }
                 if (isFirstLoad){
-                    timeLineRefreshLayout.setRefreshing(false);
+                    if (timeLineRefreshLayout!=null){
+                        timeLineRefreshLayout.setRefreshing(false);
+                    }
                 }
                 setFailedView();
             }
@@ -223,7 +238,9 @@ public class DramaTimelineFragment extends BaseFragment {
         isRefresh = false;
         setList();
         adapter.setNewData(timeLineList);
-        timeLineRefreshLayout.setRefreshing(false);
+        if (timeLineRefreshLayout!=null){
+            timeLineRefreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(getContext(),"刷新成功！");
 
     }

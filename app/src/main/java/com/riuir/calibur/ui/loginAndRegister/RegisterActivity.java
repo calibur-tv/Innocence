@@ -42,6 +42,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+
+/**
+ * 已弃用
+ */
+
 public class RegisterActivity extends BaseActivity {
 
 
@@ -174,9 +179,9 @@ public class RegisterActivity extends BaseActivity {
                     sendVerificationCodeBtn.setText("发送中..");
 //                    sendVerWithOutGee();
 //                    setNet(NET_GEE_STATUS_captcha);
-                    GeetestUtils.setGeetestStart(RegisterActivity.this,apiGet,bindListenerRegister,
-                            verificationCodeBodyGeeTest,
-                            gt3GeetestUtilsBindRegister);
+//                    GeetestUtils.setGeetestStart(RegisterActivity.this,apiGet,bindListenerRegister,
+//                            verificationCodeBodyGeeTest,
+//                            gt3GeetestUtilsBindRegister);
                 }
             }
         });

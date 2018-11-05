@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.DensityUtils;
@@ -23,6 +24,7 @@ import com.riuir.calibur.assistUtils.ScreenUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
+import com.riuir.calibur.data.params.FolllowListParams;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.ImageListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -32,6 +34,7 @@ import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -101,7 +104,8 @@ public class MainImageFragment extends BaseFragment {
         });
         //上拉加载监听
         adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
-            @Override public void onLoadMoreRequested() {
+            @Override
+            public void onLoadMoreRequested() {
                 isLoadMore = true;
                 setNet();
             }
@@ -137,14 +141,23 @@ public class MainImageFragment extends BaseFragment {
             seenIdList.clear();
         }
 
-        LogUtils.d("image_1","seenIds = "+seenIds );
+        LogUtils.d("image_1_id","seenIds = "+seenIds );
     }
 
 
     private void setNet() {
 
         setSeendIdS();
-        apiGet.getFollowList("image","active",0,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
+        FolllowListParams params = new FolllowListParams();
+        params.setType("image");
+        params.setSort("active");
+        params.setBangumiId(0);
+        params.setUserZone("");
+        params.setMinId(0);
+        params.setPage(0);
+        params.setTake(0);
+        params.setSeenIds(seenIds);
+        apiPost.getFollowList(params).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -152,8 +165,10 @@ public class MainImageFragment extends BaseFragment {
                     mainImageInfoData = response.body().getData();
                     if (isFirstLoad){
                         baseListImage = response.body().getData().getList();
-                        setFirstData();
-                        mainImageRefreshLayout.setRefreshing(false);
+                        if (mainImageRefreshLayout!=null&&adapter!=null){
+                            setFirstData();
+                            mainImageRefreshLayout.setRefreshing(false);
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -173,19 +188,32 @@ public class MainImageFragment extends BaseFragment {
                         e.printStackTrace();
                     }
                     Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                    ToastUtils.showShort(getContext(),info.getMessage());
+                    Event<String> info = null;
+                    try {
+                        info = gson.fromJson(errorStr,Event.class);
+                    } catch (JsonSyntaxException e) {
+                        e.printStackTrace();
+                    }
+                    if (info!=null){
+                        ToastUtils.showShort(getContext(),info.getMessage());
+                    }else {
+                        ToastUtils.showShort(getContext(),"服务器出现异常，请稍后再试！");
+                    }
                     if (isLoadMore){
                         adapter.loadMoreFail();
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        mainImageRefreshLayout.setRefreshing(false);
+                        if (mainImageRefreshLayout!=null){
+                            mainImageRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        mainImageRefreshLayout.setRefreshing(false);
+                        if (mainImageRefreshLayout!=null){
+                            mainImageRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }else {
@@ -195,11 +223,15 @@ public class MainImageFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        mainImageRefreshLayout.setRefreshing(false);
+                        if (mainImageRefreshLayout!=null){
+                            mainImageRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        mainImageRefreshLayout.setRefreshing(false);
+                        if (mainImageRefreshLayout!=null){
+                            mainImageRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }
@@ -208,17 +240,22 @@ public class MainImageFragment extends BaseFragment {
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络！");
-                LogUtils.d("AppNetErrorMessage","mainImageList t = "+t.getMessage());
+                LogUtils.v("AppNetErrorMessage","mainImageList t = "+t.getMessage());
+                CrashReport.postCatchedException(t);
                 if (isLoadMore){
                     adapter.loadMoreFail();
                     isLoadMore = false;
                 }
                 if (isRefresh){
-                    mainImageRefreshLayout.setRefreshing(false);
+                    if (mainImageRefreshLayout!=null){
+                        mainImageRefreshLayout.setRefreshing(false);
+                    }
                     isRefresh = false;
                 }
                 if (isFirstLoad){
-                    mainImageRefreshLayout.setRefreshing(false);
+                    if (mainImageRefreshLayout!=null){
+                        mainImageRefreshLayout.setRefreshing(false);
+                    }
                 }
                 setFailedView();
             }
@@ -293,7 +330,9 @@ public class MainImageFragment extends BaseFragment {
     private void setRefresh() {
         isRefresh = false;
         adapter.setNewData(listImage);
-        mainImageRefreshLayout.setRefreshing(false);
+        if (mainImageRefreshLayout!=null){
+            mainImageRefreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(getContext(),"刷新成功！");
     }
 

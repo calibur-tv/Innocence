@@ -156,7 +156,7 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
 
                         rewardDialog = new AlertDialog.Builder(context)
                                 .setTitle("投食")
-                                .setMessage("确认投食将会消耗您1金币哦")
+                                .setMessage("确认投食将会消耗您1团子哦")
                                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -294,7 +294,7 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
                     if (response != null && response.isSuccessful()) {
                         if (response.body().getCode() == 0) {
                             if (response.body().isData()){
-                                ToastUtils.showShort(context, "投食成功，消耗1金币");
+                                ToastUtils.showShort(context, "投食成功，消耗1团子");
                                 rewarded = true;
                                 rewardedBtn.setCompoundDrawables(leftDrawLightLike,null,null,null);
                                 LogUtils.d("testCoin","coin reward 1 = "+Constants.userInfoData.getCoin());
@@ -302,7 +302,9 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
                                 Intent intent = new Intent(MineFragment.COINCHANGE);
                                 context.sendBroadcast(intent);
                                 LogUtils.d("testCoin","coin reward 2 = "+Constants.userInfoData.getCoin());
-                                onLFCNetFinish.onRewardFinish();
+                                if (onLFCNetFinish!=null){
+                                    onLFCNetFinish.onRewardFinish();
+                                }
                             }else {
                                 ToastUtils.showShort(context,response.body().getMessage());
                             }

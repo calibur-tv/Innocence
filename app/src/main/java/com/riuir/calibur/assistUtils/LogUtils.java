@@ -1,6 +1,8 @@
 package com.riuir.calibur.assistUtils;
 
 import android.util.Log;
+import com.tencent.bugly.crashreport.BuglyLog;
+import com.tencent.bugly.crashreport.CrashReport;
 
 /**
  * log日志辅助类
@@ -28,6 +30,7 @@ public class LogUtils
     {
         if (isDebug)
             Log.d(TAG, msg);
+
     }
 
     public static void e(String msg)
@@ -66,5 +69,8 @@ public class LogUtils
     {
         if (isDebug)
             Log.i(tag, msg);
+        //网络异常上报
+        BuglyLog.v(tag,msg);
+
     }
 }

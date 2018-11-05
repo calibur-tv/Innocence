@@ -44,6 +44,7 @@
                 android:maxLength="8"
                 android:textSize="12sp"
                 android:hint="输入验证码"
+                android:inputType="number"
                 android:id="@+id/dialog_register_verification_code_edit"
                 />
 

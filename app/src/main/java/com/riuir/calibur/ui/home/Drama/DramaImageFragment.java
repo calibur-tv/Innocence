@@ -25,6 +25,7 @@ import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,6 +81,7 @@ public class DramaImageFragment extends BaseFragment {
         bangumiID = dramaActivity.getAnimeID();
         isFirstLoad = true;
         imageRefreshLayout.setRefreshing(true);
+        baseListImage.clear();
         setListAdapter();
         setNet();
     }
@@ -165,7 +167,9 @@ public class DramaImageFragment extends BaseFragment {
                         isFirstLoad = false;
                         baseListImage = response.body().getData().getList();
                         if (imageRefreshLayout!=null&&imageListView!=null){
-                            imageRefreshLayout.setRefreshing(false);
+                            if (imageRefreshLayout!=null){
+                                imageRefreshLayout.setRefreshing(false);
+                            }
                             setListAdapter();
                             setEmptyView();
                         }
@@ -197,11 +201,15 @@ public class DramaImageFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        imageRefreshLayout.setRefreshing(false);
+                        if (imageRefreshLayout!=null){
+                            imageRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        imageRefreshLayout.setRefreshing(false);
+                        if (imageRefreshLayout!=null){
+                            imageRefreshLayout.setRefreshing(false);
+                        }
                         isFirstLoad = false;
                     }
                     setFailedView();
@@ -213,11 +221,15 @@ public class DramaImageFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        imageRefreshLayout.setRefreshing(false);
+                        if (imageRefreshLayout!=null){
+                            imageRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        imageRefreshLayout.setRefreshing(false);
+                        if (imageRefreshLayout!=null){
+                            imageRefreshLayout.setRefreshing(false);
+                        }
                         isFirstLoad = false;
                     }
                     setFailedView();
@@ -229,16 +241,21 @@ public class DramaImageFragment extends BaseFragment {
                 if (call.isCanceled()){
                 }else {
                     ToastUtils.showShort(getContext(),"请检查您的网络！");
+                    CrashReport.postCatchedException(t);
                     if (isLoadMore){
                         adapter.loadMoreFail();
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        imageRefreshLayout.setRefreshing(false);
+                        if (imageRefreshLayout!=null){
+                            imageRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        imageRefreshLayout.setRefreshing(false);
+                        if (imageRefreshLayout!=null){
+                            imageRefreshLayout.setRefreshing(false);
+                        }
                         isFirstLoad = false;
                     }
                     setFailedView();
@@ -278,19 +295,15 @@ public class DramaImageFragment extends BaseFragment {
 
     private void setEmptyView(){
         if (baseListImage==null||baseListImage.size()==0){
-            if (emptyView == null){
-                emptyView = new AppListEmptyView(getContext());
-                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+            emptyView = new AppListEmptyView(getContext());
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             adapter.setEmptyView(emptyView);
         }
     }
     private void setFailedView(){
         //加载失败 点击重试
-        if (failedView == null){
-            failedView = new AppListFailedView(getContext());
-            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
+        failedView = new AppListFailedView(getContext());
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         adapter.setEmptyView(failedView);
 
     }
@@ -312,7 +325,9 @@ public class DramaImageFragment extends BaseFragment {
     private void setRefresh() {
         isRefresh = false;
         adapter.setNewData(listImage);
-        imageRefreshLayout.setRefreshing(false);
+        if (imageRefreshLayout!=null){
+            imageRefreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(getContext(),"刷新成功！");
     }
 }

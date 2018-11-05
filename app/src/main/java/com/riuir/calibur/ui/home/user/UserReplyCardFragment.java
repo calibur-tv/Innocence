@@ -79,6 +79,7 @@ public class UserReplyCardFragment extends BaseFragment {
         UserMainActivity activity = (UserMainActivity) getActivity();
         userId = activity.getUserId();
         zone = activity.getZone();
+        baseListCard.clear();
         setListAdapter();
         isFirstLoad = true;
         cardRefreshLayout.setRefreshing(true);
@@ -125,12 +126,16 @@ public class UserReplyCardFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
                         isFirstLoad = true;
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }else {
@@ -140,12 +145,16 @@ public class UserReplyCardFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
                         isFirstLoad = true;
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }
@@ -161,12 +170,16 @@ public class UserReplyCardFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
                         isFirstLoad = true;
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }
@@ -238,19 +251,17 @@ public class UserReplyCardFragment extends BaseFragment {
 
     private void setEmptyView(){
         if (baseListCard==null||baseListCard.size()==0){
-            if (emptyView == null){
-                emptyView = new AppListEmptyView(getContext());
-                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+            emptyView = new AppListEmptyView(getContext());
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
             adapter.setEmptyView(emptyView);
         }
     }
     private void setFailedView(){
         //加载失败 下拉重试
-        if (failedView == null){
-            failedView = new AppListFailedView(getContext());
-            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
+        failedView = new AppListFailedView(getContext());
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
         adapter.setEmptyView(failedView);
     }
 
@@ -271,7 +282,9 @@ public class UserReplyCardFragment extends BaseFragment {
     private void setRefresh() {
         isRefresh = false;
         adapter.setNewData(listCard);
-        cardRefreshLayout.setRefreshing(false);
+        if (cardRefreshLayout!=null){
+            cardRefreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(getContext(),"刷新成功！");
     }
 

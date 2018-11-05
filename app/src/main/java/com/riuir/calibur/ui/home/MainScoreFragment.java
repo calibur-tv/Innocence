@@ -19,6 +19,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
+import com.riuir.calibur.data.params.FolllowListParams;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaScoreListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -26,6 +27,7 @@ import com.riuir.calibur.ui.home.adapter.ScoreListAdapter;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,7 +107,16 @@ public class MainScoreFragment extends BaseFragment {
     private void setNet() {
 
         setSeendIdS();
-        apiGet.getFollowList("score","active",0,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
+        FolllowListParams params = new FolllowListParams();
+        params.setType("score");
+        params.setSort("active");
+        params.setBangumiId(0);
+        params.setUserZone("");
+        params.setMinId(0);
+        params.setPage(0);
+        params.setTake(0);
+        params.setSeenIds(seenIds);
+        apiPost.getFollowList(params).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
 //                LogUtils.d("score_fragment","response = "+response+",data = "+response.body().getData());
@@ -114,8 +125,10 @@ public class MainScoreFragment extends BaseFragment {
                     mainScoreInfoData = response.body().getData();
                     if (isFirstLoad){
                         baseListScore = response.body().getData().getList();
-                        setFirstData();
-                        mainScoreRefreshLayout.setRefreshing(false);
+                        if (mainScoreRefreshLayout!=null&&adapter!=null){
+                            setFirstData();
+                            mainScoreRefreshLayout.setRefreshing(false);
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -143,11 +156,15 @@ public class MainScoreFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        mainScoreRefreshLayout.setRefreshing(false);
+                        if (mainScoreRefreshLayout!=null){
+                            mainScoreRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        mainScoreRefreshLayout.setRefreshing(false);
+                        if (mainScoreRefreshLayout!=null){
+                            mainScoreRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }else {
@@ -157,11 +174,15 @@ public class MainScoreFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        mainScoreRefreshLayout.setRefreshing(false);
+                        if (mainScoreRefreshLayout!=null){
+                            mainScoreRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        mainScoreRefreshLayout.setRefreshing(false);
+                        if (mainScoreRefreshLayout!=null){
+                            mainScoreRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }
@@ -170,17 +191,22 @@ public class MainScoreFragment extends BaseFragment {
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络！");
-                LogUtils.d("AppNetErrorMessage","mainScoreList t = "+t.getMessage());
+                LogUtils.v("AppNetErrorMessage","mainScoreList t = "+t.getMessage());
+                CrashReport.postCatchedException(t);
                 if (isLoadMore){
                     adapter.loadMoreFail();
                     isLoadMore = false;
                 }
                 if (isRefresh){
-                    mainScoreRefreshLayout.setRefreshing(false);
+                    if (mainScoreRefreshLayout!=null){
+                        mainScoreRefreshLayout.setRefreshing(false);
+                    }
                     isRefresh = false;
                 }
                 if (isFirstLoad){
-                    mainScoreRefreshLayout.setRefreshing(false);
+                    if (mainScoreRefreshLayout!=null){
+                        mainScoreRefreshLayout.setRefreshing(false);
+                    }
                 }
                 setFailedView();
             }
@@ -286,7 +312,9 @@ public class MainScoreFragment extends BaseFragment {
     private void setRefresh() {
         isRefresh = false;
         adapter.setNewData(listScore);
-        mainScoreRefreshLayout.setRefreshing(false);
+        if (mainScoreRefreshLayout!=null){
+            mainScoreRefreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(getContext(),"刷新成功！");
     }
 

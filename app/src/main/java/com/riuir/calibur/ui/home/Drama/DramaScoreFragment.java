@@ -50,6 +50,7 @@ import com.riuir.calibur.ui.home.adapter.ScoreListAdapter;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -116,6 +117,7 @@ public class DramaScoreFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
+        baseListScore.clear();
         setListAdapter();
         isFirstLoad = true;
         scoreRefreshLayout.setRefreshing(true);
@@ -177,7 +179,9 @@ public class DramaScoreFragment extends BaseFragment {
                             if (baseListScore!=null&&baseListScore.size()!=0){
                                 setNet(NET_PRIMACY);
                             }else {
-                                scoreRefreshLayout.setRefreshing(false);
+                                if (scoreRefreshLayout!=null){
+                                    scoreRefreshLayout.setRefreshing(false);
+                                }
                             }
                             setEmptyView();
                         }
@@ -188,7 +192,9 @@ public class DramaScoreFragment extends BaseFragment {
                             if (listScore!=null&&listScore.size()!=0){
                                 setNet(NET_PRIMACY);
                             }else {
-                                scoreRefreshLayout.setRefreshing(false);
+                                if (scoreRefreshLayout!=null){
+                                    scoreRefreshLayout.setRefreshing(false);
+                                }
                                 isRefresh = false;
                                 ToastUtils.showShort(getContext(),"刷新成功！");
                             }
@@ -213,12 +219,16 @@ public class DramaScoreFragment extends BaseFragment {
                             isLoadMore = false;
                         }
                         if (isRefresh){
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                             isRefresh = false;
                         }
                         if (isFirstLoad){
                             isFirstLoad = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                         }
                         setFailedView();
                     }else {
@@ -228,12 +238,16 @@ public class DramaScoreFragment extends BaseFragment {
                             isLoadMore = false;
                         }
                         if (isRefresh){
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                             isRefresh = false;
                         }
                         if (isFirstLoad){
                             isFirstLoad = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                         }
                         setFailedView();
                     }
@@ -244,17 +258,22 @@ public class DramaScoreFragment extends BaseFragment {
                     if (call.isCanceled()){
                     }else {
                         ToastUtils.showShort(getContext(),"请检查您的网络！");
+                        CrashReport.postCatchedException(t);
                         if (isLoadMore){
                             adapter.loadMoreFail();
                             isLoadMore = false;
                         }
                         if (isRefresh){
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                             isRefresh = false;
                         }
                         if (isFirstLoad){
                             isFirstLoad = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                         }
                         setFailedView();
                     }
@@ -272,7 +291,9 @@ public class DramaScoreFragment extends BaseFragment {
                         if (isFirstLoad){
                             isFirstLoad = false;
                             if (scoreRefreshLayout!=null&&scoreListView!=null){
-                                scoreRefreshLayout.setRefreshing(false);
+                                if (scoreRefreshLayout!=null){
+                                    scoreRefreshLayout.setRefreshing(false);
+                                }
                                 setListAdapter();
                                 setPrimacy();
                             }
@@ -294,22 +315,30 @@ public class DramaScoreFragment extends BaseFragment {
                         ToastUtils.showShort(getContext(),info.getMessage());
                         if (isFirstLoad){
                             isFirstLoad = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                         }
                         if (isRefresh){
                             isRefresh = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                         }
                         setFailedView();
                     }else {
                         ToastUtils.showShort(getContext(),"未知原因导致加载失败！");
                         if (isFirstLoad){
                             isFirstLoad = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                         }
                         if (isRefresh){
                             isRefresh = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                         }
                         setFailedView();
                     }
@@ -322,11 +351,15 @@ public class DramaScoreFragment extends BaseFragment {
                         ToastUtils.showShort(getContext(),"请检查您的网络！");
                         if (isFirstLoad){
                             isFirstLoad = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                         }
                         if (isRefresh){
                             isRefresh = false;
-                            scoreRefreshLayout.setRefreshing(false);
+                            if (scoreRefreshLayout!=null){
+                                scoreRefreshLayout.setRefreshing(false);
+                            }
                         }
                         setFailedView();
                     }
@@ -603,19 +636,18 @@ public class DramaScoreFragment extends BaseFragment {
 
     private void setEmptyView(){
         if (baseListScore==null||baseListScore.size()==0){
-            if (emptyView == null){
+//            if (emptyView == null){
                 emptyView = new AppListEmptyView(getContext());
                 emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+//            }
             adapter.setEmptyView(emptyView);
         }
     }
     private void setFailedView(){
         //加载失败 点击重试
-        if (failedView == null){
-            failedView = new AppListFailedView(getContext());
-            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
+        failedView = new AppListFailedView(getContext());
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
         adapter.setEmptyView(failedView);
 
     }
@@ -639,7 +671,9 @@ public class DramaScoreFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(listScore);
         setPrimacy();
-        scoreRefreshLayout.setRefreshing(false);
+        if (scoreRefreshLayout!=null){
+            scoreRefreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(getContext(),"刷新成功！");
     }
 }

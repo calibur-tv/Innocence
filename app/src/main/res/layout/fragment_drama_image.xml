@@ -13,6 +13,7 @@
             android:id="@+id/drama_image_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/color_FFFFFFFF"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"></android.support.v7.widget.RecyclerView>
     </android.support.v4.widget.SwipeRefreshLayout>

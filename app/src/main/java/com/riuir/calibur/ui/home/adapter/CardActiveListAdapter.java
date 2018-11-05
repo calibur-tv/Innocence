@@ -1,6 +1,8 @@
 package com.riuir.calibur.ui.home.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -20,6 +22,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.data.MainTrendingInfo;
+import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
@@ -27,10 +30,12 @@ import java.util.List;
 public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTrendingInfoList,BaseViewHolder> {
 
     private Context context;
+    private Activity activity;
 
     public CardActiveListAdapter(int layoutResId, @Nullable List<MainTrendingInfo.MainTrendingInfoList> data, Context context) {
         super(layoutResId, data);
         this.context = context;
+        this.activity = (Activity) context;
     }
 
     public CardActiveListAdapter(int layoutResId, @Nullable List<MainTrendingInfo.MainTrendingInfoList> data) {
@@ -44,15 +49,64 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
         helper.setText(R.id.main_card_list_item_anime_name, item.getBangumi().getName()+"·"+ TimeUtils.HowLongTimeForNow(item.getCreated_at()));
         helper.setText(R.id.main_card_list_item_card_title, item.getTitle());
 
-
         helper.setText(R.id.main_card_list_item_reward_count, ""+item.getReward_count());
         helper.setText(R.id.main_card_list_item_zan_count, ""+item.getLike_count());
         helper.setText(R.id.main_card_list_item_comment_count, ""+item.getComment_count());
         helper.setText(R.id.main_card_list_item_marked_count, ""+item.getMark_count());
 
+        TextView tagBangumiName = helper.getView(R.id.main_card_list_item_tag_bangumi_name);
+        tagBangumiName.setText(item.getBangumi().getName());
+        tagBangumiName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context,DramaActivity.class);
+                intent.putExtra("animeId",item.getBangumi().getId());
+                activity.startActivity(intent);
+            }
+        });
+        TextView tag1 = helper.getView(R.id.main_card_list_item_tag_1);
+        TextView tag2 = helper.getView(R.id.main_card_list_item_tag_2);
+        TextView tag3 = helper.getView(R.id.main_card_list_item_tag_3);
+        if (item.getTags()!=null&&item.getTags().size()!=0){
+            if (item.getTags().size()==1){
+                tag1.setVisibility(View.VISIBLE);
+                tag1.setText(item.getTags().get(0).getName());
+            }
+            if (item.getTags().size()==2){
+                tag1.setVisibility(View.VISIBLE);
+                tag2.setVisibility(View.VISIBLE);
+                tag1.setText(item.getTags().get(0).getName());
+                tag2.setText(item.getTags().get(1).getName());
+            }
+            if (item.getTags().size()==3){
+                tag1.setVisibility(View.VISIBLE);
+                tag2.setVisibility(View.VISIBLE);
+                tag3.setVisibility(View.VISIBLE);
+                tag1.setText(item.getTags().get(0).getName());
+                tag2.setText(item.getTags().get(1).getName());
+                tag3.setText(item.getTags().get(2).getName());
+            }
+        }else {
+            tag1.setVisibility(View.GONE);
+            tag2.setVisibility(View.GONE);
+            tag3.setVisibility(View.GONE);
+        }
+
         TextView desc = helper.getView(R.id.main_card_list_item_card_desc);
         desc.setText(item.getDesc());
 
+        TextView isNiceText = helper.getView(R.id.main_card_list_item_card_is_nice);
+        if (item.isIs_nice()){
+            isNiceText.setVisibility(View.VISIBLE);
+        }else {
+            isNiceText.setVisibility(View.GONE);
+        }
+        TextView isCreatorText = helper.getView(R.id.main_card_list_item_card_is_creator);
+        if (item.isIs_creator()){
+            isCreatorText.setVisibility(View.VISIBLE);
+        }else {
+            isCreatorText.setVisibility(View.GONE);
+        }
 
         if (item.isIs_creator()){
             //原创显示投食数
@@ -80,6 +134,7 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
         }else {
             helper.setImageResource(R.id.main_card_list_item_marked_icon,R.mipmap.ic_mark_normal);
         }
+
         ImageView userIcon = helper.getView(R.id.main_card_list_item_user_icon);
         GlideUtils.loadImageViewCircle(context,
                 GlideUtils.setImageUrlForWidth(context,item.getUser().getAvatar(),userIcon.getLayoutParams().width),

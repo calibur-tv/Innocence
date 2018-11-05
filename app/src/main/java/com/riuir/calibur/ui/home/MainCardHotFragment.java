@@ -21,6 +21,7 @@ import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.CardActiveListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +118,8 @@ public class MainCardHotFragment extends BaseFragment {
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
 
-                    LogUtils.d("cardHot","t = "+t);
+                LogUtils.d("cardHot","t = "+t);
+                CrashReport.postCatchedException(t);
                 if (isLoadMore){
                     adapter.loadMoreFail();
                     isLoadMore = false;

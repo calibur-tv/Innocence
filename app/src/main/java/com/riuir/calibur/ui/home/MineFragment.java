@@ -26,15 +26,18 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MineUserInfo;
+import com.riuir.calibur.data.user.UserDaySign;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.ui.home.mine.ClearCacheActivity;
 import com.riuir.calibur.ui.home.mine.MineInfoSettingActivity;
 import com.riuir.calibur.ui.home.report.FeedbackActivity;
 import com.riuir.calibur.ui.home.user.UserMainActivity;
+import com.riuir.calibur.ui.web.WebViewActivity;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.w3c.dom.Text;
 
@@ -45,14 +48,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * ************************************
- * 作者：韩宝坤
- * 日期：2017/12/24
- * 邮箱：hanbaokun@outlook.com
- * 描述：
- * ************************************
- */
 
 /**
  * 我的fragment
@@ -68,7 +63,7 @@ public class MineFragment extends BaseFragment {
     @BindView(R.id.mine_fragment_coin_number)
     TextView coinNumber;
     @BindView(R.id.mine_fragment_id_number)
-    TextView idNumner;
+    TextView idNumber;
     @BindView(R.id.mine_fragment_day_sign_in_btn)
     TextView daySignBtn;
     @BindView(R.id.mine_fragment_mine_user_log_off)
@@ -79,20 +74,23 @@ public class MineFragment extends BaseFragment {
     RelativeLayout mineMainPage;
     @BindView(R.id.mine_fragment_mine_draft_layout)
     RelativeLayout mineDraftLayout;
+    @BindView(R.id.mine_fragment_mine_invite_layout)
+    RelativeLayout mineInviteLayout;
     @BindView(R.id.mine_fragment_clear_cache_layout)
     RelativeLayout mineClearCacheLayout;
     @BindView(R.id.mine_fragment_feedback_layout)
     RelativeLayout mineFeedbackLayout;
     @BindView(R.id.mine_fragment_tips_layout)
     RelativeLayout tipsLayout;
-    @BindView(R.id.mine_fragment_tips_close)
-    TextView closeTips;
+
     @BindView(R.id.mine_fragment_mine_refresh)
     SwipeRefreshLayout refreshLayout;
     @BindView(R.id.mine_fragment_mine_level)
     TextView level;
     @BindView(R.id.mine_fragment_mine_level_progress)
     NumberProgressBar levelProgress;
+    @BindView(R.id.mine_fragment_mine_level_question_btn)
+    ImageView questionBtn;
 
     AlertDialog levelDialog;
 
@@ -110,8 +108,7 @@ public class MineFragment extends BaseFragment {
     public static final int NET_DAY_SIGN = 2;
 
 
-
-    public static Fragment newInstance() {
+    public static MineFragment newInstance() {
         MineFragment mineFragment = new MineFragment();
         Bundle b = new Bundle();
         mineFragment.setArguments(b);
@@ -190,6 +187,7 @@ public class MineFragment extends BaseFragment {
                 @Override
                 public void onFailure(Call<MineUserInfo> call, Throwable t) {
                     ToastUtils.showShort(getContext(),"网络异常,请检查您的网络");
+                    CrashReport.postCatchedException(t);
                     setReSet();
                     if (refreshLayout!=null){
                         refreshLayout.setRefreshing(false);
@@ -219,21 +217,24 @@ public class MineFragment extends BaseFragment {
 
                 @Override
                 public void onFailure(Call<Event<String>> call, Throwable t) {
+                    CrashReport.postCatchedException(t);
                     LoginUtils.CancelLogin(App.instance(),getActivity());
                 }
             });
         }
         if (NET_STATUS == NET_DAY_SIGN){
-            apiPost.getCallUserDaySign().enqueue(new Callback<Event<String>>() {
+            apiPost.getCallUserDaySign().enqueue(new Callback<UserDaySign>() {
                 @Override
-                public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
+                public void onResponse(Call<UserDaySign> call, Response<UserDaySign> response) {
                     if (response!=null&&response.isSuccessful()){
                         daySignBtn.setText("已签到");
-                        coinNumber.setText("金币："+(Constants.userInfoData.getCoin()+1));
+                        coinNumber.setText("团子："+(Constants.userInfoData.getCoin()+1));
                         Constants.userInfoData.setCoin(Constants.userInfoData.getCoin()+1);
                         Constants.userInfoData.setDaySign(true);
                         //签到成功经验+2
-                        setUserExpChanged(2);
+                        setUserExpChanged(response.body().getData().getExp());
+                        ToastUtils.showShort(getContext(),response.body().getData().getMessage());
+
                     }else  if (!response.isSuccessful()){
                         String errorStr = "";
                         try {
@@ -256,9 +257,10 @@ public class MineFragment extends BaseFragment {
                 }
 
                 @Override
-                public void onFailure(Call<Event<String>> call, Throwable t) {
-                    call.isCanceled();
-                    call.isExecuted();
+                public void onFailure(Call<UserDaySign> call, Throwable t) {
+//                    call.isCanceled();
+//                    call.isExecuted();
+                    CrashReport.postCatchedException(t);
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                     daySignBtn.setText("签到");
                     daySignBtn.setClickable(true);
@@ -279,14 +281,14 @@ public class MineFragment extends BaseFragment {
                 GlideUtils.setImageUrl(getContext(),userInfoData.getBanner(),GlideUtils.FULL_SCREEN),
                 userBanner);
         userName.setText(userInfoData.getNickname());
-        coinNumber.setText("金币："+userInfoData.getCoin());
-        idNumner.setText("邀请码："+userInfoData.getId());
+        coinNumber.setText("团子："+userInfoData.getCoin());
+        idNumber.setText("邀请码："+userInfoData.getId());
         if (userInfoData.isDaySign()){
             daySignBtn.setText("已签到");
         }else {
             daySignBtn.setText("签到");
         }
-        level.setText("Lv"+userInfoData.getExp().getLevel());
+        level.setText("Lv"+userInfoData.getExp().getLevel()+" · 战斗力："+userInfoData.getPower());
 
         levelProgress.setMax(userInfoData.getExp().getNext_level_exp());
         levelProgress.setProgress(userInfoData.getExp().getHave_exp());
@@ -331,18 +333,28 @@ public class MineFragment extends BaseFragment {
             }
         });
 
-        closeTips.setOnClickListener(new View.OnClickListener() {
+        tipsLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tipsLayout.setVisibility(View.GONE);
+                Intent intent = new Intent(getContext(), WebViewActivity.class);
+                intent.putExtra("type",WebViewActivity.TYPE_RULE);
+                intent.putExtra("index",1);
+                startActivity(intent);
             }
         });
-
 
         mineDraftLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ToastUtils.showShort(getContext(),"功能研发中，敬请期待");
+            }
+        });
+        mineInviteLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), WebViewActivity.class);
+                intent.putExtra("type",WebViewActivity.TYPE_INVITE);
+                startActivity(intent);
             }
         });
 
@@ -393,6 +405,16 @@ public class MineFragment extends BaseFragment {
             }
         });
 
+        questionBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                setDialog();
+                Intent intent = new Intent(getContext(), WebViewActivity.class);
+                intent.putExtra("type",WebViewActivity.TYPE_RULE);
+                intent.putExtra("index",2);
+                startActivity(intent);
+            }
+        });
         levelProgress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -401,6 +423,7 @@ public class MineFragment extends BaseFragment {
         });
 
     }
+
 
     private void setDialog() {
         View view = getLayoutInflater().inflate(R.layout.level_rule_diaglog_layout,null);
@@ -430,7 +453,7 @@ public class MineFragment extends BaseFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            coinNumber.setText("金币："+(Constants.userInfoData.getCoin()));
+            coinNumber.setText("团子："+(Constants.userInfoData.getCoin()));
         }
     }
 

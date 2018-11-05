@@ -43,6 +43,7 @@
                 android:orientation="vertical">
                 <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
                     android:id="@+id/drama_video_pager_tab"
+                    android:background="@color/color_FFFFFFFF"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"></com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
                 <android.support.v4.view.ViewPager
@@ -50,6 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="3"
+                    android:background="@color/color_FFFFFFFF"
                     ></android.support.v4.view.ViewPager>
             </LinearLayout>
         </android.support.v4.widget.SwipeRefreshLayout>

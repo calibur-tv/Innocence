@@ -1,12 +1,17 @@
 package com.riuir.calibur.ui.home.Drama;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Message;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -24,10 +29,13 @@ import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.anime.AnimeFollowInfo;
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterAnimeSettingActivity;
+import com.riuir.calibur.ui.home.Drama.dramaInfo.DramaInfoActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +45,7 @@ import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 public class DramaActivity extends BaseActivity {
 
@@ -48,8 +57,8 @@ public class DramaActivity extends BaseActivity {
     TextView animeName;
     @BindView(R.id.drama_activity_anime_follow_count)
     TextView animeFollowCount;
-    @BindView(R.id.drama_activity_anime_card_count)
-    TextView animeCardCount;
+    @BindView(R.id.drama_activity_anime_power_count)
+    TextView animePowerCount;
     @BindView(R.id.drama_activity_more)
     AppHeaderPopupWindows moreBtn;
 
@@ -67,7 +76,9 @@ public class DramaActivity extends BaseActivity {
     ViewPager dramaViewPager;
 
     @BindView(R.id.drama_activity_back_btn)
-     ImageView backBtn;
+    ImageView backBtn;
+    @BindView(R.id.drama_activity_sliding_more)
+    ImageView slidingMoreBtn;
 
     AnimeShowInfo.AnimeShowInfoData animeShowInfoData;
 
@@ -93,6 +104,10 @@ public class DramaActivity extends BaseActivity {
     private Call<AnimeShowInfo> animeShowInfoCall;
     private Call<AnimeFollowInfo> animeFollowInfoCall;
 
+    AnimeSettingFinishReceiver finishReceiver;
+    IntentFilter intentFilter;
+
+
     @Override
     protected int getContentViewId() {
         return R.layout.activity_drama;
@@ -105,11 +120,48 @@ public class DramaActivity extends BaseActivity {
         animeID = intent.getIntExtra("animeId",0);
         setNet();
         setListener();
+        registerFinishReceiver();
 
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (dramaViewPager.getAdapter() != null) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            List<Fragment> fragments = fm.getFragments();
+            if(fragments != null && fragments.size() >0){
+                for (int i = 0; i < fragments.size(); i++) {
+                    ft.remove(fragments.get(i));
+                }
+            }
+            ft.commit();
+        }
+
+        titles.clear();
+        dramaViewPager.setAdapter(null);
+        dramaCardFragment = null;
+        dramaSeasonVideoFragment = null;
+        dramaCartoonFragment = null;
+        dramaImageFragment = null;
+        dramaScoreFragment = null;
+        dramaRoleFragment = null;
+
+        animeID = intent.getIntExtra("animeId",0);
+        setNet();
+        setListener();
+    }
+
+    private void registerFinishReceiver() {
+        finishReceiver = new AnimeSettingFinishReceiver();
+        intentFilter = new IntentFilter(DramaMasterAnimeSettingActivity.EDIT_BANGUMI_ACTION);
+        registerReceiver(finishReceiver,intentFilter);
+    }
+
+
     private void setListener() {
-        moreBtn.setReportModelTag(AppHeaderPopupWindows.BANGUMI,animeID);
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,6 +176,14 @@ public class DramaActivity extends BaseActivity {
                 setFollowNet();
             }
         });
+        slidingMoreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DramaActivity.this, DramaInfoActivity.class);
+                intent.putExtra("animeShowInfoData",animeShowInfoData);
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -136,7 +196,7 @@ public class DramaActivity extends BaseActivity {
         animeName.setText(animeShowInfoData.getName());
         followCount = animeShowInfoData.getFollow_users().getTotal();
         animeFollowCount.setText(followCount+"");
-        animeCardCount.setText(animeShowInfoData.getCount_score()+"");
+        animePowerCount.setText(animeShowInfoData.getPower()+"");
 
         LogUtils.d("isfollowed","isfollowed = "+animeShowInfoData.isFollowed());
         if (animeShowInfoData.isFollowed()){
@@ -146,6 +206,11 @@ public class DramaActivity extends BaseActivity {
             animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_normal);
             animeFollowBtnText.setText("关注");
         }
+
+        moreBtn.setReportModelTag(AppHeaderPopupWindows.BANGUMI,animeID);
+        moreBtn.setShareLayout(animeShowInfoData.getName(),AppHeaderPopupWindows.BANGUMI,animeID,"");
+
+        moreBtn.setMasterLayout(animeShowInfoData.isIs_master(),5,animeID,animeShowInfoData);
 
         setViewPager();
     }
@@ -213,7 +278,7 @@ public class DramaActivity extends BaseActivity {
                     }else {
                         animeFollowBtnText.setText("关注");
                     }
-
+                    CrashReport.postCatchedException(t);
                     ToastUtils.showShort(DramaActivity.this,"网络异常，操作失败了");
                 }
             }
@@ -228,6 +293,7 @@ public class DramaActivity extends BaseActivity {
         if (animeFollowInfoCall!=null){
             animeFollowInfoCall.cancel();
         }
+        unregisterReceiver(finishReceiver);
         super.onDestroy();
     }
 
@@ -278,8 +344,7 @@ public class DramaActivity extends BaseActivity {
         titles.add("帖子");
         if (animeShowInfoData.isHas_cartoon()){
             //添加漫画fragment
-            //TODO
-//            titles.add("漫画");
+            titles.add("漫画");
         }
         if (animeShowInfoData.isHas_video()){
             //添加视频fragment
@@ -287,7 +352,7 @@ public class DramaActivity extends BaseActivity {
         }
         titles.add("相册");
 
-        titles.add("评分");
+        titles.add("漫评");
 
         titles.add("偶像");
 
@@ -299,7 +364,7 @@ public class DramaActivity extends BaseActivity {
 
     private void setDramaTabs() {
         // 设置Tab是自动填充满屏幕的
-        dramaPagerTab.setShouldExpand(true);
+        dramaPagerTab.setShouldExpand(false);
         // 设置Tab的分割线是透明的
         dramaPagerTab.setDividerColor(Color.TRANSPARENT);
         dramaPagerTab.setBackgroundResource(R.color.color_FFFFFFFF);
@@ -369,7 +434,7 @@ public class DramaActivity extends BaseActivity {
                         dramaImageFragment = new DramaImageFragment();
                     }
                     return dramaImageFragment;
-                case "评分":
+                case "漫评":
                     if (dramaScoreFragment == null) {
                         dramaScoreFragment = new DramaScoreFragment();
                     }
@@ -382,14 +447,21 @@ public class DramaActivity extends BaseActivity {
                 default:
                     return null;
             }
-
-
         }
 
     }
 
     public int getAnimeID() {
         return animeID;
+    }
+
+
+    public class AnimeSettingFinishReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
     }
 
 }

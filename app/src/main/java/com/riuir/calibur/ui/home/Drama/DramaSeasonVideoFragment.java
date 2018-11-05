@@ -3,10 +3,13 @@ package com.riuir.calibur.ui.home.Drama;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.DisplayMetrics;
@@ -18,11 +21,13 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.anime.AnimeShowVideosInfo;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,9 +63,18 @@ public class DramaSeasonVideoFragment extends BaseFragment {
     //viewpager Tab标题
     private List<String> titles = new ArrayList<>();
 
-    private DramaVideoEpisodesFragment episodesFragment1,episodesFragment2,episodesFragment3,episodesFragment4,
-                                        episodesFragment5,episodesFragment6,episodesFragment7,episodesFragment8,episodesFragment9,episodesFragment10;
+    private DramaVideoEpisodesFragment episodesFragment1;
+    private DramaVideoEpisodesFragment episodesFragment2;
+    private DramaVideoEpisodesFragment episodesFragment3;
+    private DramaVideoEpisodesFragment episodesFragment4;
+    private DramaVideoEpisodesFragment episodesFragment5;
+    private DramaVideoEpisodesFragment episodesFragment6;
+    private DramaVideoEpisodesFragment episodesFragment7;
+    private DramaVideoEpisodesFragment episodesFragment8;
+    private DramaVideoEpisodesFragment episodesFragment9;
+    private DramaVideoEpisodesFragment episodesFragment10;
 
+    private DramaVideoPagerAdapter pagerAdapter;
 
     /**
      * 获取当前屏幕的密度
@@ -79,8 +93,10 @@ public class DramaSeasonVideoFragment extends BaseFragment {
         dm = getResources().getDisplayMetrics();
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         animeID = dramaActivity.getAnimeID();
-
         refreshLayout.setRefreshing(true);
+        if(animeShowVideosInfoVideos!=null){
+            animeShowVideosInfoVideos.clear();
+        }
         setNet();
         setListener();
     }
@@ -111,6 +127,7 @@ public class DramaSeasonVideoFragment extends BaseFragment {
                     animeShowVideosInfoVideos = response.body().getData().getVideos();
 
                     if (dramaVideoViewPager!=null&&refreshLayout!=null){
+                        LogUtils.d("DramaVideoEpisodesFragmentLog","11111111111");
                         setViewPager();
                         refreshLayout.setRefreshing(false);
                         refreshLayout.setEnabled(false);
@@ -127,11 +144,15 @@ public class DramaSeasonVideoFragment extends BaseFragment {
                     Gson gson = new Gson();
                     Event<String> info =gson.fromJson(errorStr,Event.class);
                     ToastUtils.showShort(getContext(),info.getMessage());
-                    refreshLayout.setRefreshing(false);
+                    if (refreshLayout!=null){
+                        refreshLayout.setRefreshing(false);
+                    }
                     setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    refreshLayout.setRefreshing(false);
+                    if (refreshLayout!=null){
+                        refreshLayout.setRefreshing(false);
+                    }
                     setFailedView();
                 }
             }
@@ -141,7 +162,10 @@ public class DramaSeasonVideoFragment extends BaseFragment {
                 if (call.isCanceled()){
                 }else {
                     ToastUtils.showShort(getContext(),"请检查您的网络哟！");
-                    refreshLayout.setRefreshing(false);
+                    CrashReport.postCatchedException(t);
+                    if (refreshLayout!=null){
+                        refreshLayout.setRefreshing(false);
+                    }
                     setFailedView();
                 }
             }
@@ -168,6 +192,7 @@ public class DramaSeasonVideoFragment extends BaseFragment {
 
     private void setViewPager() {
 
+
         titles.clear();
 
         if (animeShowVideosInfoVideos.size() == 1){
@@ -178,16 +203,17 @@ public class DramaSeasonVideoFragment extends BaseFragment {
             }
         }
 
-        dramaVideoViewPager.setAdapter(new DramaVideoPagerAdapter(getChildFragmentManager()));
+        pagerAdapter = new DramaVideoPagerAdapter(getChildFragmentManager());
+        dramaVideoViewPager.setAdapter(pagerAdapter);
         dramaVideoPagerTab.setViewPager(dramaVideoViewPager);
-        dramaVideoViewPager.setOffscreenPageLimit(5);
+        dramaVideoViewPager.setOffscreenPageLimit(3);
         setDramaTabs();
         setHideEmptyView();
     }
 
     private void setDramaTabs() {
         // 设置Tab是自动填充满屏幕的
-        dramaVideoPagerTab.setShouldExpand(true);
+        dramaVideoPagerTab.setShouldExpand(false);
         // 设置Tab的分割线是透明的
         dramaVideoPagerTab.setDividerColor(Color.TRANSPARENT);
         dramaVideoPagerTab.setBackgroundResource(R.color.color_FFFFFFFF);
@@ -229,6 +255,7 @@ public class DramaSeasonVideoFragment extends BaseFragment {
 
         @Override
         public Fragment getItem(int position) {
+
             switch (position) {
                 case 0:
                     if (episodesFragment1 == null) {
@@ -296,6 +323,5 @@ public class DramaSeasonVideoFragment extends BaseFragment {
         }
 
     }
-
 
 }

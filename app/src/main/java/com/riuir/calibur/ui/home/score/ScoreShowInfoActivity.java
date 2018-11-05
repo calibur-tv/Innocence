@@ -53,6 +53,7 @@ import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,6 +132,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
     AppHeaderPopupWindows headerMore;
     @BindView(R.id.score_show_info_comment_view)
     ReplyAndCommentView commentView;
+
+    private int primacyId;
 
     private static final int NET_STATUS_PRIMACY = 0;
     private static final int NET_STATUS_MAIN_COMMENT = 1;
@@ -241,7 +244,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
                     if (call.isCanceled()){
                     }else {
                         ToastUtils.showShort(ScoreShowInfoActivity.this,"请检查您的网络！");
-                        LogUtils.d("AppNetErrorMessage","score show t = "+t.getMessage());
+                        LogUtils.v("AppNetErrorMessage","score show t = "+t.getMessage());
+                        CrashReport.postCatchedException(t);
                         if (isFirstLoad){
                             isFirstLoad = false;
                         }
@@ -329,6 +333,7 @@ public class ScoreShowInfoActivity extends BaseActivity {
                     if (call.isCanceled()){
                     }else {
                         ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
+                        CrashReport.postCatchedException(t);
                         if (isLoadMore){
                             commentAdapter.loadMoreFail();
                             isLoadMore = false;
@@ -350,7 +355,12 @@ public class ScoreShowInfoActivity extends BaseActivity {
     }
 
     private void setAdapter() {
-        commentAdapter = new CommentAdapter(R.layout.card_show_info_list_comment_item,baseCommentMainList,ScoreShowInfoActivity.this,apiPost,CommentAdapter.TYPE_SCORE);
+
+        if (primacyData!=null){
+            primacyId = primacyData.getUser().getId();
+        }
+        commentAdapter = new CommentAdapter(R.layout.card_show_info_list_comment_item,baseCommentMainList,
+                ScoreShowInfoActivity.this,apiPost,CommentAdapter.TYPE_SCORE,primacyId);
         scoreShowInfoListView.setLayoutManager(new LinearLayoutManager(ScoreShowInfoActivity.this));
         commentAdapter.setHasStableIds(true);
         /**
@@ -396,7 +406,6 @@ public class ScoreShowInfoActivity extends BaseActivity {
         headerUserName = headerLayout.findViewById(R.id.score_show_info_list_header_user_name);
         headerTime = headerLayout.findViewById(R.id.score_show_info_list_header_time);
         headerScoreTotal = headerLayout.findViewById(R.id.score_show_info_list_header_total_score);
-
 
         headerScoreTotal.setText(primacyData.getTotal()+"分");
         scoreTitleLol = headerLayout.findViewById(R.id.score_show_info_list_header_score_lol_title);
@@ -735,8 +744,10 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
     private void setHeaderMore() {
         headerMore.setReportModelTag(AppHeaderPopupWindows.SCORE,primacyData.getId());
+        headerMore.setShareLayout(primacyData.getTitle(),AppHeaderPopupWindows.SCORE,primacyData.getId(),"");
+
         headerMore.setDeleteLayout(AppHeaderPopupWindows.SCORE,primacyData.getId(),
-                primacyData.getUser().getId(),apiPost);
+                primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
         headerMore.initOnlySeeMaster(AppHeaderPopupWindows.SCORE);
         headerMore.setOnlySeeMasterClick(new View.OnClickListener() {
             @Override
@@ -754,12 +765,21 @@ public class ScoreShowInfoActivity extends BaseActivity {
                 setNet(NET_STATUS_MAIN_COMMENT);
             }
         });
+        headerMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+            @Override
+            public void deleteFinish() {
+                finish();
+            }
+        });
     }
 
 
     private void setPreviewImageUrlList() {
         if (previewImagesList == null||previewImagesList.size() == 0){
             previewImagesList = new ArrayList<>();
+        }
+        if (previewImagesList.size()!=0){
+            previewImagesList.clear();
         }
 
         for (int i = 0; i <primacyData.getContent().size() ; i++) {

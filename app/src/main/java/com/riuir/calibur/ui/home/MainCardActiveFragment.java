@@ -20,14 +20,17 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
+import com.riuir.calibur.data.params.FolllowListParams;
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.CardActiveListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
+import com.riuir.calibur.ui.widget.BannerLoopView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.Constants;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +50,8 @@ public class MainCardActiveFragment extends BaseFragment {
 
     @BindView(R.id.main_card_active_list_view)
     RecyclerView mainCardHotListView;
-
+    @BindView(R.id.card_fragment_banner_loop)
+    BannerLoopView bannerLoopView;
     @BindView(R.id.main_card_active_refresh_layout)
     SwipeRefreshLayout mainCardHotRefreshLayout;
     //用来动态改变RecyclerView的变量
@@ -79,20 +83,24 @@ public class MainCardActiveFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         isFirstLoad = true;
         setListAdapter();
+        bannerLoopView.setApiGet(apiGet);
         mainCardHotRefreshLayout.setRefreshing(true);
         setNet();
     }
 
     private void setNet() {
-        ApiGet mApiGet;
-        if (Constants.ISLOGIN){
-            mApiGet = apiGetHasAuth;
-        }else {
-            mApiGet = apiGet;
-        }
         LogUtils.d("cardList","isLogin = "+Constants.ISLOGIN);
         setSeendIdS();
-        mApiGet.getFollowList("post","active",0,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
+        FolllowListParams params = new FolllowListParams();
+        params.setType("post");
+        params.setSort("active");
+        params.setBangumiId(0);
+        params.setUserZone("");
+        params.setMinId(0);
+        params.setPage(0);
+        params.setTake(0);
+        params.setSeenIds(seenIds);
+        apiPost.getFollowList(params).enqueue(new Callback<MainTrendingInfo>() {
             @Override
             public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
 
@@ -101,8 +109,10 @@ public class MainCardActiveFragment extends BaseFragment {
                     mainTrendingInfoData = response.body().getData();
                     if (isFirstLoad){
                         baseListActive = response.body().getData().getList();
-                        mainCardHotRefreshLayout.setRefreshing(false);
-                        setFirstData();
+                        if (mainCardHotRefreshLayout!=null&&adapter!=null){
+                            mainCardHotRefreshLayout.setRefreshing(false);
+                            setFirstData();
+                        }
                     }
                     if (isLoadMore){
                         setLoadMore();
@@ -130,11 +140,15 @@ public class MainCardActiveFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        mainCardHotRefreshLayout.setRefreshing(false);
+                        if (mainCardHotRefreshLayout!=null){
+                            mainCardHotRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        mainCardHotRefreshLayout.setRefreshing(false);
+                        if (mainCardHotRefreshLayout!=null){
+                            mainCardHotRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }else {
@@ -144,11 +158,15 @@ public class MainCardActiveFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        mainCardHotRefreshLayout.setRefreshing(false);
+                        if (mainCardHotRefreshLayout!=null){
+                            mainCardHotRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        mainCardHotRefreshLayout.setRefreshing(false);
+                        if (mainCardHotRefreshLayout!=null){
+                            mainCardHotRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }
@@ -157,18 +175,23 @@ public class MainCardActiveFragment extends BaseFragment {
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
 
-                LogUtils.d("AppNetErrorMessage","mainCardList t = "+t.getMessage());
+                LogUtils.v("AppNetErrorMessage","mainCardList t = "+t.getMessage());
+                CrashReport.postCatchedException(t);
                 ToastUtils.showShort(getContext(),"请检查您的网络！");
                 if (isLoadMore){
                     adapter.loadMoreFail();
                     isLoadMore = false;
                 }
                 if (isRefresh){
-                    mainCardHotRefreshLayout.setRefreshing(false);
+                    if (mainCardHotRefreshLayout!=null){
+                        mainCardHotRefreshLayout.setRefreshing(false);
+                    }
                     isRefresh = false;
                 }
                 if (isFirstLoad){
-                    mainCardHotRefreshLayout.setRefreshing(false);
+                    if (mainCardHotRefreshLayout!=null){
+                        mainCardHotRefreshLayout.setRefreshing(false);
+                    }
                 }
                 setFailedView();
             }
@@ -215,7 +238,9 @@ public class MainCardActiveFragment extends BaseFragment {
     private void setRefresh() {
         isRefresh = false;
         adapter.setNewData(listActive);
-        mainCardHotRefreshLayout.setRefreshing(false);
+        if (mainCardHotRefreshLayout!=null){
+            mainCardHotRefreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(getContext(),"刷新成功！");
     }
 

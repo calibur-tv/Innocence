@@ -1,5 +1,6 @@
 package com.riuir.calibur.data;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class AnimeShowInfo {
@@ -30,7 +31,7 @@ public class AnimeShowInfo {
                 '}';
     }
 
-    public class AnimeShowInfoData{
+    public class AnimeShowInfoData implements Serializable{
         private int id;
         private String name;
         private String avatar;
@@ -46,6 +47,7 @@ public class AnimeShowInfo {
         private AnimeInfoManagersUser manager_users;
         private List<AnimeShowInfoTags> tags;
         private AnimeShowInfoUsers follow_users;
+        private int power;
         private boolean has_video;
         private boolean has_cartoon;
 
@@ -187,6 +189,14 @@ public class AnimeShowInfo {
             this.has_cartoon = has_cartoon;
         }
 
+        public int getPower() {
+            return power;
+        }
+
+        public void setPower(int power) {
+            this.power = power;
+        }
+
         @Override
         public String toString() {
             return "AnimeShowInfoData{" +
@@ -205,6 +215,7 @@ public class AnimeShowInfo {
                     ", manager_users=" + manager_users +
                     ", tags=" + tags +
                     ", follow_users=" + follow_users +
+                    ", power=" + power +
                     ", has_video=" + has_video +
                     ", has_cartoon=" + has_cartoon +
                     '}';
@@ -212,26 +223,134 @@ public class AnimeShowInfo {
     }
 
 
-    public class AnimeInfoManagersUser{
+    public class AnimeInfoManagersUser implements Serializable{
         private int total;
         private boolean noMore;
         private List<AnimeInfoManagersUserList> list;
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
+
+        public boolean isNoMore() {
+            return noMore;
+        }
+
+        public void setNoMore(boolean noMore) {
+            this.noMore = noMore;
+        }
+
+        public List<AnimeInfoManagersUserList> getList() {
+            return list;
+        }
+
+        public void setList(List<AnimeInfoManagersUserList> list) {
+            this.list = list;
+        }
+
+        @Override
+        public String toString() {
+            return "AnimeInfoManagersUser{" +
+                    "total=" + total +
+                    ", noMore=" + noMore +
+                    ", list=" + list +
+                    '}';
+        }
     }
 
-    public class AnimeInfoManagersUserList{
+    public static class AnimeInfoManagersUserList implements Serializable{
         private boolean is_leader;
         private String created_at;
         private AnimeInfoManagersUserListUser user;
+
+        public boolean isIs_leader() {
+            return is_leader;
+        }
+
+        public void setIs_leader(boolean is_leader) {
+            this.is_leader = is_leader;
+        }
+
+        public String getCreated_at() {
+            return created_at;
+        }
+
+        public void setCreated_at(String created_at) {
+            this.created_at = created_at;
+        }
+
+        public AnimeInfoManagersUserListUser getUser() {
+            return user;
+        }
+
+        public void setUser(AnimeInfoManagersUserListUser user) {
+            this.user = user;
+        }
+
+        @Override
+        public String toString() {
+            return "AnimeInfoManagersUserList{" +
+                    "is_leader=" + is_leader +
+                    ", created_at='" + created_at + '\'' +
+                    ", user=" + user +
+                    '}';
+        }
     }
 
-    public class AnimeInfoManagersUserListUser{
+    public class AnimeInfoManagersUserListUser implements Serializable{
         private int id;
         private String zone;
         private String avatar;
         private String nickname;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getZone() {
+            return zone;
+        }
+
+        public void setZone(String zone) {
+            this.zone = zone;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public void setAvatar(String avatar) {
+            this.avatar = avatar;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+
+        public void setNickname(String nickname) {
+            this.nickname = nickname;
+        }
+
+        @Override
+        public String toString() {
+            return "AnimeInfoManagersUserListUser{" +
+                    "id=" + id +
+                    ", zone='" + zone + '\'' +
+                    ", avatar='" + avatar + '\'' +
+                    ", nickname='" + nickname + '\'' +
+                    '}';
+        }
     }
 
-    public class AnimeShowInfoTags{
+    public static class AnimeShowInfoTags implements Serializable{
         private int id;
         private String name;
 
@@ -260,7 +379,7 @@ public class AnimeShowInfo {
         }
     }
 
-    public class AnimeShowInfoUsers{
+    public class AnimeShowInfoUsers implements Serializable{
         private int total;
         private boolean noMore;
         private List<AnimeShowInfoUserList> list;
@@ -299,7 +418,7 @@ public class AnimeShowInfo {
         }
     }
 
-    public class AnimeShowInfoUserList{
+    public class AnimeShowInfoUserList implements Serializable{
         private int id;
         private String zone;
         private String avatar;

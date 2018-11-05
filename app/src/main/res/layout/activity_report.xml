@@ -247,7 +247,7 @@
                         android:id="@+id/report_activity_radio_btn11"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="互刷金币"
+                        android:text="互刷团子"
                         android:textSize="14sp"
                         android:gravity="center_vertical"
                         android:textColor="@color/color_FF5B5B5B"

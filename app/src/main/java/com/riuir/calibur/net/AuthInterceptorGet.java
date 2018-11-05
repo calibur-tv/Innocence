@@ -7,6 +7,8 @@ import android.provider.Settings;
 
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.Installation;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
+import com.riuir.calibur.assistUtils.VersionUtils;
 import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
@@ -31,6 +33,8 @@ public class AuthInterceptorGet implements Interceptor {
 
         Headers headers = request.headers().newBuilder()
                 .add("Accept", "application/x.api."+ Constants.API_VERSION+"+json")
+                .add("X-APP-NAME","Sakura")
+                .add("X-APP-VERSION", VersionUtils.getLocalVersionName())
                 .build();
 
         request = request.newBuilder()

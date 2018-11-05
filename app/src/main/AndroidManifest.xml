@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission
         android:name="android.permission.READ_LOGS"
         tools:ignore="ProtectedPermissions" />
@@ -27,6 +28,28 @@
             android:name="com.riuir.calibur.utils.CustomGlideModule"
             android:value="GlideModule" />
 
+        <!-- 多渠道打包 -->
+        <meta-data
+            android:name="channel"
+            android:value="calibur" />
+        <!-- bugly升级 -->
+        <activity
+            android:name="com.tencent.bugly.beta.ui.BetaActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|locale"
+            android:theme="@android:style/Theme.Translucent" />
+        <!-- bugly升级provider -->
+        <provider
+            android:name=".utils.BuglyFileProvider"
+            android:authorities="${applicationId}.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="name,authorities,exported,grantUriPermissions">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"
+                tools:replace="name,resource" />
+        </provider>
+
         <activity
             android:name=".ui.home.MainActivity"
             android:launchMode="singleTask"
@@ -34,7 +57,6 @@
         <activity
             android:name=".ui.splash.SplashActivity"
             android:screenOrientation="portrait"
-
             android:theme="@style/splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -60,6 +82,7 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".ui.home.Drama.DramaActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.loginAndRegister.RegisterActivity"
@@ -95,6 +118,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.home.user.UserMainActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.home.Drama.DramaSearchActivity"
@@ -139,8 +163,35 @@
         <activity
             android:name=".ui.home.mine.ClearCacheActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.home.report.FeedbackActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".ui.home.report.FeedbackActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.web.WebViewActivity" />
+        <activity
+            android:name=".ui.home.Drama.dramaConfig.DramaMasterConfigActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.Drama.dramaConfig.DramaMasterPostSettingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.Drama.dramaConfig.DramaMasterAnimeSettingActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ui.home.Drama.dramaConfig.DramaMasterRoleSettingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.Drama.dramaConfig.choose.DramaMasterSettingChooseTagActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.Drama.dramaInfo.DramaInfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.home.choose.CardChooseTagsActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.home.message.MessageShowCommentActivity" />
+        <activity android:name=".ui.home.Drama.DramaCartoonShowActivity" />
+        <activity android:name=".ui.home.Drama.DramaCartoonCommentActivity"></activity>
     </application>
 
 </manifest>

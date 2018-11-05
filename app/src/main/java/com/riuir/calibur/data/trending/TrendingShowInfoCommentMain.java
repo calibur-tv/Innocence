@@ -85,6 +85,9 @@ public class TrendingShowInfoCommentMain {
         private TrendingShowInfoCommentMainComment comments;
         private boolean liked;
         private int like_count;
+        private boolean is_owner;
+        private boolean is_master;
+        private boolean is_leader;
 
         public int getId() {
             return id;
@@ -198,6 +201,30 @@ public class TrendingShowInfoCommentMain {
             this.like_count = like_count;
         }
 
+        public boolean isIs_owner() {
+            return is_owner;
+        }
+
+        public void setIs_owner(boolean is_owner) {
+            this.is_owner = is_owner;
+        }
+
+        public boolean isIs_master() {
+            return is_master;
+        }
+
+        public void setIs_master(boolean is_master) {
+            this.is_master = is_master;
+        }
+
+        public boolean isIs_leader() {
+            return is_leader;
+        }
+
+        public void setIs_leader(boolean is_leader) {
+            this.is_leader = is_leader;
+        }
+
         @Override
         public String toString() {
             return "TrendingShowInfoCommentMainList{" +
@@ -215,6 +242,9 @@ public class TrendingShowInfoCommentMain {
                     ", comments=" + comments +
                     ", liked=" + liked +
                     ", like_count=" + like_count +
+                    ", is_owner=" + is_owner +
+                    ", is_master=" + is_master +
+                    ", is_leader=" + is_leader +
                     '}';
         }
     }

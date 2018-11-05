@@ -174,6 +174,7 @@ public class MyPagerSlidingTabStrip extends HorizontalScrollView {
         }
 
         pager.setOnPageChangeListener(pageListener);
+        pageListener.onPageSelected(0);
 
         notifyDataSetChanged();
     }
@@ -244,7 +245,9 @@ public class MyPagerSlidingTabStrip extends HorizontalScrollView {
         tab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                pager.setCurrentItem(position);
+                if (pager!=null){
+                    pager.setCurrentItem(position);
+                }
             }
         });
 
@@ -357,7 +360,7 @@ public class MyPagerSlidingTabStrip extends HorizontalScrollView {
         }
     }
 
-    private class PageListener implements ViewPager.OnPageChangeListener {
+    public class PageListener implements ViewPager.OnPageChangeListener {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

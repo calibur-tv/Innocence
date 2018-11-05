@@ -37,22 +37,22 @@
             android:hint="回复："
             android:textSize="14sp"
             android:paddingLeft="10dp"
-            android:paddingRight="36dp"
+            android:paddingRight="0dp"
             android:gravity="center_vertical"
             />
-        <TextView
-            android:id="@+id/reply_and_comment_clear_edit"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_centerVertical="true"
-            android:layout_alignRight="@id/reply_and_comment_edit"
-            android:layout_marginRight="6dp"
-            android:text="×"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:textColor="@color/color_FF9B9B9B"
-            android:visibility="gone"
-            />
+        <!--<TextView-->
+            <!--android:id="@+id/reply_and_comment_clear_edit"-->
+            <!--android:layout_width="36dp"-->
+            <!--android:layout_height="36dp"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_alignRight="@id/reply_and_comment_edit"-->
+            <!--android:layout_marginRight="6dp"-->
+            <!--android:text="×"-->
+            <!--android:gravity="center"-->
+            <!--android:textSize="20sp"-->
+            <!--android:textColor="@color/color_FF9B9B9B"-->
+            <!--android:visibility="gone"-->
+            <!--/>-->
 
     </RelativeLayout>
 </LinearLayout>

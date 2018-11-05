@@ -4,7 +4,7 @@ import java.util.List;
 
 public class CreateMainCommentInfo {
     private int code;
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList data;
+    private CreateMainCommentInfoData data;
 
     public int getCode() {
         return code;
@@ -14,11 +14,11 @@ public class CreateMainCommentInfo {
         this.code = code;
     }
 
-    public TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList getData() {
+    public CreateMainCommentInfoData getData() {
         return data;
     }
 
-    public void setData(TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList data) {
+    public void setData(CreateMainCommentInfoData data) {
         this.data = data;
     }
 
@@ -28,6 +28,45 @@ public class CreateMainCommentInfo {
                 "code=" + code +
                 ", data=" + data +
                 '}';
+    }
+
+    public class CreateMainCommentInfoData{
+        private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList data;
+        private int exp;
+        private String message;
+
+        public TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList getData() {
+            return data;
+        }
+
+        public void setData(TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList data) {
+            this.data = data;
+        }
+
+        public int getExp() {
+            return exp;
+        }
+
+        public void setExp(int exp) {
+            this.exp = exp;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        @Override
+        public String toString() {
+            return "CreateMainCommentInfoData{" +
+                    "data=" + data +
+                    ", exp=" + exp +
+                    ", message='" + message + '\'' +
+                    '}';
+        }
     }
 
 //    public class CreateMainCommentInfoData{

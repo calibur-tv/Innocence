@@ -2,11 +2,16 @@ package com.riuir.calibur.net;
 
 import com.riuir.calibur.data.DramaListResp;
 import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.MainTrendingInfo;
 import com.riuir.calibur.data.MineUserInfo;
 import com.riuir.calibur.data.album.ChooseImageAlbum;
 import com.riuir.calibur.data.album.CreateNewAlbumInfo;
 import com.riuir.calibur.data.anime.AnimeFollowInfo;
+import com.riuir.calibur.data.create.CreateCard;
+import com.riuir.calibur.data.create.DeleteInfo;
 import com.riuir.calibur.data.params.CreateMainComment;
+import com.riuir.calibur.data.params.FolllowListParams;
+import com.riuir.calibur.data.params.masterSetting.BangumiEditParams;
 import com.riuir.calibur.data.params.newImage.CreateNewAlbum;
 import com.riuir.calibur.data.params.newImage.CreateNewImageForAlbum;
 import com.riuir.calibur.data.params.newImage.CreateNewImageSingle;
@@ -16,12 +21,14 @@ import com.riuir.calibur.data.trending.CreateMainCommentInfo;
 import com.riuir.calibur.data.trending.ReplyCommentInfo;
 import com.riuir.calibur.data.trending.TrendingToggleInfo;
 import com.riuir.calibur.data.params.VerificationCodeBody;
+import com.riuir.calibur.data.user.UserDaySign;
 
 import java.util.Map;
 
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -29,6 +36,10 @@ import retrofit2.http.Query;
 
 public interface ApiPost {
 
+
+    //总列表flowList
+    @POST("flow/list")
+    Call<MainTrendingInfo> getFollowList(@Body FolllowListParams folllowListParams);
 
     @POST("drama/list")
     Observable<DramaListResp> getObservable(@Body Map<String, Object> argsMap);
@@ -71,7 +82,7 @@ public interface ApiPost {
     Call<Event<String>> getMineUserLogOut();
 
     @POST("user/daySign")
-    Call<Event<String>> getCallUserDaySign();
+    Call<UserDaySign> getCallUserDaySign();
 
     //发送关注番剧
     @POST("toggle/follow")
@@ -111,10 +122,10 @@ public interface ApiPost {
 
     //新建帖子
     @POST("post/create")
-    Call<Event<Integer>> getCreatPost(@Body CreatePostParams createPostParams);
+    Call<CreateCard> getCreatPost(@Body CreatePostParams createPostParams);
     //新建单张图
     @POST("image/single/upload")
-    Call<Event<Integer>> getCreateImageSingle(@Body CreateNewImageSingle createNewImageSingle);
+    Call<CreateCard> getCreateImageSingle(@Body CreateNewImageSingle createNewImageSingle);
     //新建相册传图
     @POST("image/album/upload")
     Call<Event<Integer>> getCreateImageForAlbum(@Body CreateNewImageForAlbum createNewImageForAlbum);
@@ -136,10 +147,40 @@ public interface ApiPost {
 
     //删除帖子 相册 漫评
     @POST("post/{postId}/deletePost")
-    Call<Event<String>> getCallDeletePost(@Path("postId")int postId);
+    Call<DeleteInfo> getCallDeletePost(@Path("postId")int postId);
     @POST("image/album/delete")
-    Call<Event<String>> getCallDeleteAlbum(@Query("id") int id);
+    Call<DeleteInfo> getCallDeleteAlbum(@Query("id") int id);
     @POST("score/delete")
-    Call<Event<String>> getCallDeleteScore(@Query("id")int id);
+    Call<DeleteInfo> getCallDeleteScore(@Query("id")int id);
+    //删除主评论
+    @POST("comment/main/delete")
+    Call<DeleteInfo> getCallDeleteCommentMain(@Query("type")String type,@Query("id")int id);
+    //删除子评论
+    @POST("comment/sub/delete")
+    Call<DeleteInfo> getCallDeleteCommentChild(@Query("type")String type,@Query("id")int id);
+
+    //帖子加精、置顶 和取消
+    @POST("post/manager/nice/set")
+    Call<Event<String>> getCallPostNiceSet(@Query("id")String id);
+    @POST("post/manager/nice/remove")
+    Call<Event<String>> getCallPostNiceRemove(@Query("id")String id);
+    @POST("post/manager/top/set")
+    Call<Event<String>> getCallPostTopSet(@Query("id")String id);
+    @POST("post/manager/top/remove")
+    Call<Event<String>> getCallPostTopRemove(@Query("id")String id);
+    //创建偶像
+    @POST("cartoon_role/manager/create")
+    Call<Event<Integer>> getCallManagerCreateRole(@Query("bangumi_id")int bangumi_id,@Query("name")String name,
+                                                  @Query("alias")String alias,@Query("intro")String intro,@Query("avatar")String avatar);
+    //编辑番剧内容
+    @POST("bangumi/{bangumiId}/edit")
+    Call<Event<String>> getCallEditbangumi(@Path("bangumiId")int bangumi_id, @Body BangumiEditParams params);
+
+    //读取某条消息
+    @POST("user/notification/read")
+    Call<Event<String>> getCallReadNotification(@Query("id")int id);
+    //全部设为已读
+    @POST("user/notification/clear")
+    Call<Event<String>> getCallAllReadNotification();
 
 }

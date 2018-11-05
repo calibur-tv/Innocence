@@ -2,7 +2,7 @@ package com.riuir.calibur.data.trending;
 
 public class ReplyCommentInfo {
     private int code;
-    private TrendingChildCommentInfo.TrendingChildCommentInfoList data;
+    private ReplyCommentInfoData data;
 
     public int getCode() {
         return code;
@@ -12,11 +12,11 @@ public class ReplyCommentInfo {
         this.code = code;
     }
 
-    public TrendingChildCommentInfo.TrendingChildCommentInfoList getData() {
+    public ReplyCommentInfoData getData() {
         return data;
     }
 
-    public void setData(TrendingChildCommentInfo.TrendingChildCommentInfoList data) {
+    public void setData(ReplyCommentInfoData data) {
         this.data = data;
     }
 
@@ -26,6 +26,45 @@ public class ReplyCommentInfo {
                 "code=" + code +
                 ", data=" + data +
                 '}';
+    }
+
+    public class ReplyCommentInfoData{
+        private TrendingChildCommentInfo.TrendingChildCommentInfoList data;
+        private int exp;
+        private String message;
+
+        public TrendingChildCommentInfo.TrendingChildCommentInfoList getData() {
+            return data;
+        }
+
+        public void setData(TrendingChildCommentInfo.TrendingChildCommentInfoList data) {
+            this.data = data;
+        }
+
+        public int getExp() {
+            return exp;
+        }
+
+        public void setExp(int exp) {
+            this.exp = exp;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        @Override
+        public String toString() {
+            return "ReplyCommentInfoData{" +
+                    "data=" + data +
+                    ", exp=" + exp +
+                    ", message='" + message + '\'' +
+                    '}';
+        }
     }
 
 //    public class ReplyCommentInfoData{

@@ -114,7 +114,9 @@ public class GlideUtils {
     //文件圆形加载
     public static void loadImageViewFromFileCircle(Context mContext, File file, ImageView mImageView) {
 //        Glide.with(mContext).load(file).into(mImageView);
-        GlideApp.with(mContext).load(file).apply(bitmapTransform(new CircleCrop())).into(mImageView);
+        if (mImageView!=null){
+            GlideApp.with(mContext).load(file).apply(bitmapTransform(new CircleCrop())).into(mImageView);
+        }
     }
 
     //圆角加载
@@ -160,6 +162,7 @@ public class GlideUtils {
     //preview加载
     public static void loadImageViewpreview(Context mContext, String path, final PhotoView photoView) {
         GlideApp.with(mContext).load(path).placeholder(R.mipmap.glide_load_place_holder_gray)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(new SimpleTarget() {
 
             @Override

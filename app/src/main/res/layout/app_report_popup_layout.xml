@@ -9,24 +9,23 @@
         android:layout_margin="5dp"
         android:orientation="vertical"
         >
-        <TextView
-            android:id="@+id/app_report_popup_window_item_report"
-            android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:textColor="@color/color_FF5B5B5B"
-            android:textSize="14sp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="举报"
-            android:background="@drawable/app_bg_item_white_gray"
-            />
         <LinearLayout
-            android:id="@+id/app_report_popup_window_item_only_see_master_layout"
+            android:id="@+id/app_report_popup_window_item_report_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone"
             >
+            <TextView
+                android:id="@+id/app_report_popup_window_item_report"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:textColor="@color/color_FF5B5B5B"
+                android:textSize="14sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="举报"
+                android:background="@drawable/app_bg_item_white_gray"
+                />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
@@ -36,6 +35,16 @@
                 android:layout_marginBottom="2dp"
                 android:background="@color/color_FF9B9B9B"
                 />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/app_report_popup_window_item_only_see_master_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+
             <TextView
                 android:id="@+id/app_report_popup_window_item_only_see_master"
                 android:layout_width="match_parent"
@@ -47,14 +56,6 @@
                 android:text="只看楼主"
                 android:background="@drawable/app_bg_item_white_gray"
                 />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/app_report_popup_window_item_delete_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            >
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
@@ -64,6 +65,132 @@
                 android:layout_marginBottom="2dp"
                 android:background="@color/color_FF9B9B9B"
                 />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/app_report_popup_window_item_share_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+
+            <TextView
+                android:id="@+id/app_report_popup_window_item_share"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:textColor="@color/color_FF5B5B5B"
+                android:textSize="14sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="分享"
+                android:background="@drawable/app_bg_item_white_gray"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:background="@color/color_FF9B9B9B"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/app_report_popup_window_item_url_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+
+            <TextView
+                android:id="@+id/app_report_popup_window_item_url"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:textColor="@color/color_FF5B5B5B"
+                android:textSize="14sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="复制链接"
+                android:background="@drawable/app_bg_item_white_gray"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:background="@color/color_FF9B9B9B"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/app_report_popup_window_item_master_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+            <TextView
+                android:id="@+id/app_report_popup_window_item_master"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:textColor="@color/color_FF5B5B5B"
+                android:textSize="14sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="申请版主"
+                android:background="@drawable/app_bg_item_white_gray"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:background="@color/color_FF9B9B9B"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/app_report_popup_window_item_master_config_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+            <TextView
+                android:id="@+id/app_report_popup_window_item_master_config"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:textColor="@color/color_FF5B5B5B"
+                android:textSize="14sp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="吧务设置"
+                android:background="@drawable/app_bg_item_white_gray"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:background="@color/color_FF9B9B9B"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/app_report_popup_window_item_delete_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
             <TextView
                 android:id="@+id/app_report_popup_window_item_delete"
                 android:layout_width="match_parent"
@@ -75,13 +202,17 @@
                 android:text="删除"
                 android:background="@drawable/app_bg_item_white_gray"
                 />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:background="@color/color_FF9B9B9B"
+                />
         </LinearLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_margin="5dp"
-            android:background="@color/color_FF9B9B9B"
-            />
+
         <TextView
             android:id="@+id/app_report_popup_window_item_cancel"
             android:layout_width="match_parent"

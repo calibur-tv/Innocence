@@ -44,6 +44,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.PermissionUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.create.CreateCard;
 import com.riuir.calibur.data.params.QiniuImageParams;
 import com.riuir.calibur.data.params.VerificationCodeBody;
 import com.riuir.calibur.data.params.newImage.CreateNewImageForAlbum;
@@ -65,8 +66,11 @@ import com.riuir.calibur.ui.widget.SelectorImagesActivity;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 import com.riuir.calibur.utils.QiniuUtils;
+import com.riuir.calibur.utils.album.MyAlbumUtils;
 import com.riuir.calibur.utils.geetest.GeetestUtils;
 import com.suke.widget.SwitchButton;
+import com.tencent.bugly.crashreport.CrashReport;
+import com.yanzhenjie.album.AlbumFile;
 
 import org.json.JSONObject;
 
@@ -125,11 +129,13 @@ public class CreateNewImageActivity extends BaseActivity {
     //七牛
     Configuration config;
     UploadManager uploadManager;
+    QiniuUtils qiniuUtils;
 
     //极验
     GT3GeetestUtilsBind gt3GeetestUtilsBind;
-    GT3GeetestBindListener bindListener;
     private VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGeeTest;
+    GeetestUtils geetestUtils;
+    MyAlbumUtils myAlbumUtils;
 
     CreateCardImageGridAdapter imageGridAdapter;
     ArrayList<String> baseImagesUrl;
@@ -152,8 +158,8 @@ public class CreateNewImageActivity extends BaseActivity {
     private int urlTag;
     private int userId;
 
-    private CreateSingleImageReceiver rcceiver;
-    private IntentFilter intentFilter;
+//    private CreateSingleImageReceiver rcceiver;
+//    private IntentFilter intentFilter;
 
     /**
      * 获取当前屏幕的密度
@@ -171,13 +177,21 @@ public class CreateNewImageActivity extends BaseActivity {
             ToastUtils.showShort(this,"登录之后才能发帖");
             finish();
         }
-        if (Constants.userInfoData == null){
+        if (Constants.userInfoData == null||Constants.userInfoData.getId() == 0){
             ToastUtils.showShort(this,"用户数据异常丢失，请重启APP");
             finish();
         }
+        try {
+            userId = Constants.userInfoData.getId();
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastUtils.showShort(this,"用户数据异常丢失，请重启APP");
+            finish();
+        }
+
         dm = getResources().getDisplayMetrics();
         PermissionUtils.chekReadAndWritePermission(CreateNewImageActivity.this);
-        userId = Constants.userInfoData.getId();
+        myAlbumUtils = new MyAlbumUtils();
         setImageAdapter();
         isSingle = true;
         setIsSingle();
@@ -186,96 +200,23 @@ public class CreateNewImageActivity extends BaseActivity {
         uploadManager = new UploadManager(config);
         gt3GeetestUtilsBind = new GT3GeetestUtilsBind(this);
         verificationCodeBodyGeeTest = new VerificationCodeBody.VerificationCodeBodyGeeTest();
-        registerReceiver();
-        initGeetestBindListener();
+//        registerReceiver();
         setListener();
     }
 
-    private void registerReceiver() {
-        rcceiver = new CreateSingleImageReceiver();
-        intentFilter = new IntentFilter();
-        intentFilter.addAction(GeetestUtils.FailAction);
-        registerReceiver(rcceiver,intentFilter);
-    }
+//    private void registerReceiver() {
+//        rcceiver = new CreateSingleImageReceiver();
+//        intentFilter = new IntentFilter();
+//        intentFilter.addAction(GeetestUtils.FailAction);
+//        registerReceiver(rcceiver,intentFilter);
+//    }
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(rcceiver);
+//        unregisterReceiver(rcceiver);
         super.onDestroy();
     }
 
-    private void initGeetestBindListener() {
-        bindListener = new GT3GeetestBindListener() {
-            @Override
-            public void gt3CloseDialog(int i) {
-                super.gt3CloseDialog(i);
-                setUpLoadDiaLogFail("");
-            }
-
-            @Override
-            public void gt3DialogReady() {
-                super.gt3DialogReady();
-            }
-
-            //用户是否自定义二次验证
-            @Override
-            public boolean gt3SetIsCustom() {
-                return true;
-            }
-
-            @Override
-            public void gt3GeetestStatisticsJson(JSONObject jsonObject) {
-                super.gt3GeetestStatisticsJson(jsonObject);
-            }
-
-            /**
-             * 自定义二次验证，也就是当gtSetIsCustom为ture时才执行
-             * 拿到第二个url（API2）需要的数据
-             * 在该回调里面自行请求api2
-             * 对api2的结果进行处理
-             * status 如果是true执行自定义接口2请求
-             */
-            @Override
-            public void gt3GetDialogResult(boolean status, String result) {
-//
-                if (status){
-                    //基本使用方法：
-
-                    // 1.取出该接口返回的三个参数用于自定义二次验证
-                    JSONObject res_json = null;
-                    try {
-                        res_json = new JSONObject(result);
-                        verificationCodeBodyGeeTest.setGeetest_challenge(res_json.getString("geetest_challenge"));
-                        verificationCodeBodyGeeTest.setGeetest_validate(res_json.getString("geetest_validate"));
-                        verificationCodeBodyGeeTest.setGeetest_seccode(res_json.getString("geetest_seccode"));
-                    } catch (org.json.JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    LogUtils.d("registerLog","verificationCodeBodyGeeTest = "+verificationCodeBodyGeeTest.toString());
-                    //检查和验证完成 开启上传
-                    upLoadDialog = new SweetAlertDialog(CreateNewImageActivity.this,SweetAlertDialog.PROGRESS_TYPE);
-                    upLoadDialog.setTitle("上传中...");
-                    upLoadDialog.setContentText("您的图片正在上传中...");
-                    upLoadDialog.setCancelable(false);
-                    upLoadDialog.show();
-                    gt3GeetestUtilsBind.gt3TestFinish();
-                    getQiniuToken();
-
-
-
-                }
-
-            }
-
-            @Override
-            public void gt3DialogOnError(String s) {
-                super.gt3DialogOnError(s);
-                setUpLoadDiaLogFail("");
-            }
-        };
-
-    }
 
     private void setIsSingleListener() {
 
@@ -318,6 +259,9 @@ public class CreateNewImageActivity extends BaseActivity {
             rBtnAlbum.setTextColor(getResources().getColor(R.color.color_FFFFFFFF));
         }
         baseImagesUrl.clear();
+        if (imagesUrl!=null){
+            imagesUrl.clear();
+        }
         imageGridAdapter.setNewData(baseImagesUrl);
         imageGridAdapter.addData("add");
     }
@@ -349,13 +293,23 @@ public class CreateNewImageActivity extends BaseActivity {
                 switch (view.getId()){
                     case R.id.reply_card_add_image_btn:
 
-                        Intent intent = new Intent(CreateNewImageActivity.this, SelectorImagesActivity.class);
                         if (isSingle){
-                            intent.putExtra("code",SelectorImagesActivity.IMAGE_CODE_SINGLE);
-                            startActivityForResult(intent, SelectorImagesActivity.IMAGE_CODE_SINGLE);
+                            myAlbumUtils.setChooseImage(CreateNewImageActivity.this,1);
+                            myAlbumUtils.setOnChooseImageFinishListener(new MyAlbumUtils.OnChooseImageFinishListener() {
+                                @Override
+                                public void onFinish(ArrayList<AlbumFile> albumFiles) {
+                                    setChooseFinishImageLoad(albumFiles,1);
+                                }
+                            });
                         }else {
-                            intent.putExtra("code",SelectorImagesActivity.IMAGE_CODE);
-                            startActivityForResult(intent, SelectorImagesActivity.IMAGE_CODE);
+
+                            myAlbumUtils.setChooseImage(CreateNewImageActivity.this,15);
+                            myAlbumUtils.setOnChooseImageFinishListener(new MyAlbumUtils.OnChooseImageFinishListener() {
+                                @Override
+                                public void onFinish(ArrayList<AlbumFile> albumFiles) {
+                                    setChooseFinishImageLoad(albumFiles,15);
+                                }
+                            });
                         }
 
                         break;
@@ -409,7 +363,7 @@ public class CreateNewImageActivity extends BaseActivity {
 
     private void setCheckInfo() {
         baseUploadUrlList = imageGridAdapter.getData();
-        uploadUrlList = baseImagesUrl;
+        uploadUrlList = baseUploadUrlList;
         uploadUrlList.remove("add");
         if (isSingle){
             if (pictureName.getText().toString()!=null&&pictureName.getText().toString().length()!=0&&
@@ -439,9 +393,7 @@ public class CreateNewImageActivity extends BaseActivity {
         if (isSingle){
             sendBtn.setClickable(false);
             sendBtn.setTextColor(getResources().getColor(R.color.color_FFEEEEEE));
-            GeetestUtils.setGeetestStart(CreateNewImageActivity.this,apiGet,bindListener,
-                    verificationCodeBodyGeeTest,
-                    gt3GeetestUtilsBind);
+            setGeeTestUtils();
         }else {
             //检查完成 开启上传
             upLoadDialog = new SweetAlertDialog(CreateNewImageActivity.this,SweetAlertDialog.PROGRESS_TYPE);
@@ -451,92 +403,54 @@ public class CreateNewImageActivity extends BaseActivity {
             upLoadDialog.show();
             sendBtn.setClickable(false);
             sendBtn.setTextColor(getResources().getColor(R.color.color_FFEEEEEE));
-            getQiniuToken();
+            setQiniuUpload();
         }
-
     }
-
-    private void getQiniuToken(){
-        apiGetHasAuth.getCallQiniuUpToken().enqueue(new Callback<QiniuUpToken>() {
+    private void setQiniuUpload(){
+        qiniuUtils = new QiniuUtils();
+        qiniuUtils.getQiniuUpToken(apiGetHasAuth,CreateNewImageActivity.this,uploadUrlList,userId);
+        qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
-            public void onResponse(Call<QiniuUpToken> call, Response<QiniuUpToken> response) {
-                if (response!=null&&response.isSuccessful()){
-                    Constants.QINIU_TOKEN = response.body().getData().getUpToken();
-                    setQiniuUpLoadCheck();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(CreateNewImageActivity.this,info.getMessage());
-                    setUpLoadDiaLogFail(info.getMessage());
-                }else {
-                    ToastUtils.showShort(CreateNewImageActivity.this,"未知错误导致上传失败");
-                    setUpLoadDiaLogFail("返回值为空");
-                }
+            public void onFailed(String fialMessage) {
+                setUpLoadDiaLogFail(fialMessage);
             }
-
+        });
+        qiniuUtils.setOnQiniuUploadSuccessedListnener(new QiniuUtils.OnQiniuUploadSuccessedListnener() {
             @Override
-            public void onFailure(Call<QiniuUpToken> call, Throwable t) {
-                ToastUtils.showShort(CreateNewImageActivity.this,"网络异常，请稍后再试1");
-                setUpLoadDiaLogFail("网络连接失败 t = "+t.getMessage());
+            public void onUploadSuccess(ArrayList<QiniuImageParams.QiniuImageParamsData> imageParamsDataList) {
+                qiniuImageParamsDataList = imageParamsDataList;
+                if (isSingle){
+                    setUpLoadSingle();
+                }else {
+                    setUpLoadAlbumImage();
+                }
             }
         });
     }
 
-    private void setQiniuUpLoadCheck(){
-
-        uploadUrlList.remove("add");
-        if (uploadUrlList.size()!=0){
-            urlTag = 0;
-            qiniuImageParamsDataList.clear();
-            setQiniuUpLoad(urlTag);
-        }
-    }
-
-    private void setQiniuUpLoad(int tag) {
-        //上传icon
-        String iconkey = QiniuUtils.getQiniuUpKey(userId,"avatar",uploadUrlList.get(tag));
-        File imgFile = new File(uploadUrlList.get(tag));
-        if (iconkey!=null){
-            uploadManager.put(imgFile, iconkey, Constants.QINIU_TOKEN, new UpCompletionHandler() {
-                @Override
-                public void complete(String key, ResponseInfo info, JSONObject response) {
-                    LogUtils.d("newCardCreate","icon isOk = "+info.isOK());
-                    if (info.isOK()){
-                        Gson gson = new Gson();
-                        QiniuImageParams params = gson.fromJson(response.toString(),QiniuImageParams.class);
-
-                        qiniuImageParamsDataList.add(params.getData());
-                        urlTag++;
-                        if (urlTag<uploadUrlList.size()){
-                            setQiniuUpLoad(urlTag);
-                        }else {
-                            //结束函数回调 发送上传到服务器请求
-                            if (isSingle){
-                                setUpLoadSingle();
-                            }else {
-                                setUpLoadAlbumImage();
-                            }
-                        }
-                        LogUtils.d("newCardCreate","icon url = "+params.getData().getUrl());
-                    }else if(info.isCancelled()){
-                        ToastUtils.showShort(CreateNewImageActivity.this,"取消上传");
-                        setUpLoadDiaLogFail("");
-                    }else if (info.isNetworkBroken()){
-                        ToastUtils.showShort(CreateNewImageActivity.this,"网络异常，请稍后再试2");
-                        setUpLoadDiaLogFail("");
-                    }else {
-                        ToastUtils.showShort(CreateNewImageActivity.this,"其他原因导致取消上传 \n info = "+info.error);
-                        setUpLoadDiaLogFail(info.error);
-                    }
-                }
-            },null);
-        }
+    private void setGeeTestUtils() {
+        geetestUtils = new GeetestUtils();
+        geetestUtils.setGeetestStart(CreateNewImageActivity.this,apiGet,
+                gt3GeetestUtilsBind);
+        geetestUtils.setOnGeetestFailedListener(new GeetestUtils.OnGeetestFailedListener() {
+            @Override
+            public void onFailed(String failedMessage) {
+                setUpLoadDiaLogFail("");
+            }
+        });
+        geetestUtils.setOnGeetestSuccessListener(new GeetestUtils.OnGeetestSuccessListener() {
+            @Override
+            public void onSuccess(VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGee) {
+                verificationCodeBodyGeeTest = verificationCodeBodyGee;
+                upLoadDialog = new SweetAlertDialog(CreateNewImageActivity.this,SweetAlertDialog.PROGRESS_TYPE);
+                upLoadDialog.setTitle("上传中...");
+                upLoadDialog.setContentText("您的图片正在上传中...");
+                upLoadDialog.setCancelable(false);
+                upLoadDialog.show();
+                gt3GeetestUtilsBind.gt3TestFinish();
+                setQiniuUpload();
+            }
+        });
     }
 
     private void setUpLoadSingle() {
@@ -555,13 +469,13 @@ public class CreateNewImageActivity extends BaseActivity {
         imageSingle.setGeetest(verificationCodeBodyGeeTest);
 
         apiPost.getCreateImageSingle(imageSingle)
-                .enqueue(new Callback<Event<Integer>>() {
+                .enqueue(new Callback<CreateCard>() {
                     @Override
-                    public void onResponse(Call<Event<Integer>> call, Response<Event<Integer>> response) {
+                    public void onResponse(Call<CreateCard> call, Response<CreateCard> response) {
                         if (response!=null&&response.isSuccessful()){
                             //创建单张图片成功
                             //跳转进入帖子
-                            final int id = response.body().getData();
+                            final int id = response.body().getData().getData();
                             upLoadDialog.setTitleText("上传成功!")
                                     .setContentText("您的图片上传成功!")
                                     .setConfirmText("好的")
@@ -577,9 +491,9 @@ public class CreateNewImageActivity extends BaseActivity {
                                         }
                                     })
                                     .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                            ToastUtils.showShort(CreateNewImageActivity.this,"图片成功，经验+3!");
+                            ToastUtils.showShort(CreateNewImageActivity.this,response.body().getData().getMessage());
                             Intent intent = new Intent(MineFragment.EXPCHANGE);
-                            intent.putExtra("expChangeNum",3);
+                            intent.putExtra("expChangeNum",response.body().getData().getExp());
                             sendBroadcast(intent);
                         }else if (response!=null&&!response.isSuccessful()){
                             String errorStr = "";
@@ -594,13 +508,14 @@ public class CreateNewImageActivity extends BaseActivity {
                             setUpLoadDiaLogFail(info.getMessage());
                         }else {
                             ToastUtils.showShort(CreateNewImageActivity.this,"未知错误导致上传失败");
-                            setUpLoadDiaLogFail("返回值为空");
+                            setUpLoadDiaLogFail("找不到服务器");
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<Event<Integer>> call, Throwable t) {
+                    public void onFailure(Call<CreateCard> call, Throwable t) {
                         ToastUtils.showShort(CreateNewImageActivity.this,"网络异常，请稍后再试3");
+                        CrashReport.postCatchedException(t);
                         setUpLoadDiaLogFail("网络异常，请稍后再试 t = "+t.getMessage());
                     }
                 });
@@ -645,13 +560,14 @@ public class CreateNewImageActivity extends BaseActivity {
                     setUpLoadDiaLogFail(info.getMessage());
                 }else {
                     ToastUtils.showShort(CreateNewImageActivity.this,"未知错误导致上传失败");
-                    setUpLoadDiaLogFail("返回值为空");
+                    setUpLoadDiaLogFail("找不到服务器");
                 }
             }
 
             @Override
             public void onFailure(Call<Event<Integer>> call, Throwable t) {
                 ToastUtils.showShort(CreateNewImageActivity.this,"网络异常，请稍后再试4");
+                CrashReport.postCatchedException(t);
                 setUpLoadDiaLogFail("网络异常，请稍后再试 t = "+t.getMessage());
             }
         });
@@ -663,6 +579,8 @@ public class CreateNewImageActivity extends BaseActivity {
             String content = "";
             if (error.contains("mimeType")){
                 content = "所选部分图片格式不支持,\n 只支持jpg,jpeg,png,gif格式上传";
+            }else if (error.length()!=0){
+                content = error;
             }else {
                 content = "因网络原因，图片上传失败了";
             }
@@ -698,32 +616,6 @@ public class CreateNewImageActivity extends BaseActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //获取图片路径
-        if ( resultCode == SelectorImagesActivity.IMAGE_CODE && data != null) {
-            imagesUrl = data.getStringArrayListExtra(SelectorImagesActivity.RESULT_LIST_NAME);
-
-            imageGridAdapter.remove(imageGridAdapter.getData().size()-1);
-            if (imageGridAdapter.getData().size()+imagesUrl.size()>15){
-                ToastUtils.showShort(CreateNewImageActivity.this,"单次上传图片最多15张，自动保存本次所选");
-                imageGridAdapter.setNewData(imagesUrl);
-            }else {
-                imageGridAdapter.addData(imagesUrl);
-            }
-            imageGridAdapter.addData("add");
-        }
-
-        if ( resultCode == SelectorImagesActivity.IMAGE_CODE_SINGLE && data != null) {
-            imagesUrl = data.getStringArrayListExtra(SelectorImagesActivity.RESULT_LIST_NAME);
-
-            imageGridAdapter.remove(imageGridAdapter.getData().size()-1);
-            if (imageGridAdapter.getData().size()!=0){
-                baseImagesUrl.clear();
-                imageGridAdapter.setNewData(baseImagesUrl);
-                ToastUtils.showShort(CreateNewImageActivity.this,"单张模式，自动保存本次所选");
-            }
-            imageGridAdapter.addData(imagesUrl);
-
-            imageGridAdapter.addData("add");
-        }
 
         if (resultCode == ChooseNewCardBangumiActivity.IMAGE && data!=null){
             bangumiId = data.getIntExtra("bangumiId",0);
@@ -743,6 +635,32 @@ public class CreateNewImageActivity extends BaseActivity {
             albumPoster = data.getStringExtra("albumPoster");
             setAlbum();
         }
+
+    }
+
+    private void setChooseFinishImageLoad(ArrayList<AlbumFile> albumFiles,int maxNum){
+        if (imagesUrl == null){
+            imagesUrl = new ArrayList<>();
+        }
+        imageGridAdapter.remove(imageGridAdapter.getData().size()-1);
+        for (int i = 0; i <imagesUrl.size() ; i++) {
+            if (imagesUrl.get(i).equals("add")){
+                imagesUrl.remove(i);
+            }
+        }
+        if ((albumFiles.size()+imagesUrl.size())>maxNum){
+            if (maxNum == 1){
+                ToastUtils.showShort(CreateNewImageActivity.this,"单张模式，自动保存本次所选");
+            }else {
+                ToastUtils.showShort(CreateNewImageActivity.this,"所选图片超出"+maxNum+"张，自动保存本次所选");
+            }
+            imagesUrl.clear();
+        }
+        for (int i = 0; i < albumFiles.size(); i++) {
+            imagesUrl.add(albumFiles.get(i).getPath());
+        }
+        imageGridAdapter.setNewData(imagesUrl);
+        imageGridAdapter.addData("add");
 
     }
 
@@ -817,11 +735,11 @@ public class CreateNewImageActivity extends BaseActivity {
 
     }
 
-    class CreateSingleImageReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            setUpLoadDiaLogFail("");
-        }
-    }
+//    class CreateSingleImageReceiver extends BroadcastReceiver {
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            setUpLoadDiaLogFail("");
+//        }
+//    }
 }

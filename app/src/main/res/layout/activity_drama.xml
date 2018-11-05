@@ -45,8 +45,18 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="right"
-                android:layout_marginTop="30dp">
+                android:layout_marginTop="30dp"
+                android:visibility="gone">
             </com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows>
+            <ImageView
+                android:id="@+id/drama_activity_sliding_more"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="right"
+                android:layout_marginTop="20dp"
+                android:src="@mipmap/app_btn_white_sliding_more"
+                android:padding="8dp"
+                />
             <RelativeLayout
                 android:id="@+id/drama_activity_anime_icon_layout"
                 android:layout_width="75dp"
@@ -56,13 +66,15 @@
                 android:layout_marginBottom="60dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:background="@color/color_FFFFFFFF"
                 >
-                <ImageView
+                <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/drama_activity_anime_icon"
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
                     android:scaleType="centerCrop"
+                    app:riv_corner_radius="5dp"
+                    app:riv_border_width="2dp"
+                    app:riv_border_color="@color/color_FFFFFFFF"
                     />
             </RelativeLayout>
             <TextView
@@ -104,10 +116,10 @@
                     android:layout_toRightOf="@id/drama_activity_anime_follow"
                     />
                 <TextView
-                    android:id="@+id/drama_activity_anime_card"
+                    android:id="@+id/drama_activity_anime_power"
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
-                    android:text="漫评"
+                    android:text="活跃度"
                     android:textColor="@color/color_FFFFFFFF"
                     android:textSize="13sp"
                     android:gravity="center_vertical"
@@ -115,7 +127,7 @@
                     android:layout_toRightOf="@id/drama_activity_anime_follow_count"
                     />
                 <TextView
-                    android:id="@+id/drama_activity_anime_card_count"
+                    android:id="@+id/drama_activity_anime_power_count"
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
                     android:text="110"
@@ -123,7 +135,7 @@
                     android:textSize="13sp"
                     android:gravity="center_vertical"
                     android:layout_marginLeft="6dp"
-                    android:layout_toRightOf="@id/drama_activity_anime_card"
+                    android:layout_toRightOf="@id/drama_activity_anime_power"
                     />
             </RelativeLayout>
 
@@ -180,6 +192,7 @@
             android:id="@+id/drama_activity_view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/color_FFFFFFFF"
             >
         </android.support.v4.view.ViewPager>
 

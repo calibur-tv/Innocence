@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.web.WebViewActivity"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:background="@color/theme_magic_sakura_primary">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <RelativeLayout
+                android:id="@+id/web_view_activity_web_view_title_Layout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+            </RelativeLayout>
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/web_view_activity_web_view_swipe_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <com.tencent.smtt.sdk.WebView
+                    android:id="@+id/web_view_activity_web_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/color_FFFFFFFF"
+                    >
+                </com.tencent.smtt.sdk.WebView>
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/web_view_activity_back_btn"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@mipmap/app_btn_back_white"
+            android:padding="12dp"
+            android:layout_marginTop="2.5dp"
+            />
+    </RelativeLayout>
+
+
+
+</android.support.v4.widget.DrawerLayout>

@@ -3,30 +3,39 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="5.5dp">
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/main_image_list_item_image"
+    >
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:minHeight="55dp"
-        app:riv_oval="false"
-        app:riv_corner_radius="15dp"
-        />
-    <TextView
-        android:id="@+id/main_image_list_item_image_name"
-        android:layout_alignBottom="@id/main_image_list_item_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="图片名字"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="9dp"
-        android:maxLines="2"
-        android:textColor="@color/color_FFF4F4F4"
-        android:textSize="14sp"
-        android:background="@drawable/image_list_title_bg"
-        android:gravity="center"
-        />
+        android:background="@drawable/bg_drama_cartoon_list_item"
+        android:layout_margin="5.5dp"
+        android:elevation="2dp">
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/main_image_list_item_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:minHeight="55dp"
+            app:riv_oval="false"
+            app:riv_corner_radius="15dp"
+            android:background="@drawable/bg_drama_cartoon_list_item"
+            />
+        <TextView
+            android:id="@+id/main_image_list_item_image_name"
+            android:layout_alignBottom="@id/main_image_list_item_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="图片名字"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="9dp"
+            android:maxLines="2"
+            android:textColor="@color/color_FFF4F4F4"
+            android:textSize="14sp"
+            android:background="@drawable/image_list_title_bg"
+            android:gravity="center"
+            />
+    </RelativeLayout>
+
 </RelativeLayout>

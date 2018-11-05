@@ -1,5 +1,6 @@
 package com.riuir.calibur.ui.home;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,9 +10,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -25,16 +29,19 @@ import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.adapter.UserMessageAdapter;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
+import com.riuir.calibur.ui.home.message.MessageShowCommentActivity;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
 import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import retrofit2.Call;
@@ -64,6 +71,8 @@ public class MessageFragment extends BaseFragment {
     private boolean isLoadMore = false;
     private boolean isRefresh = false;
 
+    private int noReadMsgCount;
+
     @BindView(R.id.main_user_message_list_view)
     RecyclerView messageListView;
 
@@ -73,10 +82,17 @@ public class MessageFragment extends BaseFragment {
     @BindView(R.id.message_search_layout)
     SearchLayout searchLayout;
 
+    @BindView(R.id.main_user_message_set_all_read)
+    TextView setAllReadBtn;
+
     UserMessageAdapter adapter;
 
     AppListFailedView failedView;
     AppListEmptyView emptyView;
+
+    Call<UserNotificationInfo> userNotificationInfoCall;
+
+    MainActivity mainActivity;
 
     private final int MESSAGE_TYPE_POST_LIKE = 1,MESSAGE_TYPE_POST_REWARD = 2,MESSAGE_TYPE_POST_MARK = 3,
             MESSAGE_TYPE_POST_COMMENT = 4,MESSAGE_TYPE_POST_REPLY = 5,MESSAGE_TYPE_IMAGE_LIKE = 6,MESSAGE_TYPE_IMAGE_REWARD = 7,
@@ -87,7 +103,7 @@ public class MessageFragment extends BaseFragment {
             MESSAGE_TYPE_SCORE_COMMENT_LIKE = 22,MESSAGE_TYPE_SCORE_REPLY_LIKE = 23,MESSAGE_TYPE_VIDEO_COMMENT_LIKE = 24,
             MESSAGE_TYPE_VIDEO_REPLY_LIKE = 25;
 
-    public static Fragment newInstance() {
+    public static MessageFragment newInstance() {
         MessageFragment messageFragment = new MessageFragment();
         Bundle b = new Bundle();
         messageFragment.setArguments(b);
@@ -107,6 +123,27 @@ public class MessageFragment extends BaseFragment {
 //        rootView.setPadding(0,stautsBarHeight,0,0);
         setNet();
         setAdapter();
+        mainActivity = (MainActivity) getActivity();
+        setOnRefreshMsgFromMain();
+    }
+
+
+    private void setOnRefreshMsgFromMain() {
+
+        mainActivity.setOnRefreshMessageList(new MainActivity.OnRefreshMessageList() {
+            @Override
+            public void OnReFresh(int count) {
+                noReadMsgCount = count;
+
+                if (noReadMsgCount!=0&&messageRefreshLayout!=null
+                        &&isRefresh == false){
+                    //未读消息不为0的时候刷新列表
+                    messageRefreshLayout.setRefreshing(true);
+                    isRefresh = true;
+                    setNet();
+                }
+            }
+        });
     }
 
     @Override
@@ -131,7 +168,8 @@ public class MessageFragment extends BaseFragment {
     private void setNet() {
         if (Constants.ISLOGIN){
             setMinId();
-            apiGetHasAuth.getCallUserNotification(minId).enqueue(new Callback<UserNotificationInfo>() {
+            userNotificationInfoCall = apiGetHasAuth.getCallUserNotification(minId);
+            userNotificationInfoCall.enqueue(new Callback<UserNotificationInfo>() {
                 @Override
                 public void onResponse(Call<UserNotificationInfo> call, Response<UserNotificationInfo> response) {
                     if (response!=null&&response.isSuccessful()){
@@ -186,7 +224,8 @@ public class MessageFragment extends BaseFragment {
                 @Override
                 public void onFailure(Call<UserNotificationInfo> call, Throwable t) {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    LogUtils.d("AppNetErrorMessage","message t = "+t.getMessage());
+                    LogUtils.v("AppNetErrorMessage","message t = "+t.getMessage());
+                    CrashReport.postCatchedException(t);
                     if (isLoadMore){
                         adapter.loadMoreFail();
                         isLoadMore = false;
@@ -249,7 +288,13 @@ public class MessageFragment extends BaseFragment {
         adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                setJump((UserNotificationInfo.UserNotificationInfoList) adapter.getData().get(position));
+                UserNotificationInfo.UserNotificationInfoList notificationInfo =
+                        (UserNotificationInfo.UserNotificationInfoList) adapter.getData().get(position);
+                //先消除小红点 然后发送读取消息
+                ImageView reddot = view.findViewById(R.id.user_message_list_item_msg_text_reddot);
+                reddot.setVisibility(View.INVISIBLE);
+                setReadMsg(notificationInfo.getId());
+                setJump(notificationInfo);
             }
         });
 
@@ -269,10 +314,93 @@ public class MessageFragment extends BaseFragment {
                 setNet();
             }
         });
+
+        setAllReadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(noReadMsgCount!=0){
+                    setAllReadBtn.setClickable(false);
+                    setAllReadBtn.setText("设置中");
+                    setAllMsgRead();
+                }else {
+                    ToastUtils.showShort(getContext(),"没有未读消息~");
+                }
+
+            }
+        });
+    }
+
+    private void setReadMsg(int id) {
+        apiPost.getCallReadNotification(id).enqueue(new Callback<Event<String>>() {
+            @Override
+            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
+                if (response!=null&&response.isSuccessful()){
+                }else if (response!=null&&!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    try {
+                        Event<String> info =gson.fromJson(errorStr,Event.class);
+                        LogUtils.d("readNotification","info = "+info.getMessage());
+                    } catch (JsonSyntaxException e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    LogUtils.d("readNotification","返回为空");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Event<String>> call, Throwable t) {
+                LogUtils.d("readNotification","网络连接失败");
+            }
+        });
+    }
+
+    private void setAllMsgRead() {
+        apiPost.getCallAllReadNotification().enqueue(new Callback<Event<String>>() {
+            @Override
+            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
+                if (response!=null&&response.isSuccessful()){
+                    //设置成功 刷新消息列表
+                    mainActivity.setNoReadMsgZero();
+                    messageRefreshLayout.setRefreshing(true);
+                    isRefresh = true;
+                    setNet();
+                    setAllReadBtn.setClickable(true);
+                    setAllReadBtn.setText("全部设为已读");
+                }else if (response!=null&&!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    try {
+                        Event<String> info =gson.fromJson(errorStr,Event.class);
+                        LogUtils.d("readNotification","info = "+info.getMessage());
+                    } catch (JsonSyntaxException e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    LogUtils.d("readNotification","返回为空");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Event<String>> call, Throwable t) {
+                LogUtils.d("readNotification","网络连接失败");
+            }
+        });
     }
 
     private void setJump(UserNotificationInfo.UserNotificationInfoList data) {
-        Intent intent = new Intent();
+
         int type =0;
         switch (data.getType()){
             case MESSAGE_TYPE_POST_LIKE:
@@ -336,47 +464,79 @@ public class MessageFragment extends BaseFragment {
             default:
                 break;
         }
+
+        int comment_id = 0;
+        int reply_id = 0;
+        String[] links = data.getLink().split("\\?");
+        if (links!=null&&links.length==2){
+            String [] ids = links[1].split("\\&");
+            if (ids!=null&&ids.length!=0){
+                if (ids.length == 1){
+                    String[] commentIdStr = ids[0].split("=");
+                    comment_id = Integer.parseInt(commentIdStr[1]);
+                }else {
+                    String[] commentIdStr = ids[0].split("=");
+                    comment_id = Integer.parseInt(commentIdStr[1]);
+                    String[] replyIdStr = ids[1].split("=");
+                    reply_id = Integer.parseInt(commentIdStr[1]);
+                }
+            }
+        }
+        Intent intent = new Intent();
+        intent.putExtra("main_card_id",data.getModel().getId());
+        intent.putExtra("comment_id",comment_id);
+        intent.putExtra("reply_id",reply_id);
+
         switch (type){
             case 1:
-                intent.setClass(getContext(), CardShowInfoActivity.class);
                 intent.putExtra("cardID",data.getModel().getId());
-                startActivity(intent);
+                intent.setClass(getContext(), CardShowInfoActivity.class);
+                intent.putExtra("type","post");
                 break;
             case 2:
-                intent.setClass(getContext(), ImageShowInfoActivity.class);
                 intent.putExtra("imageID",data.getModel().getId());
-                startActivity(intent);
+                intent.setClass(getContext(), ImageShowInfoActivity.class);
+                intent.putExtra("type","image");
                 break;
             case 3:
-                intent.setClass(getContext(), ScoreShowInfoActivity.class);
                 intent.putExtra("scoreID",data.getModel().getId());
-                startActivity(intent);
+                intent.setClass(getContext(), ScoreShowInfoActivity.class);
+                intent.putExtra("type","score");
                 break;
             case 4:
-                intent.setClass(getContext(), DramaVideoPlayActivity.class);
                 intent.putExtra("videoId",data.getModel().getId());
-                startActivity(intent);
+                intent.setClass(getContext(), DramaVideoPlayActivity.class);
+                intent.putExtra("type","video");
                 break;
             default:
                 break;
         }
+
+        if(data.getMessage().contains("评论了")||data.getMessage().contains("回复了")){
+            LogUtils.d("messageJump","message = "+data.getMessage());
+            intent.setClass(getContext(), MessageShowCommentActivity.class);
+        }
+        if (intent.getClass()!=null){
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 
     private void setEmptyView(){
         if (baseNotificationList==null||baseNotificationList.size()==0){
-            if (emptyView == null){
-                emptyView = new AppListEmptyView(getContext());
-                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+            emptyView = new AppListEmptyView(getContext());
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             adapter.setEmptyView(emptyView);
         }
     }
     private void setFailedView(){
         //加载失败 下拉重试
-        if (failedView == null){
-            failedView = new AppListFailedView(getContext());
-            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
+        failedView = new AppListFailedView(getContext());
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         adapter.setEmptyView(failedView);
     }
 
@@ -385,7 +545,7 @@ public class MessageFragment extends BaseFragment {
         isRefresh = false;
         adapter.setNewData(notificationList);
         messageRefreshLayout.setRefreshing(false);
-        ToastUtils.showShort(getContext(),"刷新成功！");
+        ToastUtils.showShort(getContext(),"消息列表刷新成功！");
     }
 
     private void setLoadMore() {

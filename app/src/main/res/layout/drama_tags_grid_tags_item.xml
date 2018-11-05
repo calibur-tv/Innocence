@@ -6,7 +6,7 @@
     <CheckBox
         android:id="@+id/drama_tags_grid_item_text"
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="34dp"
         android:background="@drawable/bg_drama_tags_background"
         android:textAlignment="center"
         android:text="标签"

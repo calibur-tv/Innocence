@@ -1,5 +1,7 @@
 package com.riuir.calibur.data.trending;
 
+import com.riuir.calibur.data.AnimeShowInfo;
+
 import java.util.List;
 
 public class CardShowInfoPrimacy  {
@@ -156,6 +158,7 @@ public class CardShowInfoPrimacy  {
         private CardShowInfoPrimacyLikeUser like_users;
         private CardShowInfoPrimacyLikeUser reward_users;
         private CardShowInfoPrimacyLikeUser mark_users;
+        private List<AnimeShowInfo.AnimeShowInfoTags> tags;
 
         private boolean is_nice;
         private boolean is_creator;
@@ -320,6 +323,14 @@ public class CardShowInfoPrimacy  {
             this.is_creator = is_creator;
         }
 
+        public List<AnimeShowInfo.AnimeShowInfoTags> getTags() {
+            return tags;
+        }
+
+        public void setTags(List<AnimeShowInfo.AnimeShowInfoTags> tags) {
+            this.tags = tags;
+        }
+
         @Override
         public String toString() {
             return "CardShowInfoPrimacyPost{" +
@@ -340,6 +351,7 @@ public class CardShowInfoPrimacy  {
                     ", like_users=" + like_users +
                     ", reward_users=" + reward_users +
                     ", mark_users=" + mark_users +
+                    ", tags=" + tags +
                     ", is_nice=" + is_nice +
                     ", is_creator=" + is_creator +
                     '}';

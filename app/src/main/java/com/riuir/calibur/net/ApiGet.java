@@ -5,6 +5,7 @@ import com.riuir.calibur.data.AnimeListForTagsSearch;
 import com.riuir.calibur.data.AnimeListForTimeLine;
 import com.riuir.calibur.data.AnimeNewListForWeek;
 import com.riuir.calibur.data.AnimeShowInfo;
+import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.album.ChooseImageAlbum;
 import com.riuir.calibur.data.anime.AnimeScoreInfo;
 import com.riuir.calibur.data.anime.AnimeShowVideosInfo;
@@ -13,17 +14,21 @@ import com.riuir.calibur.data.MainCardInfo;
 import com.riuir.calibur.data.MainTrendingInfo;
 import com.riuir.calibur.data.anime.AnimeVideosActivityInfo;
 import com.riuir.calibur.data.anime.BangumiAllList;
+import com.riuir.calibur.data.anime.CartoonListInfo;
 import com.riuir.calibur.data.anime.SearchAnimeInfo;
 import com.riuir.calibur.data.check.AppVersionCheck;
+import com.riuir.calibur.data.loop.BannerLoopInfo;
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.data.role.RoleFansListInfo;
 import com.riuir.calibur.data.role.RoleShowInfo;
 import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
 import com.riuir.calibur.data.trending.ScoreShowInfoPrimacy;
 import com.riuir.calibur.data.trending.TrendingChildCommentInfo;
+import com.riuir.calibur.data.trending.TrendingShowInfoCommentItem;
 import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
 import com.riuir.calibur.data.trending.CardShowInfoPrimacy;
 import com.riuir.calibur.data.params.DramaTags;
+import com.riuir.calibur.data.trending.dramaTopPost.DramaTopPostInfo;
 import com.riuir.calibur.data.user.UserFollowedBangumiInfo;
 import com.riuir.calibur.data.user.UserFollowedRoleInfo;
 import com.riuir.calibur.data.user.UserMainInfo;
@@ -67,6 +72,12 @@ public interface ApiGet {
                                          @Query("userZone")String userZone,@Query("page")int page,@Query("take")int take,@Query("minId")int minId,
                                          @Query("seenIds")String seenIds);
 
+    //漫画列表
+    @GET("bangumi/{bangumi_id}/cartoon")
+    Call<CartoonListInfo> getCartoonList(@Path("bangumi_id")int bangumi_id,@Query("take")int take, @Query("page")int page, @Query("sort")String sort);
+
+    @GET("bangumi/{id}/posts/top")
+    Call<DramaTopPostInfo> getCallDramaTopPostList(@Path("id")int id);
 
     //获取trending 首页帖子/图片/漫评
     @GET("trending/hot")
@@ -88,6 +99,10 @@ public interface ApiGet {
     //获取动漫标签
     @GET("bangumi/tags")
     Call<DramaTags> getCallDramaTags();
+
+    //获取帖子标签
+    @GET("post/tags")
+    Call<DramaTags> getCallPostTags();
 
     //获取动漫标签
     @GET("bangumi/category")
@@ -123,7 +138,7 @@ public interface ApiGet {
     @GET("image/{id}/show")
     Call<ImageShowInfoPrimacy> getCallImageShowPrimacy(@Path("id")int id);
 
-    //获取评分详情
+    //获取漫评详情
     @GET("score/{id}/show")
     Call<ScoreShowInfoPrimacy> getCallScoreShowPrimacy(@Path("id")int id);
 
@@ -138,6 +153,10 @@ public interface ApiGet {
     //获取各种主评论
     @GET("comment/main/list")
     Call<TrendingShowInfoCommentMain> getCallMainComment(@Query("type")String type, @Query("id")int id, @Query("fetchId")int fetchId,@Query("onlySeeMaster")int onlySeeMaster);
+
+    //消息列表页跳转评论
+    @GET("comment/main/item")
+    Call<TrendingShowInfoCommentItem> getCallMainItemComment(@Query("comment_id")int comment_id,@Query("reply_id")int reply_id,@Query("type")String type);
 
     //获取各种子评论
     @GET("comment/sub/list")
@@ -179,4 +198,10 @@ public interface ApiGet {
     @GET("app/version/check")
     Call<AppVersionCheck> getCallAppVersionCheck(@Query("type")int type,@Query("version")String version);
 
+    //用户未读消息个数
+    @GET("user/notification/count")
+    Call<Event<Integer>> getUserNotificationCount();
+
+    @GET("cm/loop/list")
+    Call<BannerLoopInfo> getCallBannerLoop();
 }

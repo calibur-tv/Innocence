@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -91,6 +92,36 @@ public class UserMainActivity extends BaseActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (userMainPager.getAdapter() != null) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            List<Fragment> fragments = fm.getFragments();
+            if(fragments != null && fragments.size() >0){
+                for (int i = 0; i < fragments.size(); i++) {
+                    ft.remove(fragments.get(i));
+                }
+            }
+            ft.commit();
+        }
+        titles.clear();
+        userMainPager.setAdapter(null);
+        userFollowedBangumiFragment = null;
+        userFollowedRoleFragment = null;
+        userFollowedImageFragment = null;
+        userCardFragment = null;
+        userFollowedScoreFragment = null;
+
+
+
+        userId = intent.getIntExtra("userId",0);
+        zone = intent.getStringExtra("zone");
+        setListener();
+        setNet();
+    }
+
+    @Override
     public void onDestroy() {
         if (userMainInfoCall!=null){
             userMainInfoCall.cancel();
@@ -141,8 +172,11 @@ public class UserMainActivity extends BaseActivity {
                 GlideUtils.setImageUrlForWidth(UserMainActivity.this,userData.getAvatar(),
                         userIcon.getLayoutParams().width),userIcon);
         userName.setText(userData.getNickname());
-        userLevel.setText("Lv"+userData.getLevel());
+        userLevel.setText("Lv"+userData.getLevel()+" · 战斗力："+userData.getPower());
         userSignature.setText(userData.getSignature());
+
+        moreBtn.setReportModelTag(AppHeaderPopupWindows.USER,userId);
+        moreBtn.setShareLayout(userData.getNickname(),AppHeaderPopupWindows.USER,userId,userData.getZone());
 
         setViewPager();
     }
@@ -154,7 +188,7 @@ public class UserMainActivity extends BaseActivity {
                 finish();
             }
         });
-        moreBtn.setReportModelTag(AppHeaderPopupWindows.USER,userId);
+
     }
 
     @Override
@@ -171,7 +205,7 @@ public class UserMainActivity extends BaseActivity {
 //
         titles.add("相册");
 //
-        titles.add("评分");
+        titles.add("漫评");
 
         titles.add("偶像");
 
@@ -183,7 +217,7 @@ public class UserMainActivity extends BaseActivity {
 
     private void setUserMainTabs() {
         // 设置Tab是自动填充满屏幕的
-        userMainPagerTab.setShouldExpand(true);
+        userMainPagerTab.setShouldExpand(false);
         // 设置Tab的分割线是透明的
         userMainPagerTab.setDividerColor(Color.TRANSPARENT);
         userMainPagerTab.setBackgroundResource(R.color.color_FFFFFFFF);
@@ -241,7 +275,7 @@ public class UserMainActivity extends BaseActivity {
                         userFollowedImageFragment = new UserFollowedImageFragment();
                     }
                     return userFollowedImageFragment;
-                case "评分":
+                case "漫评":
                     if (userFollowedScoreFragment == null) {
                         userFollowedScoreFragment = new UserFollowedScoreFragment();
                     }

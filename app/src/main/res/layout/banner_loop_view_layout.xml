@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v4.view.ViewPager
+        android:id="@+id/banner_loop_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="160dp">
+    </android.support.v4.view.ViewPager>
+    <!--<github.chenupt.springindicator.SpringIndicator-->
+        <!--android:id="@+id/banner_loop_view_indicator"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:minWidth="80dp"-->
+        <!--android:layout_height="25dp"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--app:siTextSize="18sp"-->
+        <!--app:siTextColor="@color/color_FF333333"-->
+        <!--app:siSelectedTextColor="@color/color_FFFFFFFF"-->
+        <!--app:siIndicatorColor="@color/theme_magic_sakura_primary"-->
+        <!--&gt;-->
+    <!--</github.chenupt.springindicator.SpringIndicator>-->
+</RelativeLayout>

@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
@@ -30,9 +31,11 @@ import com.riuir.calibur.data.check.AppVersionCheck;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
 import com.riuir.calibur.ui.home.image.CreateNewImageActivity;
+import com.riuir.calibur.ui.web.WebViewActivity;
 import com.riuir.calibur.ui.widget.MainBottomBar;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 
@@ -56,10 +59,10 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     MainBottomBar maintabBottombar;
 
 
-    private Fragment fragmentMain = MainFragment.newInstance();
-    private Fragment fragmentDrama = DramaFragment.newInstance();
-    private Fragment fragmentMessage = MessageFragment.newInstance();
-    private Fragment fragmentMine = MineFragment.newInstance();
+    private MainFragment fragmentMain = MainFragment.newInstance();
+    private DramaFragment fragmentDrama = DramaFragment.newInstance();
+    private MessageFragment fragmentMessage = MessageFragment.newInstance();
+    private MineFragment fragmentMine = MineFragment.newInstance();
 
     FloatingActionMenu actionMenu;
     ImageView childIcon1;
@@ -74,6 +77,10 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     boolean forceUpdate;
     String downloadUrl;
     AlertDialog checkVersionDialog;
+
+    //未读消息
+    Call<Event<Integer>> messageCountCall;
+    int messageCount;
 
     @Override
     protected int getContentViewId() {
@@ -118,6 +125,60 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setMessageCount();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (messageCountCall!=null){
+            messageCountCall.cancel();
+        }
+    }
+
+    private void setMessageCount() {
+        messageCountCall = apiGetHasAuth.getUserNotificationCount();
+        messageCountCall.enqueue(new Callback<Event<Integer>>() {
+            @Override
+            public void onResponse(Call<Event<Integer>> call, Response<Event<Integer>> response) {
+                if (response!=null&&response.isSuccessful()){
+                    messageCount = response.body().getData();
+                    maintabBottombar.updateMsgRedDot(messageCount);
+                    LogUtils.d("readNotification","messageCount = "+messageCount);
+                }else if (response!=null&&response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info = null;
+                    try {
+                        info = gson.fromJson(errorStr,Event.class);
+                        LogUtils.d("messageCount", "请求不成功 message = "+info.getMessage());
+                    } catch (JsonSyntaxException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    LogUtils.d("messageCount", "请求返回为空");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Event<Integer>> call, Throwable t) {
+                if (call.isCanceled()){
+                }else {
+                    LogUtils.d("messageCount", "请求失败");
+                    CrashReport.postCatchedException(t);
+                }
+            }
+        });
+    }
 
 
     private void setCheckVersion() {
@@ -153,6 +214,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
             @Override
             public void onFailure(Call<AppVersionCheck> call, Throwable t) {
                 LogUtils.d("VersionCheck", "请求失败");
+                CrashReport.postCatchedException(t);
             }
         });
     }
@@ -242,6 +304,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
             @Override
             public void onFailure(Call<MineUserInfo> call, Throwable t) {
                 ToastUtils.showShort(MainActivity.this,"网络异常,请检查您的网络");
+                CrashReport.postCatchedException(t);
             }
         });
     }
@@ -423,6 +486,8 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
     }
 
+
+
     @Override
     public void onClickThree() {
         if (fragmentManager == null)
@@ -433,6 +498,9 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .show(fragmentMessage)
                 .commitAllowingStateLoss();
 
+        if (onRefreshMessageList!=null){
+            onRefreshMessageList.OnReFresh(messageCount);
+        }
     }
 
     @Override
@@ -475,4 +543,20 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
             this.finish();
         }
     }
+
+    private OnRefreshMessageList onRefreshMessageList;
+
+    public void setOnRefreshMessageList(OnRefreshMessageList onRefreshMessageList) {
+        this.onRefreshMessageList = onRefreshMessageList;
+    }
+
+    public interface OnRefreshMessageList{
+        void OnReFresh(int count);
+    }
+
+    public void setNoReadMsgZero() {
+        messageCount = 0;
+        maintabBottombar.updateMsgRedDot(0);
+    }
+
 }

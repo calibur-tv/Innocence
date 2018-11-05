@@ -2,6 +2,7 @@ package com.riuir.calibur.net;
 
 import android.text.TextUtils;
 
+import com.riuir.calibur.assistUtils.VersionUtils;
 import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
@@ -29,6 +30,8 @@ public class AuthWithOutGeetest implements Interceptor {
                 .add("Accept", "application/x.api."+ Constants.API_VERSION+"+json")
                 .add("X-Auth-Time",time+"")
                 .add("X-Auth-Value",md5(time+"Dark-Flame-Master"))
+                .add("X-APP-NAME","Sakura")
+                .add("X-APP-VERSION", VersionUtils.getLocalVersionName())
                 .build();
 
 

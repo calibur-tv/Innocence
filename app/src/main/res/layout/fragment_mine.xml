@@ -52,7 +52,7 @@
                     android:layout_alignTop="@id/mine_fragment_mine_icon"
                     android:layout_toRightOf="@id/mine_fragment_mine_icon"
                     android:layout_marginLeft="15dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="2dp"
                     android:shadowColor="@color/color_FF333333"
                     android:shadowDx="0.5"
                     android:shadowDy="0.5"
@@ -76,7 +76,7 @@
                     android:gravity="center"
                     android:text="Lv0"
                     android:lines="1"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textColor="@color/color_FFFFFFFF"
                     />
                 <TextView
@@ -100,7 +100,7 @@
                     android:id="@+id/mine_fragment_mine_level_progress"
                     android:layout_width="120dp"
                     android:layout_height="16dp"
-                    android:layout_marginTop="3dp"
+                    android:layout_marginTop="5dp"
                     android:layout_marginBottom="1dp"
                     android:layout_below="@id/mine_fragment_mine_name"
                     android:layout_alignLeft="@id/mine_fragment_mine_name"
@@ -110,7 +110,16 @@
                     app:progress_reached_bar_height="4dp"
                     app:progress_unreached_bar_height="4dp"
                     />
-
+                <ImageView
+                    android:id="@+id/mine_fragment_mine_level_question_btn"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:padding="2dp"
+                    android:src="@mipmap/app_question_white_icon"
+                    android:layout_toRightOf="@id/mine_fragment_mine_level_progress"
+                    android:layout_alignBottom="@id/mine_fragment_mine_level_progress"
+                    android:layout_marginLeft="3dp"
+                    />
                 <TextView
                     android:id="@+id/mine_fragment_coin_number"
                     android:layout_width="wrap_content"
@@ -118,14 +127,14 @@
                     android:layout_alignLeft="@id/mine_fragment_mine_name"
                     android:layout_below="@id/mine_fragment_mine_level_progress"
                     android:gravity="center"
-                    android:text="金币：0"
+                    android:text="团子：0"
                     android:shadowColor="@color/color_FF333333"
                     android:shadowDx="0.5"
                     android:shadowDy="0.5"
                     android:shadowRadius="2"
                     android:textSize="13sp"
                     android:textColor="@color/color_FFFFFFFF"
-                    android:layout_marginTop="3dp"
+                    android:layout_marginTop="5dp"
                     />
 
                 <TextView
@@ -143,50 +152,39 @@
                     android:shadowRadius="2"
                     android:textSize="13sp"
                     android:textColor="@color/color_FFFFFFFF"
-                    android:layout_marginTop="3dp"
+                    android:layout_marginTop="5dp"
                     />
-
-
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/mine_fragment_tips_layout"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginLeft="13dp"
                 android:layout_marginRight="13dp"
-                android:layout_marginTop="15dp"
                 android:background="@drawable/bg_mine_tips"
-                android:visibility="gone"
                 >
                 <ImageView
-                    android:id="@+id/mine_fragment_tips_icon"
+                    android:id="@+id/mine_fragment_tips_coin_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@mipmap/ic_mine_tips_coin"
+                    android:layout_marginLeft="10dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="13dp"
                     />
                 <TextView
-                    android:id="@+id/mine_fragment_tips_text"
+                    android:id="@+id/mine_fragment_tips_msg_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="每日签到赚金币，1 金币 = 1 人民币，满 100 提现"
-                    android:textColor="@color/theme_magic_sakura_primary"
-                    android:layout_toRightOf="@id/mine_fragment_tips_icon"
+                    android:layout_toRightOf="@id/mine_fragment_tips_coin_image"
                     android:layout_marginLeft="13dp"
-                    android:layout_marginRight="44dp"
-                    />
-                <TextView
-                    android:id="@+id/mine_fragment_tips_close"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="13dp"
                     android:layout_centerVertical="true"
-                    android:text="×"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:textColor="@color/color_FFE0E0E0"
+                    android:text="每日签到赚团子，1团子 = 1人民币，\n满100可提现."
+                    android:gravity="left"
+                    android:textSize="13sp"
+                    android:textColor="@color/theme_magic_sakura_primary"
                     />
             </RelativeLayout>
 
@@ -240,6 +238,7 @@
                     android:layout_height="54dp"
                     android:layout_weight="1"
                     android:layout_marginLeft="19dp"
+                    android:visibility="gone"
                     >
                     <ImageView
                         android:id="@+id/mine_fragment_mine_draft_icon"
@@ -259,6 +258,33 @@
                         android:textColor="@color/color_FF333333"
                         />
                 </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/mine_fragment_mine_invite_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="19dp"
+                    >
+                    <ImageView
+                        android:id="@+id/mine_fragment_mine_invite_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/ic_mine_invite"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@id/mine_fragment_mine_invite_icon"
+                        android:layout_marginLeft="16dp"
+                        android:text="我的邀请码"
+                        android:textSize="15sp"
+                        android:textColor="@color/color_FF333333"
+                        />
+                </RelativeLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"

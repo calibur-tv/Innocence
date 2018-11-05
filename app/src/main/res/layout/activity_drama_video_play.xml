@@ -39,10 +39,22 @@
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="30dp"
+                        android:layout_marginBottom="35dp"
                         android:text="因版权等相关问题，该视频无法播放"
                         android:textColor="@color/color_FFFFFFFF"
                         android:textSize="15sp"
+                        android:visibility="gone"
+                        />
+                    <TextView
+                        android:id="@+id/drama_video_play_why_reward_level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="为什么要投食"
+                        android:textColor="@color/color_FFFFFFFF"
+                        android:textSize="12sp"
+                        android:padding="5dp"
                         android:visibility="gone"
                         />
                 </RelativeLayout>
@@ -51,7 +63,8 @@
                     android:id="@+id/drama_video_play_recycle_view"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="2"></android.support.v7.widget.RecyclerView>
+                    android:layout_weight="2"
+                    android:background="@color/color_FFFFFFFF"></android.support.v7.widget.RecyclerView>
             </LinearLayout>
         </android.support.v4.widget.SwipeRefreshLayout>
 

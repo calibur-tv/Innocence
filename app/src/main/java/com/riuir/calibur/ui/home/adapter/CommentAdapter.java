@@ -38,6 +38,7 @@ import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.List;
 
@@ -53,18 +54,21 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
 
     private Context context;
     private String type;
+    private int primacyUserId;
 
     public static final String TYPE_POST = "post";
     public static final String TYPE_IMAGE = "image";
     public static final String TYPE_SCORE = "score";
     public static final String TYPE_VIDEO = "video";
 
-    public CommentAdapter(int layoutResId, @Nullable List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> data,Context context,ApiPost apiPost,String type){
+    public CommentAdapter(int layoutResId, @Nullable List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> data,
+                          Context context,ApiPost apiPost,String type,int primacyUserId){
         super(layoutResId, data);
         
         this.context = context;
         this.apiPost = apiPost;
         this.type = type;
+        this.primacyUserId = primacyUserId;
     }
 
     public CommentAdapter(int layoutResId, @Nullable List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> data) {
@@ -72,7 +76,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, final TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList item) {
+    protected void convert(final BaseViewHolder helper, final TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList item) {
 
         final int commentId = item.getId();
         final LinearLayout commentUpvoteCheckBtn;
@@ -84,19 +88,62 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
         GlideUtils.loadImageViewCircle(context,item.getFrom_user_avatar(),
                 (ImageView) helper.getView(R.id.card_show_info_list_comment_item_user_icon));
         helper.addOnClickListener(R.id.card_show_info_list_comment_item_user_icon);
-        helper.setText(R.id.card_show_info_list_comment_item_comment_info,"第"+item.getFloor_count()+"楼·"+ TimeUtils.HowLongTimeForNow(item.getCreated_at()));
+        int floor = item.getFloor_count();
+        if (type.equals("post")){
+        }else {
+            floor--;
+        }
+        helper.setText(R.id.card_show_info_list_comment_item_comment_info,"第"+floor+"楼·"+ TimeUtils.HowLongTimeForNow(item.getCreated_at()));
         helper.setText(R.id.card_show_info_list_comment_item_comment, Html.fromHtml(item.getContent()));
         headerMore = helper.getView(R.id.card_show_info_list_comment_item_card_more);
 
         if (type.equals(TYPE_POST)){
             headerMore.setReportModelTag(AppHeaderPopupWindows.POST_COMMENT,item.getId());
+            headerMore.setDeleteLayout(AppHeaderPopupWindows.POST_COMMENT,item.getId(),item.getFrom_user_id()
+                    ,primacyUserId,apiPost);
         }else if (type.equals(TYPE_IMAGE)){
             headerMore.setReportModelTag(AppHeaderPopupWindows.IMAGE_COMMENT,item.getId());
+            headerMore.setDeleteLayout(AppHeaderPopupWindows.IMAGE_COMMENT,item.getId(),item.getFrom_user_id()
+                    ,primacyUserId,apiPost);
         }else if (type.equals(TYPE_SCORE)){
             headerMore.setReportModelTag(AppHeaderPopupWindows.SCORE_COMMENT,item.getId());
+            headerMore.setDeleteLayout(AppHeaderPopupWindows.SCORE_COMMENT,item.getId(),item.getFrom_user_id()
+                    ,primacyUserId,apiPost);
         }else if (type.equals(TYPE_VIDEO)){
             headerMore.setReportModelTag(AppHeaderPopupWindows.VIDEO_COMMENT,item.getId());
+            headerMore.setDeleteLayout(AppHeaderPopupWindows.VIDEO_COMMENT,item.getId(),item.getFrom_user_id()
+                    ,primacyUserId,apiPost);
         }
+        headerMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+            @Override
+            public void deleteFinish() {
+                remove(helper.getAdapterPosition()-1);
+            }
+        });
+
+        TextView cardMaster = helper.getView(R.id.card_show_info_list_comment_item_card_master);
+        ImageView bangumiMaster = helper.getView(R.id.card_show_info_list_comment_item_bangumi_master);
+        ImageView executer = helper.getView(R.id.card_show_info_list_comment_item_executer);
+
+        if (item.isIs_owner()){
+            //楼主
+            cardMaster.setVisibility(View.VISIBLE);
+        }else {
+            cardMaster.setVisibility(View.GONE);
+        }
+        if (item.isIs_leader()){
+            //版主
+            bangumiMaster.setVisibility(View.VISIBLE);
+        }else {
+            bangumiMaster.setVisibility(View.GONE);
+        }
+        if (item.isIs_master()){
+            //代行者
+            executer.setVisibility(View.VISIBLE);
+        }else {
+            executer.setVisibility(View.GONE);
+        }
+
 
         ImageView commentMainImageView1 = helper.getView(R.id.card_show_info_list_comment_item_image1);
         ImageView commentMainImageView2 = helper.getView(R.id.card_show_info_list_comment_item_image2);
@@ -157,6 +204,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                         @Override
                         public void onFailure(Call<TrendingToggleInfo> call, Throwable t) {
                             ToastUtils.showShort(context,"点赞/取消点赞失败了");
+                            CrashReport.postCatchedException(t);
                             commentUpvoteCheckText.setText(item.getLike_count()+"");
                         }
                     });
@@ -299,7 +347,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 commentChild1.setVisibility(View.VISIBLE);
                 commentChild2.setVisibility(View.GONE);
                 commentChildMore.setVisibility(View.GONE);
-                SpannableString fromUserName1 = new SpannableString(item.getComments().getList().get(0).getFrom_user_name());
+                SpannableString fromUserName1 = new SpannableString(item.getComments().getList().get(0).getFrom_user_name().replace("\n",""));
                 fromUserName1.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
@@ -316,7 +364,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 }, 0, fromUserName1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 commentChild1.setText(fromUserName1);
                 commentChild1.append(" 回复 ");
-                SpannableString toUserName1 = new SpannableString(item.getComments().getList().get(0).getTo_user_name());
+                SpannableString toUserName1 = new SpannableString(item.getComments().getList().get(0).getTo_user_name().replace("\n",""));
                 toUserName1.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
@@ -341,7 +389,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 commentChild2.setVisibility(View.VISIBLE);
                 commentChildMore.setVisibility(View.VISIBLE);
 
-                SpannableString fromUserName1 = new SpannableString(item.getComments().getList().get(0).getFrom_user_name());
+                SpannableString fromUserName1 = new SpannableString(item.getComments().getList().get(0).getFrom_user_name().replace("\n",""));
                 fromUserName1.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
@@ -358,7 +406,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 }, 0, fromUserName1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 commentChild1.setText(fromUserName1);
                 commentChild1.append(" 回复 ");
-                SpannableString toUserName1 = new SpannableString(item.getComments().getList().get(0).getTo_user_name());
+                SpannableString toUserName1 = new SpannableString(item.getComments().getList().get(0).getTo_user_name().replace("\n",""));
                 toUserName1.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
@@ -377,7 +425,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 commentChild1.append(" : "+item.getComments().getList().get(0).getContent());
 
                 //回复2
-                SpannableString fromUserName2 = new SpannableString(item.getComments().getList().get(1).getFrom_user_name());
+                SpannableString fromUserName2 = new SpannableString(item.getComments().getList().get(1).getFrom_user_name().replace("\n",""));
                 fromUserName2.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
@@ -394,7 +442,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                 }, 0, fromUserName2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 commentChild2.setText(fromUserName2);
                 commentChild2.append(" 回复 ");
-                SpannableString toUserName2 = new SpannableString(item.getComments().getList().get(1).getTo_user_name());
+                SpannableString toUserName2 = new SpannableString(item.getComments().getList().get(1).getTo_user_name().replace("\n",""));
                 toUserName2.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {

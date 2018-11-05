@@ -23,6 +23,7 @@
         android:layout_marginRight="15dp"
         android:textSize="16sp"
         android:text="用户昵称"
+        android:lines="1"
         android:textColor="@color/color_FF333333"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toRightOf="@id/main_card_list_item_user_icon"
@@ -43,22 +44,65 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toRightOf="@id/main_card_list_item_user_icon"
         />
-    <TextView
-        android:id="@+id/main_card_list_item_card_title"
-        app:layout_constraintTop_toBottomOf="@id/main_card_list_item_user_icon"
-        app:layout_constraintLeft_toLeftOf="@id/main_card_list_item_user_icon"
-        app:layout_constraintRight_toRightOf="@id/main_card_list_item_user_name"
-        android:textSize="16sp"
-        android:textColor="@color/color_FF333333"
-        android:text="帖子名称"
-        android:layout_marginTop="16dp"
-        android:layout_width="0dp"
-        android:minHeight="20dp"
+    <LinearLayout
+        android:id="@+id/main_card_list_item_card_title_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/main_card_list_item_user_icon"
+        >
+        <TextView
+            android:id="@+id/main_card_list_item_card_is_top"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:text="置顶"
+            android:layout_marginRight="5dp"
+            android:textColor="@color/color_FFFFFFFF"
+            android:gravity="center"
+            android:background="@drawable/bg_card_list_title_is_top"
+            android:visibility="gone"
+            />
+        <TextView
+            android:id="@+id/main_card_list_item_card_is_nice"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
+            android:text="精"
+            android:textColor="@color/color_FFFFFFFF"
+            android:gravity="center"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/bg_card_list_title_is_nice"
+            android:visibility="gone"
+            />
+        <TextView
+            android:id="@+id/main_card_list_item_card_is_creator"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:text="原创"
+            android:textColor="@color/color_FFFFFFFF"
+            android:gravity="center"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/bg_card_list_title_is_creator"
+            android:visibility="gone"
+            />
+        <TextView
+            android:id="@+id/main_card_list_item_card_title"
+            android:textSize="16sp"
+            android:textColor="@color/color_FF333333"
+            android:text="帖子名称"
+            android:lines="1"
+            android:ellipsize="end"
+            android:layout_width="match_parent"
+            android:minHeight="20dp"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/main_card_list_item_card_desc"
-        app:layout_constraintTop_toBottomOf="@id/main_card_list_item_card_title"
+        app:layout_constraintTop_toBottomOf="@id/main_card_list_item_card_title_layout"
         app:layout_constraintLeft_toLeftOf="@id/main_card_list_item_user_icon"
         app:layout_constraintRight_toRightOf="@id/main_card_list_item_user_name"
         android:layout_marginTop="7dp"
@@ -67,7 +111,7 @@
         android:text="帖子简介"
         android:textColor="@color/color_FF333333"
         android:layout_height="wrap_content"
-        android:maxLength="70"
+        android:maxLines="5"
         android:ellipsize="end"
         android:minHeight="12dp"
         />
@@ -132,6 +176,83 @@
                 android:scaleType="centerCrop"
                 app:riv_corner_radius="10dp"
                 app:riv_border_width="0dp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/main_card_list_item_tag_layout"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            android:padding="3dp"
+            >
+            <LinearLayout
+                android:id="@+id/main_card_list_item_tag_bangumi_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="6dp"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_post_list_tag_gray"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@mipmap/app_tag_icon_gray"
+                    android:padding="3dp"
+                    />
+                <TextView
+                    android:id="@+id/main_card_list_item_tag_bangumi_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="番剧名"
+                    android:maxLength="10"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:layout_marginRight="6dp"
+                    android:textColor="@color/color_FF333333"
+                    />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/main_card_list_item_tag_1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="6dp"
+                android:background="@drawable/bg_post_list_tag_gray"
+                android:text="标签"
+                android:textSize="12sp"
+                android:textColor="@color/color_FF333333"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:gravity="center"
+                android:visibility="gone"
+                />
+            <TextView
+                android:id="@+id/main_card_list_item_tag_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="6dp"
+                android:background="@drawable/bg_post_list_tag_gray"
+                android:text="标签"
+                android:textSize="12sp"
+                android:textColor="@color/color_FF333333"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:gravity="center"
+                android:visibility="gone"
+                />
+            <TextView
+                android:id="@+id/main_card_list_item_tag_3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_post_list_tag_gray"
+                android:text="标签"
+                android:textSize="12sp"
+                android:textColor="@color/color_FF333333"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:gravity="center"
+                android:visibility="gone"
                 />
         </LinearLayout>
 
@@ -225,7 +346,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.1dp"
+            android:layout_height="0.5dp"
             android:background="@color/color_FFEEEEEE"
             />
     </LinearLayout>

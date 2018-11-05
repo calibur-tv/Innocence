@@ -11,21 +11,51 @@
         android:layout_marginLeft="15dp"
         android:scaleType="centerCrop"
         />
-    <TextView
-        android:id="@+id/user_release_list_item_card_name"
+    <LinearLayout
+        android:id="@+id/user_release_list_item_card_name_layout"
         android:layout_width="match_parent"
-        android:minHeight="19dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="15dp"
-        android:textSize="14sp"
-        android:text="帖子名称"
-        android:ellipsize="end"
-        android:lines="1"
-        android:textColor="@color/color_FF7B7B7B"
+        android:orientation="horizontal"
         android:layout_toRightOf="@id/user_release_list_item_bangumi_icon"
         android:layout_alignTop="@id/user_release_list_item_bangumi_icon"
-        />
+        android:layout_marginLeft="10dp"
+        >
+        <TextView
+            android:id="@+id/user_release_list_item_bangumi_is_nice"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
+            android:text="精"
+            android:textColor="@color/color_FFFFFFFF"
+            android:gravity="center"
+            android:background="@drawable/bg_card_list_title_is_nice"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"
+            />
+        <TextView
+            android:id="@+id/user_release_list_item_bangumi_is_creator"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:text="原创"
+            android:textColor="@color/color_FFFFFFFF"
+            android:gravity="center"
+            android:background="@drawable/bg_card_list_title_is_creator"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"
+            />
+        <TextView
+            android:id="@+id/user_release_list_item_card_name"
+            android:layout_width="match_parent"
+            android:minHeight="20dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:textSize="14sp"
+            android:text="帖子名称"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/color_FF7B7B7B"
+            />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/user_release_list_item_card_time"
         android:layout_width="match_parent"
@@ -44,7 +74,7 @@
         android:id="@+id/user_release_list_item_card_desc"
         android:layout_below="@id/user_release_list_item_card_time"
         android:layout_alignLeft="@id/user_release_list_item_bangumi_icon"
-        android:layout_alignRight="@id/user_release_list_item_card_name"
+        android:layout_alignRight="@id/user_release_list_item_card_name_layout"
         android:layout_marginTop="6dp"
         android:layout_width="0dp"
         android:textSize="13sp"
@@ -60,7 +90,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/user_release_list_item_card_desc"
         android:layout_alignLeft="@id/user_release_list_item_bangumi_icon"
-        android:layout_alignRight="@id/user_release_list_item_card_name"
+        android:layout_alignRight="@id/user_release_list_item_card_name_layout"
         android:orientation="vertical"
         >
         <com.makeramen.roundedimageview.RoundedImageView
@@ -119,49 +149,188 @@
                 />
         </LinearLayout>
 
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_marginTop="6dp"-->
+            <!--android:layout_marginBottom="6dp"-->
+            <!--android:orientation="horizontal"-->
+            <!--&gt;-->
+            <!--<TextView-->
+                <!--android:id="@+id/user_release_list_item_reward_count"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="1"-->
+                <!--android:gravity="center"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:text="赞赏：0"-->
+                <!--android:textColor="@color/color_FF7B7B7B"-->
+                <!--android:textSize="12sp"-->
+                <!--/>-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/user_release_list_item_marked_count"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="1"-->
+                <!--android:gravity="center"-->
+                <!--android:layout_marginRight="5dp"-->
+                <!--android:text="收藏：0"-->
+                <!--android:textColor="@color/color_FF7B7B7B"-->
+                <!--android:textSize="12sp"-->
+                <!--/>-->
+            <!--<TextView-->
+                <!--android:id="@+id/user_release_list_item_commented_count"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_weight="1"-->
+                <!--android:gravity="center"-->
+                <!--android:layout_marginRight="5dp"-->
+                <!--android:text="评论：0"-->
+                <!--android:textColor="@color/color_FF7B7B7B"-->
+                <!--android:textSize="12sp"-->
+                <!--/>-->
+
+        <!--</LinearLayout>-->
+
         <LinearLayout
+            android:id="@+id/user_release_list_item_tag_layout"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
             android:orientation="horizontal"
+            android:padding="3dp"
             >
             <TextView
-                android:id="@+id/user_release_list_item_reward_count"
-                android:layout_width="0dp"
+                android:id="@+id/user_release_list_item_tag_1"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:layout_alignParentRight="true"
-                android:text="赞赏：0"
-                android:textColor="@color/color_FF7B7B7B"
+                android:layout_marginRight="6dp"
+                android:background="@drawable/bg_post_list_tag_gray"
+                android:text="标签"
                 android:textSize="12sp"
+                android:textColor="@color/color_FF333333"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:gravity="center"
+                android:visibility="gone"
                 />
+            <TextView
+                android:id="@+id/user_release_list_item_tag_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="6dp"
+                android:background="@drawable/bg_post_list_tag_gray"
+                android:text="标签"
+                android:textSize="12sp"
+                android:textColor="@color/color_FF333333"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:gravity="center"
+                android:visibility="gone"
+                />
+            <TextView
+                android:id="@+id/user_release_list_item_tag_3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_post_list_tag_gray"
+                android:text="标签"
+                android:textSize="12sp"
+                android:textColor="@color/color_FF333333"
+                android:maxLength="10"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:gravity="center"
+                android:visibility="gone"
+                />
+        </LinearLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="15dp"
+            >
+            <ImageView
+                android:id="@+id/user_release_list_item_zan_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_zan_normal"
+                android:layout_marginRight="3dp"
+                android:layout_centerVertical="true"
+                />
+            <TextView
+                android:id="@+id/user_release_list_item_zan_count"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_toRightOf="@id/user_release_list_item_zan_icon"
+                android:text="0"
+                android:layout_marginRight="30dp"
+                android:textColor="@color/color_FF7B7B7B"
+                android:textSize="13sp"
+                />
+            <ImageView
+                android:id="@+id/user_release_list_item_reward_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/ic_pay"
+                android:layout_marginRight="3dp"
+                android:visibility="gone"
+                />
+            <TextView
+                android:id="@+id/user_release_list_item_reward_count"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_toRightOf="@id/user_release_list_item_reward_icon"
+                android:text="0"
+                android:layout_marginRight="30dp"
+                android:textColor="@color/color_FF7B7B7B"
+                android:textSize="13sp"
+                android:visibility="gone"
+                />
+            <ImageView
+                android:id="@+id/user_release_list_item_marked_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_mark_normal"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="3dp"
+                android:layout_marginLeft="70dp"
+                />
             <TextView
                 android:id="@+id/user_release_list_item_marked_count"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_toRightOf="@id/user_release_list_item_marked_icon"
                 android:gravity="center"
-                android:layout_marginRight="5dp"
-                android:text="收藏：0"
+                android:text="0"
+                android:layout_marginRight="30dp"
                 android:textColor="@color/color_FF7B7B7B"
-                android:textSize="12sp"
+                android:textSize="13sp"
+                />
+            <ImageView
+                android:id="@+id/user_release_list_item_comment_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_comment"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="3dp"
+                android:layout_toRightOf="@id/user_release_list_item_marked_count"
                 />
             <TextView
-                android:id="@+id/user_release_list_item_commented_count"
-                android:layout_width="0dp"
+                android:id="@+id/user_release_list_item_comment_count"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_toRightOf="@id/user_release_list_item_comment_icon"
                 android:gravity="center"
-                android:layout_marginRight="5dp"
-                android:text="评论：0"
+                android:text="0"
                 android:textColor="@color/color_FF7B7B7B"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 />
-
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
 </RelativeLayout>

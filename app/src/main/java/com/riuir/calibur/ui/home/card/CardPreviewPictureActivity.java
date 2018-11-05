@@ -8,13 +8,16 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bm.library.PhotoView;
 import com.bumptech.glide.Glide;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.utils.GlideUtils;
+import com.riuir.calibur.utils.glide.SaveImageFromViewUtils;
 
 import java.util.ArrayList;
 
@@ -29,6 +32,8 @@ public class CardPreviewPictureActivity extends BaseActivity {
     String selectImageUrl;
     ArrayList<String> previewImaegUrlList;
     PerviewPictureViewPagerAdapter pagerAdapter;
+
+
 
     @Override
     protected int getContentViewId() {
@@ -95,11 +100,10 @@ public class CardPreviewPictureActivity extends BaseActivity {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
 
-            String url = previewImaegUrlList.get(position);
-            PhotoView photoView = new PhotoView(CardPreviewPictureActivity.this);
-            photoView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            photoView.setLayoutParams(params);
+            final String url = previewImaegUrlList.get(position);
+            View view = getLayoutInflater().inflate(R.layout.preview_view_pager_item_view,null);
+            final PhotoView photoView = view.findViewById(R.id.preview_view_pager_item_photo_view);
+            final TextView saveBtn = view.findViewById(R.id.preview_view_pager_item_save_btn);
             GlideUtils.loadImageViewpreview(CardPreviewPictureActivity.this,
                     GlideUtils.setImageUrl(CardPreviewPictureActivity.this,url,GlideUtils.FULL_SCREEN),photoView);
             photoView.enable();
@@ -111,8 +115,32 @@ public class CardPreviewPictureActivity extends BaseActivity {
                 }
             });
 
-            container.addView(photoView);
-            return photoView;
+            //初始化和注册保存图片工具类
+            final SaveImageFromViewUtils saveUtils = new SaveImageFromViewUtils();
+            saveUtils.setOnStartSaveListener(new SaveImageFromViewUtils.OnStartSaveListener() {
+                @Override
+                public void onStartSave() {
+                    saveBtn.setText("保存中...");
+                    saveBtn.setClickable(false);
+                }
+            });
+            saveUtils.setOnFinishSaveListener(new SaveImageFromViewUtils.OnFinishSaveListener() {
+                @Override
+                public void onFinishSave() {
+                    saveBtn.setText("保存完成");
+                    ToastUtils.showShort(CardPreviewPictureActivity.this,"图片已保存到本地相册~");
+                }
+            });
+            //点击保存之后  开始保存
+            saveBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    saveUtils.checkPermissionAndSaveImage(CardPreviewPictureActivity.this,url);
+                }
+            });
+
+            container.addView(view);
+            return view;
 
         }
 

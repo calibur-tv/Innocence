@@ -18,32 +18,52 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="用户名·XXX以前"
+        android:lines="1"
         android:textColor="@color/color_FF7B7B7B"
         android:layout_marginLeft="14dp"
         android:layout_marginRight="14dp"
         android:layout_marginTop="6dp"
         android:textSize="12sp"
         />
-    <TextView
-        android:id="@+id/user_message_list_item_msg_text"
-        android:layout_toRightOf="@id/user_message_list_item_user_icon"
-        android:layout_below="@id/user_message_list_item_user_name"
+    <LinearLayout
+        android:id="@+id/user_message_list_item_msg_text_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="XX回复了您在XXXXX下的评论"
-        android:textColor="@color/color_FF5B5B5B"
+        android:layout_toRightOf="@id/user_message_list_item_user_icon"
+        android:layout_below="@id/user_message_list_item_user_name"
         android:layout_marginLeft="14dp"
         android:layout_marginRight="14dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="12dp"
-        android:textSize="12sp"
-        />
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:id="@+id/user_message_list_item_msg_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="XX回复了您在XXXXX下的评论"
+            android:textColor="@color/color_FF5B5B5B"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textSize="12sp"
+            />
+        <ImageView
+            android:id="@+id/user_message_list_item_msg_text_reddot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="2dp"
+            android:src="@mipmap/common_new_tips"
+            android:visibility="invisible" />
+    </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="@color/color_FFD9E3ED"
         android:layout_marginLeft="14dp"
         android:layout_marginRight="14dp"
-        android:layout_below="@id/user_message_list_item_msg_text"
+        android:layout_below="@id/user_message_list_item_msg_text_layout"
         />
 </RelativeLayout>

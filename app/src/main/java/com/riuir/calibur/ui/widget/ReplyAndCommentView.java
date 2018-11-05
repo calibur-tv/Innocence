@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.KeyBoardUtils;
@@ -45,7 +46,7 @@ public class ReplyAndCommentView extends LinearLayout {
 
     Context context;
     EditText editRC;
-    TextView clearEdit;
+//    TextView clearEdit;
     TextView sendBtn;
 
     String type;
@@ -63,7 +64,7 @@ public class ReplyAndCommentView extends LinearLayout {
     //创建主评论的列表adapter
     CommentAdapter commentAdapter;
     //回复评论的列表adapter
-    CardChildCommentActivity.CardChildCommentListAdapter childCommentAdapter;
+    BaseQuickAdapter childCommentAdapter;
 
     ReplyCommentInfo replyCommentInfo;
     CreateMainCommentInfo createMainCommentInfo;
@@ -100,7 +101,7 @@ public class ReplyAndCommentView extends LinearLayout {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.reply_and_comment_view_layout, this, true);
         editRC = view.findViewById(R.id.reply_and_comment_edit);
-        clearEdit = view.findViewById(R.id.reply_and_comment_clear_edit);
+//        clearEdit = view.findViewById(R.id.reply_and_comment_clear_edit);
         sendBtn = view.findViewById(R.id.reply_and_comment_send_btn);
 
     }
@@ -137,7 +138,7 @@ public class ReplyAndCommentView extends LinearLayout {
         this.apiPost = apiPost;
     }
 
-    public void setChildCommentAdapter(CardChildCommentActivity.CardChildCommentListAdapter childCommentAdapter) {
+    public void setChildCommentAdapter(BaseQuickAdapter childCommentAdapter) {
         this.childCommentAdapter = childCommentAdapter;
     }
 
@@ -155,7 +156,7 @@ public class ReplyAndCommentView extends LinearLayout {
         LogUtils.d("replycomment","targetUserId = "+targetUserId);
         if (fromUserName!=null&&fromUserName.length()!=0&&targetUserId!=0){
             editRC.setHint("回复 "+fromUserName+":");
-            clearEdit.setVisibility(VISIBLE);
+//            clearEdit.setVisibility(VISIBLE);
         }else {
             editRC.setHint("回复 :");
         }
@@ -165,7 +166,7 @@ public class ReplyAndCommentView extends LinearLayout {
         fromUserName = "";
         targetUserId = 0;
         editRC.setText("");
-        clearEdit.setVisibility(GONE);
+//        clearEdit.setVisibility(GONE);
         editRC.addTextChangedListener(textWatcher);
 
         sendBtn.setOnClickListener(new OnClickListener() {
@@ -199,20 +200,20 @@ public class ReplyAndCommentView extends LinearLayout {
 //            }
 //        });
 
-        clearEdit.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (editRC.getText().toString().length()!=0){
-                    editRC.setText("");
-                }else if (fromUserName!=null&&fromUserName.length()!=0&&targetUserId!=0
-                        &&editRC.getText().toString().length()==0){
-                    editRC.setHint("回复 :");
-                    fromUserName = "";
-                    targetUserId = 0;
-                    clearEdit.setVisibility(GONE);
-                }
-            }
-        });
+//        clearEdit.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (editRC.getText().toString().length()!=0){
+//                    editRC.setText("");
+//                }else if (fromUserName!=null&&fromUserName.length()!=0&&targetUserId!=0
+//                        &&editRC.getText().toString().length()==0){
+//                    editRC.setHint("回复 :");
+//                    fromUserName = "";
+//                    targetUserId = 0;
+//                    clearEdit.setVisibility(GONE);
+//                }
+//            }
+//        });
     }
 
     private void sendNet() {
@@ -232,14 +233,14 @@ public class ReplyAndCommentView extends LinearLayout {
 
                         createMainCommentInfo = response.body();
                         if (type.equals(TYPE_POST)){
-                            commentAdapter.addData(createMainCommentInfo.getData());
+                            commentAdapter.addData(createMainCommentInfo.getData().getData());
                         }else {
-                            commentAdapter.addData(0,createMainCommentInfo.getData());
+                            commentAdapter.addData(0,createMainCommentInfo.getData().getData());
                         }
                         if (Constants.userInfoData!=null&&Constants.userInfoData.getId()!=titleId){
-                            ToastUtils.showShort(getContext(),"评论成功,经验+2！");
+                            ToastUtils.showShort(getContext(),createMainCommentInfo.getData().getMessage());
                             Intent intent = new Intent(MineFragment.EXPCHANGE);
-                            intent.putExtra("expChangeNum",2);
+                            intent.putExtra("expChangeNum",createMainCommentInfo.getData().getExp());
                             context.sendBroadcast(intent);
                         }else {
                             ToastUtils.showShort(getContext(),"评论成功！");
@@ -282,11 +283,11 @@ public class ReplyAndCommentView extends LinearLayout {
                 public void onResponse(Call<ReplyCommentInfo> call, Response<ReplyCommentInfo> response) {
                     if (response!=null&&response.isSuccessful()){
                         replyCommentInfo = response.body();
-                        childCommentAdapter.addData(replyCommentInfo.getData());
+                        childCommentAdapter.addData(replyCommentInfo.getData().getData());
                         if (Constants.userInfoData!=null&&Constants.userInfoData.getId()!=targetUserId){
-                            ToastUtils.showShort(getContext(),"回复成功,经验+1！");
+                            ToastUtils.showShort(getContext(),replyCommentInfo.getData().getMessage());
                             Intent intent = new Intent(MineFragment.EXPCHANGE);
-                            intent.putExtra("expChangeNum",1);
+                            intent.putExtra("expChangeNum",replyCommentInfo.getData().getExp());
                             context.sendBroadcast(intent);
                         }else {
                             ToastUtils.showShort(getContext(),"回复成功！");
@@ -329,13 +330,13 @@ public class ReplyAndCommentView extends LinearLayout {
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            if (charSequence.length()!=0){
-                clearEdit.setVisibility(View.VISIBLE);
-            }else if (fromUserName!=null&&fromUserName.length()!=0&&targetUserId!=0){
-                clearEdit.setVisibility(View.VISIBLE);
-            }else {
-                clearEdit.setVisibility(View.GONE);
-            }
+//            if (charSequence.length()!=0){
+//                clearEdit.setVisibility(View.VISIBLE);
+//            }else if (fromUserName!=null&&fromUserName.length()!=0&&targetUserId!=0){
+//                clearEdit.setVisibility(View.VISIBLE);
+//            }else {
+//                clearEdit.setVisibility(View.GONE);
+//            }
         }
 
         @Override

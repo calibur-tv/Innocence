@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
+import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.data.anime.AnimeShowVideosInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaVideoEpisodesListAdapter;
@@ -46,7 +47,7 @@ public class DramaVideoEpisodesFragment extends BaseFragment {
         setAdapter();
     }
 
-    public final void setData(List<AnimeShowVideosInfo.AnimeShowVideosInfoVideos> dataList,int position){
+    public void setData(List<AnimeShowVideosInfo.AnimeShowVideosInfoVideos> dataList,int position){
         data = dataList.get(position).getData();
     }
 
@@ -74,10 +75,8 @@ public class DramaVideoEpisodesFragment extends BaseFragment {
 
     private void setEmptyView(){
         if (data==null||data.size()==0){
-            if (emptyView == null){
-                emptyView = new AppListEmptyView(getContext());
-                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+            emptyView = new AppListEmptyView(getContext());
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             adapter.setEmptyView(emptyView);
         }
     }

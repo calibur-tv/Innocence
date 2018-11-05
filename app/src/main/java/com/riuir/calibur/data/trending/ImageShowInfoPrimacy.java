@@ -1,5 +1,6 @@
 package com.riuir.calibur.data.trending;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class ImageShowInfoPrimacy {
@@ -30,7 +31,7 @@ public class ImageShowInfoPrimacy {
                 '}';
     }
 
-    public class ImageShowInfoPrimacyData{
+    public class ImageShowInfoPrimacyData implements Serializable {
         private int id;
         private int user_id;
         private int bangumi_id;
@@ -258,7 +259,7 @@ public class ImageShowInfoPrimacy {
                     '}';
         }
     }
-    public class  ImageShowInfoPrimacyParts{
+    public class  ImageShowInfoPrimacyParts implements Serializable{
         private int id;
         private String name;
         private int part;
@@ -297,7 +298,7 @@ public class ImageShowInfoPrimacy {
         }
     }
 
-    public class ImageShowInfoPrimacyImages{
+    public class ImageShowInfoPrimacyImages implements Serializable{
         private int id;
         private String url;
         private int width;
@@ -365,7 +366,7 @@ public class ImageShowInfoPrimacy {
                     '}';
         }
     }
-    public class ImageShowInfoPrimacyUser{
+    public class ImageShowInfoPrimacyUser implements Serializable{
         private int id;
         private String zone;
         private String avatar;
@@ -414,7 +415,7 @@ public class ImageShowInfoPrimacy {
         }
     }
 
-    public class ImageShowInfoPrimacyBangumi{
+    public class ImageShowInfoPrimacyBangumi implements Serializable{
         private int id;
         private String name;
         private String avatar;
@@ -482,7 +483,7 @@ public class ImageShowInfoPrimacy {
                     '}';
         }
     }
-    public class ImageShowInfoPrimacySource{
+    public class ImageShowInfoPrimacySource implements Serializable{
         private String url;
         private int width;
         private int height;
@@ -540,7 +541,7 @@ public class ImageShowInfoPrimacy {
                     '}';
         }
     }
-    public class ImageShowInfoPrimacyLikeUser{
+    public class ImageShowInfoPrimacyLikeUser implements Serializable{
         private int total;
         private boolean noMore;
         private List<ImageShowInfoPrimacyLikeUserList> list;
@@ -579,7 +580,7 @@ public class ImageShowInfoPrimacy {
         }
     }
 
-    public class ImageShowInfoPrimacyLikeUserList{
+    public class ImageShowInfoPrimacyLikeUserList implements Serializable{
         private int id;
         private String zone;
         private String avatar;

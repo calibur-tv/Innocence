@@ -34,6 +34,7 @@ import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.ui.view.NewAnimePagerSlidingTabStrip;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.List;
@@ -189,7 +190,8 @@ public class DramaNewAnimeListFragment extends BaseFragment {
             @Override
             public void onFailure(Call<AnimeNewListForWeek> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络！");
-                LogUtils.d("AppNetErrorMessage","drama new anime list t = "+t.getMessage());
+                LogUtils.v("AppNetErrorMessage","drama new anime list t = "+t.getMessage());
+                CrashReport.postCatchedException(t);
                 refreshLayout.setRefreshing(false);
                 setFailedView();
             }

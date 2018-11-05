@@ -42,6 +42,7 @@ import com.riuir.calibur.ui.common.UIHandler;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.geetest.GeetestUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.json.JSONObject;
 
@@ -65,7 +66,7 @@ public class RegisterFragment extends BaseFragment {
     private   UIHandler handler = new UIHandler(Looper.getMainLooper());
 
     private GT3GeetestUtilsBind gt3GeetestUtilsBindRegister;
-    private GT3GeetestBindListener bindListenerRegister;
+    GeetestUtils geetestUtils;
 
     @BindView(R.id.register_fragment_phone_number_edit)
     EditText phoneNumberEdit;
@@ -108,8 +109,8 @@ public class RegisterFragment extends BaseFragment {
     private VerificationCodeBody verificationCodebodyBody;
     private VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGeeTest;
 
-    private RegisterBroadCastReceiver receiver;
-    private IntentFilter intentFilter;
+//    private RegisterBroadCastReceiver receiver;
+//    private IntentFilter intentFilter;
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_register;
@@ -122,19 +123,18 @@ public class RegisterFragment extends BaseFragment {
 
         gt3GeetestUtilsBindRegister = new GT3GeetestUtilsBind(getContext());
         setHandler();
-        registerReceiver();
-        initBindListener();
+//        registerReceiver();
 //        initSendVerificationCodeBtn();
         setDialog();
         initRegisterAndLoginBtn();
     }
 
-    private void registerReceiver() {
-        receiver = new RegisterBroadCastReceiver();
-        intentFilter = new IntentFilter();
-        intentFilter.addAction(GeetestUtils.FailAction);
-        getActivity().registerReceiver(receiver,intentFilter);
-    }
+//    private void registerReceiver() {
+//        receiver = new RegisterBroadCastReceiver();
+//        intentFilter = new IntentFilter();
+//        intentFilter.addAction(GeetestUtils.FailAction);
+//        getActivity().registerReceiver(receiver,intentFilter);
+//    }
 
     @Override
     public void onStop() {
@@ -149,7 +149,7 @@ public class RegisterFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        getActivity().unregisterReceiver(receiver);
+//        getActivity().unregisterReceiver(receiver);
         super.onDestroy();
     }
 
@@ -226,9 +226,7 @@ public class RegisterFragment extends BaseFragment {
                     verificationCodebodyBody.setPhone_number(phoneNumber);
                     sendVerificationCodeBtn.setClickable(false);
                     sendVerificationCodeBtn.setText("发送中..");
-                    GeetestUtils.setGeetestStart(getContext(),apiGet,bindListenerRegister,
-                            verificationCodeBodyGeeTest,
-                            gt3GeetestUtilsBindRegister);
+                    setGeeTestUtils();
 
                 }
             }
@@ -244,8 +242,8 @@ public class RegisterFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 verificationCodeStr = verificationCodeEdit.getText().toString();
-                if (verificationCodeStr == null&&verificationCodeStr.length()==0){
-                    ToastUtils.showShort(getContext(),"请输入正确的验证码");
+                if (verificationCodeStr == null||verificationCodeStr.length()!=6){
+                    ToastUtils.showShort(getContext(),"请输入正确的6位数字验证码");
                 }else {
                     phoneNumber = phoneNumberEdit.getText().toString();
                     verificationCodeOk.setText("注册中");
@@ -261,6 +259,27 @@ public class RegisterFragment extends BaseFragment {
         alertDialog.getWindow().setLayout((ScreenUtils.getScreenWidth(getContext())/4*3)
                 ,LinearLayout.LayoutParams.WRAP_CONTENT);
 
+    }
+
+    private void setGeeTestUtils() {
+        geetestUtils = new GeetestUtils();
+        geetestUtils.setGeetestStart(getContext(),apiGet,
+                gt3GeetestUtilsBindRegister);
+        geetestUtils.setOnGeetestFailedListener(new GeetestUtils.OnGeetestFailedListener() {
+            @Override
+            public void onFailed(String failedMessage) {
+                handler.sendEmptyMessage(1);
+            }
+        });
+        geetestUtils.setOnGeetestSuccessListener(new GeetestUtils.OnGeetestSuccessListener() {
+            @Override
+            public void onSuccess(VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGee) {
+                verificationCodeBodyGeeTest = verificationCodeBodyGee;
+                verificationCodebodyBody.setGeetest(verificationCodeBodyGeeTest);
+                gt3GeetestUtilsBindRegister.gt3TestFinish();
+                setNet(NET_GEE_STATUS_validate);
+            }
+        });
     }
 
 //    private void initSendVerificationCodeBtn() {
@@ -327,7 +346,8 @@ public class RegisterFragment extends BaseFragment {
                 @Override
                 public void onFailure(Call<Event<String>> call, Throwable t) {
                     ToastUtils.showShort(getContext(),"请检查您的网络\n  t = "+t.getMessage());
-                    LogUtils.d("AppNetErrorMessage","register t = "+t.getMessage());
+                    LogUtils.v("AppNetErrorMessage","register t = "+t.getMessage());
+                    CrashReport.postCatchedException(t);
                     gt3GeetestUtilsBindRegister.gt3TestClose();
                     handler.sendEmptyMessage(1);
                 }
@@ -386,6 +406,7 @@ public class RegisterFragment extends BaseFragment {
                 @Override
                 public void onFailure(Call<Event<String>> call, Throwable t) {
                     ToastUtils.showShort(getContext(),"请检查您的网络");
+                    CrashReport.postCatchedException(t);
                     verificationCodeOk.setText("注册");
                     verificationCodeOk.setClickable(true);
                     registerBtn.setText("注册");
@@ -396,68 +417,6 @@ public class RegisterFragment extends BaseFragment {
 
     }
 
-    private void initBindListener() {
-        bindListenerRegister = new GT3GeetestBindListener() {
-            @Override
-            public void gt3CloseDialog(int i) {
-                super.gt3CloseDialog(i);
-                handler.sendEmptyMessage(1);
-            }
-
-            @Override
-            public void gt3DialogReady() {
-                super.gt3DialogReady();
-            }
-
-            //用户是否自定义二次验证
-            @Override
-            public boolean gt3SetIsCustom() {
-                return true;
-            }
-
-            @Override
-            public void gt3GeetestStatisticsJson(JSONObject jsonObject) {
-                super.gt3GeetestStatisticsJson(jsonObject);
-            }
-
-            /**
-             * 自定义二次验证，也就是当gtSetIsCustom为ture时才执行
-             * 拿到第二个url（API2）需要的数据
-             * 在该回调里面自行请求api2
-             * 对api2的结果进行处理
-             * status 如果是true执行自定义接口2请求
-             */
-            @Override
-            public void gt3GetDialogResult(boolean status, String result) {
-//
-                if (status){
-                    //基本使用方法：
-
-                    // 1.取出该接口返回的三个参数用于自定义二次验证
-                    JSONObject res_json = null;
-                    try {
-                        res_json = new JSONObject(result);
-                        verificationCodeBodyGeeTest.setGeetest_challenge(res_json.getString("geetest_challenge"));
-                        verificationCodeBodyGeeTest.setGeetest_validate(res_json.getString("geetest_validate"));
-                        verificationCodeBodyGeeTest.setGeetest_seccode(res_json.getString("geetest_seccode"));
-
-                    } catch (org.json.JSONException e) {
-                        e.printStackTrace();
-                    }
-                    LogUtils.d("registerLog","verificationCodeBodyGeeTest = "+verificationCodeBodyGeeTest.toString());
-                    verificationCodebodyBody.setGeetest(verificationCodeBodyGeeTest);
-                    gt3GeetestUtilsBindRegister.gt3TestFinish();
-                    setNet(NET_GEE_STATUS_validate);
-                }
-            }
-
-            @Override
-            public void gt3DialogOnError(String s) {
-                super.gt3DialogOnError(s);
-                handler.sendEmptyMessage(1);
-            }
-        };
-    }
 
     private void setHandler() {
         handler.setHandler(new IHandler() {
@@ -502,11 +461,11 @@ public class RegisterFragment extends BaseFragment {
         }
     }
 
-    public class RegisterBroadCastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            handler.sendEmptyMessage(1);
-        }
-    }
+//    public class RegisterBroadCastReceiver extends BroadcastReceiver {
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            handler.sendEmptyMessage(1);
+//        }
+//    }
 }

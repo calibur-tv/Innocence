@@ -18,13 +18,16 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
+import com.riuir.calibur.data.trending.dramaTopPost.DramaTopPostInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaCardListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
+import com.riuir.calibur.ui.widget.BannerLoopView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +67,7 @@ public class DramaCardFragment extends BaseFragment {
     int bangumiID = 0;
 
     private Call<MainTrendingInfo> listCall;
+    private Call<DramaTopPostInfo> topListCall;
 
     AppListFailedView failedView;
     AppListEmptyView emptyView;
@@ -77,6 +81,7 @@ public class DramaCardFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
+        baseListActive.clear();
         setListAdapter();
         isFirstLoad = true;
         cardRefreshLayout.setRefreshing(true);
@@ -102,19 +107,14 @@ public class DramaCardFragment extends BaseFragment {
                     listActive = response.body().getData().getList();
                     mainTrendingInfoData = response.body().getData();
                     if (isFirstLoad){
-                        isFirstLoad = false;
                         baseListActive = response.body().getData().getList();
-                        if (cardRefreshLayout!=null&&cardListView!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                            setListAdapter();
-                            setEmptyView();
-                        }
+                        setTopPostNet();
                     }
                     if (isLoadMore){
                         setLoadMore();
                     }
                     if (isRefresh){
-                        setRefresh();
+                        setTopPostNet();
                     }
 
                     for (MainTrendingInfo.MainTrendingInfoList hotItem :listActive){
@@ -136,12 +136,16 @@ public class DramaCardFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }else {
@@ -151,12 +155,16 @@ public class DramaCardFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }
@@ -172,16 +180,102 @@ public class DramaCardFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        cardRefreshLayout.setRefreshing(false);
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
                     }
+                    CrashReport.postCatchedException(t);
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
                     setFailedView();
                 }
+            }
+        });
+    }
+
+    private void setTopPostNet() {
+        topListCall = apiGet.getCallDramaTopPostList(bangumiID);
+        topListCall.enqueue(new Callback<DramaTopPostInfo>() {
+            @Override
+            public void onResponse(Call<DramaTopPostInfo> call, Response<DramaTopPostInfo> response) {
+                if (response!=null&&response.isSuccessful()){
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        baseListActive.addAll(0,response.body().getData());
+                        if (cardRefreshLayout!=null&&cardListView!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                            setListAdapter();
+                            setEmptyView();
+                        }
+                    }
+                    if (isRefresh){
+                        listActive.addAll(0,response.body().getData());
+                        setRefresh();
+                    }
+                }else if (response!=null&&!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+
+                    ToastUtils.showShort(getContext(),info.getMessage());
+                    if (isRefresh){
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
+                    }
+                    setFailedView();
+                }else{
+                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
+                    if (isRefresh){
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
+                        isRefresh = false;
+                    }
+                    if (isFirstLoad){
+                        isFirstLoad = false;
+                        if (cardRefreshLayout!=null){
+                            cardRefreshLayout.setRefreshing(false);
+                        }
+                    }
+                    setFailedView();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DramaTopPostInfo> call, Throwable t) {
+                if (isRefresh){
+                    if (cardRefreshLayout!=null){
+                        cardRefreshLayout.setRefreshing(false);
+                    }
+                    isRefresh = false;
+                }
+                if (isFirstLoad){
+                    isFirstLoad = false;
+                    if (cardRefreshLayout!=null){
+                        cardRefreshLayout.setRefreshing(false);
+                    }
+                }
+                ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                setFailedView();
             }
         });
     }
@@ -215,20 +309,18 @@ public class DramaCardFragment extends BaseFragment {
 
     private void setEmptyView(){
         if (baseListActive==null||baseListActive.size()==0){
-            if (emptyView == null){
+//            if (emptyView == null){
                 emptyView = new AppListEmptyView(getContext());
                 emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+//            }
             adapter.setEmptyView(emptyView);
         }
     }
 
     private void setFailedView(){
         //加载失败 点击重试
-        if (failedView == null){
-            failedView = new AppListFailedView(getContext());
-            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
+        failedView = new AppListFailedView(getContext());
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         adapter.setEmptyView(failedView);
     }
 
@@ -249,7 +341,9 @@ public class DramaCardFragment extends BaseFragment {
     private void setRefresh() {
         isRefresh = false;
         adapter.setNewData(listActive);
-        cardRefreshLayout.setRefreshing(false);
+        if (cardRefreshLayout!=null){
+            cardRefreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(getContext(),"刷新成功！");
     }
 

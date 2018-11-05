@@ -48,6 +48,7 @@ public class MineUserInfo {
         private boolean faker;
         private boolean is_admin;
         private int notification;
+        private int power;
         private MineUserInfoExp exp;
 
         public int getId() {
@@ -194,6 +195,14 @@ public class MineUserInfo {
             this.exp = exp;
         }
 
+        public int getPower() {
+            return power;
+        }
+
+        public void setPower(int power) {
+            this.power = power;
+        }
+
         @Override
         public String toString() {
             return "MinEUserInfoData{" +
@@ -214,6 +223,7 @@ public class MineUserInfo {
                     ", faker=" + faker +
                     ", is_admin=" + is_admin +
                     ", notification=" + notification +
+                    ", power=" + power +
                     ", exp=" + exp +
                     '}';
         }

@@ -19,6 +19,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.KeyBoardUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.anime.BangumiAllList;
@@ -26,6 +27,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.home.choose.adapter.ChooseBangumiAdapter;
 import com.riuir.calibur.utils.Constants;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,10 +74,15 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
     protected void onInit() {
         Intent intent = getIntent();
         code = intent.getIntExtra("code",0);
+
+        if (Constants.bangumiAllListData==null)
+            Constants.bangumiAllListData = (ArrayList<BangumiAllList.BangumiAllListData>)
+                    SharedPreferencesUtils.get(this,"bangumiAllListData",null);
         if (Constants.bangumiAllListData!=null){
             baseBangumiList = Constants.bangumiAllListData;
+            LogUtils.d("baseBangumiList","baseBangumiList size = "+baseBangumiList.size());
             setAdapter();
-        }else {
+        }else{
             setNet();
         }
     }
@@ -86,6 +93,7 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
             public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
                 if (response!=null&&response.isSuccessful()){
                     Constants.bangumiAllListData = response.body().getData();
+                    SharedPreferencesUtils.put(ChooseNewCardBangumiActivity.this,"bangumiAllListData",response.body().getData());
                     baseBangumiList = Constants.bangumiAllListData;
                     setAdapter();
                 }else  if (!response.isSuccessful()){
@@ -108,6 +116,7 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
             @Override
             public void onFailure(Call<BangumiAllList> call, Throwable t) {
                 ToastUtils.showShort(ChooseNewCardBangumiActivity.this,"网络异常,请检查您的网络");
+                CrashReport.postCatchedException(t);
             }
         });
     }

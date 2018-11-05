@@ -10,6 +10,7 @@
         android:layout_height="match_parent">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/user_main_follow_bangumi_list_view"
+            android:background="@color/color_FFFFFFFF"
             android:layout_width="match_parent"
             android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
     </android.support.v4.widget.SwipeRefreshLayout>

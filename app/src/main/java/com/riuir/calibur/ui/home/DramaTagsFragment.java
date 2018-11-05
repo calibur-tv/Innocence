@@ -19,6 +19,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeListForTagsSearch;
+import com.riuir.calibur.data.AnimeShowInfo;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.params.DramaTags;
 import com.riuir.calibur.ui.common.BaseFragment;
@@ -26,6 +27,8 @@ import com.riuir.calibur.ui.home.Drama.DramaTagsSearchActivity;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaTagsAnimeListAdapter;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.riuir.calibur.utils.Constants;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,7 +56,7 @@ public class DramaTagsFragment extends BaseFragment {
     @BindView(R.id.drama_tags_refresh_layout)
     SwipeRefreshLayout refreshLayout;
     //网络获取的tags总list
-    List<DramaTags.DramaTagsData> tagsDataList = new ArrayList<>();
+    List<AnimeShowInfo.AnimeShowInfoTags> tagsDataList = new ArrayList<>();
 
     boolean isTagsRefresh = false;
 
@@ -93,6 +96,7 @@ public class DramaTagsFragment extends BaseFragment {
                 if (response!=null&&response.isSuccessful()){
                     tagsDataList = response.body().getData();
                     LogUtils.d("dramaTags","tagsDataList = "+tagsDataList);
+                    Constants.allTagsList = response.body().getData();
                     setTagsGridAdapter();
 
                 }else if (!response.isSuccessful()){
@@ -115,7 +119,8 @@ public class DramaTagsFragment extends BaseFragment {
             @Override
             public void onFailure(Call<DramaTags> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络哟~");
-                LogUtils.d("AppNetErrorMessage","drama tag t = "+t.getMessage());
+                LogUtils.v("AppNetErrorMessage","drama tag t = "+t.getMessage());
+                CrashReport.postCatchedException(t);
                 refreshLayout.setRefreshing(false);
             }
         });
@@ -170,15 +175,15 @@ public class DramaTagsFragment extends BaseFragment {
     }
 
 
-    class DramaTagsGridAdapter extends BaseQuickAdapter<DramaTags.DramaTagsData,BaseViewHolder>{
+    class DramaTagsGridAdapter extends BaseQuickAdapter<AnimeShowInfo.AnimeShowInfoTags,BaseViewHolder>{
 
 
-        public DramaTagsGridAdapter(int layoutResId, @Nullable List<DramaTags.DramaTagsData> data) {
+        public DramaTagsGridAdapter(int layoutResId, @Nullable List<AnimeShowInfo.AnimeShowInfoTags> data) {
             super(layoutResId, data);
         }
 
         @Override
-        protected void convert(BaseViewHolder helper, DramaTags.DramaTagsData item) {
+        protected void convert(BaseViewHolder helper, AnimeShowInfo.AnimeShowInfoTags item) {
             CheckBox tagText = helper.getView(R.id.drama_tags_grid_item_text) ;
             tagText.setText(item.getName());
             tagText.setTag(item.getId());

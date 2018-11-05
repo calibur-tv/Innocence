@@ -122,35 +122,36 @@ public class SelectorImagesActivity extends BaseActivity {
         if (!Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED)) {
                 return;
-        }
-        new Thread(new Runnable() {
+        }else {
+            new Thread(new Runnable() {
 
-            @Override
-            public void run() {
-                Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;//所有图片的信息
-                ContentResolver mContentResolver = SelectorImagesActivity.this.getContentResolver();
-                Cursor mCursor = mContentResolver.query(mImageUri, null,
-                        MediaStore.MediaColumns.MIME_TYPE + "=? or "//设置条件，类似于SQL中的where
-                                + MediaStore.MediaColumns.MIME_TYPE + "=? or "
-                                + MediaStore.MediaColumns.MIME_TYPE + "=? or "
-                                + MediaStore.MediaColumns.MIME_TYPE + "=?", new String[]{
-                                "image/jpeg", "image/png","image/jpg","image.gif"},//第三个参数里“？”代表的数据
-                        MediaStore.MediaColumns.DATE_MODIFIED);//按照什么进行排序
+                @Override
+                public void run() {
+                    Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;//所有图片的信息
+                    ContentResolver mContentResolver = SelectorImagesActivity.this.getContentResolver();
+                    Cursor mCursor = mContentResolver.query(mImageUri, null,
+                            MediaStore.MediaColumns.MIME_TYPE + "=? or "//设置条件，类似于SQL中的where
+                                    + MediaStore.MediaColumns.MIME_TYPE + "=? or "
+                                    + MediaStore.MediaColumns.MIME_TYPE + "=? or "
+                                    + MediaStore.MediaColumns.MIME_TYPE + "=?", new String[]{
+                                    "image/jpeg", "image/png","image/jpg","image.gif"},//第三个参数里“？”代表的数据
+                            MediaStore.MediaColumns.DATE_MODIFIED);//按照什么进行排序
 
-                allImageUrls.clear();
-                while (mCursor.moveToNext()) {
-                    String path = mCursor.getString(mCursor
-                            .getColumnIndex(MediaStore.MediaColumns.DATA));//MediaColumns.DATA图片的绝对路径
+                    allImageUrls.clear();
+                    while (mCursor.moveToNext()) {
+                        String path = mCursor.getString(mCursor
+                                .getColumnIndex(MediaStore.MediaColumns.DATA));//MediaColumns.DATA图片的绝对路径
 
-                    if (allImageUrls.contains(path)){
-                    }else {
-                        allImageUrls.add(path);
+                        if (allImageUrls.contains(path)){
+                        }else {
+                            allImageUrls.add(path);
+                        }
                     }
+                    mCursor.close();
+                    handler.sendEmptyMessage(SCAN_OK);
                 }
-                mCursor.close();
-                handler.sendEmptyMessage(SCAN_OK);
-            }
-        }).start();
+            }).start();
+        }
     }
 
 
@@ -165,6 +166,7 @@ public class SelectorImagesActivity extends BaseActivity {
                 } else {
                     // 权限被用户拒绝了，可以提示用户,关闭界面等等。
                     ToastUtils.showShort(SelectorImagesActivity.this, "未取得授权，无法选择图片");
+                    finish();
                 }
                 return;
             }

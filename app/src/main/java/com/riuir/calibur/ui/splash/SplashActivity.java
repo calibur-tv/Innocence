@@ -18,6 +18,7 @@ import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.loginAndRegister.LoginAndRegisterActivity;
 
 import com.riuir.calibur.utils.Constants;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 
@@ -30,6 +31,8 @@ public class SplashActivity extends BaseActivity {
     //预设的登录状态 默认false
     boolean isLogin = false;
     String AUTH_TOKEN = "";
+
+    private Call<MineUserInfo> callUserInfo;
 
     @Override
     protected int getContentViewId() {
@@ -50,8 +53,17 @@ public class SplashActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (callUserInfo!=null){
+            callUserInfo.cancel();
+        }
+    }
+
     private void setNetToGetUserInfo() {
-        apiPost.getMineUserInfo().enqueue(new Callback<MineUserInfo>() {
+        callUserInfo = apiPost.getMineUserInfo();
+        callUserInfo.enqueue(new Callback<MineUserInfo>() {
             @Override
             public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
                 if (response!=null&&response.isSuccessful()){
@@ -80,10 +92,14 @@ public class SplashActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<MineUserInfo> call, Throwable t) {
-                ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
-                LogUtils.d("AppNetErrorMessage","splash t = "+t.getMessage());
-                startActivity(LoginAndRegisterActivity.class);
-                finish();
+                if (call.isCanceled()){
+                }else {
+                    ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
+                    LogUtils.v("AppNetErrorMessage","splash t = "+t.getMessage());
+                    CrashReport.postCatchedException(t);
+                    startActivity(LoginAndRegisterActivity.class);
+                    finish();
+                }
             }
         });
     }

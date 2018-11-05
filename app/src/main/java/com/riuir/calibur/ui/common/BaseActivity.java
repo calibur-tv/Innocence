@@ -57,6 +57,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         setHandler();
 
         setContentView(getContentViewId());
+        ActivityUtils.setTranslucentStatusLight(BaseActivity.this);
         //状态栏透明
         ActivityUtils.setTranslucentStatus(this, true);
         unbinder = ButterKnife.bind(this);

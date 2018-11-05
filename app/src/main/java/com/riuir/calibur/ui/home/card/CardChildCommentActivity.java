@@ -1,9 +1,9 @@
 package com.riuir.calibur.ui.home.card;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -14,9 +14,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -37,9 +34,14 @@ import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.widget.ReplyAndCommentView;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -53,22 +55,27 @@ public class CardChildCommentActivity extends BaseActivity {
     ImageView mainCommentUserIcon;
     @BindView(R.id.card_child_comment_header_name)
     TextView mainCommentUserName;
+    @BindView(R.id.card_child_comment_header_card_master)
+    TextView titleCardMaster;
+    @BindView(R.id.card_child_comment_header_bangumi_master)
+    ImageView titleBangumiMaster;
+    @BindView(R.id.card_child_comment_header_executer)
+    ImageView titleExecuter;
     @BindView(R.id.card_child_comment_header_info)
     TextView mainCommentInfo;
     @BindView(R.id.card_child_comment_header_more)
     TextView mainCommentMore;
     @BindView(R.id.card_child_comment_header_comment_text)
     TextView mainCommentText;
-    @BindView(R.id.card_child_comment_header_scroll_view)
-    ScrollView commentScrollView;
     @BindView(R.id.card_child_comment_header_comment_image_layout)
     LinearLayout commentImageLayout;
+    @BindView(R.id.card_child_comment_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
     @BindView(R.id.card_child_comment_header_child_comment_list)
     RecyclerView childCommentListView;
-//    @BindView(R.id.card_reply_comment_edit)
-//    EditText replyCommentEdit;
-//    @BindView(R.id.card_reply_comment_button)
-//    Button replyCommentBtn;
+    @BindView(R.id.card_child_comment_header_comment_upovte_text)
+    TextView likeCount;
+
     @BindView(R.id.card_child_comment_reply_layout)
     ReplyAndCommentView replyView;
     @BindView(R.id.card_child_comment_back_btn)
@@ -79,7 +86,7 @@ public class CardChildCommentActivity extends BaseActivity {
     TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList mainComment;
 
     TrendingChildCommentInfo.TrendingChildCommentInfoData childCommentInfoData;
-    List<TrendingChildCommentInfo.TrendingChildCommentInfoList> baseChildList;
+    List<TrendingChildCommentInfo.TrendingChildCommentInfoList> baseChildList = new ArrayList<>();
     List<TrendingChildCommentInfo.TrendingChildCommentInfoList> childList;
 
     String commentReplyToUserName = "";
@@ -92,11 +99,15 @@ public class CardChildCommentActivity extends BaseActivity {
     String type;
     boolean isFirstLoad =false;
     boolean isLoadMore = false;
+    boolean isRefresh = false;
 
     private static final int NET_STATUS_GET_LIST = 0;
     private static final int NET_STATUS_REPLY_COMMENT = 1;
 
     private Call<TrendingChildCommentInfo> childCommentInfoCall;
+
+    AppListFailedView failedView;
+    AppListEmptyView emptyView;
 
 
     @Override
@@ -111,12 +122,15 @@ public class CardChildCommentActivity extends BaseActivity {
         type = intent.getStringExtra("type");
         mainComment = (TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList) intent.getSerializableExtra("mainComment");
 
+        childCommentListView.setNestedScrollingEnabled(false);
         setView();
+        setAdapter();
         isFirstLoad = true;
         setNet(NET_STATUS_GET_LIST);
     }
 
     private void setView() {
+        commentImageLayout.removeAllViews();
         GlideUtils.loadImageViewCircle(CardChildCommentActivity.this,mainComment.getFrom_user_avatar(),mainCommentUserIcon);
         mainCommentUserName.setText(mainComment.getFrom_user_name());
         mainCommentInfo.setText("第"+mainComment.getFloor_count()+"楼·"+ TimeUtils.HowLongTimeForNow(mainComment.getCreated_at()));
@@ -144,13 +158,28 @@ public class CardChildCommentActivity extends BaseActivity {
                 commentImageLayout.addView(commentImage);
             }
         }
-
+        likeCount.setText(mainComment.getLike_count()+"");
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+        if (mainComment.isIs_owner()){
+            titleCardMaster.setVisibility(View.VISIBLE);
+        }else {
+            titleCardMaster.setVisibility(View.GONE);
+        }
+        if (mainComment.isIs_master()){
+            titleExecuter.setVisibility(View.VISIBLE);
+        }else {
+            titleExecuter.setVisibility(View.GONE);
+        }
+        if (mainComment.isIs_leader()){
+            titleBangumiMaster.setVisibility(View.VISIBLE);
+        }else {
+            titleBangumiMaster.setVisibility(View.GONE);
+        }
 
     }
 
@@ -178,6 +207,10 @@ public class CardChildCommentActivity extends BaseActivity {
                             baseChildList = response.body().getData().getList();
                             setAdapter();
                         }
+                        if (isRefresh){
+                            isRefresh = false;
+                            setRefresh();
+                        }
                         if (isLoadMore&&childCommentListAdapter!=null){
                             isLoadMore = false;
                             setLoadMore();
@@ -195,12 +228,22 @@ public class CardChildCommentActivity extends BaseActivity {
                             ToastUtils.showShort(CardChildCommentActivity.this,info.getMessage());
                             isLoadMore = false;
                             childCommentListAdapter.loadMoreFail();
+                            setFailedView();
+                        }
+                        if (isRefresh&&refreshLayout!=null){
+                            isRefresh = false;
+                            refreshLayout.setRefreshing(false);
                         }
                     }else {
                         if (isLoadMore&&childCommentListAdapter!=null){
                             ToastUtils.showShort(CardChildCommentActivity.this,"网络异常，返回为空");
                             isLoadMore = false;
                             childCommentListAdapter.loadMoreFail();
+                            setFailedView();
+                        }
+                        if (isRefresh&&refreshLayout!=null){
+                            isRefresh = false;
+                            refreshLayout.setRefreshing(false);
                         }
                     }
                 }
@@ -209,16 +252,29 @@ public class CardChildCommentActivity extends BaseActivity {
                 public void onFailure(Call<TrendingChildCommentInfo> call, Throwable t) {
                     if (call.isCanceled()){
                     }else {
-                        LogUtils.d("AppNetErrorMessage","ChildComment t = "+t.getMessage());
+                        LogUtils.v("AppNetErrorMessage","ChildComment t = "+t.getMessage());
+                        CrashReport.postCatchedException(t);
                         if (isLoadMore&&childCommentListAdapter!=null){
                             isLoadMore = false;
                             childCommentListAdapter.loadMoreFail();
+                            setFailedView();
+                        }
+                        if (isRefresh&&refreshLayout!=null){
+                            isRefresh = false;
+                            refreshLayout.setRefreshing(false);
                         }
                     }
                 }
             });
         }
+    }
 
+    private void setRefresh(){
+        isRefresh = false;
+        if (childCommentListAdapter!=null&&refreshLayout!=null){
+            childCommentListAdapter.setNewData(childList);
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     private void setLoadMore() {
@@ -231,17 +287,20 @@ public class CardChildCommentActivity extends BaseActivity {
     }
 
     private void setMaxId() {
-        if (isFirstLoad){
+        if (isFirstLoad||isRefresh){
             maxId = 0;
         }
         if (isLoadMore){
-
+            if (childList!=null&&childList.size()!=0){
+                maxId = childList.get(childList.size()-1).getId();
+            }else {
+                maxId = 0;
+            }
         }
     }
 
     private void setAdapter() {
 
-        LogUtils.d("childComment","1111111");
         childCommentListAdapter = new CardChildCommentListAdapter(R.layout.card_child_comment_list_item,baseChildList);
         childCommentListView.setLayoutManager(new LinearLayoutManager(CardChildCommentActivity.this));
         childCommentListAdapter.setHasStableIds(true);
@@ -255,19 +314,16 @@ public class CardChildCommentActivity extends BaseActivity {
          */
         childCommentListAdapter.openLoadAnimation(BaseQuickAdapter.ALPHAIN);
 
-        if (childCommentInfoData.isNoMore()){
-            childCommentListAdapter.setEnableLoadMore(false);
-        }else {
-            //添加底部footer
-            childCommentListAdapter.setEnableLoadMore(true);
-            childCommentListAdapter.setLoadMoreView(new MyLoadMoreView());
-            childCommentListAdapter.disableLoadMoreIfNotFullPage(childCommentListView);
-        }
+        //添加底部footer
+        childCommentListAdapter.setEnableLoadMore(true);
+        childCommentListAdapter.setLoadMoreView(new MyLoadMoreView());
+        childCommentListAdapter.disableLoadMoreIfNotFullPage(childCommentListView);
 
         childCommentListView.setAdapter(childCommentListAdapter);
 
         setReplyView();
         setListener();
+        setEmptyView();
     }
 
     private void setReplyView() {
@@ -286,19 +342,36 @@ public class CardChildCommentActivity extends BaseActivity {
         childCommentListAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
             @Override
             public void onLoadMoreRequested() {
-                if (childCommentInfoData.isNoMore()){
-
+                if (childCommentInfoData!=null&&childCommentInfoData.isNoMore()){
                     childCommentListAdapter.loadMoreEnd();
-
                 }else {
                     isLoadMore =true;
                     setNet(NET_STATUS_GET_LIST);
                 }
             }
         },childCommentListView);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                isRefresh = true;
+                setNet(NET_STATUS_GET_LIST);
+            }
+        });
+    }
 
+    private void setEmptyView(){
+        if (baseChildList==null||baseChildList.size()==0){
+            emptyView = new AppListEmptyView(CardChildCommentActivity.this);
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            childCommentListAdapter.setEmptyView(emptyView);
+        }
+    }
 
-
+    private void setFailedView(){
+        //加载失败 点击重试
+        failedView = new AppListFailedView(CardChildCommentActivity.this);
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        childCommentListAdapter.setEmptyView(failedView);
     }
 
     @Override
@@ -309,17 +382,18 @@ public class CardChildCommentActivity extends BaseActivity {
     public class CardChildCommentListAdapter extends BaseQuickAdapter<TrendingChildCommentInfo.TrendingChildCommentInfoList,BaseViewHolder>{
 
 
+
         public CardChildCommentListAdapter(int layoutResId, @Nullable List<TrendingChildCommentInfo.TrendingChildCommentInfoList> data) {
             super(layoutResId, data);
         }
 
         @Override
-        protected void convert(BaseViewHolder helper, final TrendingChildCommentInfo.TrendingChildCommentInfoList item) {
+        protected void convert(final BaseViewHolder helper, final TrendingChildCommentInfo.TrendingChildCommentInfoList item) {
 
             TextView commentChildText = helper.getView(R.id.card_child_comment_list_item_content);
 
             commentChildText.setMovementMethod(LinkMovementMethod.getInstance());
-            SpannableString fromUserName = new SpannableString(item.getFrom_user_name());
+            SpannableString fromUserName = new SpannableString(item.getFrom_user_name().replace("\n",""));
             fromUserName.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
@@ -340,7 +414,7 @@ public class CardChildCommentActivity extends BaseActivity {
 
             }else {
                 commentChildText.append(" 回复 ");
-                SpannableString toUserName = new SpannableString(item.getTo_user_name());
+                SpannableString toUserName = new SpannableString(item.getTo_user_name().replace("\n",""));
                 toUserName.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
@@ -363,18 +437,9 @@ public class CardChildCommentActivity extends BaseActivity {
             replyContent.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
-//                    commentReplyToUserId = item.getFrom_user_id();
-//                    commentReplyToUserName = item.getFrom_user_name();
-//                    replyCommentEdit.setFocusable(true);
-//                    replyCommentEdit.setFocusableInTouchMode(true);
-//                    replyCommentEdit.requestFocus();
-//                    replyCommentEdit.setText("回复 "+commentReplyToUserName+" :");
-//                    replyCommentEdit.setSelection(replyCommentEdit.getText().toString().length());
-//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                    imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 
                     replyView.setTargetUserId(item.getFrom_user_id());
-                    replyView.setFromUserName(item.getFrom_user_name());
+                    replyView.setFromUserName(item.getFrom_user_name().replace("\n",""));
                     replyView.setRequestFocus();
                 }
 
@@ -387,9 +452,46 @@ public class CardChildCommentActivity extends BaseActivity {
             },0,replyContent.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             commentChildText.append(replyContent);
 //            commentChildText.setClickable(false);
-            commentChildText.setLongClickable(false);
+//            commentChildText.setLongClickable(false);
 
+            final AppHeaderPopupWindows longClickMore = new AppHeaderPopupWindows(CardChildCommentActivity.this);
+            if (type.equals("post")){
+                longClickMore.setReportModelTag(AppHeaderPopupWindows.POST_REPLY,item.getId());
+                longClickMore.setDeleteLayout(AppHeaderPopupWindows.POST_REPLY,item.getId(),item.getFrom_user_id()
+                        ,mainComment.getFrom_user_id(),apiPost);
+            }else if (type.equals("image")){
+                longClickMore.setReportModelTag(AppHeaderPopupWindows.IMAGE_REPLY,item.getId());
+                longClickMore.setDeleteLayout(AppHeaderPopupWindows.IMAGE_REPLY,item.getId(),item.getFrom_user_id()
+                        ,mainComment.getFrom_user_id(),apiPost);
+            }else if (type.equals("score")){
+                longClickMore.setReportModelTag(AppHeaderPopupWindows.SCORE_REPLY,item.getId());
+                longClickMore.setDeleteLayout(AppHeaderPopupWindows.SCORE_REPLY,item.getId(),item.getFrom_user_id()
+                        ,mainComment.getFrom_user_id(),apiPost);
+            }else if (type.equals("video")){
+                longClickMore.setReportModelTag(AppHeaderPopupWindows.VIDEO_REPLY,item.getId());
+                longClickMore.setDeleteLayout(AppHeaderPopupWindows.VIDEO_REPLY,item.getId(),item.getFrom_user_id()
+                        ,mainComment.getFrom_user_id(),apiPost);
+            }
+            longClickMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+                @Override
+                public void deleteFinish() {
+                    remove(helper.getAdapterPosition());
+                }
+            });
+
+
+            commentChildText.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    longClickMore.popup();
+                    return true;
+                }
+            });
         }
+
     }
+
+
+
 
 }

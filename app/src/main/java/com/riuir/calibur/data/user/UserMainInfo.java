@@ -36,6 +36,7 @@ public class UserMainInfo {
         private String nickname;
         private String signature;
         private int level;
+        private int power;
         private String sex;
         private boolean sexSecret;
         private boolean faker;
@@ -120,6 +121,14 @@ public class UserMainInfo {
             this.sexSecret = sexSecret;
         }
 
+        public int getPower() {
+            return power;
+        }
+
+        public void setPower(int power) {
+            this.power = power;
+        }
+
         @Override
         public String toString() {
             return "UserMainInfoData{" +
@@ -129,6 +138,10 @@ public class UserMainInfo {
                     ", banner='" + banner + '\'' +
                     ", nickname='" + nickname + '\'' +
                     ", signature='" + signature + '\'' +
+                    ", level=" + level +
+                    ", power=" + power +
+                    ", sex='" + sex + '\'' +
+                    ", sexSecret=" + sexSecret +
                     ", faker=" + faker +
                     '}';
         }

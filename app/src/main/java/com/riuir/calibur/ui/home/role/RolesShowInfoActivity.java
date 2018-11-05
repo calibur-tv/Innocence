@@ -40,6 +40,7 @@ import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -180,6 +181,7 @@ public class RolesShowInfoActivity extends BaseActivity {
                     if (call.isCanceled()){
                     }else {
                         ToastUtils.showShort(RolesShowInfoActivity.this,"请检查您的网络哟~");
+                        CrashReport.postCatchedException(t);
                         setFailedView();
                     }
                 }
@@ -257,6 +259,7 @@ public class RolesShowInfoActivity extends BaseActivity {
                     if (call.isCanceled()){
                     }else {
                         ToastUtils.showShort(RolesShowInfoActivity.this,"请检查您的网络哟~");
+                        CrashReport.postCatchedException(t);
                         if (isLoadMore){
                             fansListAdapter.loadMoreFail();
                             isLoadMore = false;
@@ -277,7 +280,7 @@ public class RolesShowInfoActivity extends BaseActivity {
                 public void onResponse(Call<TrendingToggleInfo> call, Response<TrendingToggleInfo> response) {
 
                     if (response!=null&&response.isSuccessful()){
-                        ToastUtils.showLong(RolesShowInfoActivity.this,"应援成功，消耗1金币,点击可继续应援！");
+                        ToastUtils.showLong(RolesShowInfoActivity.this,"应援成功，消耗1团子,点击可继续应援！");
                         setStarFinish();
                     }else if (!response.isSuccessful()){
 
@@ -293,7 +296,7 @@ public class RolesShowInfoActivity extends BaseActivity {
                             ToastUtils.showShort(RolesShowInfoActivity.this,"不存在的角色！");
                         }
                         if (info.getCode() == 40301){
-                            ToastUtils.showShort(RolesShowInfoActivity.this,"没有足够的金币！");
+                            ToastUtils.showShort(RolesShowInfoActivity.this,"没有足够的团子！");
                         }
                     }else {
                         ToastUtils.showShort(RolesShowInfoActivity.this,"未知原因导致应援失败了！");
@@ -306,6 +309,7 @@ public class RolesShowInfoActivity extends BaseActivity {
                 @Override
                 public void onFailure(Call<TrendingToggleInfo> call, Throwable t) {
                     ToastUtils.showShort(RolesShowInfoActivity.this,"请检查您的网络再重试哟~");
+                    CrashReport.postCatchedException(t);
                     headerStarBtn.setText("为TA应援");
                     headerStarBtn.setClickable(true);
                 }
@@ -321,7 +325,7 @@ public class RolesShowInfoActivity extends BaseActivity {
         hasstar++;
         starCount++;
         headerRoleFans.setText("粉丝：共有"+fansCount
-                +"名粉丝，收获了"+starCount+"枚金币");
+                +"名粉丝，收获了"+starCount+"枚团子");
         headerMineHasStar.setText("我的应援次数："+hasstar);
         LogUtils.d("testCoin","coin role 1 = "+Constants.userInfoData.getCoin());
 
@@ -401,6 +405,7 @@ public class RolesShowInfoActivity extends BaseActivity {
         headerMineHasStar = headerLayout.findViewById(R.id.role_show_info_header_role_mine_has_star);
 
         headerMore.setReportModelTag(AppHeaderPopupWindows.ROLE,primacyData.getData().getId());
+        headerMore.setShareLayout(primacyData.getData().getName(),AppHeaderPopupWindows.ROLE,primacyData.getData().getId(),"");
 
         bangumi = headerLayout.findViewById(R.id.role_show_info_header_bangmui);
         bangumi.setName(primacyData.getBangumi().getName());
@@ -430,7 +435,7 @@ public class RolesShowInfoActivity extends BaseActivity {
         starCount = primacyData.getData().getStar_count();
 
         headerRoleFans.setText("粉丝：共有"+primacyData.getData().getFans_count()
-                +"名粉丝，收获了"+primacyData.getData().getStar_count()+"枚金币");
+                +"名粉丝，收获了"+primacyData.getData().getStar_count()+"枚团子");
         headerMineHasStar.setText("我的应援次数："+primacyData.getData().getHasStar());
 
         fansListAdapter.addHeaderView(headerLayout);

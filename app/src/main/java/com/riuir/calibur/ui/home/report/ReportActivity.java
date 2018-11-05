@@ -16,6 +16,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 
@@ -48,7 +49,7 @@ public class ReportActivity extends BaseActivity {
     private final int TYPE_9 = 9;
     //内容不相关
     private final int TYPE_10 = 10;
-    //互刷金币
+    //互刷团子
     private final int TYPE_11 = 11;
 
     @BindView(R.id.report_activity_back_btn)
@@ -204,6 +205,7 @@ public class ReportActivity extends BaseActivity {
                 if (call.isCanceled()){
                 }else {
                     ToastUtils.showShort(ReportActivity.this,"请检查您的网络");
+                    CrashReport.postCatchedException(t);
                     setReportFailed();
                 }
             }

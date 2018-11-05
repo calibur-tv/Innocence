@@ -5,6 +5,8 @@ import android.provider.Settings;
 
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.Installation;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
+import com.riuir.calibur.assistUtils.VersionUtils;
 import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
@@ -28,6 +30,9 @@ public class AuthInterceptor implements Interceptor {
         Request request = chain.request();
 
         String body = bodyToString(request.body());
+        if (Constants.AUTH_TOKEN==null||Constants.AUTH_TOKEN.length()==0){
+            Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
+        }
 
 //        long time = System.currentTimeMillis();
 //        final Date now = new Date(time * 1000);
@@ -38,6 +43,8 @@ public class AuthInterceptor implements Interceptor {
         Headers headers = request.headers().newBuilder()
                 .add("Authorization","Bearer "+Constants.AUTH_TOKEN)
                 .add("Accept", "application/x.api."+ Constants.API_VERSION+"+json")
+                .add("X-APP-NAME","Sakura")
+                .add("X-APP-VERSION", VersionUtils.getLocalVersionName())
                 .build();
 
         request = request.newBuilder()

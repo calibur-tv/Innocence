@@ -2,13 +2,27 @@ package com.riuir.calibur.utils;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
 import com.qiniu.android.common.AutoZone;
+import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.Configuration;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UploadManager;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.data.Event;
+import com.riuir.calibur.data.params.QiniuImageParams;
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.net.ApiGet;
+import com.riuir.calibur.ui.home.image.CreateImageAlbumActivity;
 
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import retrofit2.Call;
@@ -16,24 +30,128 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class QiniuUtils {
-    public static String getQiniuUpToken(ApiGet apiGetHasAuth, Context context){
-        String token = "";
+
+    private int urlTag;
+    private ArrayList<QiniuImageParams.QiniuImageParamsData> qiniuImageParamsDataList = new ArrayList<>();
+    private List<String> urlList;
+    private Context context;
+    private int userId;
+    private UploadManager uploadManager;
+
+    private OnQiniuUploadFailedListnener onQiniuUploadFailedListnener;
+    private OnQiniuUploadSuccessedListnener onQiniuUploadSuccessedListnener;
+
+    public void getQiniuUpToken(ApiGet apiGetHasAuth, final Context context, List<String> urlList, int userId){
+        this.urlList = urlList;
+        this.context = context;
+        this.userId = userId;
+        uploadManager = new UploadManager(getQiniuConfig());
+
         apiGetHasAuth.getCallQiniuUpToken().enqueue(new Callback<QiniuUpToken>() {
             @Override
             public void onResponse(Call<QiniuUpToken> call, Response<QiniuUpToken> response) {
                 if (response!=null&&response.isSuccessful()){
+                    Constants.QINIU_TOKEN = response.body().getData().getUpToken();
+                    setQiniuUpLoadCheck();
                 }else if (response!=null&&!response.isSuccessful()){
+                    String errorStr = "";
+                    try {
+                        errorStr = response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Gson gson = new Gson();
+                    Event<String> info =gson.fromJson(errorStr,Event.class);
+                    ToastUtils.showShort(context,info.getMessage());
+                    setUpLoadDiaLogFail(info.getMessage());
                 }else {
+                    ToastUtils.showShort(context,"未知错误导致上传失败");
+                    setUpLoadDiaLogFail("返回值为空");
                 }
             }
 
             @Override
             public void onFailure(Call<QiniuUpToken> call, Throwable t) {
+                ToastUtils.showShort(context,"网络异常，请稍后再试1");
+                setUpLoadDiaLogFail("网络异常，请稍后再试 t ="+t.getMessage());
             }
         });
-        return token;
     }
 
+    private void setQiniuUpLoadCheck(){
+        if (urlList!=null&&urlList.size()!=0){
+            urlTag = 0;
+            qiniuImageParamsDataList.clear();
+            setQiniuUpLoad(urlTag);
+        }
+    }
+
+    private void setQiniuUpLoad(int tag) {
+        //上传icon
+        String iconkey = QiniuUtils.getQiniuUpKey(userId,"avatar",urlList.get(tag));
+        File imgFile = new File(urlList.get(tag));
+        if (iconkey!=null){
+            uploadManager.put(imgFile, iconkey, Constants.QINIU_TOKEN, new UpCompletionHandler() {
+                @Override
+                public void complete(String key, ResponseInfo info, JSONObject response) {
+                    LogUtils.d("newCardCreate","icon isOk = "+info.isOK());
+                    if (info.isOK()){
+                        Gson gson = new Gson();
+                        QiniuImageParams params = gson.fromJson(response.toString(),QiniuImageParams.class);
+
+                        qiniuImageParamsDataList.add(params.getData());
+                        urlTag++;
+                        if (urlTag<urlList.size()){
+                            setQiniuUpLoad(urlTag);
+                        }else {
+                            //结束函数回调 发送上传到服务器请求
+                            setUpLoadAlbum();
+                        }
+                        LogUtils.d("newCardCreate","icon url = "+params.getData().getUrl());
+                    }else if(info.isCancelled()){
+                        ToastUtils.showShort(context,"取消上传");
+                        setUpLoadDiaLogFail("");
+                    }else if (info.isNetworkBroken()){
+                        ToastUtils.showShort(context,"网络异常，请稍后再试2");
+                        setUpLoadDiaLogFail("");
+                    }else {
+                        ToastUtils.showShort(context,"其他原因导致取消上传 \n info = "+info.error);
+                        setUpLoadDiaLogFail(info.error);
+                    }
+                }
+            },null);
+        }
+    }
+
+    private void setUpLoadAlbum() {
+        if (onQiniuUploadSuccessedListnener!=null){
+            onQiniuUploadSuccessedListnener.onUploadSuccess(qiniuImageParamsDataList);
+        }
+    }
+
+    private void setUpLoadDiaLogFail(String failedMessage) {
+        if (onQiniuUploadFailedListnener!=null){
+            onQiniuUploadFailedListnener.onFailed(failedMessage);
+        }
+    }
+
+    public void setOnQiniuUploadFailedListnener(OnQiniuUploadFailedListnener onQiniuUploadFailedListnener) {
+        this.onQiniuUploadFailedListnener = onQiniuUploadFailedListnener;
+    }
+
+    public void setOnQiniuUploadSuccessedListnener(OnQiniuUploadSuccessedListnener onQiniuUploadSuccessedListnener) {
+        this.onQiniuUploadSuccessedListnener = onQiniuUploadSuccessedListnener;
+    }
+
+    public interface OnQiniuUploadFailedListnener{
+        void onFailed(String fialMessage);
+    }
+    public interface OnQiniuUploadSuccessedListnener{
+        void onUploadSuccess(ArrayList<QiniuImageParams.QiniuImageParamsData> imageParamsDataList);
+    }
+
+
+    //可直接调用的静态函数
     public static Configuration getQiniuConfig(){
         Configuration config = new Configuration.Builder()
                 .chunkSize(512 * 1024)        // 分片上传时，每片的大小。 默认256K
@@ -52,11 +170,13 @@ public class QiniuUtils {
     public static String getQiniuUpKey(int id,String type,String filePath){
         //user/{userId}/{prefix}/{nowTime}-{random}.{file.ext}
         Random random = new Random();
-        int ran = random.nextInt(9999 - 1000) + 1000;
+        int ran1 = random.nextInt(9999 - 1000) + 1000;
+        int ran2 = random.nextInt(9999 - 1000) + 1000;
         if (filePath.contains(".")){
             String [] s = filePath.split("\\.");
+            String oldName = "caliburImage";
             String ext = s[s.length-1];
-            return "user/"+id+"/"+type+"/"+ TimeUtils.getCurTimeLong()+"/"+ran+"/."+ext;
+            return "user/"+id+"/"+type+"/"+ TimeUtils.getCurTimeLong()+"/"+ran1+"/."+oldName+ran2+"."+ext;
         }else {
             return null;
         }

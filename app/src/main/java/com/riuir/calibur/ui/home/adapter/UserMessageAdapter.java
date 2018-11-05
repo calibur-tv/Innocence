@@ -29,9 +29,15 @@ public class UserMessageAdapter extends BaseQuickAdapter<UserNotificationInfo.Us
 
     @Override
     protected void convert(BaseViewHolder helper, UserNotificationInfo.UserNotificationInfoList item) {
-        helper.setText(R.id.user_message_list_item_msg_text, Html.fromHtml(item.getMessage()));
+        helper.setText(R.id.user_message_list_item_msg_text, Html.fromHtml(item.getMessage().replace("\n","")));
         ImageView imageView = helper.getView(R.id.user_message_list_item_user_icon);
         GlideUtils.loadImageViewCircle(context,item.getUser().getAvatar(),imageView);
+        if (item.isChecked()){
+            helper.setVisible(R.id.user_message_list_item_msg_text_reddot,false);
+        }else {
+            helper.setVisible(R.id.user_message_list_item_msg_text_reddot,true);
+        }
+
         if (item.getCreated_at()==null){
             helper.setText(R.id.user_message_list_item_user_name,item.getUser().getNickname());
         }else {

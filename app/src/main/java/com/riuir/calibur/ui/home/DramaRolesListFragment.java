@@ -25,6 +25,7 @@ import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.role.adapter.RoleListAdapter;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -91,8 +92,10 @@ public class DramaRolesListFragment extends BaseFragment {
                     roleInfoData = response.body().getData();
                     if (isFirstLoad){
                         baseDataList = response.body().getData().getList();
-                        refreshLayout.setRefreshing(false);
-                        setFirstData();
+                        if (refreshLayout!=null&&roleListAdapter!=null){
+                            refreshLayout.setRefreshing(false);
+                            setFirstData();
+                        }
                     }
                     if (isRefresh){
                         setRefresh();
@@ -120,11 +123,15 @@ public class DramaRolesListFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }else {
@@ -134,11 +141,15 @@ public class DramaRolesListFragment extends BaseFragment {
                         isLoadMore = false;
                     }
                     if (isRefresh){
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                         isRefresh = false;
                     }
                     if (isFirstLoad){
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }
@@ -147,17 +158,22 @@ public class DramaRolesListFragment extends BaseFragment {
             @Override
             public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
                 ToastUtils.showShort(getContext(),"请检查您的网络！");
-                LogUtils.d("AppNetErrorMessage","drama role list t = "+t.getMessage());
+                LogUtils.v("AppNetErrorMessage","drama role list t = "+t.getMessage());
+                CrashReport.postCatchedException(t);
                 if (isLoadMore){
                     roleListAdapter.loadMoreFail();
                     isLoadMore = false;
                 }
                 if (isRefresh){
-                    refreshLayout.setRefreshing(false);
+                    if (refreshLayout!=null){
+                        refreshLayout.setRefreshing(false);
+                    }
                     isRefresh = false;
                 }
                 if (isFirstLoad){
-                    refreshLayout.setRefreshing(false);
+                    if (refreshLayout!=null){
+                        refreshLayout.setRefreshing(false);
+                    }
                 }
                 setFailedView();
             }
@@ -199,7 +215,9 @@ public class DramaRolesListFragment extends BaseFragment {
     private void setRefresh() {
         isRefresh = false;
         roleListAdapter.setNewData(dataList);
-        refreshLayout.setRefreshing(false);
+        if (refreshLayout!=null){
+            refreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(getContext(),"刷新成功！");
     }
 

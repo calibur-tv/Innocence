@@ -1,7 +1,9 @@
 package com.riuir.calibur.utils;
 
+import com.riuir.calibur.data.AnimeShowInfo;
 import com.riuir.calibur.data.MineUserInfo;
 import com.riuir.calibur.data.anime.BangumiAllList;
+import com.riuir.calibur.data.params.DramaTags;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,5 +33,7 @@ public class Constants {
     public static MineUserInfo.MinEUserInfoData userInfoData = null;
 
     public static ArrayList<BangumiAllList.BangumiAllListData> bangumiAllListData = null;
+
+    public static List<AnimeShowInfo.AnimeShowInfoTags> allTagsList = null;
 
 }

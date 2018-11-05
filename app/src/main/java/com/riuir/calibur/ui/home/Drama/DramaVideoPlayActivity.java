@@ -37,6 +37,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.ReplyAndCommentView;
@@ -54,6 +55,7 @@ import com.shuyu.gsyvideoplayer.player.PlayerFactory;
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,10 +86,13 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     @BindView(R.id.drama_video_play_other_site_info)
     TextView otherSiteInfo;
+    @BindView(R.id.drama_video_play_why_reward_level)
+    TextView whyRewardLevel;
     @BindView(R.id.drama_video_play_refresh_layout)
     SwipeRefreshLayout refreshLayout;
 
     private int videoId;
+    private int primacyId;
 
     AnimeVideosActivityInfo.AnimeVideosActivityInfoData videoData;
 
@@ -156,9 +161,10 @@ public class DramaVideoPlayActivity extends BaseActivity {
                         //两次网络请求都完成后开始加载数据
                         LogUtils.d("ijkPlayer","网络请求完成");
                         if (recyclerView!=null){
-                            setNewData();
+                            setAdapter();
                             setPrimacyView();
                             setEmptyView();
+                            isFirstLoad = false;
                             refreshLayout.setEnabled(false);
                         }
                     }else if (response!=null&&response.isSuccessful()==false){
@@ -203,6 +209,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
                         }
                         ToastUtils.showShort(DramaVideoPlayActivity.this,"请检查您的网络!");
                         LogUtils.d("videoEEEEE"," t = "+t.getMessage());
+                        CrashReport.postCatchedException(t);
                         setFailedView();
                     }
                 }
@@ -276,6 +283,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
                     if (call.isCanceled()){
                     }else {
                         ToastUtils.showShort(DramaVideoPlayActivity.this,"请检查您的网络！ ");
+                        CrashReport.postCatchedException(t);
                         if (isLoadMore){
                             commentAdapter.loadMoreFail();
                             isLoadMore = false;
@@ -366,32 +374,60 @@ public class DramaVideoPlayActivity extends BaseActivity {
                     if (videoData.isMust_reward()){
                         if (videoData.getInfo().isRewarded()){
                             initVideoUrl();
+                            otherSiteInfo.setVisibility(View.GONE);
+                            whyRewardLevel.setVisibility(View.GONE);
                         }else {
                             otherSiteInfo.setVisibility(View.VISIBLE);
                             otherSiteInfo.setText("该视频需要投食之后才能进行观看");
+                            whyRewardLevel.setVisibility(View.VISIBLE);
+                            whyRewardLevel.setText("为什么要投食");
+                            whyRewardLevel.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent intent = new Intent(DramaVideoPlayActivity.this, CardShowInfoActivity.class);
+                                    intent.putExtra("cardID",2282);
+                                    startActivity(intent);
+                                }
+                            });
+
                         }
                     }else {
                         //不是必须投食的判断等级决定能否观看
                         if (Constants.userInfoData.getExp().getLevel()>=videoData.getNeed_min_level()){
                             //符合等级要求(大于等于3级)，直接观看
                             initVideoUrl();
+                            otherSiteInfo.setVisibility(View.GONE);
+                            whyRewardLevel.setVisibility(View.GONE);
                         }else {
                             //不符合等级要求（小于3级）
                             otherSiteInfo.setVisibility(View.VISIBLE);
                             otherSiteInfo.setText("您的等级小于3级，不能观看该视频");
+                            whyRewardLevel.setVisibility(View.VISIBLE);
+                            whyRewardLevel.setText("怎么提升等级");
+                            whyRewardLevel.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent intent = new Intent(DramaVideoPlayActivity.this, CardShowInfoActivity.class);
+                                    intent.putExtra("cardID",2279);
+                                    startActivity(intent);
+                                }
+                            });
                         }
                     }
                 }else {
                     otherSiteInfo.setVisibility(View.VISIBLE);
                     otherSiteInfo.setText("你已被禁止看视频功能，请加QQ群解禁");
+                    whyRewardLevel.setVisibility(View.GONE);
                 }
             }else {
                 otherSiteInfo.setVisibility(View.VISIBLE);
                 otherSiteInfo.setText("因版权等相关问题，该视频无法播放");
+                whyRewardLevel.setVisibility(View.GONE);
             }
         }else {
             otherSiteInfo.setVisibility(View.VISIBLE);
             otherSiteInfo.setText("请登录后再尝试观看视频");
+            whyRewardLevel.setVisibility(View.GONE);
         }
 
     }
@@ -422,7 +458,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
         });
         //是否可以滑动调整
         videoPlayer.setIsTouchWiget(true);
-        videoPlayer.setSeekRatio(5);
+        videoPlayer.setSeekRatio(10);
         //设置返回按键功能
         videoPlayer.getBackButton().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -521,21 +557,17 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     private void setEmptyView(){
         if (baseCommentMainList==null||baseCommentMainList.size()==0){
-            if (emptyView == null){
-                emptyView = new AppListEmptyView(DramaVideoPlayActivity.this);
-                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+            emptyView = new AppListEmptyView(DramaVideoPlayActivity.this);
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
             commentAdapter.setEmptyView(emptyView);
         }
     }
 
     private void setFailedView(){
         //加载失败 点击重试
-        if (failedView == null){
-            failedView = new AppListFailedView(DramaVideoPlayActivity.this);
-            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        }
+        failedView = new AppListFailedView(DramaVideoPlayActivity.this);
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         commentAdapter.setEmptyView(failedView);
 
@@ -557,13 +589,18 @@ public class DramaVideoPlayActivity extends BaseActivity {
     }
 
     private void setNewData(){
-        isFirstLoad = false;
+
         commentAdapter.setNewData(baseCommentMainList);
     }
 
     private void setAdapter() {
 
-        commentAdapter = new CommentAdapter(R.layout.card_show_info_list_comment_item,baseCommentMainList,DramaVideoPlayActivity.this,apiPost,CommentAdapter.TYPE_VIDEO);
+        if (videoData!=null){
+            primacyId = videoData.getInfo().getUser_id();
+        }
+
+        commentAdapter = new CommentAdapter(R.layout.card_show_info_list_comment_item,baseCommentMainList,
+                DramaVideoPlayActivity.this,apiPost,CommentAdapter.TYPE_VIDEO,primacyId);
         recyclerView.setLayoutManager(new LinearLayoutManager(DramaVideoPlayActivity.this));
         commentAdapter.setHasStableIds(true);
         /**
@@ -587,20 +624,14 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-
         super.onPause();
-
         videoPlayer.onVideoPause();
-
     }
 
     @Override
     protected void onResume() {
-
         super.onResume();
-
         videoPlayer.onVideoResume();
-
     }
 
     @Override
@@ -613,16 +644,12 @@ public class DramaVideoPlayActivity extends BaseActivity {
             commentMainCall.cancel();
         }
 
-
         GSYVideoManager.releaseAllVideos();
 
         if (orientationUtils != null)
 
             orientationUtils.releaseListener();
         super.onDestroy();
-
-
-
     }
 
     @Override
@@ -641,7 +668,5 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     @Override
     protected void handler(Message msg) {
-
     }
-
 }

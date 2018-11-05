@@ -25,6 +25,7 @@ import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
 import com.riuir.calibur.ui.home.role.adapter.RoleListAdapter;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ public class DramaRoleFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         bangumiID = dramaActivity.getAnimeID();
+        baseDataList.clear();
         setAdapter();
         isFirstLoad = true;
         refreshLayout.setRefreshing(true);
@@ -130,7 +132,9 @@ public class DramaRoleFragment extends BaseFragment {
                     ToastUtils.showShort(getContext(),info.getMessage());
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                     }
                     if (isLoadMore){
                         isLoadMore = false;
@@ -138,14 +142,18 @@ public class DramaRoleFragment extends BaseFragment {
                     }
                     if (isRefresh){
                         isRefresh = false;
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }else {
                     ToastUtils.showShort(getContext(),"未知原因导致加载失败");
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                     }
                     if (isLoadMore){
                         isLoadMore = false;
@@ -153,7 +161,9 @@ public class DramaRoleFragment extends BaseFragment {
                     }
                     if (isRefresh){
                         isRefresh = false;
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }
@@ -164,9 +174,12 @@ public class DramaRoleFragment extends BaseFragment {
                 if (call.isCanceled()){
                 }else {
                     ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+                    CrashReport.postCatchedException(t);
                     if (isFirstLoad){
                         isFirstLoad = false;
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                     }
                     if (isLoadMore){
                         isLoadMore = false;
@@ -174,7 +187,9 @@ public class DramaRoleFragment extends BaseFragment {
                     }
                     if (isRefresh){
                         isRefresh = false;
-                        refreshLayout.setRefreshing(false);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
                     }
                     setFailedView();
                 }
@@ -184,26 +199,26 @@ public class DramaRoleFragment extends BaseFragment {
 
     private void setEmptyView(){
         if (baseDataList==null||baseDataList.size()==0){
-            if (emptyView == null){
-                emptyView = new AppListEmptyView(getContext());
-                emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
+            emptyView = new AppListEmptyView(getContext());
+            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
             roleListAdapter.setEmptyView(emptyView);
         }
     }
     private void setFailedView(){
         //加载失败 点击重试
-        if (failedView == null){
-            failedView = new AppListFailedView(getContext());
-            failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
+        failedView = new AppListFailedView(getContext());
+        failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
         roleListAdapter.setEmptyView(failedView);
 
     }
 
     private void setRefresh() {
         isRefresh = false;
-        refreshLayout.setRefreshing(false);
+        if (refreshLayout!=null){
+            refreshLayout.setRefreshing(false);
+        }
         roleListAdapter.setNewData(dataList);
         ToastUtils.showShort(getContext(),"刷新成功");
     }

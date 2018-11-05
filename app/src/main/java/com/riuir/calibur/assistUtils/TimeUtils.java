@@ -68,65 +68,97 @@ public  class TimeUtils {
      * @return
      */
     public static String getGapCount(Date startDate, Date endDate) {
+
         Calendar fromCalendar = Calendar.getInstance();
         fromCalendar.setTime(startDate);
 
         Calendar toCalendar = Calendar.getInstance();
         toCalendar.setTime(endDate);
 
-        int fromYear = fromCalendar.get(Calendar.YEAR);
-        int fromMonth = fromCalendar.get(Calendar.MONTH)+1;
-        int fromDay = fromCalendar.get(Calendar.DAY_OF_MONTH);
-        int fromHour = fromCalendar.get(Calendar.HOUR_OF_DAY);
-        int fromMinute = fromCalendar.get(Calendar.MINUTE);
+        long startTime = fromCalendar.getTimeInMillis();
+        long endTime = toCalendar.getTimeInMillis();
+        double spaceTime = (endTime - startTime)/1000;
 
-        int toYear = toCalendar.get(Calendar.YEAR);
-        int toMonth = toCalendar.get(Calendar.MONTH)+1;
-        int toDay = toCalendar.get(Calendar.DAY_OF_MONTH);
-        int toHour = toCalendar.get(Calendar.HOUR_OF_DAY);
-        int toMinute = toCalendar.get(Calendar.MINUTE);
-
-        if (fromYear<toYear){
-            int year = toYear-fromYear;
-            if(year == 1){
-                return "去年";
-            }else {
-                return year+"年前";
-            }
-
-        }else{
-            if (fromMonth<toMonth){
-                int month = toMonth-fromMonth;
-                if (month == 1){
-                    return "上个月";
-                }else {
-                    return month+"月前";
-                }
-
-            }else{
-                if (fromDay < toDay){
-                    int day = toDay-fromDay;
-                    if (day == 1){
-                        return "昨天";
-                    }else {
-                        return day+"天前";
-                    }
-
-                }else{
-                    if (fromHour<toHour){
-                        int hour = toHour-fromHour;
-                        return hour+"小时前";
-                    }else {
-                        if (fromMinute<toMinute){
-                            int minute = toMinute-fromMinute;
-                            return minute+"分钟前";
-                        }else {
-                            return "刚刚";
-                        }
-                    }
-                }
-            }
+        if (spaceTime<=60){
+            //刚刚
+            return "刚刚";
+        }else if (spaceTime>=60&&spaceTime<3600){
+            //一小时内
+            int ret = (int) (spaceTime/60);
+            return ret+"分钟前";
+        }else if (spaceTime>=3600&&spaceTime<86400){
+            //一天内
+            int ret = (int) (spaceTime/3600);
+            return ret+"小时前";
+        }else if (spaceTime>=86400&&spaceTime<2592000){
+            //一月内
+            int ret = (int) (spaceTime/86400);
+            return ret+"天前";
+        }else if (spaceTime>=2592000&&spaceTime<31104000){
+            //一年内
+            int ret = (int) (spaceTime/2592000);
+            return ret+"个月前";
+        }else if (spaceTime>=31104000){
+            //一年以上
+            int ret = (int) (spaceTime/31104000);
+            return ret+"年前";
+        }else {
+            return "未知";
         }
+
+//        int fromYear = fromCalendar.get(Calendar.YEAR);
+//        int fromMonth = fromCalendar.get(Calendar.MONTH)+1;
+//        int fromDay = fromCalendar.get(Calendar.DAY_OF_MONTH);
+//        int fromHour = fromCalendar.get(Calendar.HOUR_OF_DAY);
+//        int fromMinute = fromCalendar.get(Calendar.MINUTE);
+//
+//        int toYear = toCalendar.get(Calendar.YEAR);
+//        int toMonth = toCalendar.get(Calendar.MONTH)+1;
+//        int toDay = toCalendar.get(Calendar.DAY_OF_MONTH);
+//        int toHour = toCalendar.get(Calendar.HOUR_OF_DAY);
+//        int toMinute = toCalendar.get(Calendar.MINUTE);
+//
+//        if (fromYear<toYear){
+//            int year = toYear-fromYear;
+//            if(year == 1){
+//                return "去年";
+//            }else {
+//                return year+"年前";
+//            }
+//
+//        }else{
+//            if (fromMonth<toMonth){
+//                int month = toMonth-fromMonth;
+//                if (month == 1){
+//                    return "上个月";
+//                }else {
+//                    return month+"月前";
+//                }
+//
+//            }else{
+//                if (fromDay < toDay){
+//                    int day = toDay-fromDay;
+//                    if (day == 1){
+//                        return "昨天";
+//                    }else {
+//                        return day+"天前";
+//                    }
+//
+//                }else{
+//                    if (fromHour<toHour){
+//                        int hour = toHour-fromHour;
+//                        return hour+"小时前";
+//                    }else {
+//                        if (fromMinute<toMinute){
+//                            int minute = toMinute-fromMinute;
+//                            return minute+"分钟前";
+//                        }else {
+//                            return "刚刚";
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     public static long getCurTimeLong(){

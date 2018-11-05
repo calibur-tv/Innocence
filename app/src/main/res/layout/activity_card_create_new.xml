@@ -98,10 +98,63 @@
                         android:textSize="14sp"
                         android:background="@color/color_FFFFFFFF"
                         />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/color_FFEEEEEE"
+                        android:layout_marginLeft="17dp"
+                        android:layout_marginRight="17dp"
+                        />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@color/color_FFFFFFFF">
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/card_create_new_activity_post_tag_recycler_view"
+                            android:layout_width="match_parent"
+                            android:minHeight="50dp"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:layout_marginRight="30dp"
+                            android:visibility="gone"
+                            >
+                        </android.support.v7.widget.RecyclerView>
+                        <TextView
+                            android:id="@+id/card_create_new_activity_post_tag_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="点击选择标签(可选)"
+                            android:padding="7dp"
+                            android:layout_marginRight="30dp"
+                            android:textSize="15sp"
+                            android:textColor="@color/color_FF5B5B5B"
+                            android:background="@drawable/app_bg_item_white_gray"
+                            />
+                        <TextView
+                            android:id="@+id/card_create_new_activity_post_tag_btn"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:text=" 〉"
+                            android:textSize="16sp"
+                            android:textColor="@color/color_FF5B5B5B"
+                            android:gravity="center"
+                            android:padding="5dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/app_bg_item_white_gray"
+                            />
+                    </RelativeLayout>
+
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/card_create_new_activity_image_grid"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
                         android:layout_marginBottom="10dp"

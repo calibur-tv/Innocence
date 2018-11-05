@@ -23,9 +23,13 @@
 #--------------------------1.实体类---------------------------------
 -keep class com.riuir.calibur.data.**{*;}
 #--------------------------2.第三方包-------------------------------
+#tencent X5
+-dontwarn com.tencent.**
+-keep public class com.tencent.**{*;}
 #tencent Bugly
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
+-keep class android.support.**{*;}
 #Gson
 -keepattributes Signature
 -keepattributes *Annotation*

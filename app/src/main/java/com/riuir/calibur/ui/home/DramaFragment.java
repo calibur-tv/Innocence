@@ -83,7 +83,7 @@ public class DramaFragment extends BaseFragment {
      */
     private DisplayMetrics dm;
 
-    public static Fragment newInstance() {
+    public static DramaFragment newInstance() {
         DramaFragment dramaFragment = new DramaFragment();
         Bundle b = new Bundle();
         dramaFragment.setArguments(b);

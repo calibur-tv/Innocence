@@ -94,7 +94,8 @@ public class MainTrendingInfo {
         private int mark_count;
         private boolean marked;
         private boolean is_nice;
-
+        private String top_at;
+        private List<AnimeShowInfo.AnimeShowInfoTags> tags;
 
         //图片需要字段
         private int user_id;
@@ -103,9 +104,7 @@ public class MainTrendingInfo {
         private MainImageInfoSource source;
         private boolean is_album;
 
-
-        //评分字段
-
+        //漫评字段
         private int total;
 
         //偶像字段
@@ -245,6 +244,14 @@ public class MainTrendingInfo {
             this.is_nice = is_nice;
         }
 
+        public String getTop_at() {
+            return top_at;
+        }
+
+        public void setTop_at(String top_at) {
+            this.top_at = top_at;
+        }
+
         public int getUser_id() {
             return user_id;
         }
@@ -358,6 +365,14 @@ public class MainTrendingInfo {
             this.has_star = has_star;
         }
 
+        public List<AnimeShowInfo.AnimeShowInfoTags> getTags() {
+            return tags;
+        }
+
+        public void setTags(List<AnimeShowInfo.AnimeShowInfoTags> tags) {
+            this.tags = tags;
+        }
+
         @Override
         public String toString() {
             return "MainTrendingInfoList{" +
@@ -380,6 +395,8 @@ public class MainTrendingInfo {
                     ", mark_count=" + mark_count +
                     ", marked=" + marked +
                     ", is_nice=" + is_nice +
+                    ", top_at='" + top_at + '\'' +
+                    ", tags=" + tags +
                     ", user_id=" + user_id +
                     ", bangumi_id=" + bangumi_id +
                     ", image_count=" + image_count +

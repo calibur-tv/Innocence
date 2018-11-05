@@ -21,6 +21,7 @@ import com.riuir.calibur.data.album.ChooseImageAlbum;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.choose.adapter.ChooseBangumiAdapter;
 import com.riuir.calibur.ui.home.choose.adapter.ChooseImageAlbumAdapter;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -154,6 +155,7 @@ public class ChooseImageAlbumActivity extends BaseActivity {
                         refreshLayout.setRefreshing(false);
                     }
                     LogUtils.d("chooseAlbum"," t = "+t.getMessage());
+                    CrashReport.postCatchedException(t);
                     ToastUtils.showShort(ChooseImageAlbumActivity.this,"请检查您的网络！");
                 }
             }
