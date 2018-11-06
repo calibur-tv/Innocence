@@ -77,7 +77,7 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
 
         if (Constants.bangumiAllListData==null)
             Constants.bangumiAllListData = (ArrayList<BangumiAllList.BangumiAllListData>)
-                    SharedPreferencesUtils.get(this,"bangumiAllListData",null);
+                    SharedPreferencesUtils.get(this,"bangumiAllListData",new ArrayList<BangumiAllList.BangumiAllListData>());
         if (Constants.bangumiAllListData!=null){
             baseBangumiList = Constants.bangumiAllListData;
             LogUtils.d("baseBangumiList","baseBangumiList size = "+baseBangumiList.size());

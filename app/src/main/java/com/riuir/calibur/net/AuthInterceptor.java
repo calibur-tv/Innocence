@@ -31,7 +31,7 @@ public class AuthInterceptor implements Interceptor {
 
         String body = bodyToString(request.body());
         if (Constants.AUTH_TOKEN==null||Constants.AUTH_TOKEN.length()==0){
-            Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",null);
+            Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
         }
 
 //        long time = System.currentTimeMillis();

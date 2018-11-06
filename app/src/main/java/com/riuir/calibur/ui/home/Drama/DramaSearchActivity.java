@@ -99,7 +99,7 @@ public class DramaSearchActivity extends BaseActivity {
         searchEdit.requestFocus();
         if (Constants.bangumiAllListData == null){
             Constants.bangumiAllListData = (ArrayList<BangumiAllList.BangumiAllListData>)
-                    SharedPreferencesUtils.get(App.instance(),"bangumiAllListData",null);
+                    SharedPreferencesUtils.get(App.instance(),"bangumiAllListData",new ArrayList<BangumiAllList.BangumiAllListData>());
         }
         if (Constants.bangumiAllListData == null){
             BangumiAllListUtils.setBangumiAllList(this,apiGet);
@@ -460,7 +460,7 @@ public class DramaSearchActivity extends BaseActivity {
 
         if (Constants.bangumiAllListData == null||Constants.bangumiAllListData.size()==0){
             Constants.bangumiAllListData = (ArrayList<BangumiAllList.BangumiAllListData>)
-                    SharedPreferencesUtils.get(this,"bangumiAllListData",null);
+                    SharedPreferencesUtils.get(this,"bangumiAllListData",new ArrayList<BangumiAllList.BangumiAllListData>());
         }
         if (bangumiAllLists == null){
             bangumiAllLists = Constants.bangumiAllListData;
