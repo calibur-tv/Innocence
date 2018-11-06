@@ -3,8 +3,16 @@ package com.riuir.calibur.assistUtils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.riuir.calibur.data.anime.BangumiAllList;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -86,6 +94,34 @@ public class SharedPreferencesUtils
         }
 
         return null;
+    }
+
+    /**
+     * 保存所有动漫信息泛型list
+     */
+    public static void putBangumiAllListList(Context context,String key,ArrayList<BangumiAllList.BangumiAllListData> bangumiAllListData){
+        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        Gson gson = new Gson();
+        String data = gson.toJson(bangumiAllListData);
+        editor.putString(key, data);
+        SharedPreferencesCompat.apply(editor);
+    }
+
+    /**
+     * 获取所有动漫信息泛型list
+     */
+    public static ArrayList<BangumiAllList.BangumiAllListData> getBangumiAllListList(Context context,String key){
+        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
+                Context.MODE_PRIVATE);
+        String data = sp.getString(key, "");
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<BangumiAllList.BangumiAllListData>>() {
+        }.getType();
+        ArrayList<BangumiAllList.BangumiAllListData> list = gson.fromJson(data, listType);
+
+        return list;
     }
 
     /**

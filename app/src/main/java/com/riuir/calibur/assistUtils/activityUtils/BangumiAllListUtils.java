@@ -32,7 +32,7 @@ public class BangumiAllListUtils {
             public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
                 if (response!=null&&response.isSuccessful()){
                     Constants.bangumiAllListData = response.body().getData();
-                    SharedPreferencesUtils.put(App.instance(),"bangumiAllListData",response.body().getData());
+                    SharedPreferencesUtils.putBangumiAllListList(App.instance(),"bangumiAllListData",response.body().getData());
                 }else  if (!response.isSuccessful()){
                     String errorStr = "";
                     try {

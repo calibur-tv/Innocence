@@ -76,8 +76,7 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
         code = intent.getIntExtra("code",0);
 
         if (Constants.bangumiAllListData==null)
-            Constants.bangumiAllListData = (ArrayList<BangumiAllList.BangumiAllListData>)
-                    SharedPreferencesUtils.get(this,"bangumiAllListData",new ArrayList<BangumiAllList.BangumiAllListData>());
+            Constants.bangumiAllListData = SharedPreferencesUtils.getBangumiAllListList(App.instance(),"bangumiAllListData");
         if (Constants.bangumiAllListData!=null){
             baseBangumiList = Constants.bangumiAllListData;
             LogUtils.d("baseBangumiList","baseBangumiList size = "+baseBangumiList.size());
@@ -93,7 +92,7 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
             public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
                 if (response!=null&&response.isSuccessful()){
                     Constants.bangumiAllListData = response.body().getData();
-                    SharedPreferencesUtils.put(App.instance(),"bangumiAllListData",response.body().getData());
+                    SharedPreferencesUtils.putBangumiAllListList(App.instance(),"bangumiAllListData",response.body().getData());
                     baseBangumiList = Constants.bangumiAllListData;
                     setAdapter();
                 }else  if (!response.isSuccessful()){

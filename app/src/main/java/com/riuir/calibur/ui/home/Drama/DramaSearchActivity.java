@@ -98,8 +98,7 @@ public class DramaSearchActivity extends BaseActivity {
     protected void onInit() {
         searchEdit.requestFocus();
         if (Constants.bangumiAllListData == null){
-            Constants.bangumiAllListData = (ArrayList<BangumiAllList.BangumiAllListData>)
-                    SharedPreferencesUtils.get(App.instance(),"bangumiAllListData",new ArrayList<BangumiAllList.BangumiAllListData>());
+            Constants.bangumiAllListData = SharedPreferencesUtils.getBangumiAllListList(App.instance(),"bangumiAllListData");
         }
         if (Constants.bangumiAllListData == null){
             BangumiAllListUtils.setBangumiAllList(this,apiGet);
@@ -458,13 +457,6 @@ public class DramaSearchActivity extends BaseActivity {
     private void setPopupWindowChanged(CharSequence charSequence){
         bangumiSearchedLists.clear();
 
-        if (Constants.bangumiAllListData == null||Constants.bangumiAllListData.size()==0){
-            Constants.bangumiAllListData = (ArrayList<BangumiAllList.BangumiAllListData>)
-                    SharedPreferencesUtils.get(this,"bangumiAllListData",new ArrayList<BangumiAllList.BangumiAllListData>());
-        }
-        if (bangumiAllLists == null){
-            bangumiAllLists = Constants.bangumiAllListData;
-        }
         if (bangumiAllLists!=null&&bangumiAllLists.size()!=0){
             for (BangumiAllList.BangumiAllListData data:bangumiAllLists) {
                 if (data.getName().contains(charSequence)){
