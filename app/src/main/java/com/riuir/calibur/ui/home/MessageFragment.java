@@ -511,8 +511,8 @@ public class MessageFragment extends BaseFragment {
             default:
                 break;
         }
-
-        if(data.getMessage().contains("评论了")||data.getMessage().contains("回复了")){
+        if (data.getMessage().contains("问题")||data.getMessage().contains("回答")){
+        }else if(data.getMessage().contains("评论了")||data.getMessage().contains("回复了")){
             LogUtils.d("messageJump","message = "+data.getMessage());
             intent.setClass(getContext(), MessageShowCommentActivity.class);
         }
@@ -521,6 +521,7 @@ public class MessageFragment extends BaseFragment {
                 startActivity(intent);
             } catch (ActivityNotFoundException e) {
                 e.printStackTrace();
+                ToastUtils.showShort(getContext(),"该模块尚未解锁！");
             }
         }
     }

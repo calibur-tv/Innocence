@@ -21,6 +21,8 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -112,7 +114,7 @@ public class QiniuUtils {
                         ToastUtils.showShort(context,"取消上传");
                         setUpLoadDiaLogFail("");
                     }else if (info.isNetworkBroken()){
-                        ToastUtils.showShort(context,"网络异常，请稍后再试2");
+                        ToastUtils.showShort(context,"网络异常，请稍后再试");
                         setUpLoadDiaLogFail("");
                     }else {
                         ToastUtils.showShort(context,"其他原因导致取消上传 \n info = "+info.error);
@@ -174,9 +176,14 @@ public class QiniuUtils {
         int ran2 = random.nextInt(9999 - 1000) + 1000;
         if (filePath.contains(".")){
             String [] s = filePath.split("\\.");
-            String oldName = "caliburImage";
+            String oldName = "caliburImage"+ran2;
+            try {
+                oldName = URLEncoder.encode(oldName, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             String ext = s[s.length-1];
-            return "user/"+id+"/"+type+"/"+ TimeUtils.getCurTimeLong()+"/"+ran1+"/."+oldName+ran2+"."+ext;
+            return "user/"+id+"/"+type+"/"+ (TimeUtils.getCurTimeLong()-+ran1)+"."+oldName+"."+ext;
         }else {
             return null;
         }

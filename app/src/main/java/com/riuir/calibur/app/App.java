@@ -52,7 +52,7 @@ public class App extends Application  {
         initX5Web();
         initAlbum();
 
-        Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
+        Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",null);
 
         LogUtils.d("userToken","token = "+Constants.AUTH_TOKEN );
 

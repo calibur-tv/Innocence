@@ -18,7 +18,7 @@ public class AuthInterceptorGetHasAuth implements Interceptor {
         Request request = chain.request();
 
         if (Constants.AUTH_TOKEN==null||Constants.AUTH_TOKEN.length()==0){
-            Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
+            Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",null);
         }
         Headers headers = request.headers().newBuilder()
                 .add("Authorization","Bearer "+Constants.AUTH_TOKEN)

@@ -85,7 +85,7 @@ public class WebViewActivity extends BaseActivity {
 
     private void setWebView() {
         if (Constants.AUTH_TOKEN==null||Constants.AUTH_TOKEN.length()==0){
-            Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
+            Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",null);
         }
         setClient();
         webSettings = webView.getSettings();

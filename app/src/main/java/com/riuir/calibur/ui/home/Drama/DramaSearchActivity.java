@@ -30,6 +30,7 @@ import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.KeyBoardUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.anime.BangumiAllList;
 import com.riuir.calibur.data.anime.SearchAnimeInfo;
@@ -96,9 +97,14 @@ public class DramaSearchActivity extends BaseActivity {
     @Override
     protected void onInit() {
         searchEdit.requestFocus();
-        if (Constants.bangumiAllListData == null)
+        if (Constants.bangumiAllListData == null){
             Constants.bangumiAllListData = (ArrayList<BangumiAllList.BangumiAllListData>)
-                    SharedPreferencesUtils.get(this,"bangumiAllListData",null);
+                    SharedPreferencesUtils.get(App.instance(),"bangumiAllListData",null);
+        }
+        if (Constants.bangumiAllListData == null){
+            BangumiAllListUtils.setBangumiAllList(this,apiGet);
+        }
+
         bangumiAllLists = Constants.bangumiAllListData;
 
         initPopupWindow();
@@ -125,6 +131,7 @@ public class DramaSearchActivity extends BaseActivity {
         popopRecycler.setAdapter(popupListAdapter);
         searchPopup.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_search_drama_popup_window));
         searchPopup.setOutsideTouchable(true);
+        searchPopup.setFocusable(false);
 
         popupListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
@@ -451,19 +458,21 @@ public class DramaSearchActivity extends BaseActivity {
     private void setPopupWindowChanged(CharSequence charSequence){
         bangumiSearchedLists.clear();
 
-        if (Constants.bangumiAllListData == null){
+        if (Constants.bangumiAllListData == null||Constants.bangumiAllListData.size()==0){
             Constants.bangumiAllListData = (ArrayList<BangumiAllList.BangumiAllListData>)
                     SharedPreferencesUtils.get(this,"bangumiAllListData",null);
         }
         if (bangumiAllLists == null){
             bangumiAllLists = Constants.bangumiAllListData;
         }
-
-        for (BangumiAllList.BangumiAllListData data:bangumiAllLists) {
-            if (data.getName().contains(charSequence)){
-                bangumiSearchedLists.add(data);
+        if (bangumiAllLists!=null&&bangumiAllLists.size()!=0){
+            for (BangumiAllList.BangumiAllListData data:bangumiAllLists) {
+                if (data.getName().contains(charSequence)){
+                    bangumiSearchedLists.add(data);
+                }
             }
         }
+
         popupListAdapter.notifyDataSetChanged();
     }
 

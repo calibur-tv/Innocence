@@ -93,7 +93,7 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
             public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
                 if (response!=null&&response.isSuccessful()){
                     Constants.bangumiAllListData = response.body().getData();
-                    SharedPreferencesUtils.put(ChooseNewCardBangumiActivity.this,"bangumiAllListData",response.body().getData());
+                    SharedPreferencesUtils.put(App.instance(),"bangumiAllListData",response.body().getData());
                     baseBangumiList = Constants.bangumiAllListData;
                     setAdapter();
                 }else  if (!response.isSuccessful()){

@@ -180,6 +180,9 @@ public class BannerLoopView extends RelativeLayout {
             }else if (url.contains("review")){
                 type = "review";
             }
+            if (url.contains("\\?")){
+                url = url.split("\\?")[0];
+            }
             idStr = url.replace(type,"").replace("/","");
             id = Integer.parseInt(idStr);
             if (type.equals("post")){

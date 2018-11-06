@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
@@ -31,7 +32,7 @@ public class BangumiAllListUtils {
             public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
                 if (response!=null&&response.isSuccessful()){
                     Constants.bangumiAllListData = response.body().getData();
-                    SharedPreferencesUtils.put(context,"bangumiAllListData",response.body().getData());
+                    SharedPreferencesUtils.put(App.instance(),"bangumiAllListData",response.body().getData());
                 }else  if (!response.isSuccessful()){
                     String errorStr = "";
                     try {

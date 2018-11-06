@@ -10,11 +10,12 @@
 
     <TextView
         android:id="@+id/drama_role_list_item_number"
-        android:layout_width="23dp"
+        android:layout_width="wrap_content"
+        android:minWidth="23dp"
         android:layout_height="28dp"
-        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:gravity="center"
+        android:lines="1"
         android:text="1"
         android:textSize="16sp"
         android:textColor="@color/theme_magic_sakura_primary"
