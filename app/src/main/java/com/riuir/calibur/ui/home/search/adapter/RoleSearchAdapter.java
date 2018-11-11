@@ -41,10 +41,12 @@ public class RoleSearchAdapter extends BaseQuickAdapter<SearchAnimeInfo.SearchAn
 //        helper.setText(R.id.drama_role_list_item_role_intro,item.getIntro());
         helper.setText(R.id.user_followed_role_list_item_role_anime_name,item.getBangumi().getName());
         helper.setText(R.id.user_followed_role_list_item_number,"团子："+item.getStar_count());
+        helper.setText(R.id.user_followed_role_list_item_role_knight,loverName+" 守护");
         RoundedImageView loverIc = helper.getView(R.id.user_followed_role_list_item_role_knight_icon);
         if (item.getLover()!=null){
-            helper.setText(R.id.user_followed_role_list_item_role_knight,loverName+" 守护");
             GlideUtils.loadImageView(context,item.getLover().getAvatar(),loverIc);
+        }else {
+            loverIc.setImageDrawable(context.getResources().getDrawable(R.drawable.app_bg_item_white_gray));
         }
 
         GlideUtils.loadImageViewCircle(context,item.getAvatar(), (ImageView) helper.getView(R.id.user_followed_role_list_item_image));

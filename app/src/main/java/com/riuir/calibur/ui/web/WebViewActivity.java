@@ -156,9 +156,8 @@ public class WebViewActivity extends BaseActivity {
         Map<String,String> header = new HashMap<>();
         header.put("Authorization","Bearer "+ Constants.AUTH_TOKEN);
 
-        webView.loadUrl("https://static.calibur.tv/hybrid/templates/self/transactions/v1/v1-c774dc4772c4190144e6f51387cea5ad-48a5598b9781e17fa517c1369ea4a1d8.mustache",header);
-        webView.addJavascriptInterface(VersionUtils.getLocalVersionName(),"version");
-        webView.addJavascriptInterface(1,"page");
+        //TODO 交易记录 需拦截html
+        //webView.loadUrl("https://static.calibur.tv/hybrid/templates/self/transactions/v1/v1-c774dc4772c4190144e6f51387cea5ad-48a5598b9781e17fa517c1369ea4a1d8.mustache",header);
     }
 
     @Override

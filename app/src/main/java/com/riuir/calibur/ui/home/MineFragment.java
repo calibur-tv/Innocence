@@ -81,6 +81,8 @@ public class MineFragment extends BaseFragment {
     RelativeLayout mineWithdrawalsLayout;
     @BindView(R.id.mine_fragment_clear_cache_layout)
     RelativeLayout mineClearCacheLayout;
+    @BindView(R.id.mine_fragment_handbook_layout)
+    RelativeLayout mineHandbookLayout;
     @BindView(R.id.mine_fragment_feedback_layout)
     RelativeLayout mineFeedbackLayout;
     @BindView(R.id.mine_fragment_tips_layout)
@@ -377,6 +379,15 @@ public class MineFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), ClearCacheActivity.class);
+                startActivity(intent);
+            }
+        });
+        mineHandbookLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), WebViewActivity.class);
+                intent.putExtra("type",WebViewActivity.TYPE_RULE);
+                intent.putExtra("index",0);
                 startActivity(intent);
             }
         });
