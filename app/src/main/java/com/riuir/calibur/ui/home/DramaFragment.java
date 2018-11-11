@@ -1,9 +1,6 @@
 package com.riuir.calibur.ui.home;
 
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,41 +9,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 
-import com.astuetz.PagerSlidingTabStrip;
 import com.riuir.calibur.R;
-import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.DensityUtils;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.ScreenUtils;
-import com.riuir.calibur.data.AnimeListForTimeLine;
-import com.riuir.calibur.data.DramaListResp;
 
-import com.riuir.calibur.data.ResponseWrapper;
-import com.riuir.calibur.net.ApiGet;
-import com.riuir.calibur.net.NetService;
 import com.riuir.calibur.ui.common.BaseFragment;
-import com.riuir.calibur.ui.home.Drama.DramaSearchActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.utils.ActivityUtils;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import butterknife.BindView;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import retrofit2.Call;
-
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * ************************************

@@ -46,6 +46,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * 动漫主页
+ */
 
 public class DramaActivity extends BaseActivity {
 
@@ -342,13 +345,13 @@ public class DramaActivity extends BaseActivity {
 
         //添加帖子fragment
         titles.add("帖子");
-        if (animeShowInfoData.isHas_cartoon()){
-            //添加漫画fragment
-            titles.add("漫画");
-        }
         if (animeShowInfoData.isHas_video()){
             //添加视频fragment
             titles.add("视频");
+        }
+        if (animeShowInfoData.isHas_cartoon()){
+            //添加漫画fragment
+            titles.add("漫画");
         }
         titles.add("相册");
 

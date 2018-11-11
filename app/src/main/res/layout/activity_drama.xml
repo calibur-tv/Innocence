@@ -112,7 +112,7 @@
                     android:textColor="@color/color_FFFFFFFF"
                     android:textSize="13sp"
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="6dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@id/drama_activity_anime_follow"
                     />
                 <TextView
@@ -122,9 +122,8 @@
                     android:text="活跃度"
                     android:textColor="@color/color_FFFFFFFF"
                     android:textSize="13sp"
+                    android:layout_below="@id/drama_activity_anime_follow"
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:layout_toRightOf="@id/drama_activity_anime_follow_count"
                     />
                 <TextView
                     android:id="@+id/drama_activity_anime_power_count"
@@ -133,8 +132,9 @@
                     android:text="110"
                     android:textColor="@color/color_FFFFFFFF"
                     android:textSize="13sp"
+                    android:layout_below="@id/drama_activity_anime_follow"
                     android:gravity="center_vertical"
-                    android:layout_marginLeft="6dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@id/drama_activity_anime_power"
                     />
             </RelativeLayout>

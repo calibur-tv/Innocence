@@ -421,7 +421,7 @@ public class ImageShowInfoActivity extends BaseActivity {
 
         headerCardTitle.setText(primacyData.getName());
         GlideUtils.loadImageViewCircle(ImageShowInfoActivity.this,primacyData.getUser().getAvatar(),headerUserIcon);
-        headerUserName.setText(primacyData.getUser().getNickname());
+        headerUserName.setText(primacyData.getUser().getNickname().replace("\n",""));
         headerTime.setText( TimeUtils.HowLongTimeForNow(primacyData.getCreated_at()));
 
 

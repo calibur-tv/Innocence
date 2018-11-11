@@ -2,6 +2,7 @@ package com.riuir.calibur.data.anime;
 
 import android.print.PrinterId;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class SearchAnimeInfo {
@@ -32,7 +33,7 @@ public class SearchAnimeInfo {
                 '}';
     }
 
-    public class SearchAnimeInfoData{
+    public class SearchAnimeInfoData implements Serializable {
         private List<SearchAnimeInfoList> list;
         private int total;
         private boolean noMore;
@@ -71,8 +72,24 @@ public class SearchAnimeInfo {
         }
     }
 
-    public class SearchAnimeInfoList{
+    public class SearchAnimeInfoList implements Serializable {
         private int id;
+        private String title;
+        private String desc;
+        private String top_at;
+        private boolean is_nice;
+        private boolean is_creator;
+        private int like_count;
+        private int reward_count;
+        private int comment_count;
+        private int mark_count;
+        private SearchAnimeInfoBangumi bangumi;
+        private SearchAnimeInfoUser user;
+        private List<SearchAnimeInfoTags> tags;
+        private int total;
+        private int star_count;
+        private int fans_count;
+        private SearchAnimeInfoUser lover;
         private String name;
         private String avatar;
         private String intro;
@@ -83,6 +100,7 @@ public class SearchAnimeInfo {
         private String nickname;
         private String signature;
         private String created_at;
+        private String updated_at;
         private List<SearchAnimeInfoImage> images;
 
         public int getId() {
@@ -181,26 +199,179 @@ public class SearchAnimeInfo {
             this.images = images;
         }
 
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+
+        public String getTop_at() {
+            return top_at;
+        }
+
+        public void setTop_at(String top_at) {
+            this.top_at = top_at;
+        }
+
+        public boolean isIs_nice() {
+            return is_nice;
+        }
+
+        public void setIs_nice(boolean is_nice) {
+            this.is_nice = is_nice;
+        }
+
+        public boolean isIs_creator() {
+            return is_creator;
+        }
+
+        public void setIs_creator(boolean is_creator) {
+            this.is_creator = is_creator;
+        }
+
+        public int getLike_count() {
+            return like_count;
+        }
+
+        public void setLike_count(int like_count) {
+            this.like_count = like_count;
+        }
+
+        public int getReward_count() {
+            return reward_count;
+        }
+
+        public void setReward_count(int reward_count) {
+            this.reward_count = reward_count;
+        }
+
+        public int getComment_count() {
+            return comment_count;
+        }
+
+        public void setComment_count(int comment_count) {
+            this.comment_count = comment_count;
+        }
+
+        public int getMark_count() {
+            return mark_count;
+        }
+
+        public void setMark_count(int mark_count) {
+            this.mark_count = mark_count;
+        }
+
+        public SearchAnimeInfoBangumi getBangumi() {
+            return bangumi;
+        }
+
+        public void setBangumi(SearchAnimeInfoBangumi bangumi) {
+            this.bangumi = bangumi;
+        }
+
+        public SearchAnimeInfoUser getUser() {
+            return user;
+        }
+
+        public void setUser(SearchAnimeInfoUser user) {
+            this.user = user;
+        }
+
+        public List<SearchAnimeInfoTags> getTags() {
+            return tags;
+        }
+
+        public void setTags(List<SearchAnimeInfoTags> tags) {
+            this.tags = tags;
+        }
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
+
+        public int getStar_count() {
+            return star_count;
+        }
+
+        public void setStar_count(int star_count) {
+            this.star_count = star_count;
+        }
+
+        public int getFans_count() {
+            return fans_count;
+        }
+
+        public void setFans_count(int fans_count) {
+            this.fans_count = fans_count;
+        }
+
+        public SearchAnimeInfoUser getLover() {
+            return lover;
+        }
+
+        public void setLover(SearchAnimeInfoUser lover) {
+            this.lover = lover;
+        }
+
+        public String getUpdated_at() {
+            return updated_at;
+        }
+
+        public void setUpdated_at(String updated_at) {
+            this.updated_at = updated_at;
+        }
+
         @Override
         public String toString() {
             return "SearchAnimeInfoList{" +
                     "id=" + id +
+                    ", title='" + title + '\'' +
+                    ", desc='" + desc + '\'' +
+                    ", top_at='" + top_at + '\'' +
+                    ", is_nice=" + is_nice +
+                    ", is_creator=" + is_creator +
+                    ", like_count=" + like_count +
+                    ", reward_count=" + reward_count +
+                    ", comment_count=" + comment_count +
+                    ", mark_count=" + mark_count +
+                    ", bangumi=" + bangumi +
+                    ", user=" + user +
+                    ", tags=" + tags +
+                    ", total=" + total +
+                    ", star_count=" + star_count +
+                    ", fans_count=" + fans_count +
+                    ", lover=" + lover +
                     ", name='" + name + '\'' +
                     ", avatar='" + avatar + '\'' +
                     ", intro='" + intro + '\'' +
                     ", poster='" + poster + '\'' +
-                    ", type=" + type +
+                    ", type='" + type + '\'' +
                     ", summary='" + summary + '\'' +
                     ", zone='" + zone + '\'' +
                     ", nickname='" + nickname + '\'' +
                     ", signature='" + signature + '\'' +
                     ", created_at='" + created_at + '\'' +
+                    ", updated_at='" + updated_at + '\'' +
                     ", images=" + images +
                     '}';
         }
     }
 
-    public class SearchAnimeInfoImage{
+    public class SearchAnimeInfoImage implements Serializable {
         private String url;
         private String width;
         private String height;
@@ -255,6 +426,123 @@ public class SearchAnimeInfo {
                     ", height='" + height + '\'' +
                     ", size='" + size + '\'' +
                     ", type='" + type + '\'' +
+                    '}';
+        }
+    }
+
+    public class SearchAnimeInfoBangumi implements Serializable {
+        private int id;
+        private String name;
+        private String avatar;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public void setAvatar(String avatar) {
+            this.avatar = avatar;
+        }
+
+        @Override
+        public String toString() {
+            return "SearchAnimeInfoBangumi{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
+                    ", avatar='" + avatar + '\'' +
+                    '}';
+        }
+    }
+
+    public class SearchAnimeInfoUser implements Serializable {
+        private int id;
+        private String nickname;
+        private String avatar;
+        private String zone;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+
+        public void setNickname(String nickname) {
+            this.nickname = nickname;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public void setAvatar(String avatar) {
+            this.avatar = avatar;
+        }
+
+        public String getZone() {
+            return zone;
+        }
+
+        public void setZone(String zone) {
+            this.zone = zone;
+        }
+
+        @Override
+        public String toString() {
+            return "SearchAnimeInfoUser{" +
+                    "id=" + id +
+                    ", nickname='" + nickname + '\'' +
+                    ", avatar='" + avatar + '\'' +
+                    ", zone='" + zone + '\'' +
+                    '}';
+        }
+    }
+
+    public class SearchAnimeInfoTags implements Serializable {
+        private int id;
+        private String name;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return "SearchAnimeInfoTags{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
                     '}';
         }
     }

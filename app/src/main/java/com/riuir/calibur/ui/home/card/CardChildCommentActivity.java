@@ -132,7 +132,7 @@ public class CardChildCommentActivity extends BaseActivity {
     private void setView() {
         commentImageLayout.removeAllViews();
         GlideUtils.loadImageViewCircle(CardChildCommentActivity.this,mainComment.getFrom_user_avatar(),mainCommentUserIcon);
-        mainCommentUserName.setText(mainComment.getFrom_user_name());
+        mainCommentUserName.setText(mainComment.getFrom_user_name().replace("\n",""));
         mainCommentInfo.setText("第"+mainComment.getFloor_count()+"楼·"+ TimeUtils.HowLongTimeForNow(mainComment.getCreated_at()));
         mainCommentText.setText(Html.fromHtml(mainComment.getContent()));
         if (mainComment.getImages().size()!=0){

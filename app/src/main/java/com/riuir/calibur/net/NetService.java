@@ -4,9 +4,15 @@ package com.riuir.calibur.net;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.utils.Constants;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.CipherSuite;
+import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
+import okhttp3.TlsVersion;
+import okhttp3.internal.cache.CacheInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -32,6 +38,18 @@ public class NetService {
     /** singleton end **/
 
     /**
+     * 创建Okhttp的ConnectionSpec spec对象
+     */
+    private ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+            .tlsVersions(TlsVersion.TLS_1_1)
+            .tlsVersions(TlsVersion.TLS_1_2)
+            .cipherSuites(
+                    CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+                    CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+                    CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256)
+            .build();
+
+    /**
      * 创建 OkHttp
      * 带有阻断的
      * 有Auth usertoken
@@ -44,9 +62,12 @@ public class NetService {
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
             //请求超时时间
             .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20,TimeUnit.SECONDS)
             //请求失败是否重新请求
             .retryOnConnectionFailure(true)
-            .connectTimeout(10,TimeUnit.SECONDS)
+            .connectTimeout(20,TimeUnit.SECONDS)
+//            .connectionSpecs(Collections.singletonList(spec))
+            .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS))
             .build();
 
     /**
@@ -62,9 +83,12 @@ public class NetService {
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
             //请求超时时间
             .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20,TimeUnit.SECONDS)
             //请求失败是否重新请求
             .retryOnConnectionFailure(true)
-            .connectTimeout(10,TimeUnit.SECONDS)
+            .connectTimeout(20,TimeUnit.SECONDS)
+//            .connectionSpecs(Collections.singletonList(spec))
+            .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS))
             .build();
 
     /**
@@ -81,9 +105,12 @@ public class NetService {
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
             //请求超时时间
             .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20,TimeUnit.SECONDS)
             //请求失败是否重新请求
             .retryOnConnectionFailure(true)
-            .connectTimeout(10,TimeUnit.SECONDS)
+            .connectTimeout(20,TimeUnit.SECONDS)
+//            .connectionSpecs(Collections.singletonList(spec))
+            .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS))
             .build();
 
     /**
@@ -95,16 +122,22 @@ public class NetService {
             .addInterceptor(new AuthInterceptorGet())
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
             .readTimeout(20,TimeUnit.SECONDS)
+            .writeTimeout(20,TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
-            .connectTimeout(10,TimeUnit.SECONDS)
+            .connectTimeout(20,TimeUnit.SECONDS)
+//            .connectionSpecs(Collections.singletonList(spec))
+            .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS))
             .build();
 
     private OkHttpClient clientGetHasAuth = new OkHttpClient.Builder()
             .addInterceptor(new AuthInterceptorGetHasAuth())
             .addInterceptor(new HttpLoggingInterceptor(new NetLogger()).setLevel(HttpLoggingInterceptor.Level.BODY))
             .readTimeout(20,TimeUnit.SECONDS)
+            .writeTimeout(20,TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
-            .connectTimeout(10,TimeUnit.SECONDS)
+            .connectTimeout(20,TimeUnit.SECONDS)
+//            .connectionSpecs(Collections.singletonList(spec))
+            .connectionSpecs(Arrays.asList(ConnectionSpec.MODERN_TLS, ConnectionSpec.COMPATIBLE_TLS))
             .build();
 
     /**

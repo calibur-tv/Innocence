@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.riuir.calibur.R;
+import com.riuir.calibur.app.App;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeShowInfo;
 import com.riuir.calibur.data.Event;
@@ -103,6 +105,10 @@ public class DramaMasterRoleSettingActivity extends BaseActivity {
     }
 
     private void setUserInfo() {
+        if (Constants.userInfoData==null){
+            Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
+        }
+
         if (Constants.userInfoData!=null){
             userId = Constants.userInfoData.getId();
         }else {

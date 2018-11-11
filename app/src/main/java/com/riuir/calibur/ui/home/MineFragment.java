@@ -23,6 +23,7 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MineUserInfo;
@@ -76,6 +77,8 @@ public class MineFragment extends BaseFragment {
     RelativeLayout mineDraftLayout;
     @BindView(R.id.mine_fragment_mine_invite_layout)
     RelativeLayout mineInviteLayout;
+    @BindView(R.id.mine_fragment_mine_withdrawals_layout)
+    RelativeLayout mineWithdrawalsLayout;
     @BindView(R.id.mine_fragment_clear_cache_layout)
     RelativeLayout mineClearCacheLayout;
     @BindView(R.id.mine_fragment_feedback_layout)
@@ -128,7 +131,10 @@ public class MineFragment extends BaseFragment {
         registerReceiver();
         if (Constants.ISLOGIN){
             if (Constants.userInfoData == null){
-                setNet(NET_GET_USER_INFO);
+                Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
+                if (Constants.userInfoData == null){
+                    setNet(NET_GET_USER_INFO);
+                }
             }else {
                 setUserInfoView();
             }
@@ -162,6 +168,7 @@ public class MineFragment extends BaseFragment {
                 public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
                     if (response!=null&&response.isSuccessful()){
                         Constants.userInfoData = response.body().getData();
+                        SharedPreferencesUtils.putUserInfoData(App.instance(),Constants.userInfoData);
                         userInfoData = response.body().getData();
                         setUserInfoView();
                     }else  if (!response.isSuccessful()){
@@ -354,6 +361,14 @@ public class MineFragment extends BaseFragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), WebViewActivity.class);
                 intent.putExtra("type",WebViewActivity.TYPE_INVITE);
+                startActivity(intent);
+            }
+        });
+        mineWithdrawalsLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), WebViewActivity.class);
+                intent.putExtra("type",WebViewActivity.TYPE_WITHDRAWALS);
                 startActivity(intent);
             }
         });

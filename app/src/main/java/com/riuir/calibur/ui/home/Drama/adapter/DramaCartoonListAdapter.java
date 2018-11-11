@@ -9,6 +9,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.data.anime.CartoonListInfo;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -35,6 +36,14 @@ public class DramaCartoonListAdapter extends BaseQuickAdapter<CartoonListInfo.Ca
         GlideUtils.loadImageView(context,
                 GlideUtils.setImageUrl(context,item.getSource().getUrl(),GlideUtils.HALF_SCREEN),
                 source);
-        title.setText("["+item.getPart()+"]"+item.getName());
+        int partInt = (int) item.getPart();
+        float chengedPart = partInt;
+
+        if (chengedPart == item.getPart()){
+            title.setText("第"+partInt+"话："+item.getName());
+        }else {
+            title.setText("第"+item.getPart()+"话："+item.getName());
+        }
+
     }
 }

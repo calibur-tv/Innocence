@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.data.MainTrendingInfo;
 import com.riuir.calibur.data.user.UserFollowedRoleInfo;
@@ -39,12 +40,15 @@ public class FollowedRoleAdapter extends BaseQuickAdapter<MainTrendingInfo.MainT
         if (loverName == null){
             loverName ="暂无";
         }
-        helper.setText(R.id.user_followed_role_list_item_role_knight,"守护者："+loverName);
+
 //        helper.setText(R.id.drama_role_list_item_role_intro,item.getIntro());
         helper.setText(R.id.user_followed_role_list_item_role_anime_name,item.getBangumi().getName());
         helper.setText(R.id.user_followed_role_list_item_number,"贡献："+item.getHas_star());
-
-
+        RoundedImageView loverIc = helper.getView(R.id.user_followed_role_list_item_role_knight_icon);
+        if (item.getLover()!=null){
+            helper.setText(R.id.user_followed_role_list_item_role_knight,loverName+" 守护");
+            GlideUtils.loadImageView(context,item.getLover().getAvatar(),loverIc);
+        }
         GlideUtils.loadImageViewCircle(context,item.getAvatar(), (ImageView) helper.getView(R.id.user_followed_role_list_item_image));
 
     }

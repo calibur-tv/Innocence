@@ -21,8 +21,10 @@ import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import com.riuir.calibur.R;
+import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.VersionUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MineUserInfo;
@@ -45,12 +47,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * ************************************
- * 作者：韩宝坤
- * 日期：2017/12/24
- * 邮箱：hanbaokun@outlook.com
- * 描述：
- * ************************************
+ * 主activity
  */
 public class MainActivity extends BaseActivity implements MainBottomBar.OnSingleClickListener {
     @BindView(R.id.framelayout_main)
@@ -114,8 +111,9 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
         setCheckVersion();
 
+
         if (Constants.userInfoData == null){
-            setNetToGetUserInfo();
+            Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
         }
         //demo TODO
 //        Logger.d("oninit");
@@ -279,163 +277,35 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         }
     }
 
-
-    private void setNetToGetUserInfo() {
-        apiPost.getMineUserInfo().enqueue(new Callback<MineUserInfo>() {
-            @Override
-            public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    Constants.userInfoData = response.body().getData();
-                }else  if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(MainActivity.this,"mainactivity user="+info.getMessage());
-                }else {
-                    ToastUtils.showShort(MainActivity.this,"网络异常,请检查您的网络");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MineUserInfo> call, Throwable t) {
-                ToastUtils.showShort(MainActivity.this,"网络异常,请检查您的网络");
-                CrashReport.postCatchedException(t);
-            }
-        });
-    }
-
-
-    //将addBtn 以actionBtn的方式在这里初始化
-//    private void setFloatingActionBth() {
-//        //宽高的px  由dp转换而成
-//        int addBtnParams = DensityUtils.dp2px(this,45);
-//        int itemIconParams = DensityUtils.dp2px(this,40);
 //
-//        //设置CircularFloatingActionMenu点击展开扇形图
-//        final ImageView addActionImg = new ImageView(this);
-//        addActionImg.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//        //设置image宽高边距
-//        FloatingActionButton.LayoutParams addImgParams = new FloatingActionButton.LayoutParams(addBtnParams,
-//                addBtnParams);
-//        addImgParams.setMargins(0, 0, 0,
-//                8);
-//        addActionImg.setLayoutParams(addImgParams);
-//        addActionImg.setImageDrawable(getResources().getDrawable(R.mipmap.maintab_new_normal));
-//
-//        //设置FloatingActionButton宽高边距
-//        FloatingActionButton.LayoutParams addActionButtonParams = new FloatingActionButton.LayoutParams(
-//                addBtnParams, addBtnParams);
-//        addActionButtonParams.setMargins(0, 0,
-//                0, 0);
-//        final FloatingActionButton addActionButton =
-//                new FloatingActionButton.Builder(this).setContentView(addActionImg,addActionButtonParams)
-//                        .setPosition(FloatingActionButton.POSITION_BOTTOM_CENTER)
-//                        .setLayoutParams(addImgParams)
-//                        .build();
-//
-//        // Set up customized SubActionButtons for the right center menu
-//        SubActionButton.Builder subBuilder = new SubActionButton.Builder(this);
-////        lCSubBuilder.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_action_blue_selector));
-//
-//        FrameLayout.LayoutParams itemIconLayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-//                FrameLayout.LayoutParams.MATCH_PARENT);
-//        itemIconLayoutParams.setMargins(0, 0,
-//                0, 0);
-//        subBuilder.setLayoutParams(itemIconLayoutParams);
-//        // Set custom layout params
-//        FrameLayout.LayoutParams itemParams = new FrameLayout.LayoutParams(itemIconParams,
-//                itemIconParams);
-//        subBuilder.setLayoutParams(itemParams);
-//
-//        childIcon1 = new ImageView(this);
-//        childIcon2 = new ImageView(this);
-//        childIcon3 = new ImageView(this);
-//
-//        childIcon1.setImageDrawable(getResources().getDrawable(R.mipmap.ic_main_add_post));
-//        childIcon2.setImageDrawable(getResources().getDrawable(R.mipmap.ic_main_add_picture));
-//        childIcon3.setImageDrawable(getResources().getDrawable(R.mipmap.ic_main_add_score));
-//
-//        SubActionButton itemSub1 = subBuilder.setContentView(childIcon1, itemIconLayoutParams).build();
-//        SubActionButton itemSub2 = subBuilder.setContentView(childIcon2, itemIconLayoutParams).build();
-//        SubActionButton itemSub3 = subBuilder.setContentView(childIcon3, itemIconLayoutParams).build();
-//
-//
-//        actionMenu = new FloatingActionMenu.Builder(this)
-//                .addSubActionView(itemSub1)
-//                .addSubActionView(itemSub2)
-//                .addSubActionView(itemSub3)
-//                .setStartAngle(-135)
-//                .setEndAngle(-45)
-//                .attachTo(addActionButton)
-//                .build();
-//
-//        itemSub1.setOnClickListener(new View.OnClickListener() {
+//    private void setNetToGetUserInfo() {
+//        apiPost.getMineUserInfo().enqueue(new Callback<MineUserInfo>() {
 //            @Override
-//            public void onClick(View v) {
-//
-//                if (Constants.ISLOGIN){
-//                    Intent intent = new Intent(MainActivity.this, CardCreateNewActivity.class);
-//                    startActivity(intent);
+//            public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
+//                if (response!=null&&response.isSuccessful()){
+//                    Constants.userInfoData = response.body().getData();
+//                    SharedPreferencesUtils.putUserInfoData(App.instance(),Constants.userInfoData);
+//                }else  if (!response.isSuccessful()){
+//                    String errorStr = "";
+//                    try {
+//                        errorStr = response.errorBody().string();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    Gson gson = new Gson();
+//                    Event<String> info =gson.fromJson(errorStr,Event.class);
+//                    ToastUtils.showShort(MainActivity.this,"mainactivity user="+info.getMessage());
 //                }else {
-//                    ToastUtils.showShort(MainActivity.this,"登录状态才能发帖哦");
+//                    ToastUtils.showShort(MainActivity.this,"网络异常,请检查您的网络");
 //                }
-//
-//                actionMenu.close(true);
-//            }
-//        });
-//        itemSub2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (Constants.ISLOGIN){
-//                    Intent intent = new Intent(MainActivity.this, CreateNewImageActivity.class);
-//                    startActivity(intent);
-//                }else {
-//                    ToastUtils.showShort(MainActivity.this,"登录状态才能发图哦");
-//                }
-//                actionMenu.close(true);
-//            }
-//        });
-//        itemSub3.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                ToastUtils.showShort(MainActivity.this,"开发中，敬请期待3");
-//                actionMenu.close(true);
-//            }
-//        });
-//
-//
-//        actionMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
-//            @Override
-//            public void onMenuOpened(FloatingActionMenu menu) {
-//                // 增加按钮中的+号图标顺时针旋转45度
-//                addActionImg.setRotation(0);
-//                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 45);
-//                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(addActionImg, pvhR);
-//                animation.start();
-//                //屏幕变暗
-////                ScreenUtils.setScreenBgDarken(MainActivity.this);
 //            }
 //
 //            @Override
-//            public void onMenuClosed(FloatingActionMenu menu) {
-//                // 增加按钮中的+号图标逆时针旋转45度
-//
-//                addActionImg.setRotation(45);
-//                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
-//                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(addActionImg, pvhR);
-//                animation.start();
-//                //屏幕变亮
-////                ScreenUtils.setScreenBgLight(MainActivity.this);
+//            public void onFailure(Call<MineUserInfo> call, Throwable t) {
+//                ToastUtils.showShort(MainActivity.this,"网络异常,请检查您的网络");
+//                CrashReport.postCatchedException(t);
 //            }
 //        });
-//
-//
-//
 //    }
 
 

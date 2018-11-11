@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+apply plugin: 'bugly'
+//符号表
+bugly {
+    appId = 'd07841a6e4' // 注册时分配的App ID
+    appKey = '7d2003f7-9ede-4d8b-90d3-bc385ad5518a' // 注册时分配的App Key
+    debug = true
+}
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -7,7 +15,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 4
-        versionName "0.1.2"
+        versionName "0.1.3"
 
         packagingOptions {
             exclude 'META-INF/rxjava.properties'
@@ -60,14 +68,16 @@ dependencies {
 
     // butterKnife
     implementation 'com.jakewharton:butterknife:8.8.1'
-
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'org.greenrobot:eventbus:3.0.0'
 
     //腾讯 bugly
-//    implementation 'com.tencent.bugly:crashreport:latest.release'
+
+    //    implementation 'com.tencent.bugly:crashreport:latest.release'
+
     //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
     implementation 'com.tencent.bugly:nativecrashreport:latest.release'
+
     //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
     implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
 
@@ -126,14 +136,22 @@ dependencies {
 
     //dialog
     implementation 'com.github.f0ris.sweetalert:library:1.5.1'
+
     //UCrop
     implementation 'com.github.yalantis:ucrop:2.2.2'
+
     //switch
     implementation 'com.github.zcweng:switch-button:0.0.3@aar'
+
     //环形按钮进度条
     implementation 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
+
     //album
     implementation 'com.yanzhenjie:album:2.1.2'
+
     //banner轮播的标签
-    implementation "com.github.chenupt.android:springindicator:1.0.2@aar"
+    implementation 'com.github.chenupt.android:springindicator:1.0.2@aar'
+    //mustache
+//    implementation 'com.github.spullara.mustache.java:javascript:0.9.5'
+    implementation 'com.samskivert:jmustache:1.14'
 }

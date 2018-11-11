@@ -45,6 +45,7 @@ public class RoleListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTrend
 //        helper.setText(R.id.drama_role_list_item_role_intro,item.getIntro());
         helper.setText(R.id.drama_role_list_item_role_anime_name,item.getBangumi().getName());
         helper.setText(R.id.drama_role_list_item_number,""+(helper.getLayoutPosition()+1));
+        helper.setText(R.id.drama_role_list_item_role_coin_count,"团子："+item.getStar_count());
 
         ImageView icNum = helper.getView(R.id.drama_role_list_item_number_ic);
         TextView num = helper.getView(R.id.drama_role_list_item_number);

@@ -84,7 +84,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
         final TextView commentUpvoteCheckText;
         AppHeaderPopupWindows headerMore;
 
-        helper.setText(R.id.card_show_info_list_comment_item_user_name,item.getFrom_user_name());
+        helper.setText(R.id.card_show_info_list_comment_item_user_name,item.getFrom_user_name().replace("\n",""));
         GlideUtils.loadImageViewCircle(context,item.getFrom_user_avatar(),
                 (ImageView) helper.getView(R.id.card_show_info_list_comment_item_user_icon));
         helper.addOnClickListener(R.id.card_show_info_list_comment_item_user_icon);

@@ -27,8 +27,10 @@ import com.qiniu.android.storage.Configuration;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.riuir.calibur.R;
+import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.PermissionUtils;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeShowInfo;
 import com.riuir.calibur.data.Event;
@@ -205,6 +207,9 @@ public class CardCreateNewActivity extends BaseActivity {
     }
 
     private void setUserInfo() {
+        if (Constants.userInfoData==null){
+            Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
+        }
         if (Constants.userInfoData!=null){
             userId = Constants.userInfoData.getId();
         }else {

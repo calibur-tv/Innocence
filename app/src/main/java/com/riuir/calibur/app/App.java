@@ -27,15 +27,6 @@ import java.util.List;
 
 import static com.riuir.calibur.assistUtils.LogUtils.isDebug;
 
-/**
- * ************************************
- * 作者：韩宝坤
- * 日期：2017/12/22
- * 邮箱：hanbaokun@outlook.com
- * 描述：
- * 版权：
- * ************************************
- */
 public class App extends Application  {
     private static App instance;
 
@@ -45,7 +36,6 @@ public class App extends Application  {
         super.onCreate();
         //正式打包时取消注释
         isDebug = false;
-
         instance = this;
         initLogger();
         initBugly();

@@ -13,7 +13,7 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsTranslucent">false</item>
-        <item name="android:windowBackground">@color/theme_magic_sakura_primary</item>
+        <item name="android:windowBackground">@mipmap/splash_background</item>
     </style>
 
 </resources>

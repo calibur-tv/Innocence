@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.Drama.DramaSearchActivity">
+    tools:context=".ui.home.search.DramaSearchActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,7 +37,7 @@
                 android:layout_marginLeft="45dp"
                 android:layout_marginRight="15dp"
                 android:paddingLeft="15dp"
-                android:hint="搜索番剧"
+                android:hint="搜索二次元的一切"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
                 android:transitionName="ToSearchDramaActivity"
@@ -70,16 +70,16 @@
                 android:visibility="gone"
                 />
         </RelativeLayout>
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/drama_search_activity_refresh_layout"
+        <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
+            android:id="@+id/drama_search_activity_pager_tabs"
             android:layout_width="match_parent"
             android:background="@color/color_FFFFFFFF"
-            android:layout_height="match_parent">
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/drama_search_activity_list_view"
-                android:background="@color/color_FFFFFFFF"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
-        </android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_height="40dp"></com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/drama_search_activity_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_FFFFFFFF">
+        </android.support.v4.view.ViewPager>
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

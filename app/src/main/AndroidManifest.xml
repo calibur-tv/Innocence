@@ -25,6 +25,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
+
         <meta-data
             android:name="com.riuir.calibur.utils.CustomGlideModule"
             android:value="GlideModule" />
@@ -122,7 +123,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.home.Drama.DramaSearchActivity"
+            android:name=".ui.home.search.DramaSearchActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysVisible|adjustPan" />
         <activity

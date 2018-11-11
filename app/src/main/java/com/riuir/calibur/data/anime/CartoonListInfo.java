@@ -73,7 +73,7 @@ public class CartoonListInfo {
         private int user_id;
         private int bangumi_id;
         private String name;
-        private int part;
+        private float part;
         private int image_count;
         private CartoonListInfoUser user;
         private CartoonListInfoSource source;
@@ -113,7 +113,7 @@ public class CartoonListInfo {
             this.name = name;
         }
 
-        public int getPart() {
+        public float getPart() {
             return part;
         }
 

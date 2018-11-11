@@ -444,7 +444,7 @@ public class CardShowInfoActivity extends BaseActivity {
 
         headerCardTitle.setText(primacyData.getPost().getTitle());
         GlideUtils.loadImageViewCircle(CardShowInfoActivity.this,primacyData.getUser().getAvatar(),headerUserIcon);
-        headerUserName.setText(primacyData.getUser().getNickname());
+        headerUserName.setText(primacyData.getUser().getNickname().replace("\n",""));
         int alllCount = primacyData.getPost().getComment_count()+1;
         headerCardInfo.setText("第1楼·共"+alllCount+"楼·"+TimeUtils.HowLongTimeForNow(primacyData.getPost().getCreated_at()));
         headerCardSeeCount.setText(primacyData.getPost().getView_count()+"");

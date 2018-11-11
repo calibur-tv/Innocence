@@ -15,6 +15,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
@@ -115,6 +116,7 @@ public class DramaCartoonShowActivity extends BaseActivity {
             public void onFailure(Call<ImageShowInfoPrimacy> call, Throwable t) {
                 if (call.isCanceled()){
                 }else {
+                    LogUtils.d("cartoonPart","t ="+t.getMessage());
                     ToastUtils.showShort(DramaCartoonShowActivity.this,"请检查您的网络！");
                     setFailedView();
                 }
@@ -125,7 +127,13 @@ public class DramaCartoonShowActivity extends BaseActivity {
     private void setView() {
         if (refreshLayout!=null){
             refreshLayout.setRefreshing(false);
-            titleText.setText("第"+cartoonData.getPart()+"话："+cartoonData.getName());
+            int partInt = (int) cartoonData.getPart();
+            float chengedPart = partInt;
+            if (chengedPart == cartoonData.getPart()){
+                titleText.setText("第"+partInt+"话："+cartoonData.getName());
+            }else {
+                titleText.setText("第"+cartoonData.getPart()+"话："+cartoonData.getName());
+            }
             setNewData();
         }
     }

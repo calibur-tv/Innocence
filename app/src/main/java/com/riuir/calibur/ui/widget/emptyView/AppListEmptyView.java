@@ -43,5 +43,10 @@ public class AppListEmptyView extends RelativeLayout {
         icon = view.findViewById(R.id.app_empty_view_icon);
         text = view.findViewById(R.id.app_empty_view_text);
     }
+    public void setText(String textStr){
+        if (text!=null){
+            text.setText(textStr);
+        }
+    }
 
 }

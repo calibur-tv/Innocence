@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="120dp">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    >
     <RelativeLayout
         android:id="@+id/drama_timeline_list_item_layout"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:background="@color/color_FFFFFFFF">
+        android:background="@drawable/app_bg_item_white_gray">
         <ImageView
             android:id="@+id/drama_timeline_list_item_image"
             android:layout_marginLeft="15dp"

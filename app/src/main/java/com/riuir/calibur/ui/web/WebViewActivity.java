@@ -14,6 +14,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
+import com.riuir.calibur.assistUtils.VersionUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.utils.Constants;
 import com.tencent.smtt.sdk.WebSettings;
@@ -42,6 +43,7 @@ public class WebViewActivity extends BaseActivity {
 
     public static final String TYPE_RULE = "rule";
     public static final String TYPE_INVITE = "invite";
+    public static final String TYPE_WITHDRAWALS = "withdrawals";
 
     private String type = "";
     private String uri = "";
@@ -87,13 +89,15 @@ public class WebViewActivity extends BaseActivity {
         if (Constants.AUTH_TOKEN==null||Constants.AUTH_TOKEN.length()==0){
             Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
         }
+
         setClient();
         webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-        String cacheDirPath = getFilesDir().getAbsolutePath()+APP_CACAHE_DIRNAME;
+        String cacheDirPath = App.instance().getFilesDir().getAbsolutePath()+APP_CACAHE_DIRNAME;
         //设置  Application Caches 缓存目录
         webSettings.setAppCachePath(cacheDirPath);
+        webSettings.setAppCacheMaxSize(20*1024*1024);
         // 设置 WebView 的缓存模式
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         // 支持启用缓存模式
@@ -101,14 +105,12 @@ public class WebViewActivity extends BaseActivity {
 
         if (type.equals(TYPE_INVITE)){
             setInviteLoad();
+        }else if (type.equals(TYPE_WITHDRAWALS)){
+            setWithdrawals();
         }else {
             setRuleLoad();
         }
-
     }
-
-
-
 
     private void setClient() {
 //        chromeClient = new WebChromeClient();
@@ -148,6 +150,15 @@ public class WebViewActivity extends BaseActivity {
         }else {
             webView.loadUrl("https://m.calibur.tv/app/handbook");
         }
+    }
+
+    private void setWithdrawals() {
+        Map<String,String> header = new HashMap<>();
+        header.put("Authorization","Bearer "+ Constants.AUTH_TOKEN);
+
+        webView.loadUrl("https://static.calibur.tv/hybrid/templates/self/transactions/v1/v1-c774dc4772c4190144e6f51387cea5ad-48a5598b9781e17fa517c1369ea4a1d8.mustache",header);
+        webView.addJavascriptInterface(VersionUtils.getLocalVersionName(),"version");
+        webView.addJavascriptInterface(1,"page");
     }
 
     @Override

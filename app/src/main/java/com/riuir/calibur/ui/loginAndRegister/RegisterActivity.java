@@ -242,7 +242,7 @@ public class RegisterActivity extends BaseActivity {
             parmas.put("secret",passwordConfirmdStr);
             parmas.put("authCode",verificationCodeStr);
             if (inviteCodeStr!=null&&inviteCodeStr.length()!=0){
-                parmas.put("inviteCode",nicknameStr);
+                parmas.put("inviteCode",inviteCodeStr);
             }
             apiPostNoAuth.getCallRegister(parmas).enqueue(new Callback<Event<String>>() {
                 @Override

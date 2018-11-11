@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/app_bg_item_white_gray">
     <RelativeLayout
         android:id="@+id/drama_timeline_list_item_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/drama_video_episodes_list_item_image"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp"
@@ -15,6 +17,7 @@
             android:layout_width="110dp"
             android:layout_height="80dp"
             android:scaleType="centerCrop"
+            app:riv_corner_radius="5dp"
             />
         <TextView
             android:id="@+id/drama_video_episodes_list_item_episodes"

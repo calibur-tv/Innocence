@@ -28,10 +28,8 @@ public class LoginAndRegisterActivity extends BaseActivity {
     ViewPager viewPager;
     @BindView(R.id.login_and_register_tab)
     MyPagerSlidingTabStrip tabStrip;
-
     RegisterFragment registerFragment;
     LoginFragment loginFragment;
-
     private DisplayMetrics dm;
 
     @Override

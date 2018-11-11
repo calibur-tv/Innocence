@@ -48,17 +48,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //拿到NetService网络请求的Api返回对象
         apiPost = NetService.getInstance().createServicePost();
+        apiGet = NetService.getInstance().createServiceGet();
+
         apiPostNoAuth = NetService.getInstance().createServicePostNoAuth();
         apiPostNoGeetest = NetService.getInstance().createServicePostNoGeetest();
-        apiGet = NetService.getInstance().createServiceGet();
         apiGetHasAuth = NetService.getInstance().createServiceGetHasAuth();
 
         compositeDisposable = new CompositeDisposable();
         setHandler();
 
         setContentView(getContentViewId());
-        ActivityUtils.setTranslucentStatusLight(BaseActivity.this);
         //状态栏透明
+        ActivityUtils.setTranslucentStatusLight(BaseActivity.this);
         ActivityUtils.setTranslucentStatus(this, true);
         unbinder = ButterKnife.bind(this);
         mInflater = LayoutInflater.from(this);

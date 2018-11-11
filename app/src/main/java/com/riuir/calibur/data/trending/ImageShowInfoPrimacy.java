@@ -36,7 +36,7 @@ public class ImageShowInfoPrimacy {
         private int user_id;
         private int bangumi_id;
         private String name;
-        private int part;
+        private float part;
         private List<ImageShowInfoPrimacyParts> parts;
         private List<ImageShowInfoPrimacyImages> images;
         private int image_count;
@@ -87,7 +87,7 @@ public class ImageShowInfoPrimacy {
             this.name = name;
         }
 
-        public int getPart() {
+        public float getPart() {
             return part;
         }
 
@@ -262,7 +262,7 @@ public class ImageShowInfoPrimacy {
     public class  ImageShowInfoPrimacyParts implements Serializable{
         private int id;
         private String name;
-        private int part;
+        private float part;
 
         public int getId() {
             return id;
@@ -280,7 +280,7 @@ public class ImageShowInfoPrimacy {
             this.name = name;
         }
 
-        public int getPart() {
+        public float getPart() {
             return part;
         }
 

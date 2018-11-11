@@ -40,6 +40,8 @@ public class MyAlbumUtils {
                 )
                 .build();
 
+        final String webp = "webp";
+        final long maxSize = 5*1024*1024;
         mAlbumFiles = new ArrayList<>();
         Album.image(context) // Image selection.
                 .multipleChoice()
@@ -52,22 +54,14 @@ public class MyAlbumUtils {
                     @Override
                     public boolean filter(String attributes) {
                         //过滤webp格式
-                        if (attributes.contains("webp")){
-                            return true;
-                        }else {
-                            return false;
-                        }
+                        return attributes.contains(webp);
                     }
                 })
                 .filterSize(new Filter<Long>() {
                     @Override
                     public boolean filter(Long attributes) {
                         //过滤大于5mb的图
-                        if (attributes>5000000){
-                            return true;
-                        }else {
-                            return false;
-                        }
+                        return attributes>maxSize;
                     }
                 })
                 .onResult(new Action<ArrayList<AlbumFile>>() {

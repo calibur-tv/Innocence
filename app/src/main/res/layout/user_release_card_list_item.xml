@@ -19,6 +19,7 @@
         android:layout_toRightOf="@id/user_release_list_item_bangumi_icon"
         android:layout_alignTop="@id/user_release_list_item_bangumi_icon"
         android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         >
         <TextView
             android:id="@+id/user_release_list_item_bangumi_is_nice"

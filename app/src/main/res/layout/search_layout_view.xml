@@ -18,7 +18,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:paddingLeft="15dp"
-            android:hint="搜索番剧"
+            android:hint="搜索二次元的一切"
             android:textSize="15sp"
             android:gravity="center_vertical"
             android:transitionName="ToSearchDramaActivity"

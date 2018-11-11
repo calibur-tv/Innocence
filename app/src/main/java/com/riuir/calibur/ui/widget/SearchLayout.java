@@ -13,9 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.riuir.calibur.R;
-import com.riuir.calibur.net.ApiGet;
-import com.riuir.calibur.net.ApiPost;
-import com.riuir.calibur.ui.home.Drama.DramaSearchActivity;
+import com.riuir.calibur.ui.home.search.DramaSearchActivity;
 
 public class SearchLayout extends RelativeLayout{
     RelativeLayout searchLayout;

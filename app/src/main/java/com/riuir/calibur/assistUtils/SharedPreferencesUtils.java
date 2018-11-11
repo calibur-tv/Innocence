@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.riuir.calibur.data.MineUserInfo;
 import com.riuir.calibur.data.anime.BangumiAllList;
 
 import java.lang.reflect.InvocationTargetException;
@@ -105,6 +106,7 @@ public class SharedPreferencesUtils
         SharedPreferences.Editor editor = sp.edit();
         Gson gson = new Gson();
         String data = gson.toJson(bangumiAllListData);
+        LogUtils.d("SharedPreferences","anime list = "+data);
         editor.putString(key, data);
         SharedPreferencesCompat.apply(editor);
     }
@@ -116,13 +118,46 @@ public class SharedPreferencesUtils
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         String data = sp.getString(key, "");
+        LogUtils.d("SharedPreferences","anime list1 = "+data);
         Gson gson = new Gson();
         Type listType = new TypeToken<List<BangumiAllList.BangumiAllListData>>() {
         }.getType();
         ArrayList<BangumiAllList.BangumiAllListData> list = gson.fromJson(data, listType);
+        for (int i = 0; i < list.size(); i++) {
+//            LogUtils.d("SharedPreferences","anime item = "+list.toString());
+        }
 
         return list;
     }
+    /**
+     * 保存用户信息
+     */
+    public static void putUserInfoData(Context context,MineUserInfo.MinEUserInfoData userInfoData){
+        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        Gson gson = new Gson();
+        String data = gson.toJson(userInfoData);
+        LogUtils.d("SharedPreferences","user  = "+data);
+        editor.putString("userInfoData", data);
+        SharedPreferencesCompat.apply(editor);
+    }
+    /**
+     * 获取用户信息
+     */
+    public static MineUserInfo.MinEUserInfoData getUserInfoData(Context context){
+        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
+                Context.MODE_PRIVATE);
+        String data = sp.getString("userInfoData", "");
+        LogUtils.d("SharedPreferences","user 1 = "+data);
+        Gson gson = new Gson();
+        Type type = new TypeToken<MineUserInfo.MinEUserInfoData>() {
+        }.getType();
+        MineUserInfo.MinEUserInfoData userInfoData = gson.fromJson(data,type);
+        LogUtils.d("SharedPreferences","user ok = "+userInfoData);
+        return userInfoData;
+    }
+
 
     /**
      * 移除某个key值已经对应的值

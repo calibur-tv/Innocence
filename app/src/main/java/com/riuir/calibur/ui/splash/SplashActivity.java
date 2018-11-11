@@ -7,6 +7,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.Event;
@@ -68,6 +69,7 @@ public class SplashActivity extends BaseActivity {
             public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
                 if (response!=null&&response.isSuccessful()){
                     Constants.userInfoData = response.body().getData();
+                    SharedPreferencesUtils.putUserInfoData(App.instance(),Constants.userInfoData);
                     BangumiAllListUtils.setBangumiAllList(SplashActivity.this,apiGet);
                 }else  if (!response.isSuccessful()){
                     String errorStr = "";

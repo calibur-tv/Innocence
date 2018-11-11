@@ -175,6 +175,10 @@ public class MessageFragment extends BaseFragment {
                     if (response!=null&&response.isSuccessful()){
                         notificationData = response.body().getData();
                         notificationList = response.body().getData().getList();
+                        for (int i = 0; i < notificationList.size(); i++) {
+                            LogUtils.d("notificationData","msg list = "+notificationList.get(i).toString());
+                        }
+
                         if (isFirstLoad){
                             baseNotificationList = response.body().getData().getList();
                             setFirstData();

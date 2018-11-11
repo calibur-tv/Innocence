@@ -33,6 +33,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * 用户主页
+ */
 public class UserMainActivity extends BaseActivity {
 
     @BindView(R.id.user_main_activity_banner)
@@ -171,7 +174,7 @@ public class UserMainActivity extends BaseActivity {
         GlideUtils.loadImageView(UserMainActivity.this,
                 GlideUtils.setImageUrlForWidth(UserMainActivity.this,userData.getAvatar(),
                         userIcon.getLayoutParams().width),userIcon);
-        userName.setText(userData.getNickname());
+        userName.setText(userData.getNickname().replace("\n",""));
         userLevel.setText("Lv"+userData.getLevel()+" · 战斗力："+userData.getPower());
         userSignature.setText(userData.getSignature());
 

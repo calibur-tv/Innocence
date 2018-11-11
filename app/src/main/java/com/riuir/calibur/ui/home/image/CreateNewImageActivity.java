@@ -39,9 +39,11 @@ import com.qiniu.android.storage.Configuration;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.riuir.calibur.R;
+import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.PermissionUtils;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.create.CreateCard;
@@ -177,14 +179,10 @@ public class CreateNewImageActivity extends BaseActivity {
             ToastUtils.showShort(this,"登录之后才能发帖");
             finish();
         }
-        if (Constants.userInfoData == null||Constants.userInfoData.getId() == 0){
-            ToastUtils.showShort(this,"用户数据异常丢失，请重启APP");
-            finish();
+        if (Constants.userInfoData==null){
+            Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
         }
-        try {
-            userId = Constants.userInfoData.getId();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (Constants.userInfoData == null||Constants.userInfoData.getId() == 0){
             ToastUtils.showShort(this,"用户数据异常丢失，请重启APP");
             finish();
         }

@@ -1,4 +1,4 @@
-package com.riuir.calibur.ui.home.Drama.adapter;
+package com.riuir.calibur.ui.home.search.adapter;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

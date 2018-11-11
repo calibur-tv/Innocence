@@ -487,9 +487,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
         headerCardTitle.setText(primacyData.getTitle());
         GlideUtils.loadImageViewCircle(ScoreShowInfoActivity.this,primacyData.getUser().getAvatar(),headerUserIcon);
-        headerUserName.setText(primacyData.getUser().getNickname());
+        headerUserName.setText(primacyData.getUser().getNickname().replace("\n",""));
         headerTime.setText( TimeUtils.HowLongTimeForNow(primacyData.getCreated_at()));
-
 
 
         headerBangumiView.setOnClickListener(new View.OnClickListener() {
