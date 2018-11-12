@@ -106,37 +106,6 @@ public class SplashActivity extends BaseActivity {
         });
     }
 
-//    private void setAllBangumiData() {
-//        apiGet.getBangumiAllList().enqueue(new Callback<BangumiAllList>() {
-//            @Override
-//            public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
-//                if (response!=null&&response.isSuccessful()){
-//                    Constants.bangumiAllListData = response.body().getData();
-//                }else  if (!response.isSuccessful()){
-//                    String errorStr = "";
-//                    try {
-//                        errorStr = response.errorBody().string();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Gson gson = new Gson();
-//                    Event<String> info =gson.fromJson(errorStr,Event.class);
-//                    ToastUtils.showShort(SplashActivity.this,info.getMessage());
-//
-//                }else {
-////                    ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
-//                }
-//                startActivity(MainActivity.class);
-//                finish();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BangumiAllList> call, Throwable t) {
-//                startActivity(MainActivity.class);
-//                finish();
-//            }
-//        });
-//    }
 
     @Override
     protected void handler(Message msg) {

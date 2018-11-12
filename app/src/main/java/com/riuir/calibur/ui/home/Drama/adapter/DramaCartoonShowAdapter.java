@@ -5,9 +5,10 @@ import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bm.library.PhotoView;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
 import com.riuir.calibur.utils.GlideUtils;
@@ -36,7 +37,7 @@ public class DramaCartoonShowAdapter extends BaseQuickAdapter<ImageShowInfoPrima
         GlideUtils.loadImageView(context,
                 GlideUtils.setImageUrl(context,item.getUrl(),GlideUtils.FULL_SCREEN),
                 photoView);
-        photoView.enable();
+//        photoView.enable();
         helper.addOnClickListener(R.id.drama_cartoon_show_item_photo_view);
     }
 }

@@ -10,8 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bm.library.PhotoView;
+
 import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
@@ -104,9 +105,8 @@ public class CardPreviewPictureActivity extends BaseActivity {
             View view = getLayoutInflater().inflate(R.layout.preview_view_pager_item_view,null);
             final PhotoView photoView = view.findViewById(R.id.preview_view_pager_item_photo_view);
             final TextView saveBtn = view.findViewById(R.id.preview_view_pager_item_save_btn);
-            GlideUtils.loadImageViewpreview(CardPreviewPictureActivity.this,
+            GlideUtils.loadImageView(CardPreviewPictureActivity.this,
                     GlideUtils.setImageUrl(CardPreviewPictureActivity.this,url,GlideUtils.FULL_SCREEN),photoView);
-            photoView.enable();
 
             photoView.setOnClickListener(new View.OnClickListener() {
                 @Override

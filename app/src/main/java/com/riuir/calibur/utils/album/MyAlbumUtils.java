@@ -54,7 +54,11 @@ public class MyAlbumUtils {
                     @Override
                     public boolean filter(String attributes) {
                         //过滤webp格式
-                        return attributes.contains(webp);
+                        if (attributes!=null){
+                            return attributes.contains(webp);
+                        }else {
+                            return false;
+                        }
                     }
                 })
                 .filterSize(new Filter<Long>() {
