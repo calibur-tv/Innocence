@@ -17,9 +17,9 @@ public class LoginUtils {
         Constants.AUTH_TOKEN = "";
         Constants.userInfoData = null;
         SharedPreferencesUtils.remove(App.instance(),"Authorization");
+        SharedPreferencesUtils.remove(App.instance(),"userInfoData");
         Intent intent = new Intent("calibur.activity.loginAndRegister");
         context.startActivity(intent);
-
     }
 
     public static void CancelLogin(Context context, Activity activity){
@@ -27,6 +27,7 @@ public class LoginUtils {
         Constants.AUTH_TOKEN = "";
         Constants.userInfoData = null;
         SharedPreferencesUtils.remove(App.instance(),"Authorization");
+        SharedPreferencesUtils.remove(App.instance(),"userInfoData");
         Intent intent = new Intent("calibur.activity.loginAndRegister");
         activity.startActivity(intent);
         activity.finish();

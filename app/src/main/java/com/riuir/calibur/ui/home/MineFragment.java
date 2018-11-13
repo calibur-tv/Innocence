@@ -127,8 +127,6 @@ public class MineFragment extends BaseFragment {
 
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
-//        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
-//        rootView.setPadding(0,stautsBarHeight,0,0);
         reSetBtn.setVisibility(View.GONE);
         registerReceiver();
         if (Constants.ISLOGIN){
