@@ -2,8 +2,10 @@ package com.riuir.calibur.ui.home.adapter;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -33,7 +35,8 @@ public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTren
     protected void convert(BaseViewHolder helper, MainTrendingInfo.MainTrendingInfoList item) {
 
         ImageView img = helper.getView(R.id.main_image_list_item_image);
-
+        TextView imageCount = helper.getView(R.id.main_image_list_item_image_count);
+        imageCount.setVisibility(View.VISIBLE);
         ViewGroup.LayoutParams params = img.getLayoutParams();
 
         double screenHeight =  ScreenUtils.getScreenHeight(context);
@@ -44,6 +47,11 @@ public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTren
             params.height = height;
         }
         img.setLayoutParams(params);
+        if (item.isIs_album()){
+            imageCount.setText(item.getImage_count()+"");
+        }else {
+            imageCount.setText("1");
+        }
 
         GlideUtils.loadImageView(context,
                 GlideUtils.setImageUrl(mContext,item.getSource().getUrl(),GlideUtils.HALF_SCREEN),

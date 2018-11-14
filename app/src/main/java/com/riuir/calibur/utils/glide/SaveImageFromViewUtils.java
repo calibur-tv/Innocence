@@ -1,26 +1,39 @@
 package com.riuir.calibur.utils.glide;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
+import com.riuir.calibur.utils.GlideApp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,10 +41,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
+
+import static butterknife.internal.Utils.arrayOf;
 
 public class SaveImageFromViewUtils {
 
@@ -59,7 +76,7 @@ public class SaveImageFromViewUtils {
         }
     }
 
-    private class getImageCacheAsyncTask extends AsyncTask<String, Void, File> {
+    private class getImageCacheAsyncTask extends AsyncTask<String, Void, Bitmap> {
 
         private final Context context;
 
@@ -68,30 +85,45 @@ public class SaveImageFromViewUtils {
         }
 
         @Override
-        protected File doInBackground(String... params) {
+        protected Bitmap doInBackground(String... params) {
 
             String imgUrl =  params[0];
+            final Bitmap[] bm = new Bitmap[1];
             try {
-                return Glide.with(context)
+                File imgPath = Glide.with(context)
                         .load(imgUrl)
                         .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                         .get();
+                Bitmap bitmap=BitmapFactory.decodeFile(imgPath.getAbsolutePath());
+                return bitmap;
             } catch (Exception ex) {
                 return null;
             }
         }
 
         @Override
-        protected void onPostExecute(File result) {
+        protected void onPostExecute(Bitmap result) {
             if (result == null) {
                 return;
             }
             try {
                 // 插入图库
-                String reFileUrl =MediaStore.Images.Media.insertImage(App.instance().getContentResolver(), result.getAbsolutePath(), result.getName(), null);
-                LogUtils.d("saveImageFinished","url = "+reFileUrl);
-                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(reFileUrl)));
-            } catch (FileNotFoundException e) {
+                Random random = new Random();
+                int ran = random.nextInt(9999 - 1000) + 1000;
+                String reFileUrl =MediaStore.Images.Media.insertImage(App.instance().getContentResolver(), result, "caliburImg"+ran, null);
+                Uri uri = Uri.parse(reFileUrl);
+                String absolutePath = getPath(uri);
+//                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, reFileUri));
+                String[] paths = arrayOf(absolutePath);
+                String[] types = arrayOf("image/jpeg","image/jpg","image/gif");
+                MediaScannerConnection.scanFile(App.instance(),paths , types, new MediaScannerConnection.OnScanCompletedListener() {
+                    @Override
+                    public void onScanCompleted(String s, Uri uri) {
+                        LogUtils.d("saveImageFinished","s = "+s+", uri = "+uri.getPath());
+                    }
+                });
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }finally {
                 onFinishSaveListener.onFinishSave();
@@ -114,4 +146,12 @@ public class SaveImageFromViewUtils {
         void onFinishSave();
     }
 
+    private String getPath(Uri uri) {
+        String[] projection = {MediaStore.Video.Media.DATA};
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
 }

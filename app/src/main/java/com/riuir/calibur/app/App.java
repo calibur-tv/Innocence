@@ -35,7 +35,7 @@ public class App extends Application  {
     public void onCreate() {
         super.onCreate();
         //正式打包时取消注释
-        isDebug = false;
+//        isDebug = false;
         instance = this;
         initLogger();
         initBugly();

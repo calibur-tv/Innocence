@@ -36,6 +36,22 @@
             android:background="@drawable/image_list_title_bg"
             android:gravity="center"
             />
+        <TextView
+            android:id="@+id/main_image_list_item_image_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="1"
+            android:layout_margin="10dp"
+            android:visibility="gone"
+            android:shadowDx="1.5"
+            android:shadowDy="1.5"
+            android:shadowColor="@color/color_FF5B5B5B"
+            android:shadowRadius="1"
+            android:textSize="12sp"
+            android:textColor="@color/color_FFFFFFFF"
+            />
     </RelativeLayout>
 
 </RelativeLayout>
