@@ -482,7 +482,7 @@ public class MessageFragment extends BaseFragment {
                     String[] commentIdStr = ids[0].split("=");
                     comment_id = Integer.parseInt(commentIdStr[1]);
                     String[] replyIdStr = ids[1].split("=");
-                    reply_id = Integer.parseInt(commentIdStr[1]);
+                    reply_id = Integer.parseInt(replyIdStr[1]);
                 }
             }
         }
