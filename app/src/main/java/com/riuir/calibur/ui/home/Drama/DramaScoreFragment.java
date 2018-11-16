@@ -43,6 +43,7 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
 import com.riuir.calibur.data.anime.AnimeScoreInfo;
+import com.riuir.calibur.data.params.FolllowListParams;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaScoreListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -165,7 +166,16 @@ public class DramaScoreFragment extends BaseFragment {
     private void setNet(int NET_STATUS) {
         if (NET_STATUS == NET_LIST){
             setSeendIdS();
-            listCall = apiGet.getFollowList("score","active",bangumiID,"",0,0,0,seenIds);
+            FolllowListParams folllowListParams = new FolllowListParams();
+            folllowListParams.setType("score");
+            folllowListParams.setSort("active");
+            folllowListParams.setBangumiId(bangumiID);
+            folllowListParams.setUserZone("");
+            folllowListParams.setPage(0);
+            folllowListParams.setTake(0);
+            folllowListParams.setMinId(0);
+            folllowListParams.setSeenIds(seenIds);
+            listCall = apiPost.getFollowList(folllowListParams);
             listCall.enqueue(new Callback<MainTrendingInfo>() {
                 @Override
                 public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {

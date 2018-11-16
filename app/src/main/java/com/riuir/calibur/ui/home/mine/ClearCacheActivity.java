@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.VersionUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.utils.GlideUtils;
 import com.riuir.calibur.utils.glide.GlideClearCatchUtils;
@@ -28,6 +29,9 @@ public class ClearCacheActivity extends BaseActivity {
     Button clearBtn;
     @BindView(R.id.clear_cache_activity_back_btn)
     ImageView backBtn;
+
+    @BindView(R.id.clear_cache_activity_version_name)
+    TextView versionName;
 
     @Override
     protected int getContentViewId() {
@@ -53,6 +57,7 @@ public class ClearCacheActivity extends BaseActivity {
     }
 
     private void setSize() {
+        versionName.setText("版本号："+VersionUtils.getLocalVersionName());
         cacheSizeText.setText(GlideClearCatchUtils.getCacheSize());
     }
 

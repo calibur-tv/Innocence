@@ -389,7 +389,6 @@ public class DramaVideoPlayActivity extends BaseActivity {
                                     startActivity(intent);
                                 }
                             });
-
                         }
                     }else {
                         //不是必须投食的判断等级决定能否观看
@@ -440,7 +439,6 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
         //隐藏非弹出的底部进度条
         videoPlayer.setBottomProgressBarDrawable(null);
-
 
         //设置全屏按键功能,这是使用的是选择屏幕，而不是全屏
         videoPlayer.getFullscreenButton().setOnClickListener(new View.OnClickListener() {

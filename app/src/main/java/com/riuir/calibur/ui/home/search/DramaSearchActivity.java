@@ -289,9 +289,12 @@ public class DramaSearchActivity extends BaseActivity {
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
             if (charSequence.length()!=0){
                 editClear.setVisibility(View.VISIBLE);
-                searchPopup.showAsDropDown(searchEdit,0,0);
+                if (searchEdit!=null){
+                    searchPopup.showAsDropDown(searchEdit,0,0);
+                }
             }else {
                 editClear.setVisibility(View.GONE);
                 searchPopup.dismiss();

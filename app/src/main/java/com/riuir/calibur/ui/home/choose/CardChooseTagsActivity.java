@@ -49,7 +49,7 @@ public class CardChooseTagsActivity extends BaseActivity {
     private List<AnimeShowInfo.AnimeShowInfoTags> baseChoosedTagList;
     private List<AnimeShowInfo.AnimeShowInfoTags> choosedTagList = new ArrayList<>();
 
-    private List<AnimeShowInfo.AnimeShowInfoTags> allTagList;
+    private List<AnimeShowInfo.AnimeShowInfoTags> allTagList = new ArrayList<>();
     private ArrayList<Integer> choosedTagsIds = new ArrayList<>();
     Call<DramaTags> tagsCall;
 
@@ -67,6 +67,7 @@ public class CardChooseTagsActivity extends BaseActivity {
         Intent intent = getIntent();
         choosedTagsIds = intent.getIntegerArrayListExtra("tagsIds");
         setListener();
+        setTagsGridAdapter();
         setNet();
     }
 
@@ -111,7 +112,7 @@ public class CardChooseTagsActivity extends BaseActivity {
                 if (response!=null&&response.isSuccessful()){
                     allTagList = response.body().getData();
                     LogUtils.d("dramaTags","tagsDataList = "+allTagList);
-                    setTagsGridAdapter();
+                    setTagsData();
 
                 }else if (!response.isSuccessful()){
                     String errorStr = "";
@@ -144,6 +145,12 @@ public class CardChooseTagsActivity extends BaseActivity {
         tagsGridView.setLayoutManager(new GridLayoutManager(CardChooseTagsActivity.this,4));
         tagsGridView.setNestedScrollingEnabled(false);
         tagsGridView.setAdapter(tagsGridAdapter);
+    }
+
+    private void setTagsData(){
+        if (tagsGridAdapter!=null&&tagsGridView!=null){
+            tagsGridAdapter.setNewData(allTagList);
+        }
     }
 
     @Override
