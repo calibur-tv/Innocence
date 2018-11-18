@@ -42,11 +42,15 @@ android {
         mavenCentral()
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-
+    implementation project(':foundation')
     //noinspection GradleCompatible
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
@@ -155,4 +159,5 @@ dependencies {
     //mustache
 //    implementation 'com.github.spullara.mustache.java:javascript:0.9.5'
     implementation 'com.samskivert:jmustache:1.14'
+    implementation 'com.qiniu:happy-dns:0.2.13'
 }

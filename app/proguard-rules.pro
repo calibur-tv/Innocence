@@ -205,8 +205,10 @@
 # 保持哪些类不被混淆
 -keep public class * extends android.app.Appliction
 
-
-
-
 # ============忽略警告，否则打包可能会不成功=============
 -ignorewarnings
+
+#事件总线需要过滤混淆
+-keep public class calibur.foundation.bus.**{*;}
+-keepclassmembers public class calibur.foundation.bus.BusinessBusObject {public *;}
+-keep public class * extends calibur.foundation.bus.BusinessBusObject {*;}

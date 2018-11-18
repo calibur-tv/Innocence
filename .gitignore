@@ -62,8 +62,8 @@ obj/
 *.iws
 /out/
 
-# User-specific configurations
 .idea/
+bugly/
 
 # OS-specific files
 .DS_Store

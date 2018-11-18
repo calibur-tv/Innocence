@@ -3,6 +3,7 @@ package com.riuir.calibur.assistUtils;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import android.text.TextUtils;
 import com.riuir.calibur.app.App;
 
 public class VersionUtils {
@@ -66,17 +67,19 @@ public class VersionUtils {
      * 获取本地软件版本号名称
      */
     public static String getLocalVersionName() {
-        String localVersion = "";
+      String localVersion = "";
+      if (TextUtils.isEmpty(localVersion)) {
         try {
-            PackageInfo packageInfo = App.instance().getApplicationContext()
-                    .getPackageManager()
-                    .getPackageInfo(App.instance().getPackageName(), 0);
-            localVersion = packageInfo.versionName;
-            LogUtils.d("VersionCheck", "本地版本号 = " + localVersion);
+          PackageInfo packageInfo = App.instance().getApplicationContext()
+              .getPackageManager()
+              .getPackageInfo(App.instance().getPackageName(), 0);
+          localVersion = packageInfo.versionName;
+          LogUtils.d("VersionCheck", "本地版本号 = " + localVersion);
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+          e.printStackTrace();
         }
-        return localVersion;
+      }
+      return localVersion;
     }
 
 }
