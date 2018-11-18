@@ -1,4 +1,4 @@
-package com.riuir.calibur.net.dns;
+package calibur.core.http.dns;
 
 import com.qiniu.android.dns.DnsManager;
 import com.qiniu.android.dns.IResolver;

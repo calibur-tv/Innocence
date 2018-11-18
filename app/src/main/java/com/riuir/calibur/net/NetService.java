@@ -1,8 +1,8 @@
 package com.riuir.calibur.net;
 
 
+import calibur.core.http.dns.HttpDns;
 import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.net.dns.HttpDns;
 import com.riuir.calibur.net.interceptors.HttpExceptionInterceptor;
 import com.riuir.calibur.utils.Constants;
 
