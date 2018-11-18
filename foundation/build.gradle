@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 apply from: '../common_build.gradle'
 dependencies {
+
   implementation fileTree(dir: 'libs', include: ['*.jar'])
+  implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 }
