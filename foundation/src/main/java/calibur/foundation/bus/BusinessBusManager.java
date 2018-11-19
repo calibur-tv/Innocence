@@ -22,6 +22,7 @@ public class BusinessBusManager {
     moduleConfigMap.put("mainModule", "com.riuir.calibur.MainModuleBusAcceptor");
   }
 
+  @SuppressWarnings("unchecked")
   public static BusinessBusObject registerBusObjectWithHost(String hostName) {
     if (TextUtils.isEmpty(hostName)) {
       return null;

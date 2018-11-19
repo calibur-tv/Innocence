@@ -1,17 +1,15 @@
 package com.riuir.calibur.app;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
-
+import calibur.foundation.bus.BusinessBusManager;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.riuir.calibur.BuildConfig;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
-import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.album.MyAlbumLoader;
 import com.tencent.bugly.Bugly;
@@ -19,11 +17,9 @@ import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.smtt.sdk.QbSdk;
 import com.yanzhenjie.album.Album;
 import com.yanzhenjie.album.AlbumConfig;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 
 import static com.riuir.calibur.assistUtils.LogUtils.isDebug;
 
@@ -37,6 +33,7 @@ public class App extends Application  {
         //正式打包时取消注释
 //        isDebug = false;
         instance = this;
+        BusinessBusManager.init();
         initLogger();
         initBugly();
         initX5Web();
