@@ -3,6 +3,7 @@ package com.riuir.calibur.app;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import calibur.core.http.CaliburHttpContext;
 import calibur.core.http.OkHttpClientManager;
 import calibur.core.http.RetrofitManager;
 import calibur.foundation.bus.BusinessBusManager;

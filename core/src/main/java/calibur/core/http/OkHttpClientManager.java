@@ -27,7 +27,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
  */
 public class OkHttpClientManager {
 
-  private static final int CLIENT_DEFAULT = 0;
   private static IHttpContext sContext;
   private static volatile boolean sInitialised = false;
 
@@ -54,7 +53,7 @@ public class OkHttpClientManager {
   }
 
   public static OkHttpClient getDefaultClient() {
-    return getClient(CLIENT_DEFAULT);
+    return getClient(IHttpContext.CLIENT_DEFAULT);
   }
 
   private static OkHttpClient createOkHttpClient(HttpConfig config) {

@@ -1,7 +1,4 @@
-package com.riuir.calibur.app;
-
-import calibur.core.http.HttpConfig;
-import calibur.core.http.IHttpContext;
+package calibur.core.http;
 
 /**
  * author : J.Chou
