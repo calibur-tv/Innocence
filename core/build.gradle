@@ -10,10 +10,5 @@ dependencies {
                   "com.squareup.retrofit2:adapter-rxjava2:$retrofit2_version",
 
                   "com.squareup.retrofit2:converter-gson:$retrofit2_version"])
-  api(["io.reactivex.rxjava2:rxandroid:$rxandroid_version",
-                  "io.reactivex.rxjava2:rxjava:$rxjava_version"])
   api 'com.qiniu:happy-dns:0.2.13'
-
-  // logger
-  api "com.orhanobut:logger:$logger_version"
 }

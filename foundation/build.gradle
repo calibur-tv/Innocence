@@ -4,4 +4,9 @@ dependencies {
 
   implementation fileTree(dir: 'libs', include: ['*.jar'])
   api "com.squareup.retrofit2:converter-gson:$retrofit2_version"
+  api(["io.reactivex.rxjava2:rxandroid:$rxandroid_version",
+       "io.reactivex.rxjava2:rxjava:$rxjava_version"])
+
+  // logger
+  api "com.orhanobut:logger:$logger_version"
 }

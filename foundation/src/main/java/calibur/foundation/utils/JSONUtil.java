@@ -1,9 +1,22 @@
 package calibur.foundation.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Date;
 
 /**
  * author : J.Chou
@@ -91,4 +104,76 @@ public final class JSONUtil {
   //  return null;
   //}
 
+  public static Gson getDefaultGson() {
+    JsonSerializer<Date> ser = new JsonSerializer<Date>() {
+      @Override
+      public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
+        return src == null ? null : new JsonPrimitive(src.getTime());
+      }
+    };
+    JsonDeserializer<Date> deser = new JsonDeserializer<Date>() {
+      @Override
+      public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+          throws JsonParseException {
+        return json == null ? null : new Date(json.getAsLong());
+      }
+    };
+
+    return new GsonBuilder().registerTypeAdapter(Date.class, ser)
+        .registerTypeAdapter(Date.class, deser)
+        .registerTypeAdapter(Boolean.class, booleanAsIntAdapter)
+        .registerTypeAdapter(boolean.class, booleanAsIntAdapter)
+        .create();
+  }
+
+  public static GsonBuilder getDefaultGsonBuilder() {
+    JsonSerializer<Date> ser = new JsonSerializer<Date>() {
+      @Override
+      public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext
+          context) {
+        return src == null ? null : new JsonPrimitive(src.getTime());
+      }
+    };
+    JsonDeserializer<Date> deser = new JsonDeserializer<Date>() {
+      @Override
+      public Date deserialize(JsonElement json, Type typeOfT,
+          JsonDeserializationContext context) throws JsonParseException {
+        return json == null ? null : new Date(json.getAsLong());
+      }
+    };
+    return new GsonBuilder()
+        .registerTypeAdapter(Date.class, ser)
+        .registerTypeAdapter(Date.class, deser)
+        .registerTypeAdapter(Boolean.class, booleanAsIntAdapter)
+        .registerTypeAdapter(boolean.class, booleanAsIntAdapter);
+  }
+
+  private static final TypeAdapter<Boolean> booleanAsIntAdapter = new TypeAdapter<Boolean>() {
+    @Override
+    public void write(JsonWriter out, Boolean value) throws IOException {
+      if (value == null) {
+        out.nullValue();
+      } else {
+        out.value(value);
+      }
+    }
+
+    @Override
+    public Boolean read(JsonReader in) throws IOException {
+      JsonToken peek = in.peek();
+      switch (peek) {
+        case BOOLEAN:
+          return in.nextBoolean();
+        case NULL:
+          in.nextNull();
+          return null;
+        case NUMBER:
+          return in.nextInt() != 0;
+        case STRING:
+          return in.nextString().equalsIgnoreCase("1");
+        default:
+          throw new IllegalStateException("Expected BOOLEAN or NUMBER but was " + peek);
+      }
+    }
+  };
 }

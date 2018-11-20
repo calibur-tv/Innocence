@@ -1,8 +1,11 @@
 package com.riuir.calibur.app;
 
 import android.app.Application;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
+import android.support.multidex.MultiDex;
 import android.text.TextUtils;
+import calibur.foundation.FoundationContextHolder;
 import calibur.foundation.bus.BusinessBusManager;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
@@ -26,14 +29,21 @@ import static com.riuir.calibur.assistUtils.LogUtils.isDebug;
 public class App extends Application  {
     private static App instance;
 
+    @Override
+    protected void attachBaseContext(android.content.Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+        FoundationContextHolder.setContext(this);
+        instance = this;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         //正式打包时取消注释
 //        isDebug = false;
-        instance = this;
-        BusinessBusManager.init();
+        CaliburInitializer initializer = new CaliburInitializer(this);
+        initializer.doLaunching();
         initLogger();
         initBugly();
         initX5Web();
@@ -154,8 +164,12 @@ public class App extends Application  {
     }
 
     @Override
-    protected void attachBaseContext(android.content.Context base) {
-        super.attachBaseContext(base);
-        android.support.multidex.MultiDex.install(this);
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        switch (level) {
+            case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
+                //TODO:
+                break;
+        }
     }
 }
