@@ -1,2 +1,12 @@
 <resources>
+  <string name="time_out">连接超时，请稍后再试</string>
+  <string name="network_not_connected">网络连接不可用，请稍后再试</string>
+  <string name="ssl_exception_network_connection">SSL验证失败</string>
+  <string name="network_exception_and_try_it_later">网络异常，请稍后再试</string>
+  <string name="sc_not_found">您要找的内容不存在</string>
+  <string name="sc_internal_server_error">服务器开小差了，请稍后再试</string>
+  <string name="sc_bad_gateway">服务器出错了，请稍后再试</string>
+  <string name="sc_gateway_timeout">服务器睡着了，请稍后再试</string>
+  <string name="unknow_host_exception">域名解析失败</string>
+  <string name="network_connection_exception">无法连接至服务器</string>
 </resources>

@@ -1,4 +1,4 @@
-package calibur.core.http.interceptors;
+package calibur.core.http.error;
 
 /**
  * author : J.Chou
@@ -8,6 +8,11 @@ package calibur.core.http.interceptors;
  * description:
  */
 public interface HttpErrorCode {
+
+  int BAD_NET_WORK = -101;
+  int SSL_PEER_UNVERIFIED_EXCEPTION = -102;
+  int CONNECT_TIMEOUT = -103;
+
   //statusCode 400
   int code1 = 40001;
 

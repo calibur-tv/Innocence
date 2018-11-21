@@ -1,5 +1,10 @@
 package calibur.core.http.api;
 
+import calibur.core.test.TestModel;
+import calibur.core.http.models.base.ResponseBean;
+import io.reactivex.Observable;
+import retrofit2.http.POST;
+
 /**
  * author : J.Chou
  * e-mail : who_know_me@163.com
@@ -9,4 +14,7 @@ package calibur.core.http.api;
  */
 public interface APIService {
 
+  //for test
+  @POST("flow/list")
+  Observable<ResponseBean<TestModel>> getFollowList();
 }
