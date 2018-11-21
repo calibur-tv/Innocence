@@ -26,8 +26,9 @@ import retrofit2.Response;
 public abstract class ObserverWrapper<T> extends DisposableObserver<Response<ResponseBean<T>>> {
 
   @Override public void onNext(Response<ResponseBean<T>> response) {
+    if(response == null) return;
     ResponseBean bean;
-    if (response != null && (bean = response.body()) != null) {
+    if ((bean = response.body()) != null) {
       if (response.isSuccessful()) {
         try {
           onSuccess((T) bean.getData());
@@ -38,6 +39,8 @@ public abstract class ObserverWrapper<T> extends DisposableObserver<Response<Res
       } else {
         onFailure(bean.getCode(), bean.getMessage());
       }
+    } else {
+      onFailure(response.code(), response.message());
     }
   }
 
