@@ -1,6 +1,5 @@
 package calibur.core.test;
 
-import android.annotation.SuppressLint;
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
 import calibur.core.http.models.base.ResponseBean;
@@ -15,7 +14,6 @@ import calibur.core.http.observer.ObserverWrapper;
  */
 public class HttpRequestTest {
 
-  @SuppressLint("CheckResult")
   public static void test() {
     RetrofitManager.getInstance().getService(APIService.class).getFollowList()
         .subscribe(new ObserverWrapper<ResponseBean<TestModel>>() {

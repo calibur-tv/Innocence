@@ -1,5 +1,6 @@
 package calibur.core.http.models.base;
 
+import calibur.core.http.error.HttpStatusCode;
 import java.io.Serializable;
 
 /**
@@ -9,8 +10,7 @@ import java.io.Serializable;
  * version: 1.0
  * description:
  */
-public class ResponseBean<T> implements Serializable, Cloneable{
-  protected static final int CODE_SUCCESS = 200;
+public class ResponseBean<T> implements Serializable, Cloneable {
   protected int code;
   protected String message;
   private T data;
@@ -40,7 +40,7 @@ public class ResponseBean<T> implements Serializable, Cloneable{
   }
 
   public boolean isSuccessful() {
-    return code == CODE_SUCCESS;
+    return code == HttpStatusCode.SC_OK;
   }
 
   @Override public String toString() {
@@ -48,8 +48,7 @@ public class ResponseBean<T> implements Serializable, Cloneable{
         + code
         + ", message="
         + message
-        + ", data="
-        +
-        + '}';
+        + ", data=???"
+        +'}';
   }
 }
