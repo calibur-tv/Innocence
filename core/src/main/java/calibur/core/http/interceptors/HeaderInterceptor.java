@@ -1,5 +1,6 @@
 package calibur.core.http.interceptors;
 
+import calibur.core.manager.UserSystem;
 import calibur.foundation.utils.AppUtil;
 import java.io.IOException;
 import okhttp3.Interceptor;
@@ -17,10 +18,12 @@ public class HeaderInterceptor implements Interceptor {
 
   @Override public Response intercept(Chain chain) throws IOException{
     Request.Builder requestBuilder = chain.request().newBuilder()
-        .addHeader("Authorization", "")
         .addHeader("X-APP-NAME", "Sakura")
         .addHeader("X-APP-VERSION", AppUtil.getAppVersionName())
         .addHeader("Accept", "application/x.api."+ "v1+json");
+    if (UserSystem.getInstance().isLogin()) {
+      requestBuilder.addHeader("Authorization", UserSystem.getUserToken());
+    }
     Request request = requestBuilder.build();
     return chain.proceed(request);
   }

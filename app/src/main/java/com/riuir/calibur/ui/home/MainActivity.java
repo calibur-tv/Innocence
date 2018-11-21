@@ -1,47 +1,37 @@
 package com.riuir.calibur.ui.home;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
-
+import butterknife.BindView;
+import calibur.core.http.RetrofitManager;
+import calibur.core.http.api.APIService;
+import calibur.core.http.models.AppVersionCheckData;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.utils.AppUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
-import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
-import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.VersionUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MineUserInfo;
 import com.riuir.calibur.data.RCode;
-import com.riuir.calibur.data.check.AppVersionCheck;
 import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
-import com.riuir.calibur.ui.home.image.CreateNewImageActivity;
-import com.riuir.calibur.ui.web.WebViewActivity;
 import com.riuir.calibur.ui.widget.MainBottomBar;
 import com.riuir.calibur.utils.Constants;
-import com.riuir.calibur.assistUtils.ToastUtils;
 import com.tencent.bugly.crashreport.CrashReport;
-
 import java.io.IOException;
-
-import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -180,41 +170,54 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
 
     private void setCheckVersion() {
-        oldVersion = VersionUtils.getLocalVersionName();
-        apiGet.getCallAppVersionCheck(1,oldVersion).enqueue(new Callback<AppVersionCheck>() {
-            @Override
-            public void onResponse(Call<AppVersionCheck> call, Response<AppVersionCheck> response) {
-                if (response!=null&&response.isSuccessful()){
-                    if (response.body().getData()!=null){
-                        LogUtils.d("VersionCheck", "请求成功 data = "+response.body().getData().toString());
-                        newVersion = response.body().getData().getLatest_version();
-                        forceUpdate = response.body().getData().isForce_update();
-                        downloadUrl = response.body().getData().getDownload_url();
-                        setIsVerUpDate();
-
-                    }
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                    LogUtils.d("VersionCheck", "请求不成功 message = "+info.getMessage());
-                }else {
-                    LogUtils.d("VersionCheck", "请求返回为空");
+        oldVersion = AppUtil.getAppVersionName();
+        RetrofitManager.getInstance().getService(APIService.class).getCallAppVersionCheck(1,oldVersion)
+            .subscribe(new ObserverWrapper<ResponseBean<AppVersionCheckData>>() {
+                @Override public void onSuccess(ResponseBean<AppVersionCheckData> model) {
+                    newVersion = model.getData().getLatest_version();
+                    forceUpdate = model.getData().isForce_update();
+                    downloadUrl = model.getData().getDownload_url();
+                    setIsVerUpDate();
                 }
-            }
 
-            @Override
-            public void onFailure(Call<AppVersionCheck> call, Throwable t) {
-                LogUtils.d("VersionCheck", "请求失败");
-                CrashReport.postCatchedException(t);
-            }
-        });
+                @Override public void onFailure(int code, String errorMsg) {
+                    super.onFailure(code, errorMsg);
+                }
+            });
+        //apiGet.getCallAppVersionCheck(1,oldVersion).enqueue(new Callback<AppVersionCheck>() {
+        //    @Override
+        //    public void onResponse(Call<AppVersionCheck> call, Response<AppVersionCheck> response) {
+        //        if (response!=null&&response.isSuccessful()){
+        //            if (response.body().getData()!=null){
+        //                LogUtils.d("VersionCheck", "请求成功 data = "+response.body().getData().toString());
+        //                newVersion = response.body().getData().getLatest_version();
+        //                forceUpdate = response.body().getData().isForce_update();
+        //                downloadUrl = response.body().getData().getDownload_url();
+        //                setIsVerUpDate();
+        //
+        //            }
+        //        }else if (response!=null&&!response.isSuccessful()){
+        //            String errorStr = "";
+        //            try {
+        //                errorStr = response.errorBody().string();
+        //            } catch (IOException e) {
+        //                e.printStackTrace();
+        //            }
+        //            Gson gson = new Gson();
+        //            Event<String> info =gson.fromJson(errorStr,Event.class);
+        //
+        //            LogUtils.d("VersionCheck", "请求不成功 message = "+info.getMessage());
+        //        }else {
+        //            LogUtils.d("VersionCheck", "请求返回为空");
+        //        }
+        //    }
+        //
+        //    @Override
+        //    public void onFailure(Call<AppVersionCheck> call, Throwable t) {
+        //        LogUtils.d("VersionCheck", "请求失败");
+        //        CrashReport.postCatchedException(t);
+        //    }
+        //});
     }
 
     private void setIsVerUpDate() {

@@ -30,7 +30,7 @@ public class CaliburInitializer {
     BusinessBusManager.init();
     initBase();
     if (MAIN_PROCESS_NAME.equals(pro)) {
-      initForMainProcess();
+      mainProcessInit();
     } else {
       generalInit();
     }
@@ -39,7 +39,7 @@ public class CaliburInitializer {
   private void initBase() {
   }
 
-  private void initForMainProcess() {
+  private void mainProcessInit() {
     OkHttpClientManager.init(new CaliburHttpContext());
     RetrofitManager.getInstance().init();
   }

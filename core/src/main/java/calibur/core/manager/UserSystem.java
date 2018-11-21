@@ -1,5 +1,7 @@
 package calibur.core.manager;
 
+import android.text.TextUtils;
+import calibur.core.http.util.SharedPreferencesUtil;
 import io.reactivex.Observable;
 
 /**
@@ -12,6 +14,7 @@ import io.reactivex.Observable;
 public class UserSystem {
 
   private volatile static UserSystem sInstance;
+  private static String mUserToken;
 
   private UserSystem() {
   }
@@ -25,8 +28,14 @@ public class UserSystem {
     return sInstance;
   }
 
+  public static String getUserToken() {
+    if(TextUtils.isEmpty(mUserToken))
+      mUserToken = SharedPreferencesUtil.getString("Authorization");
+    return mUserToken;
+  }
+
   public boolean isLogin() {
-    return false;
+    return !TextUtils.isEmpty(getUserToken());
   }
 
   public Observable<Object> getUserInfo(long userId) {

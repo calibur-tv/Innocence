@@ -5,6 +5,7 @@ import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.text.TextUtils;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.FoundationContextHolder;
 import calibur.foundation.bus.BusinessBusManager;
 import com.orhanobut.logger.AndroidLogAdapter;
@@ -48,17 +49,7 @@ public class App extends Application  {
         initBugly();
         initX5Web();
         initAlbum();
-
-        Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
-
-        LogUtils.d("userToken","token = "+Constants.AUTH_TOKEN );
-
-        if (Constants.AUTH_TOKEN!=null&&Constants.AUTH_TOKEN.length()!=0){
-            Constants.ISLOGIN = true;
-        }else {
-            Constants.ISLOGIN = false;
-        }
-        Logger.d("app");
+        Constants.ISLOGIN = UserSystem.getInstance().isLogin();
     }
 
 
@@ -87,8 +78,6 @@ public class App extends Application  {
      * 初始化腾讯bugly管理工具
      */
     private void initBugly() {
-
-
         Context context = getApplicationContext();
         // 获取当前包名
         String packageName = context.getPackageName();
