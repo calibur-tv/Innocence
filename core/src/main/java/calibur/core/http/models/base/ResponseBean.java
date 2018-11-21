@@ -11,8 +11,11 @@ import java.io.Serializable;
  * description:
  */
 public class ResponseBean<T> implements Serializable, Cloneable {
+  /** HTTP status code. */
   protected int code;
+  /** HTTP status message or null if unknown. */
   protected String message;
+  /** The response from the HTTP client. */
   private T data;
 
   public int getCode() {
@@ -40,7 +43,7 @@ public class ResponseBean<T> implements Serializable, Cloneable {
   }
 
   public boolean isSuccessful() {
-    return code == HttpStatusCode.SC_OK;
+    return code >= HttpStatusCode.SC_OK && code < HttpStatusCode.SC_MULTIPLE_CHOICES;
   }
 
   @Override public String toString() {
