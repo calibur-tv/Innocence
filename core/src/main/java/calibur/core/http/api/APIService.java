@@ -5,6 +5,7 @@ import calibur.core.test.TestModel;
 import calibur.core.http.models.base.ResponseBean;
 import io.reactivex.Observable;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -20,8 +21,8 @@ public interface APIService {
 
   //for test
   @POST("flow/list")
-  Observable<ResponseBean<TestModel>> getFollowList();
+  Observable<Response<ResponseBean<TestModel>>> getFollowList();
 
   @GET("app/version/check")
-  Observable<ResponseBean<AppVersionCheckData>> getCallAppVersionCheck(@Query("type")int type,@Query("version")String version);
+  Observable<Response<ResponseBean<AppVersionCheckData>>> getCallAppVersionCheck(@Query("type")int type,@Query("version")String version);
 }

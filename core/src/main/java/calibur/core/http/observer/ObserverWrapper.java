@@ -13,6 +13,7 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import javax.net.ssl.SSLException;
+import retrofit2.Response;
 
 /**
  * author : J.Chou
@@ -21,19 +22,22 @@ import javax.net.ssl.SSLException;
  * version: 1.0
  * description:
  */
-public abstract class ObserverWrapper<T extends ResponseBean> extends DisposableObserver<T> {
+@SuppressWarnings("unchecked")
+public abstract class ObserverWrapper<T> extends DisposableObserver<Response<ResponseBean<T>>> {
 
-  @Override public void onNext(T response) {
-    if(response == null) return;
-    if (response.isSuccessful()) {
-      try {
-        onSuccess(response);
-      } catch (Throwable throwable) {
-        Logger.e(throwable.getMessage());
-        BusinessBus.post(null, "mainModule/postException2Bugly", throwable);
+  @Override public void onNext(Response<ResponseBean<T>> response) {
+    ResponseBean bean;
+    if (response != null && (bean = response.body()) != null) {
+      if (response.isSuccessful()) {
+        try {
+          onSuccess((T) bean.getData());
+        } catch (Throwable throwable) {
+          Logger.e(throwable.getMessage());
+          BusinessBus.post(null, "mainModule/postException2Bugly", throwable);
+        }
+      } else {
+        onFailure(bean.getCode(), bean.getMessage());
       }
-    } else {
-      onFailure(response.getCode(), response.getMessage());
     }
   }
 

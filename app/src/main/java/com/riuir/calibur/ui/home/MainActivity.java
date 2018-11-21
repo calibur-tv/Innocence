@@ -13,8 +13,8 @@ import butterknife.BindView;
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
 import calibur.core.http.models.AppVersionCheckData;
-import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.AppUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -172,11 +172,12 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     private void setCheckVersion() {
         oldVersion = AppUtil.getAppVersionName();
         RetrofitManager.getInstance().getService(APIService.class).getCallAppVersionCheck(1,oldVersion)
-            .subscribe(new ObserverWrapper<ResponseBean<AppVersionCheckData>>() {
-                @Override public void onSuccess(ResponseBean<AppVersionCheckData> model) {
-                    newVersion = model.getData().getLatest_version();
-                    forceUpdate = model.getData().isForce_update();
-                    downloadUrl = model.getData().getDownload_url();
+            .compose(Rx2Schedulers.applyObservableAsync())
+            .subscribe(new ObserverWrapper<AppVersionCheckData>() {
+                @Override public void onSuccess(AppVersionCheckData model) {
+                    newVersion = model.getLatest_version();
+                    forceUpdate = model.isForce_update();
+                    downloadUrl = model.getDownload_url();
                     setIsVerUpDate();
                 }
 

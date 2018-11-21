@@ -4,6 +4,8 @@ import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
+import retrofit2.Response;
 
 /**
  * author : J.Chou
@@ -16,12 +18,10 @@ public class HttpRequestTest {
 
   public static void test() {
     RetrofitManager.getInstance().getService(APIService.class).getFollowList()
-        .subscribe(new ObserverWrapper<ResponseBean<TestModel>>() {
-          @Override public void onSuccess(ResponseBean<TestModel> testModel) {
-          }
+        .compose(Rx2Schedulers.<Response<ResponseBean<TestModel>>>applyObservableAsync())
+        .subscribe(new ObserverWrapper<TestModel>() {
+          @Override public void onSuccess(TestModel o) {
 
-          @Override public void onFailure(int code, String errorMsg) {
-            super.onFailure(code, errorMsg);
           }
         });
   }
