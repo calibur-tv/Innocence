@@ -8,5 +8,5 @@ package calibur.foundation.callback;
  * description:
  */
 public interface SimpleCallback2<T,V> {
-    void onCallback(T t, V v);
+    void onCall(T t, V v);
 }
