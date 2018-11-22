@@ -1,7 +1,8 @@
 package calibur.core.manager;
 
 import android.text.TextUtils;
-import calibur.core.http.util.SharedPreferencesUtil;
+import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.core.utils.SharedPreferencesUtil;
 import io.reactivex.Observable;
 
 /**
@@ -30,7 +31,7 @@ public class UserSystem {
 
   public static String getUserToken() {
     if(TextUtils.isEmpty(mUserToken))
-      mUserToken = SharedPreferencesUtil.getString("Authorization");
+      mUserToken = SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN);
     return mUserToken;
   }
 

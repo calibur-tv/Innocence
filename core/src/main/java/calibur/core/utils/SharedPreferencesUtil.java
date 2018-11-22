@@ -1,4 +1,4 @@
-package calibur.core.http.util;
+package calibur.core.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

@@ -145,7 +145,4 @@ dependencies {
 
     //banner轮播的标签
     implementation 'com.github.chenupt.android:springindicator:1.0.2@aar'
-    //mustache
-//    implementation 'com.github.spullara.mustache.java:javascript:0.9.5'
-    implementation 'com.samskivert:jmustache:1.14'
 }

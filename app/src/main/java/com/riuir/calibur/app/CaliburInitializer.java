@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class CaliburInitializer {
 
-  public static final String MAIN_PROCESS_NAME = BuildConfig.APPLICATION_ID;
+  private static final String MAIN_PROCESS_NAME = BuildConfig.APPLICATION_ID;
   private App mApp;
 
   public CaliburInitializer(App app) {

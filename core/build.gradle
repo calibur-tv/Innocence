@@ -11,4 +11,5 @@ dependencies {
 
                   "com.squareup.retrofit2:converter-gson:$retrofit2_version"])
   api 'com.qiniu:happy-dns:0.2.13'
+  api 'com.samskivert:jmustache:1.14'
 }
