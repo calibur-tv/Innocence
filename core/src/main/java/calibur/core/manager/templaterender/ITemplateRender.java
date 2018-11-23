@@ -1,5 +1,6 @@
 package calibur.core.manager.templaterender;
 
+import calibur.core.http.models.TemplateModel;
 import com.samskivert.mustache.Template;
 
 /**
@@ -12,4 +13,6 @@ import com.samskivert.mustache.Template;
 public interface ITemplateRender {
   String getTemplateRenderData(String renderStr);
   Template getRenderTemplate();
+  void checkForUpdate();
+  void downloadUpdateFile(TemplateModel model);
 }

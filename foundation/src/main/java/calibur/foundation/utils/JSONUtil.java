@@ -37,7 +37,7 @@ public final class JSONUtil {
     try {
       Gson gson = new Gson();
       return gson.toJson(obj);
-    } catch (JsonSyntaxException e) {
+    } catch (Throwable e) {
       e.printStackTrace();
     }
 
@@ -48,7 +48,7 @@ public final class JSONUtil {
     try {
       Gson gson = new Gson();
       return gson.toJson(obj, typeOfSrc);
-    } catch (JsonSyntaxException e) {
+    } catch (Throwable e) {
       e.printStackTrace();
     }
 
@@ -62,7 +62,7 @@ public final class JSONUtil {
     try {
       Gson gson = new Gson();
       return gson.fromJson(str, type);
-    } catch (JsonSyntaxException e) {
+    } catch (Throwable e) {
       e.printStackTrace();
     }
     return null;
@@ -75,7 +75,7 @@ public final class JSONUtil {
     try {
       Gson gson = new Gson();
       return gson.fromJson(str, clzz);
-    } catch (JsonSyntaxException e) {
+    } catch (Throwable e) {
       e.printStackTrace();
     }
     return null;
@@ -84,7 +84,7 @@ public final class JSONUtil {
   public static <T> T fromJson(JsonElement jsonElement, Class<T> clzz){
     try{
       return new Gson().fromJson(jsonElement, clzz);
-    } catch (JsonSyntaxException e){
+    } catch (Throwable e){
       e.printStackTrace();
     }
     return null;

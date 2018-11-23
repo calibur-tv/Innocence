@@ -14,6 +14,8 @@ import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
 import calibur.core.http.models.AppVersionCheckData;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.TemplateRenderManager;
+import calibur.core.manager.templaterender.EditorTemplateRender;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.AppUtil;
 import com.google.gson.Gson;
@@ -100,7 +102,8 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         maintabBottombar.setOnSingleClickListener(this);
 
         setCheckVersion();
-
+        //TemplateRenderManager.getInstance().checkForUpdate();
+        //TemplateRenderManager.getInstance().setTemplateRender(new EditorTemplateRender());
 
         if (Constants.userInfoData == null){
             Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());

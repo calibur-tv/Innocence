@@ -9,4 +9,6 @@ package calibur.core.utils;
  */
 public interface ISharedPreferencesKeys {
   String MOBILE_TOKEN = "Authorization";
+  String EDITOR_PAGE_TEMPLATE = "EDITOR_PAGE_TEMPLATE";
+  String IMAGE_DETAIL_PAGE_TEMPLATE = "IMAGE_DETAIL_PAGE_TEMPLATE";
 }

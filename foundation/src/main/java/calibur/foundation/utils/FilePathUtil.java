@@ -1,6 +1,8 @@
 package calibur.foundation.utils;
 
 import android.content.Context;
+import android.os.Environment;
+import android.text.TextUtils;
 import calibur.foundation.FoundationContextHolder;
 import java.io.File;
 
@@ -12,6 +14,31 @@ import java.io.File;
  * description:
  */
 public class FilePathUtil {
+  private static String sDataDir;
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  public static String getAppDataDir() {
+    if(TextUtils.isEmpty(sDataDir)){
+      try {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+          sDataDir = android.os.Environment.getExternalStorageDirectory().getPath() + "/Android/data/com.riuir.calibur/";
+          if (TextUtils.isEmpty(sDataDir)) {
+            sDataDir = FoundationContextHolder.getContext().getFilesDir().getAbsolutePath();
+          }
+        } else {
+          sDataDir = FoundationContextHolder.getContext().getFilesDir().getAbsolutePath();
+        }
+      } catch (Throwable e) {
+        e.printStackTrace();
+        sDataDir = FoundationContextHolder.getContext().getFilesDir().getAbsolutePath();
+      }
+      File file = new File(sDataDir);
+      if(!file.exists()){//判断文件目录是否存在
+        file.mkdirs();
+      }
+    }
+    return sDataDir;
+  }
+
   /**
    * app's sd card file root folder
    *
