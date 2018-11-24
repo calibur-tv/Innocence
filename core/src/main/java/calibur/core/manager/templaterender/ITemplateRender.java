@@ -13,6 +13,6 @@ import com.samskivert.mustache.Template;
 public interface ITemplateRender {
   String getTemplateRenderData(String renderStr);
   Template getRenderTemplate();
-  void checkForUpdate();
+  void checkForUpdate(String businessName);
   void downloadUpdateFile(TemplateModel model);
 }

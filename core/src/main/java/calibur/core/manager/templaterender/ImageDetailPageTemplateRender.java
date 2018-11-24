@@ -8,6 +8,7 @@ import calibur.core.http.models.TemplateModel;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.TemplateDownloadManager;
+import calibur.core.utils.ISharedPreferencesKeys;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.JSONUtil;
 import com.samskivert.mustache.Template;
@@ -27,31 +28,18 @@ import retrofit2.Response;
  * version: 1.0
  * description:
  */
-public class ImageDetailPageTemplateRender implements ITemplateRender {
-  @Override public String getTemplateRenderData(String renderStr) {
+public class ImageDetailPageTemplateRender extends BaseTemplateRender {
 
+  private Template mEditorTemplate;
+
+  @Override public String getTemplateRenderData(String renderStr) {
     return null;
   }
 
   @Override public Template getRenderTemplate() {
-
-    return null;
+    if (mEditorTemplate != null) return mEditorTemplate;
+    return mEditorTemplate = getTemplateFromLocal("template_image_detail_page.mustache");
   }
-
-  @Override public void checkForUpdate() {
-    RetrofitManager.getInstance().getService(APIService.class).checkTemplateUpdate("image", 1)
-        .compose(Rx2Schedulers.<Response<ResponseBean<TemplateModel>>>applyObservableAsync())
-        .subscribe(new ObserverWrapper<TemplateModel>() {
-          @Override public void onSuccess(TemplateModel checkTemplateUpdateModel) {
-
-          }
-
-          @Override public void onFailure(int code, String errorMsg) {
-            super.onFailure(code, errorMsg);
-          }
-        });
-  }
-
 
   @Override public void downloadUpdateFile(final TemplateModel model) {
     Request request = new Request.Builder().url(model.getUrl()).build();
@@ -66,7 +54,7 @@ public class ImageDetailPageTemplateRender implements ITemplateRender {
               return TemplateDownloadManager.getInstance().serializeTemplateFileToDisk(responseBody, "imageDetailPageTemplate");
             }
           }).compose(Rx2Schedulers.<Boolean>applyObservableAsync()).subscribe(new Consumer<Boolean>() {
-            @Override public void accept(Boolean isSuccess){
+            @Override public void accept(Boolean isSuccess) {
               if (isSuccess) {
                 String json = JSONUtil.toJson(model);
                 //TempleManagerModel.saveTemplateModel(json, templateType);
@@ -86,5 +74,12 @@ public class ImageDetailPageTemplateRender implements ITemplateRender {
       @Override public void onFailure(Call call, IOException e) {
       }
     });
+  }
+
+  @Override public void checkTemplateForUpdateSuccess(TemplateModel templateModel) {
+    TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.IMAGE_DETAIL_PAGE_TEMPLATE);
+    if (model == null || !model.getUrl().equals(templateModel.getUrl())) {
+      downloadUpdateFile(templateModel);
+    }
   }
 }

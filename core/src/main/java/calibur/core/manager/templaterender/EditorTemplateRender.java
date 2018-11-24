@@ -37,7 +37,7 @@ import retrofit2.Response;
  * version: 1.0
  * description:
  */
-public class EditorTemplateRender implements ITemplateRender {
+public class EditorTemplateRender extends BaseTemplateRender {
 
   private Template mEditorTemplate;
 
@@ -52,35 +52,16 @@ public class EditorTemplateRender implements ITemplateRender {
   @SuppressWarnings("ResultOfMethodCallIgnored")
   @Override public Template getRenderTemplate() {
     if (mEditorTemplate != null) return mEditorTemplate;
-    try {
-      InputStream inputStream = FoundationContextHolder.getContext().getAssets().open("temple_editor.mustache");
-      int size = inputStream.available();
-      byte[] buffer = new byte[size];
-      inputStream.read(buffer);
-      inputStream.close();
-      String temp = new String(buffer, "UTF-8");
-      return mEditorTemplate = Mustache.compiler().compile(temp);
-    } catch (IOException e) {
-      e.printStackTrace();
-      BusinessBus.post(null, "mainApps/postException2Bugly", e);
-    }
-    return null;
+    return mEditorTemplate = getTemplateFromLocal("temple_editor.mustache");
   }
 
-  @Override public void checkForUpdate() {
-    RetrofitManager.getInstance().getService(APIService.class).checkTemplateUpdate("editor", 1)
-        .compose(Rx2Schedulers.<Response<ResponseBean<TemplateModel>>>applyObservableAsync())
-        .subscribe(new ObserverWrapper<TemplateModel>() {
-          @Override public void onSuccess(TemplateModel checkTemplateUpdateModel) {
-            TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.EDITOR_PAGE_TEMPLATE);
-            if(model == null || !model.getUrl().equals(checkTemplateUpdateModel.getUrl()))
-              downloadUpdateFile(checkTemplateUpdateModel);
-          }
-
-          @Override public void onFailure(int code, String errorMsg) {
-            super.onFailure(code, errorMsg);
-          }
-        });
+  @Override public void checkTemplateForUpdateSuccess(TemplateModel templateModel) {
+    TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.NOTICE_PAGE_TEMPLATE);
+    if (model == null || !model.getUrl().equals(templateModel.getUrl())) {
+      downloadUpdateFile(templateModel);
+    } else {
+      initTemplateRender();
+    }
   }
 
   @Override public void downloadUpdateFile(final TemplateModel model) {
@@ -96,20 +77,11 @@ public class EditorTemplateRender implements ITemplateRender {
               return TemplateDownloadManager.getInstance().serializeTemplateFileToDisk(responseBody, "editorPageTemplate");
             }
           }).compose(Rx2Schedulers.<Boolean>applyObservableAsync()).subscribe(new Consumer<Boolean>() {
-            @Override public void accept(Boolean isSuccess){
+            @Override public void accept(Boolean isSuccess) {
               if (isSuccess) {
                 String json = JSONUtil.toJson(model);
-                TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.EDITOR_PAGE_TEMPLATE, json);
-                TemplateRenderManager.getInstance().initTemplateRender("editorPageTemplate.htm", TemplateRenderManager.EDITOR,
-                    new CallBack1<Template>() {
-                      @Override public void success(Template template) {
-                        mEditorTemplate = template;
-                      }
-
-                      @Override public void fail(Template template) {
-                        mEditorTemplate = null;
-                      }
-                    });
+                TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.NOTICE_PAGE_TEMPLATE, json);
+                initTemplateRender();
               }
             }
           });
@@ -119,5 +91,18 @@ public class EditorTemplateRender implements ITemplateRender {
       @Override public void onFailure(Call call, IOException e) {
       }
     });
+  }
+
+  private void initTemplateRender() {
+    TemplateRenderManager.getInstance().initTemplateRender("editorPageTemplate.htm", TemplateRenderManager.EDITOR,
+        new CallBack1<Template>() {
+          @Override public void success(Template template) {
+            mEditorTemplate = template;
+          }
+
+          @Override public void fail(Template template) {
+            mEditorTemplate = null;
+          }
+        });
   }
 }
