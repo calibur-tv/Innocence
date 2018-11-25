@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * e-mail : who_know_me@163.com
  * time   : 2018/11/20 10:29 AM
  * version: 1.0
- * description:可构建多个service
+ * description:可构建多个service并支持缓存
  */
 @SuppressWarnings({ "unchecked", "WeakerAccess" })
 public class RetrofitManager {
@@ -69,7 +69,7 @@ public class RetrofitManager {
   /**
    * @param type 接口类型
    * @param scheduler 提交线程
-   * @param host 指定的域名（默认情况下拿不到navigator时候启用）
+   * @param host 指定的域名
    */
   public <T> T getService(Class<T> type, Scheduler scheduler, String host) {
     return getService(type, scheduler, host, null);
@@ -78,7 +78,7 @@ public class RetrofitManager {
   /**
    * @param type 接口类型
    * @param scheduler 提交线程
-   * @param host 指定的域名（默认情况下拿不到navigator时候启用）
+   * @param host 指定的域名
    * @param converter json序列化实现
    */
   public <T> T getService(Class<T> type, Scheduler scheduler, String host, Converter.Factory converter) {
