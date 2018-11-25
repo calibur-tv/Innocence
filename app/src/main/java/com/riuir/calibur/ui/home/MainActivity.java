@@ -104,7 +104,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
         setCheckVersion();
         TemplateRenderManager.getInstance().setTemplateRender(new ImageDetailPageTemplateRender());
-        TemplateRenderManager.getInstance().checkForUpdate();
+        TemplateRenderManager.getInstance().checkAllTemplateForUpdate();
 
         if (Constants.userInfoData == null){
             Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());

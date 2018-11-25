@@ -79,11 +79,19 @@ public class TemplateRenderManager {
     return null;
   }
 
-  public void checkForUpdate() {
+  public void checkAllTemplateForUpdate() {
     if (editorTemplateRender != null) editorTemplateRender.checkForUpdate(EDITOR);
     if (imageDetailPageTemplateRender != null) imageDetailPageTemplateRender.checkForUpdate(IMAGEDETAIL);
     if (noticeTemplateRender != null) noticeTemplateRender.checkForUpdate(NOTICE);
     if (bookmarksTemplateRender != null) bookmarksTemplateRender.checkForUpdate(BOOKMARKS);
+  }
+
+  public void checkEditorTemplateForUpdate() {
+    if (editorTemplateRender != null) editorTemplateRender.checkForUpdate(EDITOR);
+  }
+
+  public void checkImageDetailPageTemplateForUpdate() {
+    if (imageDetailPageTemplateRender != null) imageDetailPageTemplateRender.checkForUpdate(IMAGEDETAIL);
   }
 
   public void initTemplateRender(final String templateName, final String businessName, final CallBack1<Template> callback) {
