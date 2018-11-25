@@ -1,10 +1,10 @@
-package calibur.core.manager;
+package calibur.core.templates;
 
-import calibur.core.manager.templaterender.BookmarksTemplateRender;
-import calibur.core.manager.templaterender.EditorTemplateRender;
-import calibur.core.manager.templaterender.ITemplateRender;
-import calibur.core.manager.templaterender.ImageDetailPageTemplateRender;
-import calibur.core.manager.templaterender.NoticeTemplateRender;
+import calibur.core.templates.renders.BookmarksTemplateRender;
+import calibur.core.templates.renders.EditorTemplateRender;
+import calibur.core.templates.renders.ITemplateRender;
+import calibur.core.templates.renders.ImageDetailPageTemplateRender;
+import calibur.core.templates.renders.NoticeTemplateRender;
 import calibur.foundation.callback.CallBack1;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import com.samskivert.mustache.Mustache;

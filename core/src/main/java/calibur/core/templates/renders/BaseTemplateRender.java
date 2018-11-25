@@ -1,4 +1,4 @@
-package calibur.core.manager.templaterender;
+package calibur.core.templates.renders;
 
 import android.annotation.SuppressLint;
 import calibur.core.http.OkHttpClientManager;
@@ -7,8 +7,8 @@ import calibur.core.http.api.APIService;
 import calibur.core.http.models.TemplateModel;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
-import calibur.core.manager.TemplateDownloadManager;
-import calibur.core.manager.TemplateRenderManager;
+import calibur.core.templates.TemplateDownloadManager;
+import calibur.core.templates.TemplateRenderManager;
 import calibur.foundation.FoundationContextHolder;
 import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.callback.CallBack1;

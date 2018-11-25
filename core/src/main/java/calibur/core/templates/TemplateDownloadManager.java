@@ -1,4 +1,4 @@
-package calibur.core.manager;
+package calibur.core.templates;
 
 import android.text.TextUtils;
 import calibur.core.http.models.TemplateModel;

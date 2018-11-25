@@ -1,7 +1,7 @@
-package calibur.core.manager.templaterender;
+package calibur.core.templates.renders;
 
 import calibur.core.http.models.TemplateModel;
-import calibur.core.manager.TemplateDownloadManager;
+import calibur.core.templates.TemplateDownloadManager;
 import calibur.core.utils.ISharedPreferencesKeys;
 import com.samskivert.mustache.Template;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.Map;
  * version: 1.0
  * description:
  */
-public class NoticeTemplateRender extends BaseTemplateRender {
+public class EditorTemplateRender extends BaseTemplateRender {
 
   @Override public String getTemplateRenderData(String renderStr) {
     Map<String, String> data = new HashMap<>();

@@ -1,4 +1,4 @@
-package calibur.core.manager.templaterender;
+package calibur.core.templates.renders;
 
 import calibur.core.http.models.TemplateModel;
 import com.samskivert.mustache.Template;

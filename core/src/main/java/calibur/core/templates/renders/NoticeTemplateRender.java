@@ -1,7 +1,7 @@
-package calibur.core.manager.templaterender;
+package calibur.core.templates.renders;
 
 import calibur.core.http.models.TemplateModel;
-import calibur.core.manager.TemplateDownloadManager;
+import calibur.core.templates.TemplateDownloadManager;
 import calibur.core.utils.ISharedPreferencesKeys;
 import com.samskivert.mustache.Template;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.Map;
  * version: 1.0
  * description:
  */
-public class BookmarksTemplateRender extends BaseTemplateRender {
+public class NoticeTemplateRender extends BaseTemplateRender {
 
   @Override public String getTemplateRenderData(String renderStr) {
     Map<String, String> data = new HashMap<>();
@@ -31,15 +31,15 @@ public class BookmarksTemplateRender extends BaseTemplateRender {
   }
 
   @Override public void checkTemplateForUpdateSuccess(TemplateModel templateModel) {
-    TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.BOOKMARKS_PAGE_TEMPLATE);
-    if(model == null || !model.getUrl().equals(templateModel.getUrl()))
+    TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.NOTICE_PAGE_TEMPLATE);
+    if (model == null || !model.getUrl().equals(templateModel.getUrl())) {
       downloadUpdateFile(templateModel);
-    else
+    } else {
       initTemplate();
+    }
   }
 
   @Override public void saveTemplateModel2Local(String json) {
-    TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.BOOKMARKS_PAGE_TEMPLATE, json);
+    TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.NOTICE_PAGE_TEMPLATE, json);
   }
-
 }
