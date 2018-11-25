@@ -68,7 +68,7 @@ public class BookmarksTemplateRender extends BaseTemplateRender {
               if (isSuccess) {
                 String json = JSONUtil.toJson(model);
                 TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.BOOKMARKS_PAGE_TEMPLATE, json);
-                TemplateRenderManager.getInstance().initTemplateRender(TEMPLATE_NAME + ".htm", TemplateRenderManager.BOOKMARKS,
+                TemplateRenderManager.getInstance().initTemplateRender(TEMPLATE_NAME,
                     new CallBack1<Template>() {
                       @Override public void success(Template template) {
                         mBookmarksTemplate = template;

@@ -84,7 +84,7 @@ public class NoticeTemplateRender extends BaseTemplateRender {
   }
 
   private void initTemplateRender() {
-    TemplateRenderManager.getInstance().initTemplateRender(TEMPLATE_NAME + ".htm", TemplateRenderManager.NOTICE,
+    TemplateRenderManager.getInstance().initTemplateRender(TEMPLATE_NAME,
         new CallBack1<Template>() {
           @Override public void success(Template template) {
             mNoticeTemplate = template;

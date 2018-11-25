@@ -23,6 +23,7 @@ import java.io.FileInputStream;
  * version: 1.0
  * description:模板管理类
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class TemplateRenderManager {
 
   //模板的类型
@@ -102,11 +103,11 @@ public class TemplateRenderManager {
     if (noticeTemplateRender != null) noticeTemplateRender.checkForUpdate(NOTICE);
   }
 
-  public void initTemplateRender(final String templateName, final String businessName, final CallBack1<Template> callback) {
+  public void initTemplateRender(final String templateName, final CallBack1<Template> callback) {
     Observable.create(new ObservableOnSubscribe<Template>() {
       @Override public void subscribe(ObservableEmitter<Template> emitter) {
-        Template template = null;
-        File articleTemplateFile = new File(TemplateDownloadManager.getInstance().getTemplatePath() + "/" + templateName);
+        Template template;
+        File articleTemplateFile = new File(TemplateDownloadManager.getInstance().getTemplatePath() + "/" + templateName + ".html");
         FileInputStream inputStream;
         if (articleTemplateFile.exists()) {
           try {
@@ -116,17 +117,7 @@ public class TemplateRenderManager {
             inputStream.read(buffer);
             inputStream.close();
             String temp = new String(buffer, "UTF-8");
-            switch (businessName) {
-              case EDITOR:
-                template = Mustache.compiler().compile(temp);
-                break;
-              case IMAGEDETAIL:
-                template = Mustache.compiler().compile(temp);
-                break;
-              case BOOKMARKS:
-                template = Mustache.compiler().compile(temp);
-                break;
-            }
+            template = Mustache.compiler().compile(temp);
             emitter.onNext(template);
           } catch (Throwable e) {
             e.printStackTrace();

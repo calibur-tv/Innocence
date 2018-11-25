@@ -77,7 +77,7 @@ public class ImageDetailPageTemplateRender extends BaseTemplateRender {
   }
 
   private void initTemplateRender() {
-    TemplateRenderManager.getInstance().initTemplateRender(TEMPLATE_NAME + ".htm", TemplateRenderManager.IMAGEDETAIL,
+    TemplateRenderManager.getInstance().initTemplateRender(TEMPLATE_NAME,
         new CallBack1<Template>() {
           @Override public void success(Template template) {
             mImageDetailPageTemplate = template;
