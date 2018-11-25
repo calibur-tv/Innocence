@@ -23,6 +23,7 @@ import retrofit2.Response;
  */
 public abstract class BaseTemplateRender implements ITemplateRender{
 
+  String TEMPLATE_NAME;
   public abstract void checkTemplateForUpdateSuccess(TemplateModel templateModel);
 
   @Override public String getTemplateRenderData(String renderStr) {
@@ -64,5 +65,9 @@ public abstract class BaseTemplateRender implements ITemplateRender{
       BusinessBus.post(null, "mainApps/postException2Bugly", e);
     }
     return null;
+  }
+
+  @Override public void setTemplateName(String name) {
+    TEMPLATE_NAME = name;
   }
 }

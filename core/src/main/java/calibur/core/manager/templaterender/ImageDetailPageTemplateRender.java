@@ -2,13 +2,11 @@ package calibur.core.manager.templaterender;
 
 import android.annotation.SuppressLint;
 import calibur.core.http.OkHttpClientManager;
-import calibur.core.http.RetrofitManager;
-import calibur.core.http.api.APIService;
 import calibur.core.http.models.TemplateModel;
-import calibur.core.http.models.base.ResponseBean;
-import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.TemplateDownloadManager;
+import calibur.core.manager.TemplateRenderManager;
 import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.foundation.callback.CallBack1;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.JSONUtil;
 import com.samskivert.mustache.Template;
@@ -19,7 +17,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
-import retrofit2.Response;
 
 /**
  * author : J.Chou
@@ -30,15 +27,15 @@ import retrofit2.Response;
  */
 public class ImageDetailPageTemplateRender extends BaseTemplateRender {
 
-  private Template mEditorTemplate;
+  private Template mImageDetailPageTemplate;
 
   @Override public String getTemplateRenderData(String renderStr) {
     return null;
   }
 
   @Override public Template getRenderTemplate() {
-    if (mEditorTemplate != null) return mEditorTemplate;
-    return mEditorTemplate = getTemplateFromLocal("template_image_detail_page.mustache");
+    if (mImageDetailPageTemplate != null) return mImageDetailPageTemplate;
+    return mImageDetailPageTemplate = getTemplateFromLocal(TEMPLATE_NAME + ".mustache");
   }
 
   @Override public void downloadUpdateFile(final TemplateModel model) {
@@ -51,20 +48,14 @@ public class ImageDetailPageTemplateRender extends BaseTemplateRender {
         if (body != null) {
           io.reactivex.Observable.just(body).map(new Function<ResponseBody, Boolean>() {
             @Override public Boolean apply(ResponseBody responseBody) {
-              return TemplateDownloadManager.getInstance().serializeTemplateFileToDisk(responseBody, "imageDetailPageTemplate");
+              return TemplateDownloadManager.getInstance().serializeTemplateFileToDisk(responseBody, TEMPLATE_NAME);
             }
           }).compose(Rx2Schedulers.<Boolean>applyObservableAsync()).subscribe(new Consumer<Boolean>() {
             @Override public void accept(Boolean isSuccess) {
               if (isSuccess) {
                 String json = JSONUtil.toJson(model);
-                //TempleManagerModel.saveTemplateModel(json, templateType);
-                //if (oldTemplate != null) {
-                //  if (!TextUtils.isEmpty(oldTemplate.getBuild())) {
-                //    if (!oldTemplate.getBuild().equals(newestTemplate.getBuild())) {
-                //      deleteTemplateFile(getTemplateFileName(oldTemplate.getBuild()));
-                //    }
-                //  }
-                //}
+                TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.IMAGE_DETAIL_PAGE_TEMPLATE, json);
+                initTemplateRender();
               }
             }
           });
@@ -80,6 +71,21 @@ public class ImageDetailPageTemplateRender extends BaseTemplateRender {
     TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.IMAGE_DETAIL_PAGE_TEMPLATE);
     if (model == null || !model.getUrl().equals(templateModel.getUrl())) {
       downloadUpdateFile(templateModel);
+    } else {
+      initTemplateRender();
     }
+  }
+
+  private void initTemplateRender() {
+    TemplateRenderManager.getInstance().initTemplateRender(TEMPLATE_NAME + ".htm", TemplateRenderManager.IMAGEDETAIL,
+        new CallBack1<Template>() {
+          @Override public void success(Template template) {
+            mImageDetailPageTemplate = template;
+          }
+
+          @Override public void fail(Template template) {
+            mImageDetailPageTemplate = null;
+          }
+        });
   }
 }

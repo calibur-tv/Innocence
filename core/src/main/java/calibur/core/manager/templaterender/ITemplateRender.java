@@ -11,8 +11,34 @@ import com.samskivert.mustache.Template;
  * description:
  */
 public interface ITemplateRender {
+  /**
+   * Get date which use template replace.
+   * @param renderStr data
+   * @return String
+   */
   String getTemplateRenderData(String renderStr);
+
+  /**
+   * Return the render template
+   * @return template
+   */
   Template getRenderTemplate();
+
+  /**
+   * Check the template update which specified.
+   * @param businessName
+   */
   void checkForUpdate(String businessName);
+
+  /**
+   * Download template file when has update.
+   * @param model model
+   */
   void downloadUpdateFile(TemplateModel model);
+
+  /**
+   * Set Template name.
+   * @param name name
+   */
+  void setTemplateName(String name);
 }

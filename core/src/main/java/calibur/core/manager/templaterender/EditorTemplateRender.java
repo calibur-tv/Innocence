@@ -2,33 +2,23 @@ package calibur.core.manager.templaterender;
 
 import android.annotation.SuppressLint;
 import calibur.core.http.OkHttpClientManager;
-import calibur.core.http.RetrofitManager;
-import calibur.core.http.api.APIService;
 import calibur.core.http.models.TemplateModel;
-import calibur.core.http.models.base.ResponseBean;
-import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.TemplateDownloadManager;
 import calibur.core.manager.TemplateRenderManager;
 import calibur.core.utils.ISharedPreferencesKeys;
-import calibur.core.utils.SharedPreferencesUtil;
-import calibur.foundation.FoundationContextHolder;
-import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.callback.CallBack1;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.JSONUtil;
-import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
-import retrofit2.Response;
 
 /**
  * author : J.Chou
@@ -52,7 +42,7 @@ public class EditorTemplateRender extends BaseTemplateRender {
   @SuppressWarnings("ResultOfMethodCallIgnored")
   @Override public Template getRenderTemplate() {
     if (mEditorTemplate != null) return mEditorTemplate;
-    return mEditorTemplate = getTemplateFromLocal("temple_editor.mustache");
+    return mEditorTemplate = getTemplateFromLocal(TEMPLATE_NAME+ ".mustache");
   }
 
   @Override public void checkTemplateForUpdateSuccess(TemplateModel templateModel) {
@@ -74,7 +64,7 @@ public class EditorTemplateRender extends BaseTemplateRender {
         if (body != null) {
           io.reactivex.Observable.just(body).map(new Function<ResponseBody, Boolean>() {
             @Override public Boolean apply(ResponseBody responseBody) {
-              return TemplateDownloadManager.getInstance().serializeTemplateFileToDisk(responseBody, "editorPageTemplate");
+              return TemplateDownloadManager.getInstance().serializeTemplateFileToDisk(responseBody, TEMPLATE_NAME);
             }
           }).compose(Rx2Schedulers.<Boolean>applyObservableAsync()).subscribe(new Consumer<Boolean>() {
             @Override public void accept(Boolean isSuccess) {
@@ -94,7 +84,7 @@ public class EditorTemplateRender extends BaseTemplateRender {
   }
 
   private void initTemplateRender() {
-    TemplateRenderManager.getInstance().initTemplateRender("editorPageTemplate.htm", TemplateRenderManager.EDITOR,
+    TemplateRenderManager.getInstance().initTemplateRender(TEMPLATE_NAME + ".htm", TemplateRenderManager.EDITOR,
         new CallBack1<Template>() {
           @Override public void success(Template template) {
             mEditorTemplate = template;

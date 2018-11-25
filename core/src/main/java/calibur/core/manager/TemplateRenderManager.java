@@ -25,6 +25,7 @@ import java.io.FileInputStream;
  */
 public class TemplateRenderManager {
 
+  //模板的类型
   public static final String EDITOR = "editor";
   public static final String IMAGEDETAIL = "imageDetail";
   public static final String BOOKMARKS = "bookmarks";
@@ -48,12 +49,16 @@ public class TemplateRenderManager {
 
   public void setTemplateRender(ITemplateRender render) {
     if (render instanceof EditorTemplateRender) {
+      render.setTemplateName("EditorPageTemplate");
       editorTemplateRender = render;
     } else if (render instanceof ImageDetailPageTemplateRender) {
+      render.setTemplateName("ImageDetailPageTemplate");
       imageDetailPageTemplateRender = render;
     } else if (render instanceof BookmarksTemplateRender) {
+      render.setTemplateName("BookmarksTemplate");
       bookmarksTemplateRender = render;
     } else if (render instanceof NoticeTemplateRender) {
+      render.setTemplateName("NoticeTemplate");
       noticeTemplateRender = render;
     }
   }
