@@ -2,3 +2,17 @@ include ':app'
 include ':core'
 include ':foundation'
 
+
+
+
+File localProperties = new File('local.properties')
+if (localProperties.exists()) {
+  Properties properties = new Properties()
+  properties.load(localProperties.newDataInputStream())
+  def buildEnv = properties.getProperty('buildModel')
+  if (buildEnv != null && buildEnv.contains("debug")) {
+    include ':debug'
+  }
+}
+
+

@@ -20,6 +20,7 @@ public class BusinessBusManager {
   public static void init() {
     hasInit.set(true);
     moduleConfigMap.put("mainModule", "com.riuir.calibur.MainModuleBusAcceptor");
+    moduleConfigMap.put("debugModule", "calibur.debug.DebugModuleBusAcceptor");
   }
 
   @SuppressWarnings("unchecked")

@@ -1,3 +1,5 @@
+import java.util.regex.Pattern
+
 apply plugin: 'com.android.application'
 
 apply plugin: 'bugly'
@@ -145,4 +147,26 @@ dependencies {
 
     //banner轮播的标签
     implementation 'com.github.chenupt.android:springindicator:1.0.2@aar'
+}
+
+task configPackageType {
+    File valuesFile = file("$rootDir/core/src/main/java/calibur/core/PkType.java")
+    String content = valuesFile.getText('UTF-8')
+    def pattern
+    if ("$appPackageType".contains("debug")) {
+        pattern = Pattern.compile("(mtype)\\s+=\\s+\"(\\w+)\"", Pattern.CASE_INSENSITIVE)
+        content = pattern.matcher(content).replaceAll("mtype = \"D\"")
+    } else if ("$appPackageType".contains("beta")) {
+        pattern = Pattern.compile("(mtype)\\s+=\\s+\"(\\w+)\"", Pattern.CASE_INSENSITIVE)
+        content = pattern.matcher(content).replaceAll("mtype = \"B\"")
+    } else if ("$appPackageType".contains("product")) {
+        pattern = Pattern.compile("(mtype)\\s+=\\s+\"(\\w+)\"", Pattern.CASE_INSENSITIVE)
+        content = pattern.matcher(content).replaceAll("mtype = \"P\"")
+    }
+    println "App config... \n" + content
+    valuesFile.write(content, 'UTF-8')
+}
+
+preBuild << {
+    configPackageType.execute()
 }

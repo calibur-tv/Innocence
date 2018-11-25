@@ -28,8 +28,24 @@ ext {
     buildToolsVersion = "27.0.3"
     minSdkVersion = 16
     targetSdkVersion = 27
+
+    //打包类型
+    appPackageType = "product"
+    File localProperties = new File('local.properties')
+    def buildEnv
+    if (localProperties.exists()) {
+        Properties properties = new Properties()
+        properties.load(localProperties.newDataInputStream())
+        buildEnv = properties.getProperty('buildModel')
+        if (buildEnv != null && buildEnv.contains("debug")) {
+            appPackageType = "debug"
+        } else if (buildEnv != null && buildEnv.contains("beta")) {
+            appPackageType = "beta"
+        }
+        println "App package type is " + appPackageType
+    }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
+//task clean(type: Delete) {
+//    delete rootProject.buildDir
+//}
