@@ -31,7 +31,7 @@ public class EditorTemplateRender extends BaseTemplateRender {
   }
 
   @Override public void updateTemplateSuccess(TemplateModel templateModel) {
-    TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.NOTICE_PAGE_TEMPLATE);
+    TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.EDITOR_PAGE_TEMPLATE);
     if (model == null || !model.getUrl().equals(templateModel.getUrl())) {
       downloadUpdateFile(templateModel);
     } else {
@@ -40,6 +40,6 @@ public class EditorTemplateRender extends BaseTemplateRender {
   }
 
   @Override public void saveTemplateModel2Local(String json) {
-    TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.NOTICE_PAGE_TEMPLATE, json);
+    TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.EDITOR_PAGE_TEMPLATE, json);
   }
 }
