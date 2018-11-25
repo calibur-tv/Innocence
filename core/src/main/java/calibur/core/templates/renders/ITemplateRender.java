@@ -28,7 +28,7 @@ public interface ITemplateRender {
    * Check the template update which specified.
    * @param businessName
    */
-  void checkForUpdate(String businessName);
+  void updateTemplateIfNecessary(String businessName);
 
   /**
    * Download template file when has update.

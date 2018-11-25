@@ -88,19 +88,19 @@ public class TemplateRenderManager {
   }
 
   public void checkEditorTemplateForUpdate() {
-    if (editorTemplateRender != null) editorTemplateRender.checkForUpdate(EDITOR);
+    if (editorTemplateRender != null) editorTemplateRender.updateTemplateIfNecessary(EDITOR);
   }
 
   public void checkImageDetailPageTemplateForUpdate() {
-    if (imageDetailPageTemplateRender != null) imageDetailPageTemplateRender.checkForUpdate(IMAGEDETAIL);
+    if (imageDetailPageTemplateRender != null) imageDetailPageTemplateRender.updateTemplateIfNecessary(IMAGEDETAIL);
   }
 
   public void checkBookmarksTemplateForUpdate() {
-    if (bookmarksTemplateRender != null) bookmarksTemplateRender.checkForUpdate(BOOKMARKS);
+    if (bookmarksTemplateRender != null) bookmarksTemplateRender.updateTemplateIfNecessary(BOOKMARKS);
   }
 
   public void checkNoticeTemplateForUpdate() {
-    if (noticeTemplateRender != null) noticeTemplateRender.checkForUpdate(NOTICE);
+    if (noticeTemplateRender != null) noticeTemplateRender.updateTemplateIfNecessary(NOTICE);
   }
 
   public void initTemplateRender(final String templateName, final CallBack1<Template> callback) {

@@ -46,12 +46,12 @@ public abstract class BaseTemplateRender implements ITemplateRender{
     return null;
   }
 
-  @Override public void checkForUpdate(String businessName) {
+  @Override public void updateTemplateIfNecessary(String businessName) {
     RetrofitManager.getInstance().getService(APIService.class).checkTemplateUpdate(businessName, 1)
         .compose(Rx2Schedulers.<Response<ResponseBean<TemplateModel>>>applyObservableAsync())
         .subscribe(new ObserverWrapper<TemplateModel>() {
           @Override public void onSuccess(TemplateModel checkTemplateUpdateModel) {
-            checkTemplateForUpdateSuccess(checkTemplateUpdateModel);
+            updateTemplateSuccess(checkTemplateUpdateModel);
           }
 
           @Override public void onFailure(int code, String errorMsg) {
@@ -122,6 +122,6 @@ public abstract class BaseTemplateRender implements ITemplateRender{
         });
   }
 
-  public abstract void checkTemplateForUpdateSuccess(TemplateModel templateModel);
+  public abstract void updateTemplateSuccess(TemplateModel templateModel);
   public abstract void saveTemplateModel2Local(String json);
 }

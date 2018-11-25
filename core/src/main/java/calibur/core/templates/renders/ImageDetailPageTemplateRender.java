@@ -23,7 +23,7 @@ public class ImageDetailPageTemplateRender extends BaseTemplateRender {
     return mTemplate = getTemplateFromLocal(TEMPLATE_NAME);
   }
 
-  @Override public void checkTemplateForUpdateSuccess(TemplateModel templateModel) {
+  @Override public void updateTemplateSuccess(TemplateModel templateModel) {
     TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.IMAGE_DETAIL_PAGE_TEMPLATE);
     if (model == null || !model.getUrl().equals(templateModel.getUrl())) {
       downloadUpdateFile(templateModel);
