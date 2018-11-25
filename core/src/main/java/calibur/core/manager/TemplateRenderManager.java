@@ -80,10 +80,10 @@ public class TemplateRenderManager {
   }
 
   public void checkAllTemplateForUpdate() {
-    if (editorTemplateRender != null) editorTemplateRender.checkForUpdate(EDITOR);
-    if (imageDetailPageTemplateRender != null) imageDetailPageTemplateRender.checkForUpdate(IMAGEDETAIL);
-    if (noticeTemplateRender != null) noticeTemplateRender.checkForUpdate(NOTICE);
-    if (bookmarksTemplateRender != null) bookmarksTemplateRender.checkForUpdate(BOOKMARKS);
+    checkEditorTemplateForUpdate();
+    checkImageDetailPageTemplateForUpdate();
+    checkBookmarksTemplateForUpdate();
+    checkNoticeTemplateForUpdate();
   }
 
   public void checkEditorTemplateForUpdate() {
@@ -92,6 +92,14 @@ public class TemplateRenderManager {
 
   public void checkImageDetailPageTemplateForUpdate() {
     if (imageDetailPageTemplateRender != null) imageDetailPageTemplateRender.checkForUpdate(IMAGEDETAIL);
+  }
+
+  public void checkBookmarksTemplateForUpdate() {
+    if (bookmarksTemplateRender != null) bookmarksTemplateRender.checkForUpdate(BOOKMARKS);
+  }
+
+  public void checkNoticeTemplateForUpdate() {
+    if (noticeTemplateRender != null) noticeTemplateRender.checkForUpdate(NOTICE);
   }
 
   public void initTemplateRender(final String templateName, final String businessName, final CallBack1<Template> callback) {
