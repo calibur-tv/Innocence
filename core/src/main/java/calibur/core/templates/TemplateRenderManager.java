@@ -28,7 +28,7 @@ public class TemplateRenderManager {
 
   //模板的类型
   public static final String EDITOR = "editor";
-  public static final String IMAGEDETAIL = "imageDetail";
+  public static final String IMAGEDETAIL = "image";
   public static final String BOOKMARKS = "bookmarks";
   public static final String NOTICE = "notice";
 
