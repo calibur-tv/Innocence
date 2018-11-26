@@ -6,7 +6,9 @@ import android.content.Context;
 import calibur.core.http.CaliburHttpContext;
 import calibur.core.http.OkHttpClientManager;
 import calibur.core.http.RetrofitManager;
+import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.bus.BusinessBusManager;
+import calibur.foundation.config.PackageTypeConfig;
 import com.riuir.calibur.BuildConfig;
 import java.util.List;
 
@@ -27,7 +29,6 @@ public class CaliburInitializer {
   }
   public void doLaunching() {
     String pro = getProcessName(mApp);
-    BusinessBusManager.init();
     initBase();
     if (MAIN_PROCESS_NAME.equals(pro)) {
       mainProcessInit();
@@ -37,10 +38,15 @@ public class CaliburInitializer {
   }
 
   private void initBase() {
+    BusinessBusManager.init();
   }
 
   private void mainProcessInit() {
-    OkHttpClientManager.init(new CaliburHttpContext());
+    if (PackageTypeConfig.isDebugEnv()) {
+      BusinessBus.post(mApp, "debugModule/init");
+    } else {
+      OkHttpClientManager.init(new CaliburHttpContext());
+    }
     RetrofitManager.getInstance().init();
   }
 

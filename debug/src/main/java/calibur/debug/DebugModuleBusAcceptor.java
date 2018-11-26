@@ -1,7 +1,11 @@
 package calibur.debug;
 
+import android.app.Application;
 import android.content.Context;
+import calibur.core.http.OkHttpClientManager;
 import calibur.foundation.bus.BusinessBusObject;
+import com.facebook.stetho.Stetho;
+import com.squareup.leakcanary.LeakCanary;
 
 /**
  * author : J.Chou
@@ -11,6 +15,7 @@ import calibur.foundation.bus.BusinessBusObject;
  * description:Debug模块
  * 仅在开发环境下该模块参与编译.(需在local.properties文件中开启:buildModel=debug)
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class DebugModuleBusAcceptor extends BusinessBusObject {
 
   public DebugModuleBusAcceptor(String host) {
@@ -20,8 +25,18 @@ public class DebugModuleBusAcceptor extends BusinessBusObject {
   @Override public Object doBusinessJob(final Context context, String bizName, Object... param) {
 
     if ("debugModule/init".equalsIgnoreCase(bizName)) {
-      String msg = (String) param[0];
-
+      OkHttpClientManager.init(new DebugHttpConfig ());
+      //init LeakCanary
+      LeakCanary.install((Application) context);
+      //init Facebook stetho
+      Stetho.initializeWithDefaults(context);
+      //init Facebook Flipper
+      //SoLoader.init(context, false);
+      //final FlipperClient client = AndroidFlipperClient.getInstance(context);
+      //client.addPlugin(new InspectorFlipperPlugin(context, DescriptorMapping.withDefaults()));
+      //client.addPlugin(new NetworkFlipperPlugin());
+      //client.addPlugin(new SharedPreferencesFlipperPlugin(context, "my_shared_preference_file"));
+      //client.start();
     }
     return null;
   }

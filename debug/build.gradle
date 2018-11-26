@@ -4,4 +4,14 @@ dependencies {
 
   implementation fileTree(dir: 'libs', include: ['*.jar'])
   implementation project(':core')
+  implementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+  implementation ('com.facebook.stetho:stetho-js-rhino:1.5.0'){
+    exclude module: 'jsr305'
+  }
+  implementation ('com.facebook.stetho:stetho-okhttp3:1.5.0'){
+    exclude module: 'jsr305'
+  }
+  implementation ('com.facebook.stetho:stetho:1.5.0'){
+    exclude module: 'jsr305'
+  }
 }
