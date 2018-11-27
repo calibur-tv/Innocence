@@ -17,7 +17,7 @@ import retrofit2.Response;
 public class HttpRequestTest {
 
   public static void test() {
-    RetrofitManager.getInstance().getService(APIService.class).getFollowList()
+    RetrofitManager.getInstance().getService(APIService.class).getFollowListTest()
         .compose(Rx2Schedulers.<Response<ResponseBean<TestModel>>>applyObservableAsync())
         .subscribe(new ObserverWrapper<TestModel>() {
           @Override public void onSuccess(TestModel o) {

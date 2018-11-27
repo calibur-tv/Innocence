@@ -39,7 +39,7 @@ import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.anime.BangumiAllList;
+
 import com.riuir.calibur.data.anime.SearchAnimeInfo;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.BangumiAllList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -94,8 +95,8 @@ public class DramaSearchActivity extends BaseActivity {
     private String editContent;
 
 
-    ArrayList<BangumiAllList.BangumiAllListData> bangumiAllLists = new ArrayList<>();
-    ArrayList<BangumiAllList.BangumiAllListData> bangumiSearchedLists = new ArrayList<>();
+    ArrayList<BangumiAllList> bangumiAllLists = new ArrayList<>();
+    ArrayList<BangumiAllList> bangumiSearchedLists = new ArrayList<>();
     SearchPopupListAdapter popupListAdapter;
 
     private List<String> titles = new ArrayList<>();
@@ -152,7 +153,7 @@ public class DramaSearchActivity extends BaseActivity {
         popupListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                BangumiAllList.BangumiAllListData data = (BangumiAllList.BangumiAllListData) adapter.getItem(position);
+                BangumiAllList data = (BangumiAllList) adapter.getItem(position);
                 if (data!=null){
                     editContent = data.getName();
                     searchEdit.setText(data.getName());
@@ -213,7 +214,7 @@ public class DramaSearchActivity extends BaseActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                onBackPressed();
             }
         });
     }
@@ -314,7 +315,7 @@ public class DramaSearchActivity extends BaseActivity {
         editStr = editStr.toLowerCase();
 
         if (bangumiAllLists!=null&&bangumiAllLists.size()!=0){
-            for (BangumiAllList.BangumiAllListData data:bangumiAllLists) {
+            for (BangumiAllList data:bangumiAllLists) {
                 String dataStr = data.getName().toLowerCase();
                 if (dataStr.contains(editStr)){
                     bangumiSearchedLists.add(data);
@@ -330,14 +331,14 @@ public class DramaSearchActivity extends BaseActivity {
 
     }
 
-    class SearchPopupListAdapter extends BaseQuickAdapter<BangumiAllList.BangumiAllListData,BaseViewHolder>{
+    class SearchPopupListAdapter extends BaseQuickAdapter<BangumiAllList,BaseViewHolder>{
 
-        public SearchPopupListAdapter(int layoutResId, @Nullable List<BangumiAllList.BangumiAllListData> data) {
+        public SearchPopupListAdapter(int layoutResId, @Nullable List<BangumiAllList> data) {
             super(layoutResId, data);
         }
 
         @Override
-        protected void convert(BaseViewHolder helper, BangumiAllList.BangumiAllListData item) {
+        protected void convert(BaseViewHolder helper, BangumiAllList item) {
             helper.setText(R.id.drama_search_popup_list_item_name,item.getName());
             ImageView avatar = helper.getView(R.id.drama_search_popup_list_item_avatar);
             GlideUtils.loadImageView(DramaSearchActivity.this,

@@ -11,10 +11,12 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.data.AnimeListForRole;
-import com.riuir.calibur.data.MainTrendingInfo;
+
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.followList.MainTrendingInfo;
 
 public class RoleListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTrendingInfoList,BaseViewHolder> {
 

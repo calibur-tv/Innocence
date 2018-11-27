@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -33,8 +32,7 @@ import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.trending.ScoreShowInfoPrimacy;
-import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
+
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
@@ -42,10 +40,9 @@ import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
-import com.riuir.calibur.ui.widget.ReplyAndCommentView;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.ScoreContentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
@@ -60,6 +57,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
+import calibur.core.http.models.followList.score.ScoreShowInfoPrimacy;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -67,9 +69,9 @@ import retrofit2.Response;
 public class ScoreShowInfoActivity extends BaseActivity {
 
 
-    private ScoreShowInfoPrimacy.ScoreShowInfoPrimacyData primacyData;
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData baseCommentMainData;
+    private ScoreShowInfoPrimacy primacyData;
+    private TrendingShowInfoCommentMain commentMainData;
+    private TrendingShowInfoCommentMain baseCommentMainData;
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> baseCommentMainList = new ArrayList<>();
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> commentMainList;
     private ArrayList<String> previewImagesList;
@@ -144,6 +146,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
     AppListFailedView failedView;
     AppListEmptyView emptyView;
 
+    private static ScoreShowInfoActivity instance;
+
     @Override
     protected int getContentViewId() {
         return R.layout.activity_score_show_info;
@@ -151,6 +155,7 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
+        instance = this;
         Intent intent = getIntent();
         scoreID = intent.getIntExtra("scoreID",0);
         setBackBtn();
@@ -180,177 +185,90 @@ public class ScoreShowInfoActivity extends BaseActivity {
         }
 
         if (NET_STATUS == NET_STATUS_PRIMACY){
-            primacyCall = mApiGet.getCallScoreShowPrimacy(scoreID);
-            primacyCall.enqueue(new Callback<ScoreShowInfoPrimacy>() {
-                @Override
-                public void onResponse(Call<ScoreShowInfoPrimacy> call, Response<ScoreShowInfoPrimacy> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        primacyData = response.body().getData();
-                        //两次网络请求都完成后开始加载数据
+            apiService.getCallScoreShowPrimacy(scoreID)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<ScoreShowInfoPrimacy>(){
 
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                            if (refreshLayout!=null&&scoreShowInfoListView!=null){
-                                refreshLayout.setRefreshing(false);
-                                setAdapter();
-                                setPrimacyView();
-                                setEmptyView();
-
+                        @Override
+                        public void onSuccess(ScoreShowInfoPrimacy scoreShowInfoPrimacy) {
+                            primacyData = scoreShowInfoPrimacy;
+                            //两次网络请求都完成后开始加载数据
+                            if (isFirstLoad){
+                                isFirstLoad = false;
+                                if (refreshLayout!=null&&scoreShowInfoListView!=null){
+                                    refreshLayout.setRefreshing(false);
+                                    setAdapter();
+                                    setPrimacyView();
+                                    setEmptyView();
+                                }
+                            }
+                            if (isRefresh){
+                                setRefresh();
                             }
                         }
-                        if (isRefresh){
-                            setRefresh();
-                        }
 
-                    }else if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (refreshLayout!=null){
+                                if (isFirstLoad){
+                                    isFirstLoad = false;
+                                }
+                                if (isRefresh){
+                                    isRefresh = false;
+                                }
+                                refreshLayout.setRefreshing(false);
+                                setFailedView();
+                            }
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40104){
-                            //用户登录状态过时的时候，清空UserToken,将登录置为false
-                            ToastUtils.showShort(ScoreShowInfoActivity.this,info.getMessage());
-                            LoginUtils.ReLogin(ScoreShowInfoActivity.this);
-                        }else if (info.getCode() == 40401){
-                            ToastUtils.showShort(ScoreShowInfoActivity.this,info.getMessage());
-                        }
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                        }
-                        refreshLayout.setRefreshing(false);
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                        }
-                        refreshLayout.setRefreshing(false);
-                        setFailedView();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ScoreShowInfoPrimacy> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(ScoreShowInfoActivity.this,"请检查您的网络！");
-                        LogUtils.v("AppNetErrorMessage","score show t = "+t.getMessage());
-                        CrashReport.postCatchedException(t);
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                        }
-                        refreshLayout.setRefreshing(false);
-                        setFailedView();
-                    }
-                }
-            });
+                    });
         }
 
         if (NET_STATUS == NET_STATUS_MAIN_COMMENT){
             setFetchID();
-            commentMainCall = mApiGet.getCallMainComment("score",scoreID,fetchId,onlySeeMaster);
-            commentMainCall.enqueue(new Callback<TrendingShowInfoCommentMain>() {
-                @Override
-                public void onResponse(Call<TrendingShowInfoCommentMain> call, Response<TrendingShowInfoCommentMain> response) {
-
-                    if (response!=null&&response.body()!=null&&response.body().getCode()==0){
-                        commentMainData = response.body().getData();
-                        commentMainList = response.body().getData().getList();
-                        if (isFirstLoad){
+            apiService.getCallMainComment("score",scoreID,fetchId,onlySeeMaster)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<TrendingShowInfoCommentMain>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<TrendingShowInfoCommentMain>() {
+                        @Override
+                        public void onSuccess(TrendingShowInfoCommentMain trendingShowInfoCommentMain) {
+                            commentMainData = trendingShowInfoCommentMain;
+                            commentMainList = trendingShowInfoCommentMain.getList();
+                            if (isFirstLoad){
 //                            isFirstLoad = false;
-                            baseCommentMainData = response.body().getData();
-                            baseCommentMainList = response.body().getData().getList();
-                            //第一次网络请求结束后 开始第二次网络请求
-                            setNet(NET_STATUS_PRIMACY);
+                                baseCommentMainData = trendingShowInfoCommentMain;
+                                baseCommentMainList = trendingShowInfoCommentMain.getList();
+                                //第一次网络请求结束后 开始第二次网络请求
+                                setNet(NET_STATUS_PRIMACY);
+                            }
+                            if (isLoadMore){
+                                setLoadMore();
+                            }
+                            if (isRefresh){
+                                //第一次网络请求结束后 开始第二次网络请求
+                                setNet(NET_STATUS_PRIMACY);
+                            }
                         }
-                        if (isLoadMore){
-                            setLoadMore();
-                        }
-                        if (isRefresh){
-                            //第一次网络请求结束后 开始第二次网络请求
-                            setNet(NET_STATUS_PRIMACY);
-                        }
-                    }else  if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40104){
-                            ToastUtils.showShort(ScoreShowInfoActivity.this,info.getMessage());
-                        }else if (info.getCode() == 40003){
-                            ToastUtils.showShort(ScoreShowInfoActivity.this,info.getMessage());
-                        }
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isFirstLoad){
-                            refreshLayout.setRefreshing(false);
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            refreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isFirstLoad){
-                            refreshLayout.setRefreshing(false);
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            refreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<TrendingShowInfoCommentMain> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(ScoreShowInfoActivity.this,"未知错误出现了！");
-                        CrashReport.postCatchedException(t);
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (refreshLayout!=null){
+                                if (isLoadMore){
+                                    commentAdapter.loadMoreFail();
+                                    isLoadMore = false;
+                                }
+                                if (isFirstLoad){
+                                    refreshLayout.setRefreshing(false);
+                                    isFirstLoad = false;
+                                }
+                                if (isRefresh){
+                                    refreshLayout.setRefreshing(false);
+                                    isRefresh = false;
+                                }
+                                setFailedView();
+                            }
                         }
-                        if (isFirstLoad){
-                            refreshLayout.setRefreshing(false);
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            refreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
-
-                }
-            });
+                    });
         }
     }
 
@@ -395,6 +313,26 @@ public class ScoreShowInfoActivity extends BaseActivity {
         commentView.setTitleId(primacyData.getUser().getId());
         commentView.setType(ReplyAndCommentView.TYPE_SCORE);
         commentView.setTargetUserId(0);
+        commentView.setIs_creator(primacyData.isIs_creator());
+        commentView.setLiked(primacyData.isLiked());
+        commentView.setRewarded(primacyData.isRewarded());
+        commentView.setMarked(primacyData.isMarked());
+        commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
+            @Override
+            public void onRewardFinish() {
+                trendingLFCView.setRewarded(true);
+            }
+
+            @Override
+            public void onLikeFinish(boolean isLike) {
+                trendingLFCView.setLiked(isLike);
+            }
+
+            @Override
+            public void onMarkFinish(boolean isMark) {
+                trendingLFCView.setCollected(isMark);
+            }
+        });
         commentView.setNetAndListener();
     }
 
@@ -476,6 +414,26 @@ public class ScoreShowInfoActivity extends BaseActivity {
         trendingLFCView.setCollected(primacyData.isMarked());
         trendingLFCView.setRewarded(primacyData.isRewarded());
         trendingLFCView.setIsCreator(primacyData.isIs_creator());
+        trendingLFCView.setOnLFCNetFinish(new TrendingLikeFollowCollectionView.OnLFCNetFinish() {
+            @Override
+            public void onLikedFinish(boolean isLiked) {
+                if (commentView!=null){
+                    commentView.setLiked(isLiked);
+                }
+            }
+            @Override
+            public void onCollectedFinish(boolean isMarked) {
+                if (commentView!=null){
+                    commentView.setMarked(isMarked);
+                }
+            }
+            @Override
+            public void onRewardFinish() {
+                if (commentView!=null){
+                    commentView.setRewarded(true);
+                }
+            }
+        });
         trendingLFCView.startListenerAndNet();
 
         //所属番剧操作
@@ -520,80 +478,41 @@ public class ScoreShowInfoActivity extends BaseActivity {
         scoreRadarChart.setWebLineWidthInner(1f);
         scoreRadarChart.setWebColorInner(Color.LTGRAY);
         scoreRadarChart.setWebAlpha(150);
-
-
         setData();
-
-
 
         scoreRadarChart.animateXY(0, 0);
 
-
-
         XAxis xAxis = scoreRadarChart.getXAxis();
-
 //        xAxis.setTypeface(mTfLight);
-
         xAxis.setTextSize(9f);
-
         xAxis.setYOffset(0f);
-
         xAxis.setXOffset(0f);
-
         xAxis.setValueFormatter(new IAxisValueFormatter() {
 
-
-
             private String[] mActivities = new String[]{"笑点", "泪点", "燃点", "萌点", "声音","画面","故事","人设","内涵","美感"};
-
-
-
             @Override
 
             public String getFormattedValue(float value, AxisBase axis) {
-
                 return mActivities[(int) value % mActivities.length];
-
             }
-
         });
-
         xAxis.setTextColor(getResources().getColor(R.color.color_FF9B9B9B));
 
-
-
         YAxis yAxis = scoreRadarChart.getYAxis();
-
 //        yAxis.setTypeface(mTfLight);
-
         yAxis.setLabelCount(5, false);
-
         yAxis.setTextSize(9f);
-
         yAxis.setAxisMinimum(0f);
-
         yAxis.setAxisMaximum(80f);
-
         yAxis.setDrawLabels(false);
-
-
-
         Legend l = scoreRadarChart.getLegend();
-
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-
         l.setDrawInside(true);
-
 //        l.setTypeface(mTfLight);
-
         l.setXEntrySpace(0f);
-
         l.setYEntrySpace(0f);
-
         l.setTextColor(getResources().getColor(R.color.color_FF7B7B7B));
 
     }
@@ -622,45 +541,24 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
 
         RadarDataSet set1 = new RadarDataSet(entries1, "个人总评");
-
         set1.setColor(getResources().getColor(R.color.color_radar_chart));
-
         set1.setFillColor(getResources().getColor(R.color.color_radar_chart));
-
         set1.setDrawFilled(true);
-
         set1.setFillAlpha(180);
-
         set1.setLineWidth(1f);
-
         set1.setDrawHighlightCircleEnabled(true);
-
         set1.setDrawHighlightIndicators(false);
 
-
-
-
-
         ArrayList<IRadarDataSet> sets = new ArrayList<IRadarDataSet>();
-
         sets.add(set1);
 
-
-
-
         RadarData data = new RadarData(sets);
-
 //        data.setValueTypeface(mTfLight);
-
         data.setValueTextSize(8f);
-
         data.setDrawValues(false);
-
         data.setValueTextColor(Color.WHITE);
 
-
         scoreRadarChart.setData(data);
-
         scoreRadarChart.invalidate();
 
     }
@@ -852,5 +750,13 @@ public class ScoreShowInfoActivity extends BaseActivity {
     @Override
     protected void handler(Message msg) {
 
+    }
+
+    public CommentAdapter getCommentAdapter(){
+        return commentAdapter;
+    }
+
+    public static ScoreShowInfoActivity getInstance(){
+        return instance;
     }
 }

@@ -24,9 +24,8 @@ import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.AnimeShowInfo;
+
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.create.DeleteInfo;
 import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterConfigActivity;
 import com.riuir.calibur.ui.home.MineFragment;
@@ -35,6 +34,14 @@ import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
 
+import calibur.core.http.RetrofitManager;
+import calibur.core.http.api.APIService;
+import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.delete.DeleteInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -67,7 +74,9 @@ public class AppHeaderPopupWindows extends RelativeLayout {
 
     private WindowManager.LayoutParams params;
 
-    private Call<DeleteInfo> deleteCall;
+    private APIService apiService;
+    private Observable<Response<ResponseBean<DeleteInfo>>> deleteApi;
+
     private String deleteModelTag;
 //post_reply, image_reply, score_reoly, video_reply, question_reply, answer_reply, role_reply
     public static final String USER = "user";
@@ -118,6 +127,7 @@ public class AppHeaderPopupWindows extends RelativeLayout {
 
 
     private void initView() {
+        apiService = RetrofitManager.getInstance().getService(APIService.class);
         activity = (Activity) context;
         params = activity.getWindow().getAttributes();
         layoutInflater = LayoutInflater.from(context);
@@ -343,29 +353,29 @@ public class AppHeaderPopupWindows extends RelativeLayout {
 
     private void setDeleteCall(String modelTag,int id,ApiPost apiPost) {
         if (modelTag.equals(POST)){
-            deleteCall = apiPost.getCallDeletePost(id);
+            deleteApi = apiService.getCallDeletePost(id);
         }else if (modelTag.equals(IMAGE)){
-            deleteCall = apiPost.getCallDeleteAlbum(id);
+            deleteApi = apiService.getCallDeleteAlbum(id);
         }else if (modelTag.equals(SCORE)){
-            deleteCall = apiPost.getCallDeleteScore(id);
+            deleteApi = apiService.getCallDeleteScore(id);
         }else if (modelTag.equals(POST_COMMENT)){
-            deleteCall = apiPost.getCallDeleteCommentMain("post",id);
+            deleteApi = apiService.getCallDeleteCommentMain("post",id);
         }else if (modelTag.equals(IMAGE_COMMENT)){
-            deleteCall = apiPost.getCallDeleteCommentMain("image",id);
+            deleteApi = apiService.getCallDeleteCommentMain("image",id);
         }else if ( modelTag.equals(SCORE_COMMENT)) {
-            deleteCall = apiPost.getCallDeleteCommentMain("score",id);
+            deleteApi = apiService.getCallDeleteCommentMain("score",id);
         }else if ( modelTag.equals(VIDEO_COMMENT)) {
-            deleteCall = apiPost.getCallDeleteCommentMain("video",id);
+            deleteApi = apiService.getCallDeleteCommentMain("video",id);
         }else if (modelTag.equals(POST_REPLY)){
-            deleteCall = apiPost.getCallDeleteCommentChild("post",id);
+            deleteApi = apiService.getCallDeleteCommentChild("post",id);
         }else if (modelTag.equals(IMAGE_REPLY)){
-            deleteCall = apiPost.getCallDeleteCommentChild("image",id);
+            deleteApi = apiService.getCallDeleteCommentChild("image",id);
         }else if ( modelTag.equals(SCORE_REPLY)) {
-            deleteCall = apiPost.getCallDeleteCommentChild("score",id);
+            deleteApi = apiService.getCallDeleteCommentChild("score",id);
         }else if ( modelTag.equals(VIDEO_REPLY)) {
-            deleteCall = apiPost.getCallDeleteCommentChild("video",id);
+            deleteApi = apiService.getCallDeleteCommentChild("video",id);
         }else {
-            deleteCall = null;
+            deleteApi = null;
         }
     }
 
@@ -399,62 +409,40 @@ public class AppHeaderPopupWindows extends RelativeLayout {
     }
 
     private void delete() {
-        if (deleteCall ==null){
+        if (deleteApi ==null){
             ToastUtils.showShort(context,"数据类型出错，无法删除");
         }else {
-            deleteCall.enqueue(new Callback<DeleteInfo>() {
-                @Override
-                public void onResponse(Call<DeleteInfo> call, Response<DeleteInfo> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        if (activity!=null){
-                            Intent intent = new Intent(MineFragment.EXPCHANGE);
-                            ToastUtils.showShort(context,response.body().getData().getMessage());
-                            intent.putExtra("expChangeNum",response.body().getData().getExp());
-                            context.sendBroadcast(intent);
-                            deleteBtn.setClickable(true);
-                            deleteBtn.setText("删除");
-                            popupWindow.dismiss();
-                            if (onDeleteFinish!=null){
-                                onDeleteFinish.deleteFinish();
+            deleteApi.compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<DeleteInfo>(){
+                        @Override
+                        public void onSuccess(DeleteInfo deleteInfo) {
+                            if (activity!=null){
+                                Intent intent = new Intent(MineFragment.EXPCHANGE);
+                                ToastUtils.showShort(context,deleteInfo.getMessage());
+                                intent.putExtra("expChangeNum",deleteInfo.getExp());
+                                context.sendBroadcast(intent);
+                                deleteBtn.setClickable(true);
+                                deleteBtn.setText("删除");
+                                popupWindow.dismiss();
+                                if (onDeleteFinish!=null){
+                                    onDeleteFinish.deleteFinish();
+                                }
                             }
+                        }
 
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (deleteBtn!=null){
+                                deleteBtn.setClickable(true);
+                                deleteBtn.setText("删除");
+                            }
                         }
-                    }else if (response!=null&&!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (deleteBtn!=null){
-                            ToastUtils.showShort(context,info.getMessage());
-                            deleteBtn.setClickable(true);
-                            deleteBtn.setText("删除");
-                        }
-                    }else{
-                        if (deleteBtn!=null){
-                            ToastUtils.showShort(context,"异常原因导致删除失败");
-                            deleteBtn.setClickable(true);
-                            deleteBtn.setText("删除");
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<DeleteInfo> call, Throwable t) {
-                    if (deleteBtn!=null){
-                        ToastUtils.showShort(context,"请检查您的网络");
-                        deleteBtn.setClickable(true);
-                        deleteBtn.setText("删除");
-                    }
-                }
-            });
+                    });
         }
     }
 
-    public void setMasterLayout(boolean isMaster, final int webViewIndex, final int bangumi_id, final AnimeShowInfo.AnimeShowInfoData animeShowInfoData){
+    public void setMasterLayout(boolean isMaster, final int webViewIndex, final int bangumi_id, final AnimeShowInfo animeShowInfoData){
         if (isMaster){
 //            masterConfigLayout.setVisibility(VISIBLE);
 //            masterLayout.setVisibility(GONE);

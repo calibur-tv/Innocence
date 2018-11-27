@@ -9,10 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.AnimeShowInfo;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeShowInfo;
 
 public class DramaMasterConfigActivity extends BaseActivity {
     @BindView(R.id.drama_master_config_back_btn)
@@ -26,7 +27,7 @@ public class DramaMasterConfigActivity extends BaseActivity {
 
     private int bangumi_id = 0;
 
-    AnimeShowInfo.AnimeShowInfoData animeShowInfoData;
+    AnimeShowInfo animeShowInfoData;
 
     @Override
     protected int getContentViewId() {
@@ -37,7 +38,7 @@ public class DramaMasterConfigActivity extends BaseActivity {
     protected void onInit() {
         Intent intent = getIntent();
         bangumi_id = intent.getIntExtra("bangumi_id",0);
-        animeShowInfoData = (AnimeShowInfo.AnimeShowInfoData) intent.getSerializableExtra("animeShowInfoData");
+        animeShowInfoData = (AnimeShowInfo) intent.getSerializableExtra("animeShowInfoData");
         setListener();
     }
 

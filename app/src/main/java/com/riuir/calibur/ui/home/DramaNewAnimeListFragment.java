@@ -27,7 +27,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.AnimeNewListForWeek;
+
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
@@ -40,6 +40,9 @@ import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeNewListForWeek;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,7 +67,7 @@ public class DramaNewAnimeListFragment extends BaseFragment {
     @BindView(R.id.drama_new_anime_list_empty_view_text)
     TextView emptyText;
 
-    AnimeNewListForWeek animeNewListForWeek;
+    List<List<AnimeNewListForWeek>> animeNewListForWeek;
 
     NewAnimeListViewPagerAdapter newAnimeListViewPagerAdapter;
 
@@ -98,8 +101,8 @@ public class DramaNewAnimeListFragment extends BaseFragment {
 
     private void setEmptyView(){
         if (animeNewListForWeek == null||
-                animeNewListForWeek.getData() == null||
-                animeNewListForWeek.getData().size()==0){
+                animeNewListForWeek == null||
+                animeNewListForWeek.size()==0){
             emptyLayout.setVisibility(View.VISIBLE);
             emptyIcon.setImageResource(R.mipmap.ic_no_content_empty_view);
             emptyText.setText("这里空空如也");
@@ -112,8 +115,8 @@ public class DramaNewAnimeListFragment extends BaseFragment {
     }
     private void setHideEmptyView(){
         if (animeNewListForWeek !=null&&
-                animeNewListForWeek.getData()!=null&&
-                animeNewListForWeek.getData().size()!=0){
+                animeNewListForWeek!=null&&
+                animeNewListForWeek.size()!=0){
             emptyLayout.setVisibility(View.GONE);
         }
     }
@@ -159,43 +162,28 @@ public class DramaNewAnimeListFragment extends BaseFragment {
     }
 
     private void setNet() {
-        apiGet.getCallDramaNewForWeek().enqueue(new Callback<AnimeNewListForWeek>() {
-            @Override
-            public void onResponse(Call<AnimeNewListForWeek> call, Response<AnimeNewListForWeek> response) {
-                if (response!=null&&response.isSuccessful()){
+        apiService.getCallDramaNewForWeek()
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<List<List<AnimeNewListForWeek>>>(){
 
-                    setEmptyView();
-                    animeNewListForWeek = response.body();
-                    setViewPagerAdapter();
-                    refreshLayout.setEnabled(false);
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onSuccess(List<List<AnimeNewListForWeek>> anime) {
+                        setEmptyView();
+                        animeNewListForWeek = anime;
+                        setViewPagerAdapter();
+                        refreshLayout.setRefreshing(false);
+                        refreshLayout.setEnabled(false);
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    setFailedView();
-                }
-                refreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure(Call<AnimeNewListForWeek> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络！");
-                LogUtils.v("AppNetErrorMessage","drama new anime list t = "+t.getMessage());
-                CrashReport.postCatchedException(t);
-                refreshLayout.setRefreshing(false);
-                setFailedView();
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                            setFailedView();
+                        }
+                    }
+                });
     }
 
     class NewAnimeListViewPagerAdapter extends PagerAdapter{
@@ -221,7 +209,7 @@ public class DramaNewAnimeListFragment extends BaseFragment {
         public Object instantiateItem(ViewGroup container, final int position) {
             View view = getLayoutInflater().inflate(R.layout.drama_new_anime_view_pager_item,null);
             RecyclerView newAnimeList = view.findViewById(R.id.drama_new_anime_view_pager_item_recycler);
-            DramaNewAnimeListAdapter newAnimeListAdapter = new DramaNewAnimeListAdapter(R.layout.drama_new_week_pager_item_list,animeNewListForWeek.getData().get(position));
+            DramaNewAnimeListAdapter newAnimeListAdapter = new DramaNewAnimeListAdapter(R.layout.drama_new_week_pager_item_list,animeNewListForWeek.get(position));
             newAnimeListAdapter.setHasStableIds(true);
             /**
              * adapter动画效果
@@ -238,7 +226,7 @@ public class DramaNewAnimeListFragment extends BaseFragment {
             newAnimeListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(BaseQuickAdapter adapter, View view, int positionItem) {
-                    int animeId = animeNewListForWeek.getData().get(position).get(positionItem).getId();
+                    int animeId = animeNewListForWeek.get(position).get(positionItem).getId();
                     Intent intent = new Intent(getActivity(),DramaActivity.class);
                     intent.putExtra("animeId",animeId);
                     startActivity(intent);
@@ -257,15 +245,15 @@ public class DramaNewAnimeListFragment extends BaseFragment {
         }
     }
 
-    class DramaNewAnimeListAdapter extends BaseQuickAdapter<AnimeNewListForWeek.AnimeNewListForWeekData,BaseViewHolder> {
+    class DramaNewAnimeListAdapter extends BaseQuickAdapter<AnimeNewListForWeek,BaseViewHolder> {
 
 
-        public DramaNewAnimeListAdapter(int layoutResId, @Nullable List<AnimeNewListForWeek.AnimeNewListForWeekData>  data) {
+        public DramaNewAnimeListAdapter(int layoutResId, @Nullable List<AnimeNewListForWeek>  data) {
             super(layoutResId, data);
         }
 
         @Override
-        protected void convert(BaseViewHolder helper, AnimeNewListForWeek.AnimeNewListForWeekData item) {
+        protected void convert(BaseViewHolder helper, AnimeNewListForWeek item) {
             helper.setText(R.id.drama_new_week_pager_item_list_name,item.getName());
             helper.setText(R.id.drama_new_week_pager_item_list_part,"更新至第"+item.getReleased_part()+"集");
 

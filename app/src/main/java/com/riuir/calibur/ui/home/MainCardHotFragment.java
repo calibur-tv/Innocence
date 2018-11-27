@@ -16,7 +16,7 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.MainCardInfo;
-import com.riuir.calibur.data.MainTrendingInfo;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.CardActiveListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.followList.MainTrendingInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,7 +54,7 @@ public class MainCardHotFragment extends BaseFragment {
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
     private List<MainTrendingInfo.MainTrendingInfoList> baseListHot;
 
-    private MainTrendingInfo.MainTrendingInfoData mainCardInfoData;
+    private MainTrendingInfo mainCardInfoData;
 
     private CardActiveListAdapter adapter;
 
@@ -77,61 +78,61 @@ public class MainCardHotFragment extends BaseFragment {
     }
 
     private void setNet() {
-
-        setSeendIdS();
-        apiGet.getCallMainCardHotGet(seenIds).enqueue(new Callback<MainTrendingInfo>() {
-            @Override
-            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
-
-                if (response == null||response.body()==null||response.body().getData() == null||response.body().getData().getList().size() == 0){
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        mainCardHotRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                }else {
-                    listHot = response.body().getData().getList();
-                    mainCardInfoData = response.body().getData();
-                    if (isFirstLoad){
-                        baseListHot = response.body().getData().getList();
-                        setListAdapter();
-                    }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setRefresh();
-                    }
-
-                    for (MainTrendingInfo.MainTrendingInfoList hotItem :listHot){
-                        seenIdList.add(hotItem.getId());
-                    }
-                }
-
-
-            }
-
-            @Override
-            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-
-                LogUtils.d("cardHot","t = "+t);
-                CrashReport.postCatchedException(t);
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                }
-                if (isRefresh){
-                    mainCardHotRefreshLayout.setRefreshing(false);
-                    isRefresh = false;
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                }
-            }
-        });
+//
+//        setSeendIdS();
+//        apiGet.getCallMainCardHotGet(seenIds).enqueue(new Callback<MainTrendingInfo>() {
+//            @Override
+//            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
+//
+//                if (response == null||response.body()==null||response.body().getData() == null||response.body().getData().getList().size() == 0){
+//                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+//                    if (isLoadMore){
+//                        adapter.loadMoreFail();
+//                        isLoadMore = false;
+//                    }
+//                    if (isRefresh){
+//                        mainCardHotRefreshLayout.setRefreshing(false);
+//                        isRefresh = false;
+//                    }
+//                }else {
+//                    listHot = response.body().getData().getList();
+//                    mainCardInfoData = response.body().getData();
+//                    if (isFirstLoad){
+//                        baseListHot = response.body().getData().getList();
+//                        setListAdapter();
+//                    }
+//                    if (isLoadMore){
+//                        setLoadMore();
+//                    }
+//                    if (isRefresh){
+//                        setRefresh();
+//                    }
+//
+//                    for (MainTrendingInfo.MainTrendingInfoList hotItem :listHot){
+//                        seenIdList.add(hotItem.getId());
+//                    }
+//                }
+//
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
+//
+//                LogUtils.d("cardHot","t = "+t);
+//                CrashReport.postCatchedException(t);
+//                if (isLoadMore){
+//                    adapter.loadMoreFail();
+//                    isLoadMore = false;
+//                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+//                }
+//                if (isRefresh){
+//                    mainCardHotRefreshLayout.setRefreshing(false);
+//                    isRefresh = false;
+//                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
+//                }
+//            }
+//        });
     }
 
     private void setSeendIdS() {

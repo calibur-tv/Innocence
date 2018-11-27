@@ -14,11 +14,13 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.TimeUtils;
-import com.riuir.calibur.data.MainTrendingInfo;
+
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.followList.MainTrendingInfo;
 
 public class ReleaseCardListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTrendingInfoList,BaseViewHolder> {
 
@@ -55,11 +57,14 @@ public class ReleaseCardListAdapter extends BaseQuickAdapter<MainTrendingInfo.Ma
         if (item.getTags()!=null&&item.getTags().size()!=0){
             if (item.getTags().size()==1){
                 tag1.setVisibility(View.VISIBLE);
+                tag2.setVisibility(View.GONE);
+                tag3.setVisibility(View.GONE);
                 tag1.setText(item.getTags().get(0).getName());
             }
             if (item.getTags().size()==2){
                 tag1.setVisibility(View.VISIBLE);
                 tag2.setVisibility(View.VISIBLE);
+                tag3.setVisibility(View.GONE);
                 tag1.setText(item.getTags().get(0).getName());
                 tag2.setText(item.getTags().get(1).getName());
             }

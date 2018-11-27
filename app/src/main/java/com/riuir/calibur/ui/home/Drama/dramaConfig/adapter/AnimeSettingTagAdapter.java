@@ -6,9 +6,11 @@ import android.support.annotation.Nullable;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.AnimeShowInfo;
+
 
 import java.util.List;
+
+import calibur.core.http.models.anime.AnimeShowInfo;
 
 public class AnimeSettingTagAdapter extends BaseQuickAdapter<AnimeShowInfo.AnimeShowInfoTags,BaseViewHolder> {
 

@@ -18,7 +18,7 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MainTrendingInfo;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -32,6 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.followList.MainTrendingInfo;
+import calibur.core.http.models.followList.params.FolllowListParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -52,7 +57,7 @@ public class DramaRolesListFragment extends BaseFragment {
     private List<MainTrendingInfo.MainTrendingInfoList> dataList;
     private List<MainTrendingInfo.MainTrendingInfoList> baseDataList;
 
-    private MainTrendingInfo.MainTrendingInfoData roleInfoData;
+    private MainTrendingInfo roleInfoData;
 
     private RoleListAdapter roleListAdapter;
 
@@ -84,100 +89,64 @@ public class DramaRolesListFragment extends BaseFragment {
 
     private void setNet() {
         setSeendIdS();
-        apiGet.getFollowList("role","hot",0,"",0,0,0,seenIds).enqueue(new Callback<MainTrendingInfo>() {
-            @Override
-            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    dataList = response.body().getData().getList();
-                    roleInfoData = response.body().getData();
-                    if (isFirstLoad){
-                        baseDataList = response.body().getData().getList();
-                        if (refreshLayout!=null&&roleListAdapter!=null){
-                            refreshLayout.setRefreshing(false);
-                            setFirstData();
+        FolllowListParams folllowListParams = new FolllowListParams();
+        folllowListParams.setType("role");
+        folllowListParams.setSort("hot");
+        folllowListParams.setBangumiId(0);
+        folllowListParams.setUserZone("");
+        folllowListParams.setPage(0);
+        folllowListParams.setTake(0);
+        folllowListParams.setMinId(0);
+        folllowListParams.setSeenIds(seenIds);
+        apiService.getFollowList(folllowListParams)
+                .compose(Rx2Schedulers.<Response<ResponseBean<MainTrendingInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<MainTrendingInfo>() {
+                    @Override
+                    public void onSuccess(MainTrendingInfo mainTrendingInfo) {
+                        dataList = mainTrendingInfo.getList();
+                        roleInfoData = mainTrendingInfo;
+                        if (isFirstLoad){
+                            baseDataList = mainTrendingInfo.getList();
+                            if (refreshLayout!=null&&roleListAdapter!=null){
+                                refreshLayout.setRefreshing(false);
+                                setFirstData();
+                            }
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        setEmptyView();
+                        for (MainTrendingInfo.MainTrendingInfoList hotItem :dataList){
+                            seenIdList.add(hotItem.getId());
                         }
                     }
-                    if (isRefresh){
-                        setRefresh();
-                    }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    setEmptyView();
-                    for (MainTrendingInfo.MainTrendingInfoList hotItem :dataList){
-                        seenIdList.add(hotItem.getId());
-                    }
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isLoadMore){
-                        roleListAdapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                        }
-                    }
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isLoadMore){
-                        roleListAdapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (roleListView!=null){
+                            if (isLoadMore){
+                                roleListAdapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isRefresh){
+                                if (refreshLayout!=null){
+                                    refreshLayout.setRefreshing(false);
+                                }
+                                isRefresh = false;
+                            }
+                            if (isFirstLoad){
+                                if (refreshLayout!=null){
+                                    refreshLayout.setRefreshing(false);
+                                }
+                            }
+                            setFailedView();
                         }
                     }
-                    setFailedView();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络！");
-                LogUtils.v("AppNetErrorMessage","drama role list t = "+t.getMessage());
-                CrashReport.postCatchedException(t);
-                if (isLoadMore){
-                    roleListAdapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isRefresh){
-                    if (refreshLayout!=null){
-                        refreshLayout.setRefreshing(false);
-                    }
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    if (refreshLayout!=null){
-                        refreshLayout.setRefreshing(false);
-                    }
-                }
-                setFailedView();
-            }
-        });
+                });
     }
 
     private void setEmptyView(){

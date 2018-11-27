@@ -17,8 +17,8 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MainTrendingInfo;
-import com.riuir.calibur.data.params.FolllowListParams;
+
+
 import com.riuir.calibur.data.trending.dramaTopPost.DramaTopPostInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaCardListAdapter;
@@ -35,6 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.followList.MainTrendingInfo;
+import calibur.core.http.models.followList.params.FolllowListParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,7 +59,7 @@ public class DramaCardFragment extends BaseFragment {
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
     private List<MainTrendingInfo.MainTrendingInfoList> baseListActive = new ArrayList<>();
 
-    private MainTrendingInfo.MainTrendingInfoData mainTrendingInfoData;
+    private MainTrendingInfo mainTrendingInfoData;
 
     private DramaCardListAdapter adapter;
 
@@ -108,186 +113,97 @@ public class DramaCardFragment extends BaseFragment {
         folllowListParams.setTake(0);
         folllowListParams.setMinId(0);
         folllowListParams.setSeenIds(seenIds);
-        listCall = apiPost.getFollowList(folllowListParams);
-        listCall.enqueue(new Callback<MainTrendingInfo>() {
-            @Override
-            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
+        apiService.getFollowList(folllowListParams)
+                .compose(Rx2Schedulers.<Response<ResponseBean<MainTrendingInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<MainTrendingInfo>() {
+                    @Override
+                    public void onSuccess(MainTrendingInfo mainTrendingInfo) {
+                        listActive = mainTrendingInfo.getList();
+                        mainTrendingInfoData = mainTrendingInfo;
+                        if (isFirstLoad){
+                            baseListActive = mainTrendingInfo.getList();
+                            setTopPostNet();
+                        }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setTopPostNet();
+                        }
 
-                if (response!=null&&response.isSuccessful()){
-                    listActive = response.body().getData().getList();
-                    mainTrendingInfoData = response.body().getData();
-                    if (isFirstLoad){
-                        baseListActive = response.body().getData().getList();
-                        setTopPostNet();
-                    }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setTopPostNet();
+                        for (MainTrendingInfo.MainTrendingInfoList hotItem :listActive){
+                            seenIdList.add(hotItem.getId());
+                        }
                     }
 
-                    for (MainTrendingInfo.MainTrendingInfoList hotItem :listActive){
-                        seenIdList.add(hotItem.getId());
-                    }
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (cardListView!=null){
+                            if (isLoadMore){
+                                adapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isRefresh){
+                                if (cardRefreshLayout!=null){
+                                    cardRefreshLayout.setRefreshing(false);
+                                }
+                                isRefresh = false;
+                            }
+                            if (isFirstLoad){
+                                isFirstLoad = false;
+                                if (cardRefreshLayout!=null){
+                                    cardRefreshLayout.setRefreshing(false);
+                                }
+                            }
+                            setFailedView();
                         }
                     }
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    setFailedView();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    CrashReport.postCatchedException(t);
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                    setFailedView();
-                }
-            }
-        });
+                });
     }
 
     private void setTopPostNet() {
-        topListCall = apiGet.getCallDramaTopPostList(bangumiID);
-        topListCall.enqueue(new Callback<DramaTopPostInfo>() {
-            @Override
-            public void onResponse(Call<DramaTopPostInfo> call, Response<DramaTopPostInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        baseListActive.addAll(0,response.body().getData());
-                        if (cardRefreshLayout!=null&&cardListView!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                            setListAdapter();
-                            setEmptyView();
+        apiService.getCallDramaTopPostList(bangumiID)
+                .compose(Rx2Schedulers.<Response<ResponseBean<List<MainTrendingInfo.MainTrendingInfoList>>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<List<MainTrendingInfo.MainTrendingInfoList>>() {
+                    @Override
+                    public void onSuccess(List<MainTrendingInfo.MainTrendingInfoList> mainTrendingInfoLists) {
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            baseListActive.addAll(0,mainTrendingInfoLists);
+                            if (cardRefreshLayout!=null&&cardListView!=null){
+                                cardRefreshLayout.setRefreshing(false);
+                                setListAdapter();
+                                setEmptyView();
+                            }
+                        }
+                        if (isRefresh){
+                            listActive.addAll(0,mainTrendingInfoLists);
+                            setRefresh();
                         }
                     }
-                    if (isRefresh){
-                        listActive.addAll(0,response.body().getData());
-                        setRefresh();
-                    }
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isRefresh){
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    setFailedView();
-                }else{
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isRefresh){
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (cardListView!=null){
+                            if (isRefresh){
+                                if (cardRefreshLayout!=null){
+                                    cardRefreshLayout.setRefreshing(false);
+                                }
+                                isRefresh = false;
+                            }
+                            if (isFirstLoad){
+                                isFirstLoad = false;
+                                if (cardRefreshLayout!=null){
+                                    cardRefreshLayout.setRefreshing(false);
+                                }
+                            }
+                            setFailedView();
                         }
                     }
-                    setFailedView();
-                }
-            }
+                });
 
-            @Override
-            public void onFailure(Call<DramaTopPostInfo> call, Throwable t) {
-                if (isRefresh){
-                    if (cardRefreshLayout!=null){
-                        cardRefreshLayout.setRefreshing(false);
-                    }
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    isFirstLoad = false;
-                    if (cardRefreshLayout!=null){
-                        cardRefreshLayout.setRefreshing(false);
-                    }
-                }
-                ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                setFailedView();
-            }
-        });
     }
 
     private void setSeendIdS() {

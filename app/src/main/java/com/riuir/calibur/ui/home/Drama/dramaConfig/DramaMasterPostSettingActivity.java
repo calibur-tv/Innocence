@@ -18,6 +18,10 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import java.io.IOException;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,7 +60,7 @@ public class DramaMasterPostSettingActivity extends BaseActivity {
 
     private String baseUrl = "https://www.calibur.tv/post/";
 
-    private Call<Event<String>> settingCall;
+    private Observable<Response<ResponseBean<String>>> settingApi;
 
     @Override
     protected int getContentViewId() {
@@ -70,9 +74,6 @@ public class DramaMasterPostSettingActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
-        if (settingCall!=null){
-            settingCall.cancel();
-        }
         super.onDestroy();
     }
 
@@ -175,61 +176,32 @@ public class DramaMasterPostSettingActivity extends BaseActivity {
 
     private void setNet(String type) {
         if (type.equals(Nice)){
-            settingCall = apiPost.getCallPostNiceSet(id);
+            settingApi = apiService.getCallPostNiceSet(id);
         }else if (type.equals(CancelNice)){
-            settingCall = apiPost.getCallPostNiceRemove(id);
+            settingApi = apiService.getCallPostNiceRemove(id);
         }else if (type.equals(Top)){
-            settingCall = apiPost.getCallPostTopSet(id);
+            settingApi = apiService.getCallPostTopSet(id);
         }else if (type.equals(CancelTop)){
-            settingCall = apiPost.getCallPostTopRemove(id);
+            settingApi = apiService.getCallPostTopRemove(id);
         }else{
             ToastUtils.showLong(DramaMasterPostSettingActivity.this,"数据出错");
             setFailed();
             return;
         }
-        settingCall.enqueue(new Callback<Event<String>>() {
-            @Override
-            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                if (response!=null&&response.isSuccessful()){
-                    ToastUtils.showLong(DramaMasterPostSettingActivity.this,"设置成功,可继续设置！");
-                    setFinish();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        settingApi.compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<String>(){
+                    @Override
+                    public void onSuccess(String s) {
+                        ToastUtils.showLong(DramaMasterPostSettingActivity.this,"设置成功,可继续设置！");
+                        setFinish();
                     }
-                    Gson gson = new Gson();
 
-                    Event<String> info = null;
-                    try {
-                        info = gson.fromJson(errorStr,Event.class);
-                    } catch (JsonSyntaxException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        setFailed();
                     }
-                    if (info!=null){
-                        ToastUtils.showShort(DramaMasterPostSettingActivity.this,info.getMessage());
-                    }else {
-                        ToastUtils.showShort(DramaMasterPostSettingActivity.this,"服务器出现异常，请稍后再试！");
-                    }
-                    setFailed();
-                }else {
-                    ToastUtils.showShort(DramaMasterPostSettingActivity.this,"获取不到服务器，请稍后再试！");
-                    setFailed();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Event<String>> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(DramaMasterPostSettingActivity.this,"网络异常，请稍后再试！");
-                    setFailed();
-                }
-
-            }
-        });
+                });
     }
     private void setFinish(){
         if (jingEdit!=null&&cancelJingEdit!=null&&topEdit!=null&&cancelTopEdit!=null){

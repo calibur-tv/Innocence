@@ -17,7 +17,7 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.album.ChooseImageAlbum;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.choose.adapter.ChooseBangumiAdapter;
 import com.riuir.calibur.ui.home.choose.adapter.ChooseImageAlbumAdapter;
@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.create.ChooseImageAlbum;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,8 +42,8 @@ public class ChooseImageAlbumActivity extends BaseActivity {
     RecyclerView recyclerView;
     @BindView(R.id.choose_image_album_refresh)
     SwipeRefreshLayout refreshLayout;
-    List<ChooseImageAlbum.ChooseImageAlbumData> baseAlbumList = new ArrayList<>();
-    List<ChooseImageAlbum.ChooseImageAlbumData> albumList;
+    List<ChooseImageAlbum> baseAlbumList = new ArrayList<>();
+    List<ChooseImageAlbum> albumList;
 
     Call<ChooseImageAlbum> callImageAlbum;
 
@@ -94,72 +97,39 @@ public class ChooseImageAlbumActivity extends BaseActivity {
     }
 
     private void setNet() {
-        callImageAlbum =  apiGetHasAuth.getUserAlbumList();
-        callImageAlbum.enqueue(new Callback<ChooseImageAlbum>() {
-            @Override
-            public void onResponse(Call<ChooseImageAlbum> call, Response<ChooseImageAlbum> response) {
-                if (response!=null&&response.isSuccessful()){
-                    albumList = response.body().getData();
-                    if (isFirst){
-                        isFirst = false;
-                        refreshLayout.setRefreshing(false);
-                        baseAlbumList = response.body().getData();
-                        setAdapter();
-                    }
-                    if (isRefresh){
-                        setRefresh();
+        apiService.getUserAlbumList()
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<List<ChooseImageAlbum>>(){
+                    @Override
+                    public void onSuccess(List<ChooseImageAlbum> albums) {
+                        albumList = albums;
+                        if (isFirst){
+                            isFirst = false;
+                            refreshLayout.setRefreshing(false);
+                            baseAlbumList = albums;
+                            setAdapter();
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
                     }
 
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (refreshLayout!=null){
+                            if (isFirst){
+                                isFirst = false;
+                                refreshLayout.setRefreshing(false);
+                            }
+                            if (isRefresh){
+                                isRefresh = false;
+                                refreshLayout.setRefreshing(false);
+                            }
 
-                    ToastUtils.showShort(ChooseImageAlbumActivity.this,info.getMessage());
-                    if (isFirst){
-                        isFirst = false;
-                        refreshLayout.setRefreshing(false);
+                        }
                     }
-                    if (isRefresh){
-                        isRefresh = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                }else {
-                    if (isFirst){
-                        isFirst = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    if (isRefresh){
-                        isRefresh = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    ToastUtils.showShort(ChooseImageAlbumActivity.this,"未知原因导致加载失败！");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ChooseImageAlbum> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    if (isFirst){
-                        isFirst = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    if (isRefresh){
-                        isRefresh = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    LogUtils.d("chooseAlbum"," t = "+t.getMessage());
-                    CrashReport.postCatchedException(t);
-                    ToastUtils.showShort(ChooseImageAlbumActivity.this,"请检查您的网络！");
-                }
-            }
-        });
+                });
     }
 
     private void setRefresh() {
@@ -186,7 +156,7 @@ public class ChooseImageAlbumActivity extends BaseActivity {
         albumAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                ChooseImageAlbum.ChooseImageAlbumData data = (ChooseImageAlbum.ChooseImageAlbumData) adapter.getData().get(position);
+                ChooseImageAlbum data = (ChooseImageAlbum) adapter.getData().get(position);
                 Intent intent = new Intent();
                 intent.putExtra("album_id",data.getId());
                 intent.putExtra("albumName",data.getName());

@@ -18,7 +18,6 @@ import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.user.UserMainInfo;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
@@ -29,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.user.UserMainInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,7 +62,7 @@ public class UserMainActivity extends BaseActivity {
     int userId;
     String zone;
 
-    UserMainInfo.UserMainInfoData userData;
+    UserMainInfo userData;
 
     //viewpager Tab标题
     private List<String> titles = new ArrayList<>();
@@ -133,38 +135,21 @@ public class UserMainActivity extends BaseActivity {
     }
 
     private void setNet() {
-        userMainInfoCall = apiGet.getCallUserMainInfo(zone);
-        userMainInfoCall.enqueue(new Callback<UserMainInfo>() {
-            @Override
-            public void onResponse(Call<UserMainInfo> call, Response<UserMainInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    userData = response.body().getData();
-                    setView();
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    if (info.getCode() == 40401){
-                        userName.setText("该用户不存在");
-                    }
-                }else {
-                    ToastUtils.showShort(UserMainActivity.this,"未知错误导致加载失败了！");
-                }
-            }
+        apiService.getCallUserMainInfo(zone)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<UserMainInfo>(){
 
-            @Override
-            public void onFailure(Call<UserMainInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(UserMainActivity.this,"请检查您的网络哦！");
-                }
-            }
-        });
+                    @Override
+                    public void onSuccess(UserMainInfo info) {
+                        userData = info;
+                        setView();
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                    }
+                });
     }
 
     private void setView() {

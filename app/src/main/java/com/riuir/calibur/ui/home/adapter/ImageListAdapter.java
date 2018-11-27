@@ -13,10 +13,12 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ScreenUtils;
-import com.riuir.calibur.data.MainTrendingInfo;
+
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.followList.MainTrendingInfo;
 
 public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTrendingInfoList,BaseViewHolder> {
 
@@ -40,9 +42,12 @@ public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTren
         ViewGroup.LayoutParams params = img.getLayoutParams();
 
         double screenHeight =  ScreenUtils.getScreenHeight(context);
+        int minHeight = DensityUtils.dp2px(context,80);
         int height = GlideUtils.getImageHeightDp(context,item.getSource().getHeight(),item.getSource().getWidth(),21.0f,2);
         if (height>(screenHeight*0.75)){
             params.height = (int) (screenHeight*0.75);
+        }else if (height<minHeight){
+            params.height = minHeight;
         }else {
             params.height = height;
         }

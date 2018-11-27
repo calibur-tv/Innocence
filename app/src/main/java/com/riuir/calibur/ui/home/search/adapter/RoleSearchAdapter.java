@@ -8,10 +8,12 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.anime.SearchAnimeInfo;
+
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.anime.SearchAnimeInfo;
 
 public class RoleSearchAdapter extends BaseQuickAdapter<SearchAnimeInfo.SearchAnimeInfoList,BaseViewHolder> {
 

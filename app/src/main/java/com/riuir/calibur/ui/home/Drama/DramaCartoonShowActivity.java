@@ -18,7 +18,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaCartoonShowAdapter;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,7 +58,7 @@ public class DramaCartoonShowActivity extends BaseActivity {
     int cartoonId;
 
     private Call<ImageShowInfoPrimacy> cartoonCall;
-    private ImageShowInfoPrimacy.ImageShowInfoPrimacyData cartoonData;
+    private ImageShowInfoPrimacy cartoonData;
     private List<ImageShowInfoPrimacy.ImageShowInfoPrimacyImages> baeCartoonList = new ArrayList<>();
     private List<ImageShowInfoPrimacy.ImageShowInfoPrimacyImages> cartoonList;
 
@@ -88,40 +91,23 @@ public class DramaCartoonShowActivity extends BaseActivity {
     }
 
     private void setNet() {
-        cartoonCall = apiGet.getCallImageShowPrimacy(cartoonId);
-        cartoonCall.enqueue(new Callback<ImageShowInfoPrimacy>() {
-            @Override
-            public void onResponse(Call<ImageShowInfoPrimacy> call, Response<ImageShowInfoPrimacy> response) {
-                if (response!=null&&response.isSuccessful()){
-                    cartoonData = response.body().getData();
-                    setView();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getCallImageShowPrimacy(cartoonId)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<ImageShowInfoPrimacy>(){
+                    @Override
+                    public void onSuccess(ImageShowInfoPrimacy imageShowInfoPrimacy) {
+                        cartoonData = imageShowInfoPrimacy;
+                        setView();
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(DramaCartoonShowActivity.this,info.getMessage());
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(DramaCartoonShowActivity.this,"找不到服务器！");
-                    setFailedView();
-                }
-            }
 
-            @Override
-            public void onFailure(Call<ImageShowInfoPrimacy> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    LogUtils.d("cartoonPart","t ="+t.getMessage());
-                    ToastUtils.showShort(DramaCartoonShowActivity.this,"请检查您的网络！");
-                    setFailedView();
-                }
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (refreshLayout!=null){
+                            setFailedView();
+                        }
+                    }
+                });
     }
 
     private void setView() {

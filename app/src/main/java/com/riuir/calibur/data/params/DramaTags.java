@@ -1,8 +1,10 @@
 package com.riuir.calibur.data.params;
 
-import com.riuir.calibur.data.AnimeShowInfo;
+
 
 import java.util.List;
+
+import calibur.core.http.models.anime.AnimeShowInfo;
 
 public class DramaTags {
     private int code;

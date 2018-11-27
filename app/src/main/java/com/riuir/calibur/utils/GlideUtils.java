@@ -325,7 +325,8 @@ public class GlideUtils {
 
         String imageUrl = "";
 
-        imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/"+width+"x/format/webp";
+//        imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/"+width+"x/format/webp";
+        imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/"+width+"x";
 
         LogUtils.d("activetrendingWWW","image url finish = "+imageUrl);
 

@@ -1,8 +1,6 @@
 package com.riuir.calibur.ui.home.Drama;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,18 +15,15 @@ import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
-import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
-import com.riuir.calibur.ui.widget.ReplyAndCommentView;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
@@ -37,6 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,7 +55,7 @@ public class DramaCartoonCommentActivity extends BaseActivity {
 
     private CommentAdapter commentAdapter;
 
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
+    private TrendingShowInfoCommentMain commentMainData;
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> baseCommentMainList = new ArrayList<>();
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> commentMainList;
 
@@ -186,47 +185,28 @@ public class DramaCartoonCommentActivity extends BaseActivity {
 
     private void setNet() {
         setFetchID();
-        commentMainCall = apiGetHasAuth.getCallMainComment("image",cartoonId,fetchId,0);
-        commentMainCall.enqueue(new Callback<TrendingShowInfoCommentMain>() {
-            @Override
-            public void onResponse(Call<TrendingShowInfoCommentMain> call, Response<TrendingShowInfoCommentMain> response) {
-                if (response!=null&&response.body()!=null&&response.body().getCode()==0){
-                    commentMainData = response.body().getData();
-                    commentMainList = response.body().getData().getList();
-                    if (isFirstLoad){
-                        baseCommentMainList = response.body().getData().getList();
+        apiService.getCallMainComment("image",cartoonId,fetchId,0)
+                .compose(Rx2Schedulers.<Response<ResponseBean<TrendingShowInfoCommentMain>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<TrendingShowInfoCommentMain>() {
+                    @Override
+                    public void onSuccess(TrendingShowInfoCommentMain trendingShowInfoCommentMain) {
+                        commentMainData = trendingShowInfoCommentMain;
+                        commentMainList = trendingShowInfoCommentMain.getList();
+                        if (isFirstLoad){
+                            baseCommentMainList = trendingShowInfoCommentMain.getList();
+                        }
+                        setLoadComplete();
                     }
-                    setLoadComplete();
-                }else  if (response!=null&&response.isSuccessful()==false){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (refreshLayout!=null){
+                            setLoadFailed();
+                            setFailedView();
+                        }
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                    ToastUtils.showShort(DramaCartoonCommentActivity.this,info.getMessage());
-                    setLoadFailed();
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(DramaCartoonCommentActivity.this,"找不到服务器！");
-                    setLoadFailed();
-                    setFailedView();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TrendingShowInfoCommentMain> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(DramaCartoonCommentActivity.this,"请检查您的网络！");
-                    setLoadFailed();
-                    setFailedView();
-                }
-            }
-        });
+                });
     }
 
     private void setFetchID() {
@@ -308,6 +288,11 @@ public class DramaCartoonCommentActivity extends BaseActivity {
         commentView.setTitleId(cartoonData.getUser().getId());
         commentView.setType(ReplyAndCommentView.TYPE_IMAGE);
         commentView.setTargetUserId(0);
+        commentView.setIs_creator(cartoonData.isIs_creator());
+        commentView.setLiked(cartoonData.isLiked());
+        commentView.setRewarded(cartoonData.isRewarded());
+        commentView.setMarked(cartoonData.isMarked());
+
         commentView.setNetAndListener();
     }
 

@@ -32,12 +32,9 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.PermissionUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.AnimeShowInfo;
+
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.create.CreateCard;
-import com.riuir.calibur.data.params.VerificationCodeBody;
-import com.riuir.calibur.data.params.newPost.CreatePostParams;
-import com.riuir.calibur.data.params.QiniuImageParams;
+
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterAnimeSettingActivity;
@@ -67,6 +64,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.models.create.CreateCard;
+import calibur.core.http.models.create.params.CreatePostParams;
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
+import calibur.core.http.models.qiniu.params.QiniuImageParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -429,56 +433,42 @@ public class CardCreateNewActivity extends BaseActivity {
             tagIdList.add(paramsTagsList.get(i).getId());
         }
         createPostParams.setTags(tagIdList);
-        apiPost.getCreatPost(createPostParams).enqueue(new Callback<CreateCard>() {
-            @Override
-            public void onResponse(Call<CreateCard> call, Response<CreateCard> response) {
-                if (response!=null&&response.isSuccessful()){
-                    //创建帖子成功
-                    //跳转进入帖子
-                    final int id = response.body().getData().getData();
-                    upLoadDialog.setTitleText("上传成功!")
-                            .setContentText("您的帖子上传成功!")
-                            .setConfirmText("好的")
-                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    if (id!=0){
-                                        Intent intent = new Intent(CardCreateNewActivity.this,CardShowInfoActivity.class);
-                                        intent.putExtra("cardID",id);
-                                        startActivity(intent);
-                                        finish();
+        apiService.getCreatPost(createPostParams)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<CreateCard>(){
+                    @Override
+                    public void onSuccess(CreateCard createCard) {
+                        //创建帖子成功
+                        //跳转进入帖子
+                        final int id = createCard.getData();
+                        upLoadDialog.setTitleText("上传成功!")
+                                .setContentText("您的帖子上传成功!")
+                                .setConfirmText("好的")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        if (id!=0){
+                                            Intent intent = new Intent(CardCreateNewActivity.this,CardShowInfoActivity.class);
+                                            intent.putExtra("cardID",id);
+                                            startActivity(intent);
+                                            finish();
+                                        }
                                     }
-                                }
-                            })
-                            .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                    ToastUtils.showShort(CardCreateNewActivity.this,response.body().getData().getMessage());
-                    Intent intent = new Intent(MineFragment.EXPCHANGE);
-                    intent.putExtra("expChangeNum",response.body().getData().getExp());
-                    sendBroadcast(intent);
+                                })
+                                .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                        ToastUtils.showShort(CardCreateNewActivity.this,createCard.getMessage());
+                        Intent intent = new Intent(MineFragment.EXPCHANGE);
+                        intent.putExtra("expChangeNum",createCard.getExp());
+                        sendBroadcast(intent);
 
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(CardCreateNewActivity.this,info.getMessage());
-                    setUpLoadDiaLogFail(info.getMessage());
-                }else {
-                    ToastUtils.showShort(CardCreateNewActivity.this,"未知错误导致上传失败");
-                    setUpLoadDiaLogFail("找不到服务器");
-                }
-            }
 
-            @Override
-            public void onFailure(Call<CreateCard> call, Throwable t) {
-                ToastUtils.showShort(CardCreateNewActivity.this,"网络异常，请稍后再试 \n t = "+t.getMessage());
-                setUpLoadDiaLogFail(t.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        setUpLoadDiaLogFail(errorMsg);
+                    }
+                });
     }
 
     private void setUpLoadDiaLogFail(String error){

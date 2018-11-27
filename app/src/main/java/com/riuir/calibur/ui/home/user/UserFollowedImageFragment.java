@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MainTrendingInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.ImageListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -30,6 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.followList.MainTrendingInfo;
+import calibur.core.http.models.followList.params.FolllowListParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -59,7 +63,7 @@ public class UserFollowedImageFragment extends BaseFragment {
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
     private List<MainTrendingInfo.MainTrendingInfoList> baseListImage = new ArrayList<>();
 
-    private MainTrendingInfo.MainTrendingInfoData imageInfoData;
+    private MainTrendingInfo imageInfoData;
 
     private ImageListAdapter adapter;
 
@@ -97,93 +101,60 @@ public class UserFollowedImageFragment extends BaseFragment {
 
     private void setNet() {
         setPage();
-        listCall = apiGet.getFollowList("image","news",0,zone,page,20,0,"");
-        listCall.enqueue(new Callback<MainTrendingInfo>() {
-            @Override
-            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    listImage = response.body().getData().getList();
-                    imageInfoData = response.body().getData();
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        baseListImage = response.body().getData().getList();
-                        if (imageRefreshLayout!=null&&imageListView!=null){
-                            imageRefreshLayout.setRefreshing(false);
-                            setListAdapter();
-                            setEmptyView();
+        FolllowListParams params = new FolllowListParams();
+        params.setType("image");
+        params.setSort("news");
+        params.setBangumiId(0);
+        params.setUserZone(zone);
+        params.setMinId(0);
+        params.setPage(page);
+        params.setTake(0);
+        params.setSeenIds("");
+        apiService.getFollowList(params)
+                .compose(Rx2Schedulers.<Response<ResponseBean<MainTrendingInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<MainTrendingInfo>(){
+
+                    @Override
+                    public void onSuccess(MainTrendingInfo mainTrendingInfo) {
+                        listImage = mainTrendingInfo.getList();
+                        imageInfoData = mainTrendingInfo;
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            baseListImage = mainTrendingInfo.getList();
+                            if (imageRefreshLayout!=null&&imageListView!=null){
+                                imageRefreshLayout.setRefreshing(false);
+                                setListAdapter();
+                                setEmptyView();
+                            }
+                        }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setRefresh();
                         }
                     }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setRefresh();
-                    }
 
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (imageListView!=null){
+                            if (isLoadMore){
+                                adapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isRefresh){
+                                imageRefreshLayout.setRefreshing(false);
+                                isRefresh = false;
+                            }
+                            if (isFirstLoad){
+                                isFirstLoad = false;
+                                imageRefreshLayout.setRefreshing(false);
+                            }
+                            setFailedView();
+                        }
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        imageRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        imageRefreshLayout.setRefreshing(false);
-                    }
-
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        imageRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        imageRefreshLayout.setRefreshing(false);
-                    }
-                    setFailedView();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(getContext(),"请检查您的网络！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        imageRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        imageRefreshLayout.setRefreshing(false);
-                    }
-                    setFailedView();
-                }
-            }
-        });
+                });
 
     }
 

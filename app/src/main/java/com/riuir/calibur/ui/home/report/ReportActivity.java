@@ -21,6 +21,8 @@ import com.tencent.bugly.crashreport.CrashReport;
 import java.io.IOException;
 
 import butterknife.BindView;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -174,47 +176,28 @@ public class ReportActivity extends BaseActivity {
 
     private void setNet() {
         setMessage();
-        callReport = apiPost.getCallReportSend(id,model,type,message);
-        Log.d("reportText","id ="+id+",model ="+model+",type ="+type+",message ="+message);
-        callReport.enqueue(new Callback<Event<String>>() {
-            @Override
-            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                if (response!=null&&response.isSuccessful()){
-                    ToastUtils.showShort(ReportActivity.this,"举报成功");
-                    finish();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getCallReportSend(id,model,type,message)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<String>(){
+                    @Override
+                    public void onSuccess(String s) {
+                        ToastUtils.showShort(ReportActivity.this,"举报成功");
+                        finish();
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(ReportActivity.this,info.getMessage());
-                    Log.d("reportText","error msg = "+info.getMessage());
-                    setReportFailed();
-                }else {
-                    ToastUtils.showShort(ReportActivity.this,"未知原因导致发送失败");
-                    setReportFailed();
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Event<String>> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(ReportActivity.this,"请检查您的网络");
-                    CrashReport.postCatchedException(t);
-                    setReportFailed();
-                }
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        setReportFailed();
+                    }
+                });
     }
 
     private void setReportFailed() {
-        reportBtn.setClickable(true);
-        reportBtn.setText("提交");
+        if (reportBtn!=null){
+            reportBtn.setClickable(true);
+            reportBtn.setText("提交");
+        }
     }
 
     @Override

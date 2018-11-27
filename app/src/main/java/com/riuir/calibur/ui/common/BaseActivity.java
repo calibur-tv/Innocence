@@ -22,6 +22,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import calibur.core.http.RetrofitManager;
+import calibur.core.http.api.APIService;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
@@ -39,6 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected static UIHandler handler = new UIHandler(Looper.getMainLooper());
     protected ApiPost apiPost,apiPostNoAuth,apiPostNoGeetest;
     protected ApiGet apiGet,apiGetHasAuth;
+    protected APIService apiService;
     protected CompositeDisposable compositeDisposable = null;
 
     private View contentViewGroup;
@@ -47,6 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //拿到NetService网络请求的Api返回对象
+        apiService = RetrofitManager.getInstance().getService(APIService.class);
         apiPost = NetService.getInstance().createServicePost();
         apiGet = NetService.getInstance().createServiceGet();
 

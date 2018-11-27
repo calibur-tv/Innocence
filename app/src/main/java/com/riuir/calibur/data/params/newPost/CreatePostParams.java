@@ -1,10 +1,13 @@
 package com.riuir.calibur.data.params.newPost;
 
-import com.riuir.calibur.data.params.QiniuImageParams;
-import com.riuir.calibur.data.params.VerificationCodeBody;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
+
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
+import calibur.core.http.models.qiniu.params.QiniuImageParams;
 
 public class CreatePostParams {
     private int bangumiId;

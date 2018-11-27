@@ -18,13 +18,11 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
-import com.riuir.calibur.assistUtils.activityUtils.RecyclerViewUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
-import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
+
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
@@ -35,7 +33,7 @@ import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.adapter.HeaderImageShowAdapter;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
-import com.riuir.calibur.ui.widget.ReplyAndCommentView;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
@@ -49,6 +47,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
+import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -68,9 +71,9 @@ public class ImageShowInfoActivity extends BaseActivity {
 
     int primacyId;
 
-    private ImageShowInfoPrimacy.ImageShowInfoPrimacyData primacyData;
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData baseCommentMainData;
+    private ImageShowInfoPrimacy primacyData;
+    private TrendingShowInfoCommentMain commentMainData;
+    private TrendingShowInfoCommentMain baseCommentMainData;
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> baseCommentMainList;
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> commentMainList;
     private ArrayList<String> previewImagesList;
@@ -118,6 +121,7 @@ public class ImageShowInfoActivity extends BaseActivity {
     AppListFailedView failedView;
     AppListEmptyView emptyView;
 
+    private static ImageShowInfoActivity instance;
 
     @Override
     protected int getContentViewId() {
@@ -126,6 +130,7 @@ public class ImageShowInfoActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
+        instance = this;
         Intent intent = getIntent();
         imageID = intent.getIntExtra("imageID",0);
         setBackBtn();
@@ -149,197 +154,96 @@ public class ImageShowInfoActivity extends BaseActivity {
     }
 
     private void setNet(int NET_STATUS){
-        ApiGet mApiGet;
-        if (Constants.ISLOGIN){
-            mApiGet = apiGetHasAuth;
-        }else {
-            mApiGet = apiGet;
-        }
 
         if (NET_STATUS == NET_STATUS_PRIMACY){
-            primacyCall = mApiGet.getCallImageShowPrimacy(imageID);
-            mApiGet.getCallImageShowPrimacy(imageID).enqueue(new Callback<ImageShowInfoPrimacy>() {
-                @Override
-                public void onResponse(Call<ImageShowInfoPrimacy> call, Response<ImageShowInfoPrimacy> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        primacyData = response.body().getData();
-                        //两次网络请求都完成后开始加载数据
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                            if (refreshLayout!=null&&imageShowInfoListView!=null){
-                                refreshLayout.setRefreshing(false);
-                                setAdapter();
-                                setPrimacyView();
-                                setEmptyView();
+            apiService.getCallImageShowPrimacy(imageID)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<ImageShowInfoPrimacy>(){
+                        @Override
+                        public void onSuccess(ImageShowInfoPrimacy imageShowInfoPrimacy) {
+                            primacyData = imageShowInfoPrimacy;
+                            //两次网络请求都完成后开始加载数据
+                            if (isFirstLoad){
+                                isFirstLoad = false;
+                                if (refreshLayout!=null&&imageShowInfoListView!=null){
+                                    refreshLayout.setRefreshing(false);
+                                    setAdapter();
+                                    setPrimacyView();
+                                    setEmptyView();
+                                }
+                            }
+                            if (isRefresh){
+                                setRefresh();
                             }
                         }
-                        if (isRefresh){
-                            setRefresh();
-                        }
 
-                    }else if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (refreshLayout!=null){
+                                if (isFirstLoad){
+                                    isFirstLoad = false;
+                                }
+                                if (isRefresh){
+                                    isRefresh = false;
+                                }
+                                if (refreshLayout!=null){
+                                    refreshLayout.setRefreshing(false);
+                                }
+                                setFailedView();
+                            }
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40104){
-                            //用户登录状态过时的时候，清空UserToken,将登录置为false
-                            ToastUtils.showShort(ImageShowInfoActivity.this,info.getMessage());
-                            LoginUtils.ReLogin(ImageShowInfoActivity.this);
-                        }else if (info.getCode() == 40401){
-                            ToastUtils.showShort(ImageShowInfoActivity.this,info.getMessage());
-                        }
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                        }
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(ImageShowInfoActivity.this,"未知错误出现了！");
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                        }
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                        }
-                        setFailedView();
-                    }
-                }
+                    });
 
-                @Override
-                public void onFailure(Call<ImageShowInfoPrimacy> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(ImageShowInfoActivity.this,"请检查您的网络！");
-                        CrashReport.postCatchedException(t);
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                        }
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                        }
-                        setFailedView();
-                    }
-                }
-            });
         }
         if (NET_STATUS == NET_STATUS_MAIN_COMMENT){
             setFetchID();
-            commentMainCall = mApiGet.getCallMainComment("image",imageID,fetchId,onlySeeMaster);
-            commentMainCall.enqueue(new Callback<TrendingShowInfoCommentMain>() {
-                @Override
-                public void onResponse(Call<TrendingShowInfoCommentMain> call, Response<TrendingShowInfoCommentMain> response) {
-                    if (response!=null&&response.body()!=null&&response.body().getCode()==0){
-                        commentMainData = response.body().getData();
-                        commentMainList = response.body().getData().getList();
-                        if (isFirstLoad){
+            apiService.getCallMainComment("image",imageID,fetchId,onlySeeMaster)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<TrendingShowInfoCommentMain>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<TrendingShowInfoCommentMain>() {
+                        @Override
+                        public void onSuccess(TrendingShowInfoCommentMain trendingShowInfoCommentMain) {
+                            commentMainData = trendingShowInfoCommentMain;
+                            commentMainList = trendingShowInfoCommentMain.getList();
+                            if (isFirstLoad){
 //                            isFirstLoad = false;
-                            baseCommentMainData = response.body().getData();
-                            baseCommentMainList = response.body().getData().getList();
-                            //第一次网络请求结束后 开始第二次网络请求
-                            setNet(NET_STATUS_PRIMACY);
-                        }
-                        if (isLoadMore){
-                            setLoadMore();
-                        }
-                        if (isRefresh){
-                            setNet(NET_STATUS_PRIMACY);
-                        }
-                    }else  if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40104){
-                            ToastUtils.showShort(ImageShowInfoActivity.this,info.getMessage());
-                        }else if (info.getCode() == 40003){
-                            ToastUtils.showShort(ImageShowInfoActivity.this,info.getMessage());
-                        }
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isFirstLoad){
-                            if (refreshLayout!=null){
-                                refreshLayout.setRefreshing(false);
+                                baseCommentMainData = trendingShowInfoCommentMain;
+                                baseCommentMainList = trendingShowInfoCommentMain.getList();
+                                //第一次网络请求结束后 开始第二次网络请求
+                                setNet(NET_STATUS_PRIMACY);
                             }
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            if (refreshLayout!=null){
-                                refreshLayout.setRefreshing(false);
+                            if (isLoadMore){
+                                setLoadMore();
                             }
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(ImageShowInfoActivity.this,"未知错误出现了！");
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isFirstLoad){
-                            if (refreshLayout!=null){
-                                refreshLayout.setRefreshing(false);
+                            if (isRefresh){
+                                setNet(NET_STATUS_PRIMACY);
                             }
-                            isFirstLoad = false;
                         }
-                        if (isRefresh){
-                            if (refreshLayout!=null){
-                                refreshLayout.setRefreshing(false);
-                            }
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<TrendingShowInfoCommentMain> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(ImageShowInfoActivity.this,"请检查您的网络！");
-                        LogUtils.v("AppNetErrorMessage","image show t = "+t.getMessage());
-                        CrashReport.postCatchedException(t);
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isFirstLoad){
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
                             if (refreshLayout!=null){
-                                refreshLayout.setRefreshing(false);
+                                if (isLoadMore){
+                                    commentAdapter.loadMoreFail();
+                                    isLoadMore = false;
+                                }
+                                if (isFirstLoad){
+                                    if (refreshLayout!=null){
+                                        refreshLayout.setRefreshing(false);
+                                    }
+                                    isFirstLoad = false;
+                                }
+                                if (isRefresh){
+                                    if (refreshLayout!=null){
+                                        refreshLayout.setRefreshing(false);
+                                    }
+                                    isRefresh = false;
+                                }
+                                setFailedView();
                             }
-                            isFirstLoad = false;
                         }
-                        if (isRefresh){
-                            if (refreshLayout!=null){
-                                refreshLayout.setRefreshing(false);
-                            }
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
-                }
-            });
+                    });
         }
 
     }
@@ -382,6 +286,26 @@ public class ImageShowInfoActivity extends BaseActivity {
         commentView.setTitleId(primacyData.getUser().getId());
         commentView.setType(ReplyAndCommentView.TYPE_IMAGE);
         commentView.setTargetUserId(0);
+        commentView.setIs_creator(primacyData.isIs_creator());
+        commentView.setLiked(primacyData.isLiked());
+        commentView.setRewarded(primacyData.isRewarded());
+        commentView.setMarked(primacyData.isMarked());
+        commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
+            @Override
+            public void onRewardFinish() {
+                trendingLFCView.setRewarded(true);
+            }
+
+            @Override
+            public void onLikeFinish(boolean isLike) {
+                trendingLFCView.setLiked(isLike);
+            }
+
+            @Override
+            public void onMarkFinish(boolean isMark) {
+                trendingLFCView.setCollected(isMark);
+            }
+        });
         commentView.setNetAndListener();
     }
 
@@ -410,6 +334,27 @@ public class ImageShowInfoActivity extends BaseActivity {
         trendingLFCView.setCollected(primacyData.isMarked());
         trendingLFCView.setRewarded(primacyData.isRewarded());
         trendingLFCView.setIsCreator(primacyData.isIs_creator());
+        trendingLFCView.setOnLFCNetFinish(new TrendingLikeFollowCollectionView.OnLFCNetFinish() {
+            @Override
+            public void onLikedFinish(boolean isLiked) {
+                if (commentView!=null){
+                    commentView.setLiked(isLiked);
+                }
+            }
+
+            @Override
+            public void onCollectedFinish(boolean isMarked) {
+                if (commentView!=null){
+                    commentView.setMarked(isMarked);
+                }
+            }
+            @Override
+            public void onRewardFinish() {
+                if (commentView!=null){
+                    commentView.setRewarded(true);
+                }
+            }
+        });
         trendingLFCView.startListenerAndNet();
 
         //所属番剧操作
@@ -701,5 +646,13 @@ public class ImageShowInfoActivity extends BaseActivity {
     @Override
     protected void handler(Message msg) {
 
+    }
+
+    public CommentAdapter getCommentAdapter(){
+        return commentAdapter;
+    }
+
+    public static ImageShowInfoActivity getInstance(){
+        return instance;
     }
 }

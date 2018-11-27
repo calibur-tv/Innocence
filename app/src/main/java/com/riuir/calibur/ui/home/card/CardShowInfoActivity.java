@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,8 +25,8 @@ import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
-import com.riuir.calibur.data.trending.CardShowInfoPrimacy;
+
+
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
@@ -35,7 +34,7 @@ import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
-import com.riuir.calibur.ui.widget.ReplyAndCommentView;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
@@ -49,6 +48,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
+import calibur.core.http.models.followList.post.CardShowInfoPrimacy;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,9 +64,9 @@ public class CardShowInfoActivity extends BaseActivity {
     private static final int NET_STATUS_PRIMACY = 0;
     private static final int NET_STATUS_MAIN_COMMENT = 1;
 
-    private CardShowInfoPrimacy.CardShowInfoPrimacyData primacyData;
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData baseCommentMainData;
+    private CardShowInfoPrimacy primacyData;
+    private TrendingShowInfoCommentMain commentMainData;
+    private TrendingShowInfoCommentMain baseCommentMainData;
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> baseCommentMainList = new ArrayList<>();
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> commentMainList;
     private ArrayList<String> previewImagesList;
@@ -116,6 +120,7 @@ public class CardShowInfoActivity extends BaseActivity {
     AppListFailedView failedView;
     AppListEmptyView emptyView;
 
+    private static CardShowInfoActivity instance;
     @Override
     protected int getContentViewId() {
         return R.layout.activity_card_show_info;
@@ -123,6 +128,7 @@ public class CardShowInfoActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
+        instance = this;
         Intent intent = getIntent();
         cardID = intent.getIntExtra("cardID",0);
         LogUtils.d("cardInfo","cardID = "+cardID);
@@ -154,180 +160,89 @@ public class CardShowInfoActivity extends BaseActivity {
             mApiGet = apiGet;
         }
         if (NET_STATUS == NET_STATUS_PRIMACY){
-            primacyCall = mApiGet.getCallCardShowPrimacy(cardID);
-            primacyCall.enqueue(new Callback<CardShowInfoPrimacy>() {
-                @Override
-                public void onResponse(Call<CardShowInfoPrimacy> call, Response<CardShowInfoPrimacy> response) {
-                    if (response!=null&&response.body()!=null&&response.isSuccessful()){
-                        primacyData = response.body().getData();
-                        if (isFirstLoad){
-                            //两次网络请求都完成后开始加载数据
-                            isFirstLoad = false;
-                            if (refreshLayout!=null&&cardShowInfoListView!=null){
-                                refreshLayout.setRefreshing(false);
-                                setAdapter();
-                                setPrimacyView();
-                                setEmptyView();
+            apiService.getCallCardShowPrimacy(cardID)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<CardShowInfoPrimacy>(){
+                        @Override
+                        public void onSuccess(CardShowInfoPrimacy cardShowInfoPrimacy) {
+                            primacyData = cardShowInfoPrimacy;
+                            if (isFirstLoad){
+                                //两次网络请求都完成后开始加载数据
+                                isFirstLoad = false;
+                                if (refreshLayout!=null&&cardShowInfoListView!=null){
+                                    refreshLayout.setRefreshing(false);
+                                    setAdapter();
+                                    setPrimacyView();
+                                    setEmptyView();
+                                }
+                            }
+                            if (isRefresh){
+                                setRefresh();
                             }
                         }
-                        if (isRefresh){
-                            setRefresh();
-                        }
 
-                    }else if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                                if (isFirstLoad){
+                                    isFirstLoad = false;
+                                }
+                                if (isRefresh){
+                                    isRefresh = false;
+                                }
+                                setFailedView();
+                            }
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40104){
-                            //用户登录状态过时的时候，清空UserToken,将登录置为false
-                            ToastUtils.showShort(CardShowInfoActivity.this,info.getMessage());
-                            LoginUtils.ReLogin(CardShowInfoActivity.this);
-                        }else if (info.getCode() == 40401){
-                            ToastUtils.showShort(CardShowInfoActivity.this,info.getMessage());
-                        }
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                        }
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                            setFailedView();
-                        }
-                    }else {
-                        ToastUtils.showShort(CardShowInfoActivity.this,"未知错误出现了！");
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                        }
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                            setFailedView();
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<CardShowInfoPrimacy> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(CardShowInfoActivity.this,"网络异常，请稍后再试！");
-                        LogUtils.v("AppNetErrorMessage","cardShow primacy t = "+t.getMessage());
-                        CrashReport.postCatchedException(t);
-                        refreshLayout.setRefreshing(false);
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
-
-                }
-            });
+                    });
         }
 
         if (NET_STATUS == NET_STATUS_MAIN_COMMENT){
             setFetchID();
-            commentMainCall = mApiGet.getCallMainComment("post",cardID,fetchId,onlySeeMaster);
-            commentMainCall.enqueue(new Callback<TrendingShowInfoCommentMain>() {
-                @Override
-                public void onResponse(Call<TrendingShowInfoCommentMain> call, Response<TrendingShowInfoCommentMain> response) {
-                    if (response!=null&&response.body()!=null&&response.body().getCode()==0){
-                        commentMainData = response.body().getData();
-                        commentMainList = response.body().getData().getList();
-                        if (isFirstLoad){
+            apiService.getCallMainComment("post",cardID,fetchId,onlySeeMaster)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<TrendingShowInfoCommentMain>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<TrendingShowInfoCommentMain>() {
+                        @Override
+                        public void onSuccess(TrendingShowInfoCommentMain trendingShowInfoCommentMain) {
+                            commentMainData = trendingShowInfoCommentMain;
+                            commentMainList = trendingShowInfoCommentMain.getList();
+                            if (isFirstLoad){
 
-                            baseCommentMainData = response.body().getData();
-                            baseCommentMainList = response.body().getData().getList();
-                            //第一次网络请求结束后 开始第二次网络请求
-                            setNet(NET_STATUS_PRIMACY);
+                                baseCommentMainData = trendingShowInfoCommentMain;
+                                baseCommentMainList = trendingShowInfoCommentMain.getList();
+                                //第一次网络请求结束后 开始第二次网络请求
+                                setNet(NET_STATUS_PRIMACY);
+                            }
+                            if (isLoadMore){
+                                setLoadMore();
+                            }
+                            if (isRefresh){
+                                //第一次网络请求结束后 开始第二次网络请求
+                                setNet(NET_STATUS_PRIMACY);
+                            }
                         }
-                        if (isLoadMore){
-                            setLoadMore();
-                        }
-                        if (isRefresh){
 
-                            //第一次网络请求结束后 开始第二次网络请求
-                            setNet(NET_STATUS_PRIMACY);
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (refreshLayout!=null){
+                                if (isLoadMore){
+                                    commentAdapter.loadMoreFail();
+                                    isLoadMore = false;
+                                }
+                                if (isFirstLoad){
+                                    refreshLayout.setRefreshing(false);
+                                    isFirstLoad = false;
+                                }
+                                if (isRefresh){
+                                    refreshLayout.setRefreshing(false);
+                                    isRefresh = false;
+                                }
+                                setFailedView();
+                            }
                         }
-                    }else  if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40104){
-                            ToastUtils.showShort(CardShowInfoActivity.this,info.getMessage());
-                        }else if (info.getCode() == 40003){
-                            ToastUtils.showShort(CardShowInfoActivity.this,info.getMessage());
-                        }
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isFirstLoad){
-                            refreshLayout.setRefreshing(false);
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            refreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(CardShowInfoActivity.this,"未知错误出现了！");
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isFirstLoad){
-                            refreshLayout.setRefreshing(false);
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            refreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<TrendingShowInfoCommentMain> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(CardShowInfoActivity.this,"网络异常，请稍后再试！");
-                        LogUtils.v("AppNetErrorMessage","cardShow list t = "+t.getMessage());
-                        CrashReport.postCatchedException(t);
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isFirstLoad){
-                            refreshLayout.setRefreshing(false);
-                            isFirstLoad = false;
-                        }
-                        if (isRefresh){
-                            refreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
-                }
-            });
+                    });
         }
     }
 
@@ -437,6 +352,28 @@ public class CardShowInfoActivity extends BaseActivity {
         trendingLFCView.setCollected(primacyData.getPost().isMarked());
         trendingLFCView.setRewarded(primacyData.getPost().isRewarded());
         trendingLFCView.setIsCreator(primacyData.getPost().isIs_creator());
+        trendingLFCView.setOnLFCNetFinish(new TrendingLikeFollowCollectionView.OnLFCNetFinish() {
+            @Override
+            public void onLikedFinish(boolean isLiked) {
+                if (commentView!=null){
+                    commentView.setLiked(isLiked);
+                }
+            }
+
+            @Override
+            public void onCollectedFinish(boolean isMarked) {
+                if (commentView!=null){
+                    commentView.setMarked(isMarked);
+                }
+            }
+
+            @Override
+            public void onRewardFinish() {
+                if (commentView!=null){
+                    commentView.setRewarded(true);
+                }
+            }
+        });
         trendingLFCView.startListenerAndNet();
 
 
@@ -736,6 +673,26 @@ public class CardShowInfoActivity extends BaseActivity {
         commentView.setTitleId(primacyData.getUser().getId());
         commentView.setType(ReplyAndCommentView.TYPE_POST);
         commentView.setTargetUserId(0);
+        commentView.setIs_creator(primacyData.getPost().isIs_creator());
+        commentView.setLiked(primacyData.getPost().isLiked());
+        commentView.setRewarded(primacyData.getPost().isRewarded());
+        commentView.setMarked(primacyData.getPost().isMarked());
+        commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
+            @Override
+            public void onRewardFinish() {
+                trendingLFCView.setRewarded(true);
+            }
+
+            @Override
+            public void onLikeFinish(boolean isLike) {
+                trendingLFCView.setLiked(isLike);
+            }
+
+            @Override
+            public void onMarkFinish(boolean isMark) {
+                trendingLFCView.setCollected(isMark);
+            }
+        });
         commentView.setNetAndListener();
     }
     @Override
@@ -743,7 +700,12 @@ public class CardShowInfoActivity extends BaseActivity {
 
     }
 
+    public CommentAdapter getCommentAdapter(){
+        return commentAdapter;
+    }
 
-
+    public static CardShowInfoActivity getInstance(){
+        return instance;
+    }
 
 }

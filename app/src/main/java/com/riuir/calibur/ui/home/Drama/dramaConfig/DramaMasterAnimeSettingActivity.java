@@ -22,10 +22,8 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.AnimeShowInfo;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.params.QiniuImageParams;
-import com.riuir.calibur.data.params.masterSetting.BangumiEditParams;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.Drama.dramaConfig.adapter.AnimeSettingTagAdapter;
@@ -43,6 +41,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.models.anime.params.BangumiEditParams;
+import calibur.core.http.models.qiniu.params.QiniuImageParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,7 +74,7 @@ public class DramaMasterAnimeSettingActivity extends BaseActivity {
 
     private int userId;
     private AnimeSettingTagAdapter tagAdapter;
-    private AnimeShowInfo.AnimeShowInfoData animeShowInfoData;
+    private AnimeShowInfo animeShowInfoData;
     private DramaActivity dramaActivity;
     private int bangumi_id;
 
@@ -108,7 +111,7 @@ public class DramaMasterAnimeSettingActivity extends BaseActivity {
         setUserInfo();
         Intent intent = getIntent();
         bangumi_id = intent.getIntExtra("bangumi_id",0);
-        animeShowInfoData = (AnimeShowInfo.AnimeShowInfoData) intent.getSerializableExtra("animeShowInfoData");
+        animeShowInfoData = (AnimeShowInfo) intent.getSerializableExtra("animeShowInfoData");
         LogUtils.d("bangumiEditSet","animeShowInfoData = "+animeShowInfoData.toString());
         instance = this;
         initView();
@@ -371,48 +374,20 @@ public class DramaMasterAnimeSettingActivity extends BaseActivity {
         }
         params.setTags(tagIdList);
 
-        bangumiEditCall = apiPost.getCallEditbangumi(bangumi_id,params);
-        LogUtils.d("animeSetting","bangumiId = "+bangumi_id);
-        bangumiEditCall.enqueue(new Callback<Event<String>>() {
-            @Override
-            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                if (response!=null&&response.isSuccessful()){
-                    setUpLoadFinish();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getCallEditBangumi(bangumi_id,params)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<String>(){
+                    @Override
+                    public void onSuccess(String s) {
+                        setUpLoadFinish();
                     }
-                    Gson gson = new Gson();
 
-                    Event<String> info = null;
-                    try {
-                        info = gson.fromJson(errorStr,Event.class);
-                    } catch (JsonSyntaxException e) {
-                        e.printStackTrace();
-                    }
-                    if (info!=null){
-                        ToastUtils.showShort(DramaMasterAnimeSettingActivity.this,info.getMessage());
-                        setUploadFailed(info.getMessage());
-                    }else {
-                        ToastUtils.showShort(DramaMasterAnimeSettingActivity.this,"服务器出现异常，请稍后再试！");
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
                         setUploadFailed("");
                     }
-                }else{
-                    ToastUtils.showShort(DramaMasterAnimeSettingActivity.this,"获取不到服务器，请稍后再试！");
-                    setUploadFailed("");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Event<String>> call, Throwable t) {
-                ToastUtils.showShort(DramaMasterAnimeSettingActivity.this,"网络异常，请稍后再试！");
-                CrashReport.postCatchedException(t);
-                setUploadFailed("");
-            }
-        });
+                });
     }
     private void setUploadFailed(String failMessage) {
         if (upLoadDialog!=null){

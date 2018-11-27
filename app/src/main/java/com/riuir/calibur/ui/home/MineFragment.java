@@ -26,8 +26,6 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MineUserInfo;
-import com.riuir.calibur.data.user.UserDaySign;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.ui.home.mine.ClearCacheActivity;
@@ -45,6 +43,11 @@ import org.w3c.dom.Text;
 import java.io.IOException;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.user.MineUserInfo;
+import calibur.core.http.models.user.UserDaySign;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -99,7 +102,7 @@ public class MineFragment extends BaseFragment {
 
     AlertDialog levelDialog;
 
-    MineUserInfo.MinEUserInfoData userInfoData;
+    MineUserInfo userInfoData;
 
     private CoinChangeBroadCastReceiver coinReceiver;
     private ExpChangeBroadCastReceiver expReceiver;
@@ -163,116 +166,70 @@ public class MineFragment extends BaseFragment {
 
     private void setNet(int NET_STATUS) {
         if (NET_STATUS == NET_GET_USER_INFO){
-            apiPost.getMineUserInfo().enqueue(new Callback<MineUserInfo>() {
-                @Override
-                public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        Constants.userInfoData = response.body().getData();
-                        SharedPreferencesUtils.putUserInfoData(App.instance(),Constants.userInfoData);
-                        userInfoData = response.body().getData();
-                        setUserInfoView();
-                    }else  if (!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            apiService.getMineUserInfo()
+                    .compose(Rx2Schedulers.<Response<ResponseBean<MineUserInfo>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<MineUserInfo>(){
+                        @Override
+                        public void onSuccess(MineUserInfo mineUserInfo) {
+                            Constants.userInfoData = mineUserInfo;
+                            SharedPreferencesUtils.putUserInfoData(App.instance(),Constants.userInfoData);
+                            userInfoData = mineUserInfo;
+                            setUserInfoView();
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                            }
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        ToastUtils.showShort(getContext(),info.getMessage());
-                        setReSet();
-                    }else {
-                        ToastUtils.showShort(getContext(),"网络异常,请检查您的网络");
-                        setReSet();
-                    }
-                    if (refreshLayout!=null){
-                        refreshLayout.setRefreshing(false);
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<MineUserInfo> call, Throwable t) {
-                    ToastUtils.showShort(getContext(),"网络异常,请检查您的网络");
-                    CrashReport.postCatchedException(t);
-                    setReSet();
-                    if (refreshLayout!=null){
-                        refreshLayout.setRefreshing(false);
-                    }
-                }
-            });
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            setReSet();
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                            }
+                        }
+                    });
         }
         if (NET_STATUS == NET_LOG_OFF){
-            apiPost.getMineUserLogOut().enqueue(new Callback<Event<String>>() {
-                @Override
-                public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                    if (response!=null&&response.isSuccessful()){
-                    }else  if (!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            apiService.getMineUserLogOut()
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<String>(){
+                        @Override
+                        public void onSuccess(String s) {
+                            LoginUtils.CancelLogin(App.instance(),getActivity());
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        LogUtils.d("umLogin","info = "+info.getMessage());
-                    }else {
-                    }
-                    LoginUtils.CancelLogin(App.instance(),getActivity());
-                }
 
-                @Override
-                public void onFailure(Call<Event<String>> call, Throwable t) {
-                    CrashReport.postCatchedException(t);
-                    LoginUtils.CancelLogin(App.instance(),getActivity());
-                }
-            });
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            LoginUtils.CancelLogin(App.instance(),getActivity());
+                        }
+                    });
         }
         if (NET_STATUS == NET_DAY_SIGN){
-            apiPost.getCallUserDaySign().enqueue(new Callback<UserDaySign>() {
-                @Override
-                public void onResponse(Call<UserDaySign> call, Response<UserDaySign> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        daySignBtn.setText("已签到");
-                        coinNumber.setText("团子："+(Constants.userInfoData.getCoin()+1));
-                        Constants.userInfoData.setCoin(Constants.userInfoData.getCoin()+1);
-                        Constants.userInfoData.setDaySign(true);
-                        //签到成功经验+2
-                        setUserExpChanged(response.body().getData().getExp());
-                        ToastUtils.showShort(getContext(),response.body().getData().getMessage());
-
-                    }else  if (!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            apiService.getCallUserDaySign()
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<UserDaySign>(){
+                        @Override
+                        public void onSuccess(UserDaySign userDaySign) {
+                            daySignBtn.setText("已签到");
+                            coinNumber.setText("团子："+(Constants.userInfoData.getCoin()+1));
+                            Constants.userInfoData.setCoin(Constants.userInfoData.getCoin()+1);
+                            Constants.userInfoData.setDaySign(true);
+                            //签到成功经验+2
+                            setUserExpChanged(userDaySign.getExp());
+                            ToastUtils.showShort(getContext(),userDaySign.getMessage());
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        ToastUtils.showShort(getContext(),info.getMessage());
 
-                        daySignBtn.setText("签到");
-                        daySignBtn.setClickable(true);
-
-                    }else {
-                        ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                        daySignBtn.setText("签到");
-                        daySignBtn.setClickable(true);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<UserDaySign> call, Throwable t) {
-//                    call.isCanceled();
-//                    call.isExecuted();
-                    CrashReport.postCatchedException(t);
-                    ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                    daySignBtn.setText("签到");
-                    daySignBtn.setClickable(true);
-                }
-            });
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (daySignBtn!=null){
+                                daySignBtn.setText("签到");
+                                daySignBtn.setClickable(true);
+                            }
+                        }
+                    });
         }
     }
 

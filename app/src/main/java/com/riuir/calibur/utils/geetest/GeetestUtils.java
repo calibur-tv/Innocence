@@ -9,8 +9,8 @@ import com.google.gson.Gson;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.GeeTestInfo;
-import com.riuir.calibur.data.params.VerificationCodeBody;
+
+
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.home.image.CreateImageAlbumActivity;
 
@@ -19,6 +19,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import calibur.core.http.RetrofitManager;
+import calibur.core.http.api.APIService;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.geetest.GeeTestInfo;
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,8 +34,8 @@ import retrofit2.Response;
 public class GeetestUtils {
 
 
-    private  GeeTestInfo geeTestInfo;
-    private  GeeTestInfo.GeeTest geeTest;
+    private GeeTestInfo geeTestInfo;
+    private  GeeTestInfo geeTest;
     public static final String FailAction = "getGeetestFailed";
     private  GT3GeetestBindListener bindListener;
     private  VerificationCodeBody.VerificationCodeBodyGeeTest verificationCodeBodyGeeTest = new VerificationCodeBody.VerificationCodeBodyGeeTest();
@@ -42,57 +49,39 @@ public class GeetestUtils {
 
 //        final Intent intent = new Intent(FailAction);
         //自定义API1后 将API1的返回数据传给gt3GeetestUtils
-        apiGet.getCallGeeTestImageCaptcha().enqueue(new Callback<GeeTestInfo>() {
-            @Override
-            public void onResponse(Call<GeeTestInfo> call, Response<GeeTestInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    geeTestInfo = response.body();
-                    geeTest = geeTestInfo.getData();
+        RetrofitManager.getInstance().getService(APIService.class)
+                .getCallGeeTestImageCaptcha()
+                .compose(Rx2Schedulers.<Response<ResponseBean<GeeTestInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<GeeTestInfo>() {
+                    @Override
+                    public void onSuccess(GeeTestInfo geeTestInfo) {
+                        GeetestUtils.this.geeTestInfo = geeTestInfo;
+                        geeTest = geeTestInfo;
 
-                    verificationCodeBodyGeeTest.setSuccess(geeTest.getSuccess());
-                    verificationCodeBodyGeeTest.setPayload(geeTest.getPayload());
-                    JSONObject params = new JSONObject();
-                    try {
-                        params.put("success",geeTest.getSuccess());
-                        params.put("gt",geeTest.getGt());
-                        params.put("challenge",geeTest.getChallenge());
-                        params.put("new_captcha",true);
-                    } catch (org.json.JSONException e) {
-                        e.printStackTrace();
+                        verificationCodeBodyGeeTest.setSuccess(geeTest.getSuccess());
+                        verificationCodeBodyGeeTest.setPayload(geeTest.getPayload());
+                        JSONObject params = new JSONObject();
+                        try {
+                            params.put("success",geeTest.getSuccess());
+                            params.put("gt",geeTest.getGt());
+                            params.put("challenge",geeTest.getChallenge());
+                            params.put("new_captcha",true);
+                        } catch (org.json.JSONException e) {
+                            e.printStackTrace();
+                        }
+                        gt3GeetestUtilsBind.gtSetApi1Json(params);
+                        LogUtils.d("geetestLogin","params = "+params.toString());
+
+                        initBind(context,bindListener,gt3GeetestUtilsBind);
                     }
-                    gt3GeetestUtilsBind.gtSetApi1Json(params);
-                    LogUtils.d("geetestLogin","params = "+params.toString());
 
-                    initBind(context,bindListener,gt3GeetestUtilsBind);
-
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        setFailed("");
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
+                });
 
-                    ToastUtils.showShort(context,info.getMessage());
-//                    context.sendBroadcast(intent);
-                    setFailed("");
-                }else {
-                    ToastUtils.showShort(context,"不明原因导致验证码发送失败QAQ");
-//                    context.sendBroadcast(intent);
-                    setFailed("");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GeeTestInfo> call, Throwable t) {
-                LogUtils.d("throwableMessage","gee t = "+t.getMessage());
-                ToastUtils.showShort(context,"请检查您的网络哟~");
-//                context.sendBroadcast(intent);
-                setFailed("");
-            }
-        });
     }
 
     private void initBind(Context context,GT3GeetestBindListener geetestBindListener,GT3GeetestUtilsBind gt3GeetestUtilsBind) {

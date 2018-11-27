@@ -21,7 +21,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.user.UserFollowedBangumiInfo;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
@@ -34,6 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.user.UserFollowedBangumiInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,8 +56,8 @@ public class UserFollowedBangumiFragment extends BaseFragment {
     boolean isFirstLoad = false;
     boolean isRefresh = false;
 
-    private List<UserFollowedBangumiInfo.UserFollowedBangumiInfoData> bangumiInfoDatas;
-    private List<UserFollowedBangumiInfo.UserFollowedBangumiInfoData> baseBangumiInfoDatas = new ArrayList<>();
+    private List<UserFollowedBangumiInfo> bangumiInfoDatas;
+    private List<UserFollowedBangumiInfo> baseBangumiInfoDatas = new ArrayList<>();
     FollowedBangumiAdapter bangumiAdapter;
 
     private Call<UserFollowedBangumiInfo> bangumiInfoCall;
@@ -88,77 +91,43 @@ public class UserFollowedBangumiFragment extends BaseFragment {
     }
 
     private void setNet() {
-        bangumiInfoCall = apiGet.getCallUserFollowedBangumi(zone);
-        bangumiInfoCall.enqueue(new Callback<UserFollowedBangumiInfo>() {
-            @Override
-            public void onResponse(Call<UserFollowedBangumiInfo> call, Response<UserFollowedBangumiInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    bangumiInfoDatas = response.body().getData();
-                    if (isFirstLoad){
-                        isFirstLoad =false;
-                        baseBangumiInfoDatas = response.body().getData();
-                        if (refreshLayout!=null&&bangumiListView!=null){
-                            refreshLayout.setRefreshing(false);
-                            setAdapter();
-                            setEmptyView();
+        apiService.getCallUserFollowedBangumi(zone)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<List<UserFollowedBangumiInfo>>(){
+                    @Override
+                    public void onSuccess(List<UserFollowedBangumiInfo> infoList) {
+                        bangumiInfoDatas = infoList;
+                        if (isFirstLoad){
+                            isFirstLoad =false;
+                            baseBangumiInfoDatas = infoList;
+                            if (refreshLayout!=null&&bangumiListView!=null){
+                                refreshLayout.setRefreshing(false);
+                                setAdapter();
+                                setEmptyView();
+                            }
+                        }
+                        if (isRefresh){
+                            setRefresh();
                         }
                     }
-                    if (isRefresh){
-                        setRefresh();
-                    }
 
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (refreshLayout!=null){
+                            if (isFirstLoad){
+                                isFirstLoad = false;
+                                refreshLayout.setRefreshing(false);
+                            }
+                            if (isRefresh){
+                                isRefresh = false;
+                                refreshLayout.setRefreshing(false);
+                            }
+                            setFailedView();
+                        }
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    if (info.getCode() == 40401){
-                        ToastUtils.showShort(getContext(),"该用户不存在！");
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    if (isRefresh){
-                        isRefresh = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    if (isRefresh){
-                        isRefresh = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    setFailedView();
-                }
-            }
+                });
 
-            @Override
-            public void onFailure(Call<UserFollowedBangumiInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(getContext(),"请检查您的网络哟！");
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    if (isRefresh){
-                        isRefresh = false;
-                        refreshLayout.setRefreshing(false);
-                    }
-                    setFailedView();
-                }
-            }
-        });
     }
 
     private void setEmptyView(){
@@ -211,7 +180,7 @@ public class UserFollowedBangumiFragment extends BaseFragment {
 
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                UserFollowedBangumiInfo.UserFollowedBangumiInfoData data = (UserFollowedBangumiInfo.UserFollowedBangumiInfoData)adapter.getData().get(position);
+                UserFollowedBangumiInfo data = (UserFollowedBangumiInfo)adapter.getData().get(position);
                 Intent intent = new Intent(getContext(), DramaActivity.class);
                 intent.putExtra("animeId",data.getId());
                 startActivity(intent);

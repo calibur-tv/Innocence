@@ -22,7 +22,6 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.user.UserNotificationInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaVideoPlayActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -44,18 +43,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import butterknife.BindView;
+import calibur.core.http.models.user.UserNotificationInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * ************************************
- * 作者：韩宝坤
- * 日期：2017/12/24
- * 邮箱：hanbaokun@outlook.com
- * 描述：
- * ************************************
- */
 
 /**
  * 消息fragment
@@ -63,7 +57,7 @@ import retrofit2.Response;
 public class MessageFragment extends BaseFragment {
 
     private int minId = 0;
-    private UserNotificationInfo.UserNotificationInfoData notificationData;
+    private UserNotificationInfo notificationData;
     private List<UserNotificationInfo.UserNotificationInfoList> notificationList;
     private List<UserNotificationInfo.UserNotificationInfoList> baseNotificationList = new ArrayList<>();
 
@@ -121,8 +115,8 @@ public class MessageFragment extends BaseFragment {
         isFirstLoad = true;
 //        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
 //        rootView.setPadding(0,stautsBarHeight,0,0);
-        setNet();
         setAdapter();
+        setNet();
         mainActivity = (MainActivity) getActivity();
         setOnRefreshMsgFromMain();
     }
@@ -134,7 +128,6 @@ public class MessageFragment extends BaseFragment {
             @Override
             public void OnReFresh(int count) {
                 noReadMsgCount = count;
-
                 if (noReadMsgCount!=0&&messageRefreshLayout!=null
                         &&isRefresh == false){
                     //未读消息不为0的时候刷新列表
@@ -168,83 +161,50 @@ public class MessageFragment extends BaseFragment {
     private void setNet() {
         if (Constants.ISLOGIN){
             setMinId();
-            userNotificationInfoCall = apiGetHasAuth.getCallUserNotification(minId);
-            userNotificationInfoCall.enqueue(new Callback<UserNotificationInfo>() {
-                @Override
-                public void onResponse(Call<UserNotificationInfo> call, Response<UserNotificationInfo> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        notificationData = response.body().getData();
-                        notificationList = response.body().getData().getList();
-                        for (int i = 0; i < notificationList.size(); i++) {
-                            LogUtils.d("notificationData","msg list = "+notificationList.get(i).toString());
+            apiService.getCallUserNotification(minId)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<UserNotificationInfo>(){
+                        @Override
+                        public void onSuccess(UserNotificationInfo userNotificationInfo) {
+                            notificationData = userNotificationInfo;
+                            notificationList = userNotificationInfo.getList();
+                            for (int i = 0; i < notificationList.size(); i++) {
+                                LogUtils.d("notificationData","msg list = "+notificationList.get(i).toString());
+                            }
+
+                            if (isFirstLoad){
+                                baseNotificationList = userNotificationInfo.getList();
+                                setFirstData();
+                            }
+                            if (isLoadMore){
+                                setLoadMore();
+                            }
+                            if (isRefresh){
+                                setRefresh();
+                            }
+                            setEmptyView();
                         }
 
-                        if (isFirstLoad){
-                            baseNotificationList = response.body().getData().getList();
-                            setFirstData();
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (messageRefreshLayout!=null){
+                                if (isLoadMore){
+                                    adapter.loadMoreFail();
+                                    isLoadMore = false;
+                                }
+                                if (isRefresh){
+                                    messageRefreshLayout.setRefreshing(false);
+                                    isRefresh = false;
+                                }
+                                setFailedView();
+                            }
                         }
-                        if (isLoadMore){
-                            setLoadMore();
-                        }
-                        if (isRefresh){
-                            setRefresh();
-                        }
-                        setEmptyView();
-                    }else if (!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
+                    });
 
-                        ToastUtils.showShort(getContext(),info.getMessage());
-                        if (isLoadMore){
-                            adapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isRefresh){
-                            messageRefreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                        if (isLoadMore){
-                            adapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isRefresh){
-                            messageRefreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<UserNotificationInfo> call, Throwable t) {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    LogUtils.v("AppNetErrorMessage","message t = "+t.getMessage());
-                    CrashReport.postCatchedException(t);
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        messageRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                    setFailedView();
-                }
-            });
         }else {
             //未登录状态
             ToastUtils.showShort(getContext(),"登录之后才能查看消息哦！");
-
         }
     }
 
@@ -335,72 +295,37 @@ public class MessageFragment extends BaseFragment {
     }
 
     private void setReadMsg(int id) {
-        apiPost.getCallReadNotification(id).enqueue(new Callback<Event<String>>() {
-            @Override
-            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                if (response!=null&&response.isSuccessful()){
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getCallReadNotification(id)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<String>(){
+                    @Override
+                    public void onSuccess(String s) {
                     }
-                    Gson gson = new Gson();
-                    try {
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        LogUtils.d("readNotification","info = "+info.getMessage());
-                    } catch (JsonSyntaxException e) {
-                        e.printStackTrace();
-                    }
-                }else {
-                    LogUtils.d("readNotification","返回为空");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Event<String>> call, Throwable t) {
-                LogUtils.d("readNotification","网络连接失败");
-            }
-        });
+                });
     }
 
     private void setAllMsgRead() {
-        apiPost.getCallAllReadNotification().enqueue(new Callback<Event<String>>() {
-            @Override
-            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                if (response!=null&&response.isSuccessful()){
-                    //设置成功 刷新消息列表
-                    mainActivity.setNoReadMsgZero();
-                    messageRefreshLayout.setRefreshing(true);
-                    isRefresh = true;
-                    setNet();
-                    setAllReadBtn.setClickable(true);
-                    setAllReadBtn.setText("全部设为已读");
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getCallAllReadNotification()
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<String>(){
+                    @Override
+                    public void onSuccess(String s) {
+                        //设置成功 刷新消息列表
+                        mainActivity.setNoReadMsgZero();
+                        messageRefreshLayout.setRefreshing(true);
+                        isRefresh = true;
+                        setNet();
+                        setAllReadBtn.setClickable(true);
+                        setAllReadBtn.setText("全部设为已读");
                     }
-                    Gson gson = new Gson();
-                    try {
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        LogUtils.d("readNotification","info = "+info.getMessage());
-                    } catch (JsonSyntaxException e) {
-                        e.printStackTrace();
-                    }
-                }else {
-                    LogUtils.d("readNotification","返回为空");
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Event<String>> call, Throwable t) {
-                LogUtils.d("readNotification","网络连接失败");
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        setAllReadBtn.setClickable(true);
+                        setAllReadBtn.setText("全部设为已读");
+                    }
+                });
     }
 
     private void setJump(UserNotificationInfo.UserNotificationInfoList data) {

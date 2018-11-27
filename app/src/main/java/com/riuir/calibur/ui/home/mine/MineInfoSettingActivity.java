@@ -36,9 +36,8 @@ import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UriUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MineUserInfo;
-import com.riuir.calibur.data.params.QiniuImageParams;
-import com.riuir.calibur.data.params.UpUserSetting;
+
+
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.ui.common.BaseActivity;
 
@@ -64,6 +63,11 @@ import java.util.List;
 import java.util.zip.Inflater;
 
 import butterknife.BindView;
+import calibur.core.http.models.qiniu.params.QiniuImageParams;
+import calibur.core.http.models.user.MineUserInfo;
+import calibur.core.http.models.user.params.UpUserSetting;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -105,7 +109,7 @@ public class MineInfoSettingActivity extends BaseActivity {
     QiniuUtils qiniuUtils;
     MyAlbumUtils myAlbumUtils;
 
-    MineUserInfo.MinEUserInfoData userData;
+    MineUserInfo userData;
 
     DatePickerDialog datePic;
     int cYear,cMonth,cDay;
@@ -144,7 +148,7 @@ public class MineInfoSettingActivity extends BaseActivity {
     @Override
     protected void onInit() {
         Intent intent = getIntent();
-        userData = (MineUserInfo.MinEUserInfoData) intent.getSerializableExtra("userData");
+        userData = (MineUserInfo) intent.getSerializableExtra("userData");
         if (userData == null&&Constants.userInfoData!=null){
             userData = Constants.userInfoData;
         }
@@ -453,49 +457,27 @@ public class MineInfoSettingActivity extends BaseActivity {
         upUserSetting.setBirth_secret(birth_secret);
         upUserSetting.setSex_secret(sex_secret);
 
-        uploadCall = apiPost.getCallUPLoadUserSetting(upUserSetting);
-        uploadCall.enqueue(new Callback<Event<String>>() {
-            @Override
-            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                if (response!=null&&response.isSuccessful()){
-                    LogUtils.d("mineSetting","info success");
-                    finishBtn.setClickable(true);
-                    finishBtn.setText("保存");
-                    ToastUtils.showShort(MineInfoSettingActivity.this,"保存成功！");
-                    setResult(SETTING_CODE);
-                    finish();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getCallUPLoadUserSetting(upUserSetting)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<String>(){
+                    @Override
+                    public void onSuccess(String s) {
+                        finishBtn.setClickable(true);
+                        finishBtn.setText("保存");
+                        ToastUtils.showShort(MineInfoSettingActivity.this,"保存成功！");
+                        setResult(SETTING_CODE);
+                        finish();
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(MineInfoSettingActivity.this,info.getMessage());
-                    finishBtn.setClickable(true);
-                    finishBtn.setText("保存");
-                }else {
-                    ToastUtils.showShort(MineInfoSettingActivity.this,"未知错误导致上传失败");
-                    finishBtn.setClickable(true);
-                    finishBtn.setText("保存");
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Event<String>> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
-                    CrashReport.postCatchedException(t);
-                    finishBtn.setClickable(true);
-                    finishBtn.setText("保存");
-                }
-            }
-        });
-
-
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (finishBtn!=null){
+                            finishBtn.setClickable(true);
+                            finishBtn.setText("保存");
+                        }
+                    }
+                });
 
     }
 
@@ -550,45 +532,31 @@ public class MineInfoSettingActivity extends BaseActivity {
         if (type.equals("banner")){
             url = bannerImageQiniu.getUrl();
         }
-        apiPost.getCallUpLoadUserAvatarAndBanner(type,url).enqueue(new Callback<Event<String>>() {
-            @Override
-            public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                if (response!=null&&response.isSuccessful()){
-                    File file;
-                    if (type.equals("avatar")){
-                        file = new File(iconUrl);
-                        GlideUtils.loadImageViewFromFileCircle(MineInfoSettingActivity.this,
-                                file,icon);
+        apiService.getCallUpLoadUserAvatarAndBanner(type,url)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<String>(){
+                    @Override
+                    public void onSuccess(String s) {
+                        File file;
+                        if (type.equals("avatar")){
+                            file = new File(iconUrl);
+                            GlideUtils.loadImageViewFromFileCircle(MineInfoSettingActivity.this,
+                                    file,icon);
+                        }
+                        if (type.equals("banner")){
+                            file = new File(bannerUrl);
+                            GlideUtils.loadImageViewFromFileBlur(MineInfoSettingActivity.this,
+                                    file,banner);
+                        }
+                        isChanged = true;
+                        ToastUtils.showShort(MineInfoSettingActivity.this,"图片上传成功！");
                     }
-                    if (type.equals("banner")){
-                        file = new File(bannerUrl);
-                        GlideUtils.loadImageViewFromFileBlur(MineInfoSettingActivity.this,
-                                file,banner);
-                    }
-                    isChanged = true;
-                    ToastUtils.showShort(MineInfoSettingActivity.this,"图片上传成功！");
 
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(MineInfoSettingActivity.this,info.getMessage());
-                }else {
-                    ToastUtils.showShort(MineInfoSettingActivity.this,"未知错误导致上传失败");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Event<String>> call, Throwable t) {
-                ToastUtils.showShort(MineInfoSettingActivity.this,"网络异常，请稍后再试");
-                CrashReport.postCatchedException(t);
-            }
-        });
+                });
     }
 
     @Override

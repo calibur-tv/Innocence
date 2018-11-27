@@ -29,7 +29,7 @@ import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.params.VerificationCodeBody;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.geetest.GeetestUtils;
@@ -42,6 +42,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -184,55 +188,32 @@ public class LoginFragment extends BaseFragment {
             params.put("geetest",verificationCodeBodyGeeTest);
 
             LogUtils.d("loginActivity","geetest = "+verificationCodeBodyGeeTest.toString());
-            apiPostNoAuth.getCallLogin(params).enqueue(new Callback<Event<String>>() {
-                @Override
-                public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                    if (response!=null&&response.isSuccessful()){
-
-                        int code = response.body().getCode();
-                        if (code == 0){
+            apiService.getCallLogin(params)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<String>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<String>() {
+                        @Override
+                        public void onSuccess(String s) {
                             // 登录成功
                             ToastUtils.showShort(getContext(),"登录成功！✿✿ヽ(°▽°)ノ✿");
                             //返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                            SharedPreferencesUtils.put(App.instance(),"Authorization",response.body().getData());
+                            SharedPreferencesUtils.put(App.instance(),"Authorization",s);
                             Constants.ISLOGIN = true;
-                            Constants.AUTH_TOKEN = response.body().getData();
+                            Constants.AUTH_TOKEN = s;
 
                             BangumiAllListUtils.setBangumiAllList(getContext(),apiGet);
-//                            startActivity(MainActivity.class);
-//                            finish();
                         }
-                    }else if (response!=null&&!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (loginBtn!=null){
+                                loginBtn.setClickable(true);
+                                loginBtn.setText("登录");
+                            }
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
+                    });
 
-                        loginBtn.setClickable(true);
-                        loginBtn.setText("登录");
-                        ToastUtils.showShort(getContext(),info.getMessage());
-                    }else {
-                        loginBtn.setClickable(true);
-                        loginBtn.setText("登录");
-                        ToastUtils.showShort(getContext(),"不明原因导致登录失败QAQ");
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Event<String>> call, Throwable t) {
-                    ToastUtils.showShort(getContext(),"请检查您的网络哟~");
-                    LogUtils.v("AppNetErrorMessage","login t = "+t.getMessage());
-                    CrashReport.postCatchedException(t);
-                    loginBtn.setClickable(true);
-                    loginBtn.setText("登录");
-                }
-            });
         }
-
     }
 
 

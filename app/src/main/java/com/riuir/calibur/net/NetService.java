@@ -13,6 +13,7 @@ import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.TlsVersion;
+import okhttp3.internal.cache.CacheInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -193,8 +194,11 @@ public class NetService {
      * 创建 Retrofit get
      **/
     private Retrofit retrofitGet = new Retrofit.Builder()
+            // 设置网络请求的api地址
             .baseUrl(baseUrl)
+            // 设置数据解析器
             .addConverterFactory(GsonConverterFactory.create())
+            //传入OKHttpClient对象
             .client(clientGet)
             .build();
 

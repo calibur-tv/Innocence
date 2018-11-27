@@ -13,6 +13,7 @@ import butterknife.BindView;
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
 import calibur.core.http.models.AppVersionCheckData;
+import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.templates.TemplateRenderManager;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
@@ -34,6 +35,9 @@ import com.riuir.calibur.ui.widget.MainBottomBar;
 import com.riuir.calibur.utils.Constants;
 import com.tencent.bugly.crashreport.CrashReport;
 import java.io.IOException;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -132,96 +136,46 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     }
 
     private void setMessageCount() {
-        messageCountCall = apiGetHasAuth.getUserNotificationCount();
-        messageCountCall.enqueue(new Callback<Event<Integer>>() {
-            @Override
-            public void onResponse(Call<Event<Integer>> call, Response<Event<Integer>> response) {
-                if (response!=null&&response.isSuccessful()){
-                    messageCount = response.body().getData();
-                    maintabBottombar.updateMsgRedDot(messageCount);
-                    LogUtils.d("readNotification","messageCount = "+messageCount);
-                }else if (response!=null&&response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info = null;
-                    try {
-                        info = gson.fromJson(errorStr,Event.class);
-                        LogUtils.d("messageCount", "请求不成功 message = "+info.getMessage());
-                    } catch (JsonSyntaxException e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    LogUtils.d("messageCount", "请求返回为空");
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Event<Integer>> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    LogUtils.d("messageCount", "请求失败");
-                    CrashReport.postCatchedException(t);
-                }
-            }
-        });
+
+        apiService.getUserNotificationCount()
+                .compose(Rx2Schedulers.<Response<ResponseBean<Integer>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<Integer>() {
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        messageCount = integer;
+                        maintabBottombar.updateMsgRedDot(messageCount);
+                        LogUtils.d("readNotification","messageCount = "+messageCount);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                    }
+                });
+
     }
 
 
     private void setCheckVersion() {
         oldVersion = AppUtil.getAppVersionName();
-        RetrofitManager.getInstance().getService(APIService.class).getCallAppVersionCheck(1,oldVersion)
-            .compose(Rx2Schedulers.applyObservableAsync())
+        apiService.getCallAppVersionCheck(1,oldVersion)
+            .compose(Rx2Schedulers.<Response<ResponseBean<AppVersionCheckData>>>applyObservableAsync())
             .subscribe(new ObserverWrapper<AppVersionCheckData>() {
-                @Override public void onSuccess(AppVersionCheckData model) {
+                @Override
+                public void onSuccess(AppVersionCheckData model) {
                     newVersion = model.getLatest_version();
                     forceUpdate = model.isForce_update();
                     downloadUrl = model.getDownload_url();
                     setIsVerUpDate();
                 }
 
-                @Override public void onFailure(int code, String errorMsg) {
+                @Override
+                public void onFailure(int code, String errorMsg) {
                     super.onFailure(code, errorMsg);
                 }
             });
-        //apiGet.getCallAppVersionCheck(1,oldVersion).enqueue(new Callback<AppVersionCheck>() {
-        //    @Override
-        //    public void onResponse(Call<AppVersionCheck> call, Response<AppVersionCheck> response) {
-        //        if (response!=null&&response.isSuccessful()){
-        //            if (response.body().getData()!=null){
-        //                LogUtils.d("VersionCheck", "请求成功 data = "+response.body().getData().toString());
-        //                newVersion = response.body().getData().getLatest_version();
-        //                forceUpdate = response.body().getData().isForce_update();
-        //                downloadUrl = response.body().getData().getDownload_url();
-        //                setIsVerUpDate();
-        //
-        //            }
-        //        }else if (response!=null&&!response.isSuccessful()){
-        //            String errorStr = "";
-        //            try {
-        //                errorStr = response.errorBody().string();
-        //            } catch (IOException e) {
-        //                e.printStackTrace();
-        //            }
-        //            Gson gson = new Gson();
-        //            Event<String> info =gson.fromJson(errorStr,Event.class);
-        //
-        //            LogUtils.d("VersionCheck", "请求不成功 message = "+info.getMessage());
-        //        }else {
-        //            LogUtils.d("VersionCheck", "请求返回为空");
-        //        }
-        //    }
-        //
-        //    @Override
-        //    public void onFailure(Call<AppVersionCheck> call, Throwable t) {
-        //        LogUtils.d("VersionCheck", "请求失败");
-        //        CrashReport.postCatchedException(t);
-        //    }
-        //});
+
     }
 
     private void setIsVerUpDate() {

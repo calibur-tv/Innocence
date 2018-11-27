@@ -1,6 +1,7 @@
 package com.riuir.calibur.data.params.newImage;
 
-import com.riuir.calibur.data.params.VerificationCodeBody;
+
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
 
 public class CreateNewAlbum {
     private int bangumi_id;

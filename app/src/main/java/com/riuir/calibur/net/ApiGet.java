@@ -35,7 +35,12 @@ import com.riuir.calibur.data.user.UserMainInfo;
 import com.riuir.calibur.data.user.UserNotificationInfo;
 import com.riuir.calibur.data.user.UserReplyCardInfo;
 
+
+
+import calibur.core.http.models.base.ResponseBean;
+import io.reactivex.Observable;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -87,7 +92,6 @@ public interface ApiGet {
     @GET("image/captcha")
     Call<GeeTestInfo> getCallGeeTestImageCaptcha();
 
-
     //获取番剧时间抽
     @GET("bangumi/timeline")
     Call<AnimeListForTimeLine> getCallDramaTimeGet(@Query("year")int year, @Query("take")int take);
@@ -104,7 +108,7 @@ public interface ApiGet {
     @GET("post/tags")
     Call<DramaTags> getCallPostTags();
 
-    //获取动漫标签
+    //根据标签搜索动漫
     @GET("bangumi/category")
     Call<AnimeListForTagsSearch> getCallSearchDramaForTags(@Query("id")String id, @Query("page")String page);
 
@@ -115,8 +119,6 @@ public interface ApiGet {
     //获取动漫详情
     @GET("bangumi/{bangumiId}/show")
     Call<AnimeShowInfo> getCallAnimeShow(@Path("bangumiId")int bangumiId);
-
-
 
     //获取动漫视频列表
     @GET("bangumi/{bangumiId}/videos")
@@ -174,7 +176,6 @@ public interface ApiGet {
     @GET("user/{zone}/followed/role")
     Call<UserFollowedRoleInfo> getCallUserFollowedRole(@Path("zone")String zone);
 
-
     //获取用户主题帖
     @GET("user/{zone}/posts/mine")
     Call<MainTrendingInfo> getCallUserReleseCard(@Path("zone") String zone,@Query("page")int page);
@@ -204,4 +205,5 @@ public interface ApiGet {
 
     @GET("cm/loop/list")
     Call<BannerLoopInfo> getCallBannerLoop();
+
 }

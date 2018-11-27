@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 背景颜色 -->
-    <item android:drawable="@color/theme_magic_sakura_primary" />
+    <item android:drawable="@color/color_FFFFFFFF" />
 
     <item>
         <!-- 图片 -->
         <bitmap
             android:gravity="center"
             android:src="@mipmap/splash_background"
+            android:scaleType="centerCrop"
             />
     </item>
 </layer-list>

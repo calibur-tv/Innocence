@@ -20,7 +20,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.AnimeShowInfo;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.Drama.DramaTagsSearchActivity;
@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeShowInfo;
 
 public class DramaInfoActivity extends BaseActivity {
 
@@ -68,7 +69,7 @@ public class DramaInfoActivity extends BaseActivity {
     DramaTagsAdapter dramaTagsAdapter;
     DramaMasterAdapter dramaMasterAdapter;
 
-    AnimeShowInfo.AnimeShowInfoData animeShowInfoData;
+    AnimeShowInfo animeShowInfoData;
 
     String tagsIDStr;
     String tagsNameStr;
@@ -85,7 +86,7 @@ public class DramaInfoActivity extends BaseActivity {
     @Override
     protected void onInit() {
         Intent intent = getIntent();
-        animeShowInfoData = (AnimeShowInfo.AnimeShowInfoData) intent.getSerializableExtra("animeShowInfoData");
+        animeShowInfoData = (AnimeShowInfo) intent.getSerializableExtra("animeShowInfoData");
         if (animeShowInfoData!=null){
             setView();
             setListener();

@@ -22,8 +22,7 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
-import com.riuir.calibur.data.role.RoleFansListInfo;
-import com.riuir.calibur.data.role.RoleShowInfo;
+
 import com.riuir.calibur.data.trending.TrendingToggleInfo;
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
@@ -47,6 +46,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.RoleFansListInfo;
+import calibur.core.http.models.anime.RoleShowInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -86,8 +89,8 @@ public class RolesShowInfoActivity extends BaseActivity {
     @BindView(R.id.role_show_info_header_more)
     AppHeaderPopupWindows headerMore;
 
-    private RoleShowInfo.RoleShowInfoData primacyData;
-    private RoleFansListInfo.RoleFansListInfoData fansData;
+    private RoleShowInfo primacyData;
+    private RoleFansListInfo fansData;
     private List<RoleFansListInfo.RoleFansListInfoList> fansList;
     private List<RoleFansListInfo.RoleFansListInfoList> baseFansList = new ArrayList<>();
 
@@ -102,8 +105,7 @@ public class RolesShowInfoActivity extends BaseActivity {
     boolean isLoadMore = false;
     boolean isRefresh = false;
 
-    private Call<RoleShowInfo> primacyCall;
-    private Call<RoleFansListInfo> fansListInfoCall;
+
 
     AppListFailedView failedView;
     AppListEmptyView emptyView;
@@ -127,193 +129,98 @@ public class RolesShowInfoActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
-        if (primacyCall!=null){
-            primacyCall.cancel();
-        }
-        if (fansListInfoCall!=null){
-            fansListInfoCall.cancel();
-        }
         super.onDestroy();
     }
 
     private void setNet(int NET_STATUS) {
 
-        ApiGet mApiGet;
-        if (Constants.ISLOGIN){
-            mApiGet = apiGetHasAuth;
-        }else {
-            mApiGet = apiGet;
-        }
-
         if (NET_STATUS == NET_STATUS_PRIMACY){
-            primacyCall = mApiGet.getCallRoleShowPrimacy(roleId);
-            primacyCall.enqueue(new Callback<RoleShowInfo>() {
-                @Override
-                public void onResponse(Call<RoleShowInfo> call, Response<RoleShowInfo> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        primacyData = response.body().getData();
-                        setNet(NET_STATUS_USER_LIST);
+            apiService.getCallRoleShowPrimacy(roleId)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<RoleShowInfo>(){
+                        @Override
+                        public void onSuccess(RoleShowInfo roleShowInfo) {
+                            primacyData = roleShowInfo;
+                            setNet(NET_STATUS_USER_LIST);
+                        }
 
-                    }else if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (roleShowInfoRefreshLayout!=null){
+                                setFailedView();
+                            }
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40104){
-                            //用户登录状态过时的时候，清空UserToken,将登录置为false
-                            ToastUtils.showShort(RolesShowInfoActivity.this,info.getMessage());
-                            LoginUtils.ReLogin(RolesShowInfoActivity.this);
-                        }else if (info.getCode() == 40401){
-                            ToastUtils.showShort(RolesShowInfoActivity.this,info.getMessage());
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(RolesShowInfoActivity.this,"未知错误出现了！");
-                        setFailedView();
-                    }
-                }
-                @Override
-                public void onFailure(Call<RoleShowInfo> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(RolesShowInfoActivity.this,"请检查您的网络哟~");
-                        CrashReport.postCatchedException(t);
-                        setFailedView();
-                    }
-                }
-            });
+                    });
         }
 
         if (NET_STATUS == NET_STATUS_USER_LIST){
             setSeendIdS();
-            fansListInfoCall = mApiGet.getCallRolesFansList(roleId,"hot",seenIds);
-            fansListInfoCall.enqueue(new Callback<RoleFansListInfo>() {
-                @Override
-                public void onResponse(Call<RoleFansListInfo> call, Response<RoleFansListInfo> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        fansList = response.body().getData().getList();
-                        fansData = response.body().getData();
-                        if (isFirstLoad){
-                            baseFansList = response.body().getData().getList();
-                            if (roleShowInfoListView!=null){
-                                setAdapter();
-                                setPrimacyView();
-                                setEmptyView();
+            apiService.getCallRolesFansList(roleId,"hot",seenIds)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<RoleFansListInfo>(){
+                        @Override
+                        public void onSuccess(RoleFansListInfo roleFansListInfo) {
+                            fansList = roleFansListInfo.getList();
+                            fansData = roleFansListInfo;
+                            if (isFirstLoad){
+                                baseFansList = roleFansListInfo.getList();
+                                if (roleShowInfoListView!=null){
+                                    setAdapter();
+                                    setPrimacyView();
+                                    setEmptyView();
+                                }
+                            }
+                            if (isLoadMore){
+                                setLoadMore();
+                            }
+                            if (isRefresh){
+                                setRefresh();
+                            }
+                            for (RoleFansListInfo.RoleFansListInfoList hotItem :fansList){
+                                seenIdList.add(hotItem.getId());
                             }
                         }
-                        if (isLoadMore){
-                            setLoadMore();
-                        }
-                        if (isRefresh){
-                            setRefresh();
-                        }
-                        for (RoleFansListInfo.RoleFansListInfoList hotItem :fansList){
-                            seenIdList.add(hotItem.getId());
-                        }
-                    }else if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40104){
-                            //用户登录状态过时的时候，清空UserToken,将登录置为false
-                            ToastUtils.showShort(RolesShowInfoActivity.this,info.getMessage());
-                            LoginUtils.ReLogin(RolesShowInfoActivity.this);
-                        }else if (info.getCode() == 40401){
-                            ToastUtils.showShort(RolesShowInfoActivity.this,info.getMessage());
-                        }
-                        if (isLoadMore){
-                            fansListAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isRefresh){
-                            roleShowInfoRefreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(RolesShowInfoActivity.this,"未知错误出现了！");
-                        if (isLoadMore){
-                            fansListAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isRefresh){
-                            roleShowInfoRefreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
 
-                }
-
-                @Override
-                public void onFailure(Call<RoleFansListInfo> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(RolesShowInfoActivity.this,"请检查您的网络哟~");
-                        CrashReport.postCatchedException(t);
-                        if (isLoadMore){
-                            fansListAdapter.loadMoreFail();
-                            isLoadMore = false;
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (roleShowInfoRefreshLayout!=null){
+                                if (isLoadMore){
+                                    fansListAdapter.loadMoreFail();
+                                    isLoadMore = false;
+                                }
+                                if (isRefresh){
+                                    roleShowInfoRefreshLayout.setRefreshing(false);
+                                    isRefresh = false;
+                                }
+                                setFailedView();
+                            }
                         }
-                        if (isRefresh){
-                            roleShowInfoRefreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                        setFailedView();
-                    }
-                }
-            });
+                    });
         }
 
         if (NET_STATUS == NET_STATUS_STAR){
-            apiPost.getCallRolesStar(roleId).enqueue(new Callback<TrendingToggleInfo>() {
-                @Override
-                public void onResponse(Call<TrendingToggleInfo> call, Response<TrendingToggleInfo> response) {
-
-                    if (response!=null&&response.isSuccessful()){
-                        ToastUtils.showLong(RolesShowInfoActivity.this,"应援成功，消耗1团子,点击可继续应援！");
-                        setStarFinish();
-                    }else if (!response.isSuccessful()){
-
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            apiService.getCallRolesStar(roleId)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<String>(){
+                        @Override
+                        public void onSuccess(String isStar) {
+                            ToastUtils.showLong(RolesShowInfoActivity.this,"应援成功，消耗1团子,点击可继续应援！");
+                            setStarFinish();
+                            headerStarBtn.setText("为TA应援");
+                            headerStarBtn.setClickable(true);
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40401){
-                            ToastUtils.showShort(RolesShowInfoActivity.this,"不存在的角色！");
-                        }
-                        if (info.getCode() == 40301){
-                            ToastUtils.showShort(RolesShowInfoActivity.this,"没有足够的团子！");
-                        }
-                    }else {
-                        ToastUtils.showShort(RolesShowInfoActivity.this,"未知原因导致应援失败了！");
 
-                    }
-                    headerStarBtn.setText("为TA应援");
-                    headerStarBtn.setClickable(true);
-                }
-
-                @Override
-                public void onFailure(Call<TrendingToggleInfo> call, Throwable t) {
-                    ToastUtils.showShort(RolesShowInfoActivity.this,"请检查您的网络再重试哟~");
-                    CrashReport.postCatchedException(t);
-                    headerStarBtn.setText("为TA应援");
-                    headerStarBtn.setClickable(true);
-                }
-            });
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (headerStarBtn!=null){
+                                headerStarBtn.setText("为TA应援");
+                                headerStarBtn.setClickable(true);
+                            }
+                        }
+                    });
         }
 
     }

@@ -41,9 +41,7 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MainTrendingInfo;
-import com.riuir.calibur.data.anime.AnimeScoreInfo;
-import com.riuir.calibur.data.params.FolllowListParams;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaScoreListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -58,6 +56,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeScoreInfo;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.followList.MainTrendingInfo;
+import calibur.core.http.models.followList.params.FolllowListParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,9 +93,9 @@ public class DramaScoreFragment extends BaseFragment {
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
     private List<MainTrendingInfo.MainTrendingInfoList> baseListScore = new ArrayList<>();
 
-    private MainTrendingInfo.MainTrendingInfoData mainScoreInfoData;
+    private MainTrendingInfo mainScoreInfoData;
 
-    private AnimeScoreInfo.AnimeScoreInfoData animeScore;
+    private AnimeScoreInfo animeScore;
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
@@ -154,9 +158,9 @@ public class DramaScoreFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        if (listCall!=null){
-            listCall.cancel();
-        }
+//        if (listCall!=null){
+//            listCall.cancel();
+//        }
         if (primacyCall!=null){
             primacyCall.cancel();
         }
@@ -175,206 +179,112 @@ public class DramaScoreFragment extends BaseFragment {
             folllowListParams.setTake(0);
             folllowListParams.setMinId(0);
             folllowListParams.setSeenIds(seenIds);
-            listCall = apiPost.getFollowList(folllowListParams);
-            listCall.enqueue(new Callback<MainTrendingInfo>() {
-                @Override
-                public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
-
-                    if (response!=null&&response.isSuccessful()){
-
-                        mainScoreInfoData = response.body().getData();
-                        listScore = response.body().getData().getList();
-                        if (isFirstLoad){
-                            baseListScore = response.body().getData().getList();
-                            if (baseListScore!=null&&baseListScore.size()!=0){
-                                setNet(NET_PRIMACY);
-                            }else {
-                                if (scoreRefreshLayout!=null){
-                                    scoreRefreshLayout.setRefreshing(false);
+            apiService.getFollowList(folllowListParams)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<MainTrendingInfo>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<MainTrendingInfo>() {
+                        @Override
+                        public void onSuccess(MainTrendingInfo mainTrendingInfo) {
+                            mainScoreInfoData = mainTrendingInfo;
+                            listScore = mainTrendingInfo.getList();
+                            if (isFirstLoad){
+                                baseListScore = mainTrendingInfo.getList();
+                                if (baseListScore!=null&&baseListScore.size()!=0){
+                                    setNet(NET_PRIMACY);
+                                }else {
+                                    if (scoreRefreshLayout!=null){
+                                        scoreRefreshLayout.setRefreshing(false);
+                                    }
+                                }
+                                setEmptyView();
+                            }
+                            if (isLoadMore){
+                                setLoadMore();
+                            }
+                            if (isRefresh){
+                                if (listScore!=null&&listScore.size()!=0){
+                                    setNet(NET_PRIMACY);
+                                }else {
+                                    if (scoreRefreshLayout!=null){
+                                        scoreRefreshLayout.setRefreshing(false);
+                                    }
+                                    isRefresh = false;
+                                    ToastUtils.showShort(getContext(),"刷新成功！");
                                 }
                             }
-                            setEmptyView();
+                            for (MainTrendingInfo.MainTrendingInfoList hotItem :listScore){
+                                seenIdList.add(hotItem.getId());
+                            }
                         }
-                        if (isLoadMore){
-                            setLoadMore();
-                        }
-                        if (isRefresh){
-                            if (listScore!=null&&listScore.size()!=0){
-                                setNet(NET_PRIMACY);
-                            }else {
-                                if (scoreRefreshLayout!=null){
-                                    scoreRefreshLayout.setRefreshing(false);
+
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (scoreListView!=null){
+                                if (isLoadMore){
+                                    adapter.loadMoreFail();
+                                    isLoadMore = false;
                                 }
-                                isRefresh = false;
-                                ToastUtils.showShort(getContext(),"刷新成功！");
+                                if (isRefresh){
+                                    if (scoreRefreshLayout!=null){
+                                        scoreRefreshLayout.setRefreshing(false);
+                                    }
+                                    isRefresh = false;
+                                }
+                                if (isFirstLoad){
+                                    isFirstLoad = false;
+                                    if (scoreRefreshLayout!=null){
+                                        scoreRefreshLayout.setRefreshing(false);
+                                    }
+                                }
+                                setFailedView();
                             }
                         }
-                        for (MainTrendingInfo.MainTrendingInfoList hotItem :listScore){
-                            seenIdList.add(hotItem.getId());
-                        }
+                    });
 
-                    }else if (!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                        ToastUtils.showShort(getContext(),info.getMessage());
-                        if (isLoadMore){
-                            adapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isRefresh){
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                            isRefresh = false;
-                        }
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                        if (isLoadMore){
-                            adapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isRefresh){
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                            isRefresh = false;
-                        }
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                        }
-                        setFailedView();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(getContext(),"请检查您的网络！");
-                        CrashReport.postCatchedException(t);
-                        if (isLoadMore){
-                            adapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isRefresh){
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                            isRefresh = false;
-                        }
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                        }
-                        setFailedView();
-                    }
-                }
-            });
         }
 
         if (NET_STATUS == NET_PRIMACY){
-            primacyCall = apiGet.getCallAnimeShowAllScore(bangumiID);
-            primacyCall.enqueue(new Callback<AnimeScoreInfo>() {
-                @Override
-                public void onResponse(Call<AnimeScoreInfo> call, Response<AnimeScoreInfo> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        animeScore = response.body().getData();
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                            if (scoreRefreshLayout!=null&&scoreListView!=null){
-                                if (scoreRefreshLayout!=null){
-                                    scoreRefreshLayout.setRefreshing(false);
+            apiService.getCallAnimeShowAllScore(bangumiID)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<AnimeScoreInfo>(){
+                        @Override
+                        public void onSuccess(AnimeScoreInfo animeScoreInfo) {
+                            animeScore = animeScoreInfo;
+                            if (isFirstLoad){
+                                isFirstLoad = false;
+                                if (scoreRefreshLayout!=null&&scoreListView!=null){
+                                    if (scoreRefreshLayout!=null){
+                                        scoreRefreshLayout.setRefreshing(false);
+                                    }
+                                    setListAdapter();
+                                    setPrimacy();
                                 }
-                                setListAdapter();
-                                setPrimacy();
                             }
-                        }
-                        if (isRefresh){
-                            setRefresh();
+                            if (isRefresh){
+                                setRefresh();
+                            }
                         }
 
-                    }else if (!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                        ToastUtils.showShort(getContext(),info.getMessage());
-                        if (isFirstLoad){
-                            isFirstLoad = false;
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
                             if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
+                                if (isFirstLoad){
+                                    isFirstLoad = false;
+                                    if (scoreRefreshLayout!=null){
+                                        scoreRefreshLayout.setRefreshing(false);
+                                    }
+                                }
+                                if (isRefresh){
+                                    isRefresh = false;
+                                    if (scoreRefreshLayout!=null){
+                                        scoreRefreshLayout.setRefreshing(false);
+                                    }
+                                }
+                                setFailedView();
                             }
                         }
-                        if (isRefresh){
-                            isRefresh = false;
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(getContext(),"未知原因导致加载失败！");
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                        }
-                        setFailedView();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<AnimeScoreInfo> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(getContext(),"请检查您的网络！");
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                            if (scoreRefreshLayout!=null){
-                                scoreRefreshLayout.setRefreshing(false);
-                            }
-                        }
-                        setFailedView();
-                    }
-                }
-            });
+                    });
         }
 
     }

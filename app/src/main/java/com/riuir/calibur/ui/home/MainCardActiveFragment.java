@@ -19,8 +19,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MainTrendingInfo;
-import com.riuir.calibur.data.params.FolllowListParams;
+
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.CardActiveListAdapter;
@@ -37,6 +36,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.followList.MainTrendingInfo;
+import calibur.core.http.models.followList.params.FolllowListParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -59,7 +63,7 @@ public class MainCardActiveFragment extends BaseFragment {
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
     private List<MainTrendingInfo.MainTrendingInfoList> baseListActive = new ArrayList<>();
 
-    private MainTrendingInfo.MainTrendingInfoData mainTrendingInfoData;
+    private MainTrendingInfo mainTrendingInfoData;
 
     private CardActiveListAdapter adapter;
 
@@ -100,102 +104,56 @@ public class MainCardActiveFragment extends BaseFragment {
         params.setPage(0);
         params.setTake(0);
         params.setSeenIds(seenIds);
-        apiPost.getFollowList(params).enqueue(new Callback<MainTrendingInfo>() {
-            @Override
-            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
+        apiService.getFollowList(params)
+                .compose(Rx2Schedulers.<Response<ResponseBean<MainTrendingInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<MainTrendingInfo>() {
+                    @Override
+                    public void onSuccess(MainTrendingInfo mainTrendingInfo) {
+                        listActive = mainTrendingInfo.getList();
+                        mainTrendingInfoData = mainTrendingInfo;
+                        if (isFirstLoad){
+                            baseListActive = mainTrendingInfo.getList();
+                            if (mainCardHotRefreshLayout!=null&&adapter!=null){
+                                mainCardHotRefreshLayout.setRefreshing(false);
+                                setFirstData();
+                            }
+                        }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+                        setEmptyView();
+                        for (MainTrendingInfo.MainTrendingInfoList hotItem :listActive){
+                            seenIdList.add(hotItem.getId());
+                        }
+                    }
 
-                if (response!=null&&response.isSuccessful()){
-                    listActive = response.body().getData().getList();
-                    mainTrendingInfoData = response.body().getData();
-                    if (isFirstLoad){
-                        baseListActive = response.body().getData().getList();
-                        if (mainCardHotRefreshLayout!=null&&adapter!=null){
-                            mainCardHotRefreshLayout.setRefreshing(false);
-                            setFirstData();
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (mainCardHotListView!=null){
+                            if (isLoadMore){
+                                adapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isRefresh){
+                                if (mainCardHotRefreshLayout!=null){
+                                    mainCardHotRefreshLayout.setRefreshing(false);
+                                }
+                                isRefresh = false;
+                            }
+                            if (isFirstLoad){
+                                if (mainCardHotRefreshLayout!=null){
+                                    mainCardHotRefreshLayout.setRefreshing(false);
+                                }
+                            }
+                            setFailedView();
                         }
                     }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setRefresh();
-                    }
-                    setEmptyView();
-                    for (MainTrendingInfo.MainTrendingInfoList hotItem :listActive){
-                        seenIdList.add(hotItem.getId());
-                    }
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
+                });
 
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (mainCardHotRefreshLayout!=null){
-                            mainCardHotRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        if (mainCardHotRefreshLayout!=null){
-                            mainCardHotRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (mainCardHotRefreshLayout!=null){
-                            mainCardHotRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        if (mainCardHotRefreshLayout!=null){
-                            mainCardHotRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    setFailedView();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-
-                LogUtils.v("AppNetErrorMessage","mainCardList t = "+t.getMessage());
-                CrashReport.postCatchedException(t);
-                ToastUtils.showShort(getContext(),"请检查您的网络！");
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isRefresh){
-                    if (mainCardHotRefreshLayout!=null){
-                        mainCardHotRefreshLayout.setRefreshing(false);
-                    }
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    if (mainCardHotRefreshLayout!=null){
-                        mainCardHotRefreshLayout.setRefreshing(false);
-                    }
-                }
-                setFailedView();
-            }
-        });
     }
 
     private void setSeendIdS() {

@@ -30,10 +30,7 @@ import com.riuir.calibur.assistUtils.PermissionUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.album.ChooseImageAlbum;
-import com.riuir.calibur.data.album.CreateNewAlbumInfo;
-import com.riuir.calibur.data.params.QiniuImageParams;
-import com.riuir.calibur.data.params.VerificationCodeBody;
-import com.riuir.calibur.data.params.newImage.CreateNewAlbum;
+
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MineFragment;
@@ -57,6 +54,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.create.CreateNewAlbumInfo;
+import calibur.core.http.models.create.params.CreateNewAlbum;
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
+import calibur.core.http.models.qiniu.params.QiniuImageParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -325,62 +328,45 @@ public class CreateImageAlbumActivity extends BaseActivity {
         newAlbum.setType(qiniuData.getType());
         newAlbum.setGeetest(verificationCodeBodyGeeTest);
 
-        apiPost.getCreateIAlbum(newAlbum)
-                .enqueue(new Callback<CreateNewAlbumInfo>() {
+        apiService.getCreateIAlbum(newAlbum)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<CreateNewAlbumInfo>(){
                     @Override
-                    public void onResponse(Call<CreateNewAlbumInfo> call, Response<CreateNewAlbumInfo> response) {
-                        if (response!=null&&response.isSuccessful()){
-                            final CreateNewAlbumInfo.CreateNewAlbumInfoData data = response.body().getData();
-                            final int id = data.getData().getId();
-                            upLoadDialog.setTitleText("上传成功!")
-                                    .setContentText("您的相册上传成功!")
-                                    .setConfirmText("好的")
-                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                        @Override
-                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                            if (id!=0){
+                    public void onSuccess(CreateNewAlbumInfo info) {
+                        final CreateNewAlbumInfo data = info;
+                        final int id = data.getData().getId();
+                        upLoadDialog.setTitleText("上传成功!")
+                                .setContentText("您的相册上传成功!")
+                                .setConfirmText("好的")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        if (id!=0){
 //                                                Intent intent = new Intent(CreateImageAlbumActivity.this,ImageShowInfoActivity.class);
 //                                                intent.putExtra("imageID",id);
 //                                                startActivity(intent);
 //                                                finish();
-                                                Intent intent = new Intent();
-                                                intent.putExtra("album_id",data.getData().getId());
-                                                intent.putExtra("albumName",data.getData().getName());
-                                                intent.putExtra("albumPoster",data.getData().getPoster());
-                                                setResult(NEW_ALBUM_CODE,intent);
-                                                finish();
-                                            }
+                                            Intent intent = new Intent();
+                                            intent.putExtra("album_id",data.getData().getId());
+                                            intent.putExtra("albumName",data.getData().getName());
+                                            intent.putExtra("albumPoster",data.getData().getPoster());
+                                            setResult(NEW_ALBUM_CODE,intent);
+                                            finish();
                                         }
-                                    })
-                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                            ToastUtils.showShort(CreateImageAlbumActivity.this,data.getMessage());
-                            Intent intent = new Intent(MineFragment.EXPCHANGE);
-                            intent.putExtra("expChangeNum",data.getExp());
-                            sendBroadcast(intent);
+                                    }
+                                })
+                                .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                        ToastUtils.showShort(CreateImageAlbumActivity.this,data.getMessage());
+                        Intent intent = new Intent(MineFragment.EXPCHANGE);
+                        intent.putExtra("expChangeNum",data.getExp());
+                        sendBroadcast(intent);
 
-                        }else if (response!=null&&!response.isSuccessful()){
-                            String errorStr = "";
-                            try {
-                                errorStr = response.errorBody().string();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            Gson gson = new Gson();
-                            Event<String> info =gson.fromJson(errorStr,Event.class);
-                            ToastUtils.showShort(CreateImageAlbumActivity.this,info.getMessage());
-                            setUpLoadDiaLogFail(info.getMessage());
-                        }else {
-                            ToastUtils.showShort(CreateImageAlbumActivity.this,"未知错误导致上传失败");
-                            setUpLoadDiaLogFail("找不到服务器");
-                        }
                     }
 
                     @Override
-                    public void onFailure(Call<CreateNewAlbumInfo> call, Throwable t) {
-                        ToastUtils.showShort(CreateImageAlbumActivity.this,"网络异常，请稍后再试3");
-                        LogUtils.d("newCardCreate","album t = "+t.getMessage());
-                        CrashReport.postCatchedException(t);
-                        setUpLoadDiaLogFail("网络异常，请稍后再试 t = "+t.getMessage());
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        setUpLoadDiaLogFail(errorMsg);
                     }
                 });
     }

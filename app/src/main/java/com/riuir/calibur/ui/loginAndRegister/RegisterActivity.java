@@ -24,7 +24,7 @@ import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.DramaListResp;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.GeeTestInfo;
-import com.riuir.calibur.data.params.VerificationCodeBody;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.splash.SplashActivity;
@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

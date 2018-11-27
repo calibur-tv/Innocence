@@ -10,10 +10,11 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
 
 public class DramaCartoonShowAdapter extends BaseQuickAdapter<ImageShowInfoPrimacy.ImageShowInfoPrimacyImages,BaseViewHolder> {
 

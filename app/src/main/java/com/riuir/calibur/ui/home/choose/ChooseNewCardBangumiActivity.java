@@ -22,7 +22,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.anime.BangumiAllList;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.home.choose.adapter.ChooseBangumiAdapter;
@@ -34,6 +34,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.BangumiAllList;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,8 +62,8 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
 
     ChooseBangumiAdapter bangumiAdapter;
 
-    ArrayList<BangumiAllList.BangumiAllListData> baseBangumiList;
-    ArrayList<BangumiAllList.BangumiAllListData> bangumiList = new ArrayList<>();
+    ArrayList<BangumiAllList> baseBangumiList;
+    ArrayList<BangumiAllList> bangumiList = new ArrayList<>();
 
     String searchContent;
 
@@ -87,37 +91,25 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
     }
 
     private void setNet() {
-        apiGet.getBangumiAllList().enqueue(new Callback<BangumiAllList>() {
-            @Override
-            public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
-                if (response!=null&&response.isSuccessful()){
-                    Constants.bangumiAllListData = response.body().getData();
-                    SharedPreferencesUtils.putBangumiAllListList(App.instance(),"bangumiAllListData",response.body().getData());
-                    baseBangumiList = Constants.bangumiAllListData;
-                    setAdapter();
-                }else  if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getBangumiAllList()
+                .compose(Rx2Schedulers.<Response<ResponseBean<ArrayList<BangumiAllList>>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<ArrayList<BangumiAllList>>() {
+                    @Override
+                    public void onSuccess(ArrayList<BangumiAllList> bangumiAllLists) {
+                        Constants.bangumiAllListData = bangumiAllLists;
+                        SharedPreferencesUtils.putBangumiAllListList(App.instance(),"bangumiAllListData",bangumiAllLists);
+                        baseBangumiList = Constants.bangumiAllListData;
+                        if (bangumiListView!=null){
+                            setAdapter();
+                        }
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(ChooseNewCardBangumiActivity.this,info.getMessage());
 
-                }else {
-                    ToastUtils.showShort(ChooseNewCardBangumiActivity.this,"未知原因导致加载失败了");
-                }
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                    }
+                });
 
-            }
-
-            @Override
-            public void onFailure(Call<BangumiAllList> call, Throwable t) {
-                ToastUtils.showShort(ChooseNewCardBangumiActivity.this,"网络异常,请检查您的网络");
-                CrashReport.postCatchedException(t);
-            }
-        });
     }
 
 
@@ -148,7 +140,7 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 KeyBoardUtils.closeKeybord(searchEdit,ChooseNewCardBangumiActivity.this);
-                BangumiAllList.BangumiAllListData data = (BangumiAllList.BangumiAllListData)adapter.getData().get(position);
+                BangumiAllList data = (BangumiAllList)adapter.getData().get(position);
                 Intent intent = new Intent();
                 intent.putExtra("bangumiId",data.getId());
                 intent.putExtra("bangumiAvatar",data.getAvatar());
@@ -225,9 +217,9 @@ public class ChooseNewCardBangumiActivity extends BaseActivity {
 
     private void setSearch() {
         bangumiList.clear();
-        Iterator<BangumiAllList.BangumiAllListData> iterator = baseBangumiList.iterator();
+        Iterator<BangumiAllList> iterator = baseBangumiList.iterator();
         while (iterator.hasNext()){
-            BangumiAllList.BangumiAllListData data = iterator.next();
+            BangumiAllList data = iterator.next();
             String name = data.getName();
             if (name.contains(searchContent)){
                 bangumiList.add(data);

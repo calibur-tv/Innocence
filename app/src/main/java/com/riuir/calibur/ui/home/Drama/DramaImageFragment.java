@@ -18,8 +18,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MainTrendingInfo;
-import com.riuir.calibur.data.params.FolllowListParams;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.ImageListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -33,6 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.followList.MainTrendingInfo;
+import calibur.core.http.models.followList.params.FolllowListParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,7 +61,7 @@ public class DramaImageFragment extends BaseFragment {
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
     private List<MainTrendingInfo.MainTrendingInfoList> baseListImage = new ArrayList<>();
 
-    private MainTrendingInfo.MainTrendingInfoData mainImageInfoData;
+    private MainTrendingInfo mainImageInfoData;
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
@@ -166,113 +170,61 @@ public class DramaImageFragment extends BaseFragment {
         folllowListParams.setTake(0);
         folllowListParams.setMinId(0);
         folllowListParams.setSeenIds(seenIds);
-        listCall = apiPost.getFollowList(folllowListParams);
-        listCall.enqueue(new Callback<MainTrendingInfo>() {
-            @Override
-            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    listImage = response.body().getData().getList();
-                    mainImageInfoData = response.body().getData();
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        baseListImage = response.body().getData().getList();
-                        if (imageRefreshLayout!=null&&imageListView!=null){
-                            if (imageRefreshLayout!=null){
-                                imageRefreshLayout.setRefreshing(false);
+
+        apiService.getFollowList(folllowListParams)
+                .compose(Rx2Schedulers.<Response<ResponseBean<MainTrendingInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<MainTrendingInfo>() {
+                    @Override
+                    public void onSuccess(MainTrendingInfo mainTrendingInfo) {
+                        listImage = mainTrendingInfo.getList();
+                        mainImageInfoData = mainTrendingInfo;
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            baseListImage = mainTrendingInfo.getList();
+                            if (imageRefreshLayout!=null&&imageListView!=null){
+                                if (imageRefreshLayout!=null){
+                                    imageRefreshLayout.setRefreshing(false);
+                                }
+                                setListAdapter();
+                                setEmptyView();
                             }
-                            setListAdapter();
-                            setEmptyView();
                         }
-                    }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setRefresh();
-                    }
-                    for (MainTrendingInfo.MainTrendingInfoList hotItem :listImage){
-                        seenIdList.add(hotItem.getId());
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+                        for (MainTrendingInfo.MainTrendingInfoList hotItem :listImage){
+                            seenIdList.add(hotItem.getId());
+                        }
                     }
 
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (imageListView!=null){
+                            if (isLoadMore){
+                                adapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isRefresh){
+                                if (imageRefreshLayout!=null){
+                                    imageRefreshLayout.setRefreshing(false);
+                                }
+                                isRefresh = false;
+                            }
+                            if (isFirstLoad){
+                                if (imageRefreshLayout!=null){
+                                    imageRefreshLayout.setRefreshing(false);
+                                }
+                                isFirstLoad = false;
+                            }
+                            setFailedView();
+                        }
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
+                });
 
-                    ToastUtils.showShort(getContext(),info.getMessage());
-
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (imageRefreshLayout!=null){
-                            imageRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        if (imageRefreshLayout!=null){
-                            imageRefreshLayout.setRefreshing(false);
-                        }
-                        isFirstLoad = false;
-                    }
-                    setFailedView();
-
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (imageRefreshLayout!=null){
-                            imageRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        if (imageRefreshLayout!=null){
-                            imageRefreshLayout.setRefreshing(false);
-                        }
-                        isFirstLoad = false;
-                    }
-                    setFailedView();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(getContext(),"请检查您的网络！");
-                    CrashReport.postCatchedException(t);
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (imageRefreshLayout!=null){
-                            imageRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        if (imageRefreshLayout!=null){
-                            imageRefreshLayout.setRefreshing(false);
-                        }
-                        isFirstLoad = false;
-                    }
-                    setFailedView();
-                }
-
-            }
-        });
     }
 
     private void setListAdapter() {

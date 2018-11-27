@@ -12,8 +12,8 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.params.QiniuImageParams;
-import com.riuir.calibur.data.qiniu.QiniuUpToken;
+
+
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.home.image.CreateImageAlbumActivity;
 
@@ -27,6 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import calibur.core.http.RetrofitManager;
+import calibur.core.http.api.APIService;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.qiniu.QiniuUpToken;
+import calibur.core.http.models.qiniu.params.QiniuImageParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,36 +55,24 @@ public class QiniuUtils {
         this.context = context;
         this.userId = userId;
         uploadManager = new UploadManager(getQiniuConfig());
-
-        apiGetHasAuth.getCallQiniuUpToken().enqueue(new Callback<QiniuUpToken>() {
-            @Override
-            public void onResponse(Call<QiniuUpToken> call, Response<QiniuUpToken> response) {
-                if (response!=null&&response.isSuccessful()){
-                    Constants.QINIU_TOKEN = response.body().getData().getUpToken();
-                    setQiniuUpLoadCheck();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        RetrofitManager.getInstance().getService(APIService.class)
+                .getCallQiniuUpToken()
+                .compose(Rx2Schedulers.<Response<ResponseBean<QiniuUpToken>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<QiniuUpToken>() {
+                    @Override
+                    public void onSuccess(QiniuUpToken qiniuUpToken) {
+                        Constants.QINIU_TOKEN = qiniuUpToken.getUpToken();
+                        setQiniuUpLoadCheck();
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(context,info.getMessage());
-                    setUpLoadDiaLogFail(info.getMessage());
-                }else {
-                    ToastUtils.showShort(context,"未知错误导致上传失败");
-                    setUpLoadDiaLogFail("返回值为空");
-                }
-            }
 
-            @Override
-            public void onFailure(Call<QiniuUpToken> call, Throwable t) {
-                ToastUtils.showShort(context,"网络异常，请稍后再试1");
-                setUpLoadDiaLogFail("网络异常，请稍后再试 t ="+t.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        setUpLoadDiaLogFail(errorMsg);
+
+                    }
+                });
+
     }
 
     private void setQiniuUpLoadCheck(){

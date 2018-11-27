@@ -19,7 +19,7 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.MainTrendingInfo;
-import com.riuir.calibur.data.user.UserReplyCardInfo;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.user.UserReplyCardInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,7 +54,7 @@ public class UserReplyCardFragment extends BaseFragment {
     @BindView(R.id.user_reply_card_refresh_layout)
     SwipeRefreshLayout cardRefreshLayout;
 
-    private UserReplyCardInfo.UserReplayCardInfoData replayCardInfoData;
+    private UserReplyCardInfo replayCardInfoData;
     private List<UserReplyCardInfo.UserReplayCardInfoList> listCard;
     private List<UserReplyCardInfo.UserReplayCardInfoList> baseListCard = new ArrayList<>();
 
@@ -88,107 +91,58 @@ public class UserReplyCardFragment extends BaseFragment {
 
     private void setNet() {
         setPage();
-        replyCardInfoCall = apiGet.getCallUserReplyCard(zone,page);
-        replyCardInfoCall.enqueue(new Callback<UserReplyCardInfo>() {
-            @Override
-            public void onResponse(Call<UserReplyCardInfo> call, Response<UserReplyCardInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    listCard = response.body().getData().getList();
-                    replayCardInfoData = response.body().getData();
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        baseListCard = response.body().getData().getList();
-                        if (cardRefreshLayout!=null&&cardListView!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                            setListAdapter();
-                            setEmptyView();
+        apiService.getCallUserReplyCard(zone,page)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<UserReplyCardInfo>(){
+                    @Override
+                    public void onSuccess(UserReplyCardInfo userReplyCardInfo) {
+                        listCard = userReplyCardInfo.getList();
+                        replayCardInfoData = userReplyCardInfo;
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            baseListCard = userReplyCardInfo.getList();
+                            if (cardRefreshLayout!=null&&cardListView!=null){
+                                cardRefreshLayout.setRefreshing(false);
+                                setListAdapter();
+                                setEmptyView();
+                            }
+                        }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setRefresh();
                         }
                     }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setRefresh();
-                    }
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
                         if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = true;
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = true;
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
+                            if (isLoadMore){
+                                adapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isRefresh){
+                                if (cardRefreshLayout!=null){
+                                    cardRefreshLayout.setRefreshing(false);
+                                }
+                                isRefresh = false;
+                            }
+                            if (isFirstLoad){
+                                isFirstLoad = true;
+                                if (cardRefreshLayout!=null){
+                                    cardRefreshLayout.setRefreshing(false);
+                                }
+                            }
+                            setFailedView();
                         }
                     }
-                    setFailedView();
-                }
-            }
+                });
 
-            @Override
-            public void onFailure(Call<UserReplyCardInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(getContext(),"请检查您的网络哟！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = true;
-                        if (cardRefreshLayout!=null){
-                            cardRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    setFailedView();
-                }
-            }
-        });
     }
 
     private void setListAdapter() {
-
 
         adapter = new ReplyCardListAdapter(R.layout.user_reply_card_list_item,baseListCard,getContext());
         cardListView.setLayoutManager(new LinearLayoutManager(App.instance()));

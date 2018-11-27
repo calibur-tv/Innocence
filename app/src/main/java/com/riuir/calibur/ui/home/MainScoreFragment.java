@@ -18,8 +18,7 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MainTrendingInfo;
-import com.riuir.calibur.data.params.FolllowListParams;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaScoreListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -34,6 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.followList.MainTrendingInfo;
+import calibur.core.http.models.followList.params.FolllowListParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,7 +61,7 @@ public class MainScoreFragment extends BaseFragment {
     //传给Adapter的值 首次加载后不可更改 不然会导致数据出错
     private List<MainTrendingInfo.MainTrendingInfoList> baseListScore = new ArrayList<>();
 
-    private MainTrendingInfo.MainTrendingInfoData mainScoreInfoData;
+    private MainTrendingInfo mainScoreInfoData;
 
     boolean isLoadMore = false;
     boolean isRefresh = false;
@@ -116,101 +120,56 @@ public class MainScoreFragment extends BaseFragment {
         params.setPage(0);
         params.setTake(0);
         params.setSeenIds(seenIds);
-        apiPost.getFollowList(params).enqueue(new Callback<MainTrendingInfo>() {
-            @Override
-            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
-//                LogUtils.d("score_fragment","response = "+response+",data = "+response.body().getData());
-                if (response!=null&&response.isSuccessful()){
-                    listScore = response.body().getData().getList();
-                    mainScoreInfoData = response.body().getData();
-                    if (isFirstLoad){
-                        baseListScore = response.body().getData().getList();
-                        if (mainScoreRefreshLayout!=null&&adapter!=null){
-                            setFirstData();
-                            mainScoreRefreshLayout.setRefreshing(false);
+        apiService.getFollowList(params)
+                .compose(Rx2Schedulers.<Response<ResponseBean<MainTrendingInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<MainTrendingInfo>() {
+                    @Override
+                    public void onSuccess(MainTrendingInfo mainTrendingInfo) {
+                        listScore = mainTrendingInfo.getList();
+                        mainScoreInfoData = mainTrendingInfo;
+                        if (isFirstLoad){
+                            baseListScore = mainTrendingInfo.getList();
+                            if (mainScoreRefreshLayout!=null&&adapter!=null){
+                                setFirstData();
+                                mainScoreRefreshLayout.setRefreshing(false);
+                            }
                         }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+                        for (MainTrendingInfo.MainTrendingInfoList hotItem :listScore){
+                            seenIdList.add(hotItem.getId());
+                        }
+                        setEmptyView();
                     }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setRefresh();
-                    }
-                    for (MainTrendingInfo.MainTrendingInfoList hotItem :listScore){
-                        seenIdList.add(hotItem.getId());
-                    }
-                    setEmptyView();
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (mainScoreRefreshLayout!=null){
-                            mainScoreRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        if (mainScoreRefreshLayout!=null){
-                            mainScoreRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (mainScoreRefreshLayout!=null){
-                            mainScoreRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        if (mainScoreRefreshLayout!=null){
-                            mainScoreRefreshLayout.setRefreshing(false);
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (mainScoreListView!=null){
+                            if (isLoadMore){
+                                adapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isRefresh){
+                                if (mainScoreRefreshLayout!=null){
+                                    mainScoreRefreshLayout.setRefreshing(false);
+                                }
+                                isRefresh = false;
+                            }
+                            if (isFirstLoad){
+                                if (mainScoreRefreshLayout!=null){
+                                    mainScoreRefreshLayout.setRefreshing(false);
+                                }
+                            }
+                            setFailedView();
                         }
                     }
-                    setFailedView();
-                }
-            }
+                });
 
-            @Override
-            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络！");
-                LogUtils.v("AppNetErrorMessage","mainScoreList t = "+t.getMessage());
-                CrashReport.postCatchedException(t);
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isRefresh){
-                    if (mainScoreRefreshLayout!=null){
-                        mainScoreRefreshLayout.setRefreshing(false);
-                    }
-                    isRefresh = false;
-                }
-                if (isFirstLoad){
-                    if (mainScoreRefreshLayout!=null){
-                        mainScoreRefreshLayout.setRefreshing(false);
-                    }
-                }
-                setFailedView();
-            }
-        });
     }
 
     private void setListAdapter() {

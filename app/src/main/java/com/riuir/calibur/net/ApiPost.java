@@ -20,11 +20,12 @@ import com.riuir.calibur.data.params.UpUserSetting;
 import com.riuir.calibur.data.trending.CreateMainCommentInfo;
 import com.riuir.calibur.data.trending.ReplyCommentInfo;
 import com.riuir.calibur.data.trending.TrendingToggleInfo;
-import com.riuir.calibur.data.params.VerificationCodeBody;
+
 import com.riuir.calibur.data.user.UserDaySign;
 
 import java.util.Map;
 
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -118,7 +119,6 @@ public interface ApiPost {
     @POST("comment/main/reply")
     Call<ReplyCommentInfo> getReplyComment(@Query("content")String content, @Query("type")String type,
                                            @Query("id")int id,@Query("targetUserId")int targetUserId);
-
 
     //新建帖子
     @POST("post/create")

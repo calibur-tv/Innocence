@@ -34,7 +34,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.AnimeListForTimeLine;
+
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
@@ -51,6 +51,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeListForTimeLine;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.operators.observable.ObserverResourceWrapper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -77,7 +84,7 @@ public class DramaTimelineFragment extends BaseFragment {
 
     TimeLineAdapter adapter;
 
-    int year = TimeUtils.getYear();
+    int year =0;
     int howLongYear = 1;
 
     AppListFailedView failedView;
@@ -91,6 +98,7 @@ public class DramaTimelineFragment extends BaseFragment {
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         isFirstLoad = true;
+        year =  TimeUtils.getYear();
         timeLineRefreshLayout.setRefreshing(true);
         setDramaAdapter();
         setNet();
@@ -102,97 +110,51 @@ public class DramaTimelineFragment extends BaseFragment {
         if (isRefresh){
             year = TimeUtils.getYear();
         }
-        apiGet.getCallDramaTimeGet(year,howLongYear).enqueue(new Callback<AnimeListForTimeLine>() {
-            @Override
-            public void onResponse(Call<AnimeListForTimeLine> call, Response<AnimeListForTimeLine> response) {
-                if (response!=null&&response.isSuccessful()){
-                    groupList =  response.body().getData().getList();
+        apiService.getCallDramaTimeGet(year,howLongYear)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<AnimeListForTimeLine>() {
+                    @Override
+                    public void onSuccess(AnimeListForTimeLine animeListForTimeLine) {
+                        groupList =  animeListForTimeLine.getList();
+                        year -= howLongYear;
+                        if (isFirstLoad){
+                            if (timeLineRefreshLayout!=null&&adapter!=null){
+                                setFirstData();
+                                timeLineRefreshLayout.setRefreshing(false);
+                            }
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        setEmptyView();
+                    }
 
-                    year -= howLongYear;
-                    if (isFirstLoad){
-                        if (timeLineRefreshLayout!=null&&adapter!=null){
-                            setFirstData();
-                            timeLineRefreshLayout.setRefreshing(false);
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (timeLineListView!=null){
+                            if (isRefresh){
+                                if (timeLineRefreshLayout!=null){
+                                    timeLineRefreshLayout.setRefreshing(false);
+                                }
+                                isRefresh = false;
+                            }
+                            if (isLoadMore){
+                                adapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isFirstLoad){
+                                if (timeLineRefreshLayout!=null){
+                                    timeLineRefreshLayout.setRefreshing(false);
+                                }
+                            }
+                            setFailedView();
                         }
                     }
-                    if (isRefresh){
-                        setRefresh();
-                    }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    setEmptyView();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isRefresh){
-                        if (timeLineRefreshLayout!=null){
-                            timeLineRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isFirstLoad){
-                        if (timeLineRefreshLayout!=null){
-                            timeLineRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    setFailedView();
-                }else {
-                    if (isRefresh){
-                        if (timeLineRefreshLayout!=null){
-                            timeLineRefreshLayout.setRefreshing(false);
-                        }
-                        isRefresh = false;
-                    }
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isFirstLoad){
-                        if (timeLineRefreshLayout!=null){
-                            timeLineRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了");
-                    setFailedView();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AnimeListForTimeLine> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"网络异常，请稍后再试");
-                LogUtils.v("AppNetErrorMessage","drama time line t = "+t.getMessage());
-                CrashReport.postCatchedException(t);
-                if (isRefresh){
-                    if (timeLineRefreshLayout!=null){
-                        timeLineRefreshLayout.setRefreshing(false);
-                    }
-                    isRefresh = false;
-                }
-                if (isLoadMore){
-                    adapter.loadMoreFail();
-                    isLoadMore = false;
-                }
-                if (isFirstLoad){
-                    if (timeLineRefreshLayout!=null){
-                        timeLineRefreshLayout.setRefreshing(false);
-                    }
-                }
-                setFailedView();
-            }
-        });
+                });
     }
 
     private void setEmptyView(){
@@ -227,7 +189,6 @@ public class DramaTimelineFragment extends BaseFragment {
             adapter.addData(timeLineList);
             LogUtils.d("TimeLine","all list view 2 = "+adapter.getData().toString());
             adapter.loadMoreComplete();
-
 
         }
 

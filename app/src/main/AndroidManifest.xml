@@ -25,7 +25,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-
         <meta-data
             android:name="com.riuir.calibur.utils.CustomGlideModule"
             android:value="GlideModule" />
@@ -99,7 +98,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.home.card.CardShowInfoActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity
             android:name=".ui.home.card.CardReplyActivity"
             android:screenOrientation="portrait" />
@@ -114,10 +114,12 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.home.image.ImageShowInfoActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity
             android:name=".ui.home.score.ScoreShowInfoActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity
             android:name=".ui.home.user.UserMainActivity"
             android:launchMode="singleTask"
@@ -134,7 +136,7 @@
             android:name=".ui.home.Drama.DramaVideoPlayActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".ui.home.mine.MineInfoSettingActivity"
             android:screenOrientation="portrait" />
@@ -191,9 +193,19 @@
         <activity
             android:name=".ui.home.choose.CardChooseTagsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.home.message.MessageShowCommentActivity" />
-        <activity android:name=".ui.home.Drama.DramaCartoonShowActivity" />
-        <activity android:name=".ui.home.Drama.DramaCartoonCommentActivity"></activity>
+        <activity android:name=".ui.home.message.MessageShowCommentActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.home.Drama.DramaCartoonShowActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.home.Drama.DramaCartoonCommentActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".ui.home.score.CreateNewScoreActivity" />
+        <activity android:name=".ui.widget.replyAndComment.ReplyAndCommentActivity"
+            android:theme="@style/replyAndComment"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            ></activity>
     </application>
 
 </manifest>

@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.AnimeShowInfo;
+
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.params.DramaTags;
 import com.riuir.calibur.ui.common.BaseActivity;
@@ -31,6 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -105,38 +108,21 @@ public class CardChooseTagsActivity extends BaseActivity {
 
     private void setNet() {
 
-        tagsCall = apiGet.getCallPostTags();
-        tagsCall.enqueue(new Callback<DramaTags>() {
-            @Override
-            public void onResponse(Call<DramaTags> call, Response<DramaTags> response) {
-                if (response!=null&&response.isSuccessful()){
-                    allTagList = response.body().getData();
-                    LogUtils.d("dramaTags","tagsDataList = "+allTagList);
-                    setTagsData();
+        apiService.getCallPostTags()
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<List<AnimeShowInfo.AnimeShowInfoTags>>(){
 
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onSuccess(List<AnimeShowInfo.AnimeShowInfoTags> tags) {
+                        allTagList = tags;
+                        setTagsData();
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(CardChooseTagsActivity.this,info.getMessage());
-                }else {
-                    ToastUtils.showShort(CardChooseTagsActivity.this,"未知原因导致加载失败了！");
 
-                }
-            }
-
-            @Override
-            public void onFailure(Call<DramaTags> call, Throwable t) {
-                ToastUtils.showShort(CardChooseTagsActivity.this,"请检查您的网络哟~");
-                LogUtils.v("AppNetErrorMessage","drama tag t = "+t.getMessage());
-                CrashReport.postCatchedException(t);
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                    }
+                });
     }
 
     private void setTagsGridAdapter() {

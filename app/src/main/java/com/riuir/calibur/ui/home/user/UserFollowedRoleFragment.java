@@ -19,7 +19,7 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MainTrendingInfo;
+
 import com.riuir.calibur.data.user.UserFollowedBangumiInfo;
 import com.riuir.calibur.data.user.UserFollowedRoleInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
@@ -35,6 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.followList.MainTrendingInfo;
+import calibur.core.http.models.followList.params.FolllowListParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -57,7 +62,7 @@ public class UserFollowedRoleFragment extends BaseFragment {
     private boolean isLoadMore = false;
     boolean isRefresh = false;
 
-    private MainTrendingInfo.MainTrendingInfoData roleInfoData;
+    private MainTrendingInfo roleInfoData;
     private List<MainTrendingInfo.MainTrendingInfoList> roleInfoList;
     private List<MainTrendingInfo.MainTrendingInfoList> baseRoleInfoList = new ArrayList<>();
 
@@ -98,94 +103,60 @@ public class UserFollowedRoleFragment extends BaseFragment {
 
     private void setNet() {
         setPage();
-        listCall = apiGet.getFollowList("role","hot",0,zone,page,20,0,"");
-        listCall.enqueue(new Callback<MainTrendingInfo>() {
-            @Override
-            public void onResponse(Call<MainTrendingInfo> call, Response<MainTrendingInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    roleInfoData = response.body().getData();
-                    roleInfoList = response.body().getData().getList();
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        baseRoleInfoList = response.body().getData().getList();
-                        if (roleRefreshLayout!=null&&roleListView!=null){
-                            roleRefreshLayout.setRefreshing(false);
-                            setAdapter();
-                            setEmptyView();
+        FolllowListParams folllowListParams = new FolllowListParams();
+        folllowListParams.setType("role");
+        folllowListParams.setSort("hot");
+        folllowListParams.setBangumiId(0);
+        folllowListParams.setUserZone(zone);
+        folllowListParams.setPage(page);
+        folllowListParams.setTake(0);
+        folllowListParams.setMinId(0);
+        folllowListParams.setSeenIds("");
+        apiService.getFollowList(folllowListParams)
+                .compose(Rx2Schedulers.<Response<ResponseBean<MainTrendingInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<MainTrendingInfo>() {
+                    @Override
+                    public void onSuccess(MainTrendingInfo mainTrendingInfo) {
+                        roleInfoData = mainTrendingInfo;
+                        roleInfoList = mainTrendingInfo.getList();
+                        if (isFirstLoad){
+                            isFirstLoad = false;
+                            baseRoleInfoList = mainTrendingInfo.getList();
+                            if (roleRefreshLayout!=null&&roleListView!=null){
+                                roleRefreshLayout.setRefreshing(false);
+                                setAdapter();
+                                setEmptyView();
+                            }
+                        }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setRefresh();
                         }
                     }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setRefresh();
-                    }
 
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (roleListView!=null){
+                            if (isLoadMore){
+                                followedRoleAdapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isRefresh){
+                                roleRefreshLayout.setRefreshing(false);
+                                isRefresh = false;
+                            }
+                            if (isFirstLoad){
+                                isFirstLoad = false;
+                                roleRefreshLayout.setRefreshing(false);
+                            }
+                            setFailedView();
+                        }
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    if (info.getCode() == 40401){
-                        ToastUtils.showShort(getContext(),"该用户不存在！");
-                    }
-                    if (isLoadMore){
-                        followedRoleAdapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        roleRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        roleRefreshLayout.setRefreshing(false);
-                    }
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isLoadMore){
-                        followedRoleAdapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        roleRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        roleRefreshLayout.setRefreshing(false);
-                    }
-                    setFailedView();
-                }
-            }
+                });
 
-            @Override
-            public void onFailure(Call<MainTrendingInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(getContext(),"请检查您的网络哟！");
-                    if (isLoadMore){
-                        followedRoleAdapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        roleRefreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                    if (isFirstLoad){
-                        isFirstLoad = false;
-                        roleRefreshLayout.setRefreshing(false);
-                    }
-                    setFailedView();
-                }
-
-            }
-        });
     }
 
     private void setPage() {

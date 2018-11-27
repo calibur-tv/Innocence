@@ -10,10 +10,12 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.data.anime.CartoonListInfo;
+
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.followList.CartoonListInfo;
 
 public class DramaCartoonListAdapter extends BaseQuickAdapter<CartoonListInfo.CartoonListInfoList,BaseViewHolder> {
 

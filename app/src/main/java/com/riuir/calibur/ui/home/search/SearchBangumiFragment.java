@@ -17,7 +17,7 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.KeyBoardUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.anime.SearchAnimeInfo;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.search.adapter.DramaSearchAdapter;
@@ -31,6 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.SearchAnimeInfo;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,7 +59,7 @@ public class SearchBangumiFragment extends BaseFragment {
     boolean isRefresh = false;
     boolean isFirstLoad = false;
 
-    private SearchAnimeInfo.SearchAnimeInfoData searchData;
+    private SearchAnimeInfo searchData;
     private List<SearchAnimeInfo.SearchAnimeInfoList> searchList;
     private List<SearchAnimeInfo.SearchAnimeInfoList> baseSearchList = new ArrayList<>();
 
@@ -122,83 +126,47 @@ public class SearchBangumiFragment extends BaseFragment {
 
     private void setNet() {
         setPage();
-        searchCall = apiGet.getCallSearch(editContent,"bangumi",page);
-        searchCall.enqueue(new Callback<SearchAnimeInfo>() {
-            @Override
-            public void onResponse(Call<SearchAnimeInfo> call, Response<SearchAnimeInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    searchData = response.body().getData();
-                    searchList = response.body().getData().getList();
-                    if (isFirstLoad){
-                        baseSearchList = response.body().getData().getList();
+        apiService.getCallSearch(editContent,"bangumi",page)
+                .compose(Rx2Schedulers.<Response<ResponseBean<SearchAnimeInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<SearchAnimeInfo>() {
+                    @Override
+                    public void onSuccess(SearchAnimeInfo searchAnimeInfo) {
+                        searchData = searchAnimeInfo;
+                        searchList = searchAnimeInfo.getList();
+                        if (isFirstLoad){
+                            baseSearchList = searchAnimeInfo.getList();
+                            if (listView!=null){
+                                setSearchFinish();
+                                setEmptyView();
+                            }
+                        }
+                        if (isLoadMore){
+                            setLoadMore();
+                        }
+                        if (isRefresh){
+                            setRefresh();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
                         if (listView!=null){
-                            setSearchFinish();
-                            setEmptyView();
+                            if (isLoadMore){
+                                adapter.loadMoreFail();
+                                isLoadMore = false;
+                            }
+                            if (isRefresh){
+                                if (refreshLayout!=null){
+                                    refreshLayout.setRefreshing(false);
+                                    isRefresh = false;
+                                }
+                            }
+                            setFailedView();
                         }
                     }
-                    if (isLoadMore){
-                        setLoadMore();
-                    }
-                    if (isRefresh){
-                        setRefresh();
-                    }
+                });
 
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                    }
-                    setFailedView();
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        if (refreshLayout!=null){
-                            refreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                        }
-                    }
-                    setFailedView();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<SearchAnimeInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(getContext(),"请检查您的网络！");
-                    CrashReport.postCatchedException(t);
-                    if (isLoadMore){
-                        adapter.loadMoreFail();
-                        isLoadMore = false;
-                    }
-                    if (isRefresh){
-                        refreshLayout.setRefreshing(false);
-                        isRefresh = false;
-                    }
-                    setFailedView();
-                }
-            }
-        });
     }
 
     private void setEmptyView(){

@@ -46,11 +46,7 @@ import com.riuir.calibur.assistUtils.PermissionUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.create.CreateCard;
-import com.riuir.calibur.data.params.QiniuImageParams;
-import com.riuir.calibur.data.params.VerificationCodeBody;
-import com.riuir.calibur.data.params.newImage.CreateNewImageForAlbum;
-import com.riuir.calibur.data.params.newImage.CreateNewImageSingle;
+
 import com.riuir.calibur.data.qiniu.QiniuUpToken;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.DramaFragment;
@@ -82,6 +78,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.create.CreateCard;
+import calibur.core.http.models.create.params.CreateNewImageForAlbum;
+import calibur.core.http.models.create.params.CreateNewImageSingle;
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
+import calibur.core.http.models.qiniu.params.QiniuImageParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -466,109 +469,77 @@ public class CreateNewImageActivity extends BaseActivity {
         imageSingle.setType(qiniuData.getType());
         imageSingle.setGeetest(verificationCodeBodyGeeTest);
 
-        apiPost.getCreateImageSingle(imageSingle)
-                .enqueue(new Callback<CreateCard>() {
+        apiService.getCreateImageSingle(imageSingle)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<CreateCard>(){
                     @Override
-                    public void onResponse(Call<CreateCard> call, Response<CreateCard> response) {
-                        if (response!=null&&response.isSuccessful()){
-                            //创建单张图片成功
-                            //跳转进入帖子
-                            final int id = response.body().getData().getData();
-                            upLoadDialog.setTitleText("上传成功!")
-                                    .setContentText("您的图片上传成功!")
-                                    .setConfirmText("好的")
-                                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                        @Override
-                                        public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                            if (id!=0){
-                                                Intent intent = new Intent(CreateNewImageActivity.this,ImageShowInfoActivity.class);
-                                                intent.putExtra("imageID",id);
-                                                startActivity(intent);
-                                                finish();
-                                            }
+                    public void onSuccess(CreateCard createCard) {
+                        //创建单张图片成功
+                        //跳转进入图片
+                        final int id = createCard.getData();
+                        upLoadDialog.setTitleText("上传成功!")
+                                .setContentText("您的图片上传成功!")
+                                .setConfirmText("好的")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        if (id!=0){
+                                            Intent intent = new Intent(CreateNewImageActivity.this,ImageShowInfoActivity.class);
+                                            intent.putExtra("imageID",id);
+                                            startActivity(intent);
+                                            finish();
                                         }
-                                    })
-                                    .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                            ToastUtils.showShort(CreateNewImageActivity.this,response.body().getData().getMessage());
-                            Intent intent = new Intent(MineFragment.EXPCHANGE);
-                            intent.putExtra("expChangeNum",response.body().getData().getExp());
-                            sendBroadcast(intent);
-                        }else if (response!=null&&!response.isSuccessful()){
-                            String errorStr = "";
-                            try {
-                                errorStr = response.errorBody().string();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            Gson gson = new Gson();
-                            Event<String> info =gson.fromJson(errorStr,Event.class);
-                            ToastUtils.showShort(CreateNewImageActivity.this,info.getMessage());
-                            setUpLoadDiaLogFail(info.getMessage());
-                        }else {
-                            ToastUtils.showShort(CreateNewImageActivity.this,"未知错误导致上传失败");
-                            setUpLoadDiaLogFail("找不到服务器");
-                        }
+                                    }
+                                })
+                                .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                        ToastUtils.showShort(CreateNewImageActivity.this,createCard.getMessage());
+                        Intent intent = new Intent(MineFragment.EXPCHANGE);
+                        intent.putExtra("expChangeNum",createCard.getExp());
+                        sendBroadcast(intent);
                     }
 
                     @Override
-                    public void onFailure(Call<CreateCard> call, Throwable t) {
-                        ToastUtils.showShort(CreateNewImageActivity.this,"网络异常，请稍后再试3");
-                        CrashReport.postCatchedException(t);
-                        setUpLoadDiaLogFail("网络异常，请稍后再试 t = "+t.getMessage());
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        setUpLoadDiaLogFail(errorMsg);
                     }
                 });
+
     }
     private void setUpLoadAlbumImage() {
         CreateNewImageForAlbum imageForAlbum = new CreateNewImageForAlbum();
         imageForAlbum.setAlbum_id(albumId);
         imageForAlbum.setImages(qiniuImageParamsDataList);
-        apiPost.getCreateImageForAlbum(imageForAlbum).enqueue(new Callback<Event<Integer>>() {
-            @Override
-            public void onResponse(Call<Event<Integer>> call, Response<Event<Integer>> response) {
-                if (response!=null&&response.isSuccessful()){
-                    //相册添加图片成功
-                    //跳转进入帖子
-//                    LogUtils.d("createImage","response.body = "+response.body()+"\n");
-//                    final int id = response.body().getData();
-                    upLoadDialog.setTitleText("上传成功!")
-                            .setContentText("您的图片上传成功!")
-                            .setConfirmText("好的")
-                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                                @Override
-                                public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    if (albumId!=0){
-                                        Intent intent = new Intent(CreateNewImageActivity.this,ImageShowInfoActivity.class);
-                                        intent.putExtra("imageID",albumId);
-                                        startActivity(intent);
-                                        finish();
+        apiService.getCreateImageForAlbum(imageForAlbum)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<Integer>(){
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        //相册添加图片成功
+                        //跳转进入帖子
+                        upLoadDialog.setTitleText("上传成功!")
+                                .setContentText("您的图片上传成功!")
+                                .setConfirmText("好的")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        if (albumId!=0){
+                                            Intent intent = new Intent(CreateNewImageActivity.this,ImageShowInfoActivity.class);
+                                            intent.putExtra("imageID",albumId);
+                                            startActivity(intent);
+                                            finish();
+                                        }
                                     }
-                                }
-                            })
-                            .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                                })
+                                .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(CreateNewImageActivity.this,info.getMessage());
-                    setUpLoadDiaLogFail(info.getMessage());
-                }else {
-                    ToastUtils.showShort(CreateNewImageActivity.this,"未知错误导致上传失败");
-                    setUpLoadDiaLogFail("找不到服务器");
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Event<Integer>> call, Throwable t) {
-                ToastUtils.showShort(CreateNewImageActivity.this,"网络异常，请稍后再试4");
-                CrashReport.postCatchedException(t);
-                setUpLoadDiaLogFail("网络异常，请稍后再试 t = "+t.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        setUpLoadDiaLogFail(errorMsg);
+                    }
+                });
     }
 
 

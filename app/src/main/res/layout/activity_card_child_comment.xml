@@ -189,12 +189,12 @@
                     </LinearLayout>
 
                 </android.support.v4.widget.NestedScrollView>
-                <com.riuir.calibur.ui.widget.ReplyAndCommentView
+                <com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView
                     android:id="@+id/card_child_comment_reply_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/color_FFFFFFFF"
-                    android:minHeight="45dp"></com.riuir.calibur.ui.widget.ReplyAndCommentView>
+                    android:minHeight="45dp"></com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView>
             </LinearLayout>
         </android.support.v4.widget.SwipeRefreshLayout>
 

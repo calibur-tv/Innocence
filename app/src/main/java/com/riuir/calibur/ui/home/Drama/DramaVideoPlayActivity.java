@@ -1,26 +1,18 @@
 package com.riuir.calibur.ui.home.Drama;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.net.Uri;
-import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
@@ -29,29 +21,21 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.anime.AnimeVideosActivityInfo;
-import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
+
 import com.riuir.calibur.net.ApiGet;
-import com.riuir.calibur.net.NetService;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
+import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
-import com.riuir.calibur.ui.widget.ReplyAndCommentView;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
-import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
-import com.riuir.calibur.utils.GlideUtils;
-import com.shuyu.gsyvideoplayer.GSYBaseActivityDetail;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
-import com.shuyu.gsyvideoplayer.builder.GSYVideoOptionBuilder;
-import com.shuyu.gsyvideoplayer.player.IjkPlayerManager;
-import com.shuyu.gsyvideoplayer.player.PlayerFactory;
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
@@ -64,6 +48,11 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeVideosActivityInfo;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -94,10 +83,10 @@ public class DramaVideoPlayActivity extends BaseActivity {
     private int videoId;
     private int primacyId;
 
-    AnimeVideosActivityInfo.AnimeVideosActivityInfoData videoData;
+    AnimeVideosActivityInfo videoData;
 
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData commentMainData;
-    private TrendingShowInfoCommentMain.TrendingShowInfoCommentMainData baseCommentMainData;
+    private TrendingShowInfoCommentMain commentMainData;
+    private TrendingShowInfoCommentMain baseCommentMainData;
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> baseCommentMainList = new ArrayList<>();
 
 
@@ -123,7 +112,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
     AppListFailedView failedView;
     AppListEmptyView emptyView;
 
-
+    private static DramaVideoPlayActivity instance;
 
     @Override
     protected int getContentViewId() {
@@ -132,6 +121,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
+        instance = this;
         isFirstLoad = true;
         Intent intent = getIntent();
         videoId = intent.getIntExtra("videoId",0);
@@ -151,151 +141,81 @@ public class DramaVideoPlayActivity extends BaseActivity {
         }
 
         if (NET_STATUS == NET_STATUS_PRIMACY){
-            primacyCall = mApiGet.getCallAnimeVideo(videoId);
-            primacyCall.enqueue(new Callback<AnimeVideosActivityInfo>() {
-                @Override
-                public void onResponse(Call<AnimeVideosActivityInfo> call, Response<AnimeVideosActivityInfo> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        videoData = response.body().getData();
+            apiService.getCallAnimeVideo(videoId)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<AnimeVideosActivityInfo>(){
+                        @Override
+                        public void onSuccess(AnimeVideosActivityInfo animeVideosActivityInfo) {
+                            videoData = animeVideosActivityInfo;
 //                        initVideo();
-                        //两次网络请求都完成后开始加载数据
-                        LogUtils.d("ijkPlayer","网络请求完成");
-                        if (recyclerView!=null){
-                            setAdapter();
-                            setPrimacyView();
-                            setEmptyView();
-                            isFirstLoad = false;
-                            refreshLayout.setEnabled(false);
+                            //两次网络请求都完成后开始加载数据
+                            LogUtils.d("ijkPlayer","网络请求完成");
+                            if (recyclerView!=null){
+                                setAdapter();
+                                setPrimacyView();
+                                setEmptyView();
+                                isFirstLoad = false;
+                                refreshLayout.setEnabled(false);
+                            }
                         }
-                    }else if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                        if (info.getCode() == 40104){
-                            //用户登录状态过时的时候，清空UserToken,将登录置为false
-                            ToastUtils.showShort(DramaVideoPlayActivity.this,info.getMessage());
-                            LoginUtils.ReLogin(DramaVideoPlayActivity.this);
-                        }else if (info.getCode() == 40401){
-                            ToastUtils.showShort(DramaVideoPlayActivity.this,info.getMessage());
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (refreshLayout!=null){
+                                if (isRefresh){
+                                    isRefresh = false;
+                                    refreshLayout.setRefreshing(false);
+                                }
+                                setFailedView();
+                            }
                         }
-                        if (isRefresh){
-                            isRefresh = false;
-                            refreshLayout.setRefreshing(false);
-                        }
-                        setFailedView();
-                    }else {
-                        if (isRefresh){
-                            isRefresh = false;
-                            refreshLayout.setRefreshing(false);
-                        }
-                        ToastUtils.showShort(DramaVideoPlayActivity.this,"未知错误出现了！");
-                        setFailedView();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<AnimeVideosActivityInfo> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        if (isRefresh){
-                            isRefresh = false;
-                            refreshLayout.setRefreshing(false);
-                        }
-                        ToastUtils.showShort(DramaVideoPlayActivity.this,"请检查您的网络!");
-                        LogUtils.d("videoEEEEE"," t = "+t.getMessage());
-                        CrashReport.postCatchedException(t);
-                        setFailedView();
-                    }
-                }
-            });
+                    });
         }
         if (NET_STATUS == NET_STATUS_MAIN_COMMENT){
             setFetchID();
-            commentMainCall = mApiGet.getCallMainComment("video",videoId,fetchId,0);
-            commentMainCall.enqueue(new Callback<TrendingShowInfoCommentMain>() {
-                @Override
-                public void onResponse(Call<TrendingShowInfoCommentMain> call, Response<TrendingShowInfoCommentMain> response) {
-                    if (response!=null&&response.body()!=null&&response.body().getCode()==0){
-                        commentMainData = response.body().getData();
-                        if (isFirstLoad){
-                            isFirstLoad = false;
-                            baseCommentMainData = response.body().getData();
-                            baseCommentMainList = response.body().getData().getList();
-                            //第一次网络请求结束后 开始第二次网络请求
-                            setNet(NET_STATUS_PRIMACY);
+            apiService.getCallMainComment("video",videoId,fetchId,0)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<TrendingShowInfoCommentMain>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<TrendingShowInfoCommentMain>() {
+                        @Override
+                        public void onSuccess(TrendingShowInfoCommentMain trendingShowInfoCommentMain) {
+                            commentMainData = trendingShowInfoCommentMain;
+                            if (isFirstLoad){
+                                isFirstLoad = false;
+                                baseCommentMainData = trendingShowInfoCommentMain;
+                                baseCommentMainList = trendingShowInfoCommentMain.getList();
+                                //第一次网络请求结束后 开始第二次网络请求
+                                setNet(NET_STATUS_PRIMACY);
+                            }
+                            if (isLoadMore){
+                                setLoadMore();
+                            }
+                            if (isRefresh){
+                                refreshLayout.setRefreshing(false);
+                                isRefresh = false;
+                                baseCommentMainData = trendingShowInfoCommentMain;
+                                baseCommentMainList = trendingShowInfoCommentMain.getList();
+                                //第一次网络请求结束后 开始第二次网络请求
+                                setNet(NET_STATUS_PRIMACY);
+                            }
                         }
-                        if (isLoadMore){
-                            setLoadMore();
-                        }
-                        if (isRefresh){
-                            refreshLayout.setRefreshing(false);
-                            isRefresh = false;
-                            baseCommentMainData = response.body().getData();
-                            baseCommentMainList = response.body().getData().getList();
-                            //第一次网络请求结束后 开始第二次网络请求
-                            setNet(NET_STATUS_PRIMACY);
-                        }
-                    }else  if (response!=null&&response.isSuccessful()==false){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        if (info.getCode() == 40104){
-                            ToastUtils.showShort(DramaVideoPlayActivity.this,info.getMessage());
-                        }else if (info.getCode() == 40003){
-                            ToastUtils.showShort(DramaVideoPlayActivity.this,info.getMessage());
-                        }
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                            refreshLayout.setRefreshing(false);
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(DramaVideoPlayActivity.this,"未知错误出现了！");
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
-                        }
-                        if (isRefresh){
-                            isRefresh = false;
-                            refreshLayout.setRefreshing(false);
-                        }
-                        setFailedView();
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<TrendingShowInfoCommentMain> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(DramaVideoPlayActivity.this,"请检查您的网络！ ");
-                        CrashReport.postCatchedException(t);
-                        if (isLoadMore){
-                            commentAdapter.loadMoreFail();
-                            isLoadMore = false;
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (refreshLayout!=null){
+                                if (isLoadMore){
+                                    commentAdapter.loadMoreFail();
+                                    isLoadMore = false;
+                                }
+                                if (isRefresh){
+                                    isRefresh = false;
+                                    refreshLayout.setRefreshing(false);
+                                }
+                                setFailedView();
+                            }
                         }
-                        if (isRefresh){
-                            isRefresh = false;
-                            refreshLayout.setRefreshing(false);
-                        }
-                        setFailedView();
-                    }
-                }
-            });
+                    });
         }
 
     }
@@ -341,6 +261,25 @@ public class DramaVideoPlayActivity extends BaseActivity {
             public void onRewardFinish() {
                 videoData.getInfo().setRewarded(true);
                 checkVideo();
+                if (commentView!=null){
+                    commentView.setRewarded(true);
+                }
+            }
+
+            @Override
+            public void onLikedFinish(boolean isLiked) {
+                if (commentView!=null){
+                    commentView.setLiked(isLiked);
+                }
+            }
+
+            @Override
+            public void onCollectedFinish(boolean isMarked) {
+                if (commentView!=null){
+                    if (commentView!=null){
+                        commentView.setMarked(isMarked);
+                    }
+                }
             }
         });
         videoLFCView.startListenerAndNet();
@@ -354,6 +293,30 @@ public class DramaVideoPlayActivity extends BaseActivity {
         commentView.setId(videoId);
         commentView.setType(ReplyAndCommentView.TYPE_VIDEO);
         commentView.setTargetUserId(0);
+        commentView.setIs_creator(videoData.getInfo().isIs_creator());
+        commentView.setLiked(videoData.getInfo().isLiked());
+        commentView.setRewarded(videoData.getInfo().isRewarded());
+        commentView.setMarked(videoData.getInfo().isMarked());
+        commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
+            @Override
+            public void onRewardFinish() {
+                videoData.getInfo().setRewarded(true);
+                checkVideo();
+                if (videoLFCView!=null){
+                    videoLFCView.setRewarded(true);
+                }
+            }
+            @Override
+            public void onLikeFinish(boolean isLike) {
+                //视频只有投食 没有喜欢
+            }
+            @Override
+            public void onMarkFinish(boolean isMark) {
+                if (videoLFCView!=null){
+                    videoLFCView.setCollected(isMark);
+                }
+            }
+        });
         commentView.setNetAndListener();
     }
 
@@ -666,5 +629,13 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     @Override
     protected void handler(Message msg) {
+    }
+
+    public CommentAdapter getCommentAdapter(){
+        return commentAdapter;
+    }
+
+    public static DramaVideoPlayActivity getInstance(){
+        return instance;
     }
 }

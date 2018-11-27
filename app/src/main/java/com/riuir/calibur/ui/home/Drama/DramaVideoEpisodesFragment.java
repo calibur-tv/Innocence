@@ -14,7 +14,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.data.anime.AnimeShowVideosInfo;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaVideoEpisodesListAdapter;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
@@ -22,6 +22,7 @@ import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeShowVideosInfo;
 
 /**
  * A simple {@link Fragment} subclass.

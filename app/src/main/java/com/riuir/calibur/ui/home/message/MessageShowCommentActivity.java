@@ -12,12 +12,10 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -31,17 +29,14 @@ import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.trending.TrendingChildCommentInfo;
-import com.riuir.calibur.data.trending.TrendingShowInfoCommentItem;
-import com.riuir.calibur.data.trending.TrendingShowInfoCommentMain;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaVideoPlayActivity;
-import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
-import com.riuir.calibur.ui.widget.ReplyAndCommentView;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
@@ -49,10 +44,13 @@ import com.riuir.calibur.utils.GlideUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.comment.TrendingChildCommentInfo;
+import calibur.core.http.models.comment.TrendingShowInfoCommentItem;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -103,10 +101,12 @@ public class MessageShowCommentActivity extends BaseActivity {
     List<TrendingChildCommentInfo.TrendingChildCommentInfoList> baseChildList;
     CommentChildAdapter commentChildAdapter;
 
-    TrendingShowInfoCommentItem.TrendingShowInfoCommentItemData commentData;
+    TrendingShowInfoCommentItem commentData;
 
     AppListFailedView failedView;
     AppListEmptyView emptyView;
+
+    private static MessageShowCommentActivity instance;
 
     @Override
     protected int getContentViewId() {
@@ -115,6 +115,7 @@ public class MessageShowCommentActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
+        instance = this;
         Intent intent = getIntent();
         comment_id = intent.getIntExtra("comment_id",0);
         reply_id = intent.getIntExtra("reply_id",0);
@@ -168,46 +169,28 @@ public class MessageShowCommentActivity extends BaseActivity {
     }
 
     private void setNet() {
-        callCommentItem = apiGetHasAuth.getCallMainItemComment(comment_id,reply_id,type);
-        callCommentItem.enqueue(new Callback<TrendingShowInfoCommentItem>() {
-            @Override
-            public void onResponse(Call<TrendingShowInfoCommentItem> call, Response<TrendingShowInfoCommentItem> response) {
-                if (response!=null&&response.isSuccessful()){
-                    commentData = response.body().getData();
-                    LogUtils.d("messageShow","commentData = "+commentData.toString());
-                    if (refreshLayout!=null){
-                        refreshLayout.setRefreshing(false);
+        apiService.getCallMainItemComment(comment_id,reply_id,type)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<TrendingShowInfoCommentItem>(){
+                    @Override
+                    public void onSuccess(TrendingShowInfoCommentItem trendingShowInfoCommentItem) {
+                        commentData = trendingShowInfoCommentItem;
+                        LogUtils.d("messageShow","commentData = "+commentData.toString());
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
+                        setView();
+                        setEmptyView();
                     }
-                    setView();
-                    setEmptyView();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (refreshLayout!=null){
+                            setFailedView();
+                        }
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(MessageShowCommentActivity.this,info.getMessage());
-                    setFailedView();
-
-                }else {
-                    ToastUtils.showShort(MessageShowCommentActivity.this,"网络异常，返回为空");
-                    setFailedView();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TrendingShowInfoCommentItem> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(MessageShowCommentActivity.this,"请检查您的网络");
-                    CrashReport.postCatchedException(t);
-                    setFailedView();
-                }
-            }
-        });
+                });
     }
 
     private void setView() {
@@ -271,6 +254,7 @@ public class MessageShowCommentActivity extends BaseActivity {
 
     private void setReplyView() {
         replyView.setStatus(ReplyAndCommentView.STATUS_SUB_COMMENT);
+        replyView.setSubType(ReplyAndCommentView.TYPE_SUB_MESSAGE);
         replyView.setApiPost(apiPost);
         replyView.setChildCommentAdapter(commentChildAdapter);
         replyView.setFromUserName("");
@@ -409,5 +393,13 @@ public class MessageShowCommentActivity extends BaseActivity {
     @Override
     protected void handler(Message msg) {
 
+    }
+
+    public CommentChildAdapter  getCommentAdapter(){
+        return commentChildAdapter;
+    }
+
+    public static MessageShowCommentActivity getInstance(){
+        return instance;
     }
 }

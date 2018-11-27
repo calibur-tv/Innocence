@@ -19,12 +19,13 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.AnimeListForTagsSearch;
-import com.riuir.calibur.data.AnimeShowInfo;
+
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.params.DramaTags;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaTagsSearchActivity;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaTagsAnimeListAdapter;
+import com.riuir.calibur.ui.home.Drama.dramaConfig.choose.DramaMasterSettingChooseTagActivity;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.Constants;
@@ -36,6 +37,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -90,40 +94,26 @@ public class DramaTagsFragment extends BaseFragment {
 
     private void setNet() {
 
-        apiGet.getCallDramaTags().enqueue(new Callback<DramaTags>() {
-            @Override
-            public void onResponse(Call<DramaTags> call, Response<DramaTags> response) {
-                if (response!=null&&response.isSuccessful()){
-                    tagsDataList = response.body().getData();
-                    LogUtils.d("dramaTags","tagsDataList = "+tagsDataList);
-                    Constants.allTagsList = response.body().getData();
-                    setTagsGridAdapter();
-
-                }else if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getCallDramaTags()
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<List<AnimeShowInfo.AnimeShowInfoTags>>(){
+                    @Override
+                    public void onSuccess(List<AnimeShowInfo.AnimeShowInfoTags> tags) {
+                        if (refreshLayout!=null){
+                            tagsDataList = tags;
+                            Constants.allTagsList = tags;
+                            setTagsGridAdapter();
+                            refreshLayout.setRefreshing(false);
+                        }
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(getContext(),info.getMessage());
-                }else {
-                    ToastUtils.showShort(getContext(),"未知原因导致加载失败了！");
-
-                }
-                refreshLayout.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure(Call<DramaTags> call, Throwable t) {
-                ToastUtils.showShort(getContext(),"请检查您的网络哟~");
-                LogUtils.v("AppNetErrorMessage","drama tag t = "+t.getMessage());
-                CrashReport.postCatchedException(t);
-                refreshLayout.setRefreshing(false);
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (refreshLayout!=null){
+                            refreshLayout.setRefreshing(false);
+                        }
+                    }
+                });
 
     }
 

@@ -16,11 +16,12 @@ import android.widget.TextView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
-import com.riuir.calibur.data.trending.ScoreShowInfoPrimacy;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import calibur.core.http.models.followList.score.ScoreShowInfoPrimacy;
 
 public class ScoreContentView extends LinearLayout{
 

@@ -2,6 +2,7 @@ package com.riuir.calibur.data.qiniu;
 
 public class QiniuUpToken {
     private int code;
+    private QiniuUpTokenData data;
 
     public int getCode() {
         return code;
@@ -27,7 +28,7 @@ public class QiniuUpToken {
                 '}';
     }
 
-    private QiniuUpTokenData data;
+
     public class QiniuUpTokenData{
         private String upToken;
         private String expiredAt;

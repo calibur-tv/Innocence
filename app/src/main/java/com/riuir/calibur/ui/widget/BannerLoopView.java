@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
-import com.riuir.calibur.data.loop.BannerLoopInfo;
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.IHandler;
 import com.riuir.calibur.ui.common.UIHandler;
@@ -32,6 +31,11 @@ import com.riuir.calibur.utils.GlideUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import calibur.core.http.RetrofitManager;
+import calibur.core.http.api.APIService;
+import calibur.core.http.models.followList.BannerLoopInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import github.chenupt.springindicator.SpringIndicator;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,7 +48,7 @@ public class BannerLoopView extends RelativeLayout {
     SpringIndicator indicator;
     BannerLoopAdapter adapter;
     ApiGet apiGet;
-    List<BannerLoopInfo.BannerLoopInfoData> bannerLoopList;
+    List<BannerLoopInfo> bannerLoopList;
     List<String> titles = new ArrayList<>();
     View view;
     private UIHandler handler = new UIHandler(Looper.getMainLooper());
@@ -82,21 +86,23 @@ public class BannerLoopView extends RelativeLayout {
     }
 
     private void setNet() {
-        apiGet.getCallBannerLoop().enqueue(new Callback<BannerLoopInfo>() {
-            @Override
-            public void onResponse(Call<BannerLoopInfo> call, Response<BannerLoopInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    bannerLoopList = response.body().getData();
-                    setBannerLoopInfo();
-                }else if (response!=null&&!response.isSuccessful()){
-                }else {
-                }
-            }
 
-            @Override
-            public void onFailure(Call<BannerLoopInfo> call, Throwable t) {
-            }
-        });
+        RetrofitManager.getInstance().getService(APIService.class)
+                .getCallBannerLoop()
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<List<BannerLoopInfo>>(){
+                    @Override
+                    public void onSuccess(List<BannerLoopInfo> bannerLoopInfos) {
+                        bannerLoopList = bannerLoopInfos;
+                        setBannerLoopInfo();
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                    }
+                });
+
     }
 
     public void setBannerLoopInfo(){
@@ -164,7 +170,7 @@ public class BannerLoopView extends RelativeLayout {
     }
 
     private void setJump(int position) {
-        BannerLoopInfo.BannerLoopInfoData data = bannerLoopList.get(position);
+        BannerLoopInfo data = bannerLoopList.get(position);
         String url = data.getLink();
         String type = "";
         String idStr = "";

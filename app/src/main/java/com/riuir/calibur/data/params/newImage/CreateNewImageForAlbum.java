@@ -1,8 +1,10 @@
 package com.riuir.calibur.data.params.newImage;
 
-import com.riuir.calibur.data.params.QiniuImageParams;
+
 
 import java.util.ArrayList;
+
+import calibur.core.http.models.qiniu.params.QiniuImageParams;
 
 public class CreateNewImageForAlbum {
     private int album_id;

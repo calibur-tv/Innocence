@@ -8,12 +8,14 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.MainTrendingInfo;
+
 import com.riuir.calibur.data.user.UserFollowedRoleInfo;
 import com.riuir.calibur.ui.home.user.UserFollowedRoleFragment;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.followList.MainTrendingInfo;
 
 public class FollowedRoleAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTrendingInfoList,BaseViewHolder> {
 

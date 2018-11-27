@@ -27,6 +27,10 @@ import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
 
+import calibur.core.http.RetrofitManager;
+import calibur.core.http.api.APIService;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -95,7 +99,7 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
 
     }
 
-    private void setListener() {
+    private void setLFCStatus(){
         if (isCreator){
             likeCheckBtn.setVisibility(GONE);
             rewardedBtn.setVisibility(VISIBLE);
@@ -132,6 +136,9 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
         }else {
             likeCheckBtn.setCompoundDrawables(leftDrawDarkLike,null,null,null);
         }
+    }
+
+    private void setListener() {
 
         likeCheckBtn.setOnClickListener(new OnClickListener() {
             @Override
@@ -200,100 +207,76 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
     private void setNetToToggle(int NET_TOGGLE_STATUS) {
 
         if (NET_TOGGLE_STATUS == NET_STATUS_TOGGLE_LIKE){
-            apiPost.getTrendingToggleLike(type,id).enqueue(new Callback<TrendingToggleInfo>() {
-                @Override
-                public void onResponse(Call<TrendingToggleInfo> call, Response<TrendingToggleInfo> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        if (response.body().getCode() == 0){
-                            if (response.body().isData()){
+            RetrofitManager.getInstance().getService(APIService.class)
+                    .getTrendingToggleLike(type,id)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<Boolean>(){
+                        @Override
+                        public void onSuccess(Boolean isLike) {
+                            if (isLike){
                                 ToastUtils.showShort(context,"点赞成功");
                                 likeCheckBtn.setCompoundDrawables(leftDrawLightLike,null,null,null);
                             }else {
                                 ToastUtils.showShort(context,"取消赞成功");
                                 likeCheckBtn.setCompoundDrawables(leftDrawDarkLike,null,null,null);
                             }
+                            if (onLFCNetFinish!=null){
+                                onLFCNetFinish.onLikedFinish(isLike);
+                            }
+                            likeCheckBtn.setText("喜欢");
+                            likeCheckBtn.setClickable(true);
                         }
-                    }else {
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        TrendingToggleInfo toggleInfo=gson.fromJson(errorStr,TrendingToggleInfo.class);
-                        if (toggleInfo.getCode() == 40104){
-                            ToastUtils.showShort(context,toggleInfo.getMessage());
-                        }else if (toggleInfo.getCode() == 40301){
-                            ToastUtils.showShort(context,toggleInfo.getMessage());
-                        }else if (toggleInfo.getCode() == 40401){
-                            ToastUtils.showShort(context,toggleInfo.getMessage());
-                        }
-                    }
-                    likeCheckBtn.setText("喜欢");
-                    likeCheckBtn.setClickable(true);
-                }
 
-                @Override
-                public void onFailure(Call<TrendingToggleInfo> call, Throwable t) {
-                    ToastUtils.showShort(context,"请检查您的网络");
-                    likeCheckBtn.setText("喜欢");
-                    likeCheckBtn.setClickable(true);
-                }
-            });
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (likeCheckBtn!=null){
+                                likeCheckBtn.setText("喜欢");
+                                likeCheckBtn.setClickable(true);
+                            }
+                        }
+                    });
         }
         if (NET_TOGGLE_STATUS == NET_STATUS_TOGGLE_COLLENTION) {
-            apiPost.getTrendingToggleCollection(type, id).enqueue(new Callback<TrendingToggleInfo>() {
-                @Override
-                public void onResponse(Call<TrendingToggleInfo> call, Response<TrendingToggleInfo> response) {
-                    if (response != null && response.isSuccessful()) {
-                        if (response.body().getCode() == 0) {
-
-                            if (response.body().isData()) {
+            RetrofitManager.getInstance().getService(APIService.class)
+                    .getTrendingToggleCollection(type,id)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<Boolean>(){
+                        @Override
+                        public void onSuccess(Boolean isMark) {
+                            if (isMark) {
                                 ToastUtils.showShort(context, "收藏成功");
                                 collectionCheckBtn.setCompoundDrawables(leftDrawLightcollection,null,null,null);
                             } else {
                                 ToastUtils.showShort(context, "取消收藏成功");
                                 collectionCheckBtn.setCompoundDrawables(leftDrawDarkcollection,null,null,null);
                             }
+                            if (onLFCNetFinish!=null){
+                                onLFCNetFinish.onCollectedFinish(isMark);
+                            }
+                            collectionCheckBtn.setClickable(true);
+                            collectionCheckBtn.setText("收藏");
                         }
-                    } else {
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        TrendingToggleInfo toggleInfo = gson.fromJson(errorStr, TrendingToggleInfo.class);
-                        if (toggleInfo.getCode() == 40104) {
-                            ToastUtils.showShort(context, toggleInfo.getMessage());
-                        } else if (toggleInfo.getCode() == 40301) {
-                            ToastUtils.showShort(context, toggleInfo.getMessage());
-                        } else if (toggleInfo.getCode() == 40401) {
-                            ToastUtils.showShort(context, toggleInfo.getMessage());
-                        }
-                    }
-                    collectionCheckBtn.setClickable(true);
-                    collectionCheckBtn.setText("收藏");
-                }
 
-                @Override
-                public void onFailure(Call<TrendingToggleInfo> call, Throwable t) {
-                    ToastUtils.showShort(context, "请检查您的网络");
-                    collectionCheckBtn.setClickable(true);
-                    collectionCheckBtn.setText("收藏");
-                }
-            });
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (collectionCheckBtn!=null){
+                                collectionCheckBtn.setClickable(true);
+                                collectionCheckBtn.setText("收藏");
+                            }
+                        }
+                    });
         }
 
         if (NET_TOGGLE_STATUS == NET_STATUS_TOGGLE_REWARDED) {
-            apiPost.getTrendingToggleReward(type, id).enqueue(new Callback<TrendingToggleInfo>() {
-                @Override
-                public void onResponse(Call<TrendingToggleInfo> call, Response<TrendingToggleInfo> response) {
-                    if (response != null && response.isSuccessful()) {
-                        if (response.body().getCode() == 0) {
-                            if (response.body().isData()){
+            RetrofitManager.getInstance().getService(APIService.class)
+                    .getTrendingToggleReward(type,id)
+                    .compose(Rx2Schedulers.applyObservableAsync())
+                    .subscribe(new ObserverWrapper<Boolean>(){
+                        @Override
+                        public void onSuccess(Boolean isRewarded) {
+                            if (isRewarded){
                                 ToastUtils.showShort(context, "投食成功，消耗1团子");
                                 rewarded = true;
                                 rewardedBtn.setCompoundDrawables(leftDrawLightLike,null,null,null);
@@ -306,51 +289,38 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
                                     onLFCNetFinish.onRewardFinish();
                                 }
                             }else {
-                                ToastUtils.showShort(context,response.body().getMessage());
+                                ToastUtils.showShort(context,"请勿重复投食");
+                            }
+                            rewardedBtn.setClickable(true);
+                            rewardedBtn.setText("投食");
+                        }
+
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (rewardedBtn!=null){
+                                rewardedBtn.setClickable(true);
+                                rewardedBtn.setText("投食");
                             }
                         }
-                    } else {
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        TrendingToggleInfo toggleInfo = gson.fromJson(errorStr, TrendingToggleInfo.class);
-                        if (toggleInfo.getCode() == 40104) {
-                            ToastUtils.showShort(context, toggleInfo.getMessage());
-                        } else if (toggleInfo.getCode() == 40301) {
-                            ToastUtils.showShort(context, toggleInfo.getMessage());
-                        } else if (toggleInfo.getCode() == 40401) {
-                            ToastUtils.showShort(context, toggleInfo.getMessage());
-                        }
-                    }
-                    rewardedBtn.setClickable(true);
-                    rewardedBtn.setText("投食");
-                }
-
-                @Override
-                public void onFailure(Call<TrendingToggleInfo> call, Throwable t) {
-                    ToastUtils.showShort(context, "请检查您的网络");
-                    rewardedBtn.setClickable(true);
-                    rewardedBtn.setText("投食");
-                }
-            });
+                    });
         }
 
     }
 
     public final void setLiked(boolean liked){
         this.liked = liked;
+        setLFCStatus();
     }
 
     public final void setCollected(boolean collected){
         this.collected = collected;
+        setLFCStatus();
     }
 
     public final void setRewarded(boolean rewarded){
         this.rewarded = rewarded;
+        setLFCStatus();
     }
 
     public final void setType(String type){
@@ -364,6 +334,7 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
     }
     public final void setIsCreator(boolean isCreator){
         this.isCreator = isCreator;
+        setLFCStatus();
     }
     public final void startListenerAndNet(){
         setListener();
@@ -376,8 +347,8 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
 
     public interface OnLFCNetFinish{
         //需要的时候解开注释 同时给对应的类添加这两个方法
-//        void onLikedFinish();
-//        void onCollectedFinish();
+        void onLikedFinish(boolean isLiked);
+        void onCollectedFinish(boolean isMarked);
         void onRewardFinish();
     }
 }

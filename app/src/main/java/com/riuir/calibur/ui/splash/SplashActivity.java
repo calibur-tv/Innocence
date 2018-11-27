@@ -11,7 +11,7 @@ import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MineUserInfo;
+
 
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
@@ -23,6 +23,10 @@ import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.user.MineUserInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,47 +67,23 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void setNetToGetUserInfo() {
-        callUserInfo = apiPost.getMineUserInfo();
-        callUserInfo.enqueue(new Callback<MineUserInfo>() {
-            @Override
-            public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    Constants.userInfoData = response.body().getData();
-                    SharedPreferencesUtils.putUserInfoData(App.instance(),Constants.userInfoData);
-                    BangumiAllListUtils.setBangumiAllList(SplashActivity.this,apiGet);
-                }else  if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getMineUserInfo()
+                .compose(Rx2Schedulers.<Response<ResponseBean<MineUserInfo>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<MineUserInfo>() {
+                    @Override
+                    public void onSuccess(MineUserInfo mineUserInfo) {
+                        Constants.userInfoData = mineUserInfo;
+                        SharedPreferencesUtils.putUserInfoData(App.instance(),Constants.userInfoData);
+                        BangumiAllListUtils.setBangumiAllList(SplashActivity.this,apiGet);
                     }
-                    LogUtils.d("splashError","error = "+errorStr);
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    ToastUtils.showShort(SplashActivity.this,info.getMessage());
 
-                    startActivity(LoginAndRegisterActivity.class);
-                    finish();
-                }else {
-                    ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
-                    startActivity(LoginAndRegisterActivity.class);
-                    finish();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MineUserInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    ToastUtils.showShort(SplashActivity.this,"网络异常,请检查您的网络");
-                    LogUtils.v("AppNetErrorMessage","splash t = "+t.getMessage());
-                    CrashReport.postCatchedException(t);
-                    startActivity(LoginAndRegisterActivity.class);
-                    finish();
-                }
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        startActivity(LoginAndRegisterActivity.class);
+                        finish();
+                    }
+                });
     }
 
 

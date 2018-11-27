@@ -11,10 +11,12 @@ import android.widget.LinearLayout;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.user.UserReplyCardInfo;
+
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.user.UserReplyCardInfo;
 
 
 public class ReplyCardListAdapter extends BaseQuickAdapter<UserReplyCardInfo.UserReplayCardInfoList,BaseViewHolder> {

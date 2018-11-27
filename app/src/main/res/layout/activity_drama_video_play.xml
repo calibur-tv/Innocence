@@ -68,12 +68,12 @@
             </LinearLayout>
         </android.support.v4.widget.SwipeRefreshLayout>
 
-        <com.riuir.calibur.ui.widget.ReplyAndCommentView
+        <com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView
             android:id="@+id/drama_video_play_comment_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="45dp">
-        </com.riuir.calibur.ui.widget.ReplyAndCommentView>
+        </com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView>
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

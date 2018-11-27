@@ -12,10 +12,12 @@ import com.hedgehog.ratingbar.RatingBar;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
-import com.riuir.calibur.data.MainTrendingInfo;
+
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.followList.MainTrendingInfo;
 
 public class DramaScoreListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTrendingInfoList,BaseViewHolder> {
 

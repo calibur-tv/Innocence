@@ -11,7 +11,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.anime.BangumiAllList;
+
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.splash.SplashActivity;
@@ -19,7 +19,14 @@ import com.riuir.calibur.utils.Constants;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import calibur.core.http.RetrofitManager;
+import calibur.core.http.api.APIService;
+import calibur.core.http.models.anime.BangumiAllList;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,41 +34,27 @@ import retrofit2.Response;
 public class BangumiAllListUtils {
     public static void setBangumiAllList(final Context context, ApiGet apiGet){
         final Activity activity = (Activity) context;
-        apiGet.getBangumiAllList().enqueue(new Callback<BangumiAllList>() {
-            @Override
-            public void onResponse(Call<BangumiAllList> call, Response<BangumiAllList> response) {
-                if (response!=null&&response.isSuccessful()){
-                    Constants.bangumiAllListData = response.body().getData();
-                    SharedPreferencesUtils.putBangumiAllListList(App.instance(),"bangumiAllListData",response.body().getData());
-                }else  if (!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        RetrofitManager.getInstance().getService(APIService.class)
+                .getBangumiAllList()
+                .compose(Rx2Schedulers.<Response<ResponseBean<ArrayList<BangumiAllList>>>>applyObservableAsync())
+                .subscribe(new ObserverWrapper<ArrayList<BangumiAllList>>() {
+                    @Override
+                    public void onSuccess(ArrayList<BangumiAllList> bangumiAllLists) {
+                        Constants.bangumiAllListData = bangumiAllLists;
+                        SharedPreferencesUtils.putBangumiAllListList(App.instance(),"bangumiAllListData",bangumiAllLists);
+                        Intent intent = new Intent(context,MainActivity.class);
+                        activity.startActivity(intent);
+                        activity.finish();
                     }
-                    Gson gson = new Gson();
-                    Event<String> info = null;
-                    try {
-                        info = gson.fromJson(errorStr,Event.class);
-                    } catch (JsonSyntaxException e) {
-                        e.printStackTrace();
-                    }
-                }else {
-                }
-                Intent intent = new Intent(context,MainActivity.class);
-                activity.startActivity(intent);
-                activity.finish();
-            }
 
-            @Override
-            public void onFailure(Call<BangumiAllList> call, Throwable t) {
-                LogUtils.v("AppNetErrorMessage","splash t = "+t.getMessage());
-                CrashReport.postCatchedException(t);
-                Intent intent = new Intent(context,MainActivity.class);
-                activity.startActivity(intent);
-                activity.finish();
-            }
-        });
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        Intent intent = new Intent(context,MainActivity.class);
+                        activity.startActivity(intent);
+                        activity.finish();
+                    }
+                });
+
     }
 }

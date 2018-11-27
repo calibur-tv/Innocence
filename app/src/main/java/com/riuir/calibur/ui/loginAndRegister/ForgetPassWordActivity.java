@@ -24,7 +24,7 @@ import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.GeeTestInfo;
-import com.riuir.calibur.data.params.VerificationCodeBody;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.home.image.CreateImageAlbumActivity;
@@ -38,6 +38,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -196,44 +200,23 @@ public class ForgetPassWordActivity extends BaseActivity {
             verificationCodebodyBody.setPhone_number(userNameStr);
             verificationCodebodyBody.setGeetest(verificationCodeBodyGeeTest);
 
-            apiPostNoAuth.getGeeTestSendValidate(verificationCodebodyBody).enqueue(new Callback<Event<String>>() {
-                @Override
-                public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                        LogUtils.d("resetPass",response.toString());
-                    if (response!=null&&response.body()!=null){
-                        LogUtils.d("resetPass",response.body().toString());
-                        int code = response.body().getCode();
+            apiService.getGeeTestSendValidate(verificationCodebodyBody)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<String>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<String>(){
 
-                        ToastUtils.showShort(ForgetPassWordActivity.this,"重置密码短信发送成功！✿✿ヽ(°▽°)ノ✿");
-                        reSetSendMessageBtnSecond = 60;
-                        handler.sendEmptyMessage(0);
-
-                    }else if (response!=null&&!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onSuccess(String s) {
+                            ToastUtils.showShort(ForgetPassWordActivity.this,"重置密码短信发送成功！✿✿ヽ(°▽°)ノ✿");
+                            reSetSendMessageBtnSecond = 60;
+                            handler.sendEmptyMessage(0);
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                        ToastUtils.showShort(ForgetPassWordActivity.this,info.getMessage());
-                        handler.sendEmptyMessage(1);
-                    }else {
-                        ToastUtils.showShort(ForgetPassWordActivity.this,"不明原因导致验证码发送失败QAQ");
-                        handler.sendEmptyMessage(1);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Event<String>> call, Throwable t) {
-                    ToastUtils.showShort(ForgetPassWordActivity.this,"请检查您的网络哟");
-                    LogUtils.v("AppNetErrorMessage","forgetPassWord code  t = "+t.getMessage());
-                    CrashReport.postCatchedException(t);
-                    handler.sendEmptyMessage(1);
-                }
-            });
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            handler.sendEmptyMessage(1);
+                        }
+                    });
         }
 
         //点击重置密码
@@ -243,47 +226,24 @@ public class ForgetPassWordActivity extends BaseActivity {
             parmas.put("secret",newPassWordStr);
             parmas.put("authCode",verificationCodeStr);
 
-            apiPostNoAuth.getCallReSetPassWord(parmas).enqueue(new Callback<Event<String>>() {
-                @Override
-                public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                    LogUtils.d("resetPass",response.toString());
-
-                    if (response!=null&&response.body()!=null){
-                        LogUtils.d("resetPass",response.body().toString());
-                        if(response!=null&&response.isSuccessful()){
+            apiService.getCallReSetPassWord(parmas)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<String>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<String>() {
+                        @Override
+                        public void onSuccess(String s) {
                             ToastUtils.showLong(ForgetPassWordActivity.this,"重置密码成功(＾Ｕ＾)ノ~");
                             finish();
-                        }else if (response!=null&&!response.isSuccessful()){
-                            String errorStr = "";
-                            try {
-                                errorStr = response.errorBody().string();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            Gson gson = new Gson();
-                            Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                            ToastUtils.showShort(ForgetPassWordActivity.this,info.getMessage());
-                        }else {
-                            ToastUtils.showShort(ForgetPassWordActivity.this,"不明原因导致注册失败了");
+                            reSetPassWordBtn.setText("重置密码");
+                            reSetPassWordBtn.setClickable(true);
                         }
-                    }else {
-                        ToastUtils.showShort(ForgetPassWordActivity.this,"不明原因导致注册失败了QAQ");
-                    }
-                    reSetPassWordBtn.setText("重置密码");
-                    reSetPassWordBtn.setClickable(true);
 
-                }
-
-                @Override
-                public void onFailure(Call<Event<String>> call, Throwable t) {
-                    ToastUtils.showShort(ForgetPassWordActivity.this,"请检查您的网络哟~");
-                    LogUtils.v("AppNetErrorMessage","forgetPassWord t = "+t.getMessage());
-                    CrashReport.postCatchedException(t);
-                    reSetPassWordBtn.setText("重置密码");
-                    reSetPassWordBtn.setClickable(true);
-                }
-            });
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            reSetPassWordBtn.setText("重置密码");
+                            reSetPassWordBtn.setClickable(true);
+                        }
+                    });
         }
 
     }

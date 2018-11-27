@@ -16,9 +16,9 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.AnimeShowInfo;
+
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.params.QiniuImageParams;
+
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
@@ -34,6 +34,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.models.qiniu.params.QiniuImageParams;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,7 +77,7 @@ public class DramaMasterRoleSettingActivity extends BaseActivity {
     private int userId;
     private int bangumi_id = 0;
     private int responseRoleId = 0;
-    AnimeShowInfo.AnimeShowInfoData animeShowInfoData;
+    AnimeShowInfo animeShowInfoData;
 
     Call<Event<Integer>> callCreateRole;
 
@@ -91,7 +95,7 @@ public class DramaMasterRoleSettingActivity extends BaseActivity {
         }
         Intent intent = getIntent();
         bangumi_id = intent.getIntExtra("bangumi_id",0);
-        animeShowInfoData = (AnimeShowInfo.AnimeShowInfoData) intent.getSerializableExtra("animeShowInfoData");
+        animeShowInfoData = (AnimeShowInfo) intent.getSerializableExtra("animeShowInfoData");
         setUserInfo();
         setListener();
     }
@@ -215,47 +219,21 @@ public class DramaMasterRoleSettingActivity extends BaseActivity {
     }
 
     private void setUpLoadRole() {
-        callCreateRole = apiPost.getCallManagerCreateRole(bangumi_id,nameStr,otherNameStr,summaryStr,qiniuImageParamsDataList.get(0).getUrl());
-        callCreateRole.enqueue(new Callback<Event<Integer>>() {
-            @Override
-            public void onResponse(Call<Event<Integer>> call, Response<Event<Integer>> response) {
-                if (response!=null&&response.isSuccessful()){
-                    responseRoleId = response.body().getData();
-                    setUpLoadRoleFinish();
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        apiService.getCallManagerCreateRole(bangumi_id,nameStr,otherNameStr,summaryStr,qiniuImageParamsDataList.get(0).getUrl())
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<Integer>(){
+                    @Override
+                    public void onSuccess(Integer id) {
+                        responseRoleId = id;
+                        setUpLoadRoleFinish();
                     }
-                    Gson gson = new Gson();
 
-                    Event<String> info = null;
-                    try {
-                        info = gson.fromJson(errorStr,Event.class);
-                    } catch (JsonSyntaxException e) {
-                        e.printStackTrace();
-                    }
-                    if (info!=null){
-                        ToastUtils.showShort(DramaMasterRoleSettingActivity.this,info.getMessage());
-                        setUpLoadDiaLogFail(info.getMessage());
-                    }else {
-                        ToastUtils.showShort(DramaMasterRoleSettingActivity.this,"服务器出现异常，请稍后再试！");
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
                         setUpLoadDiaLogFail("");
                     }
-                }else{
-                    ToastUtils.showShort(DramaMasterRoleSettingActivity.this,"获取不到服务器，请稍后再试！");
-                    setUpLoadDiaLogFail("");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Event<Integer>> call, Throwable t) {
-                ToastUtils.showShort(DramaMasterRoleSettingActivity.this,"网络异常，请稍后再试！");
-                setUpLoadDiaLogFail("");
-            }
-        });
+                });
     }
 
     private void setUpLoadDiaLogFail(String fialMessage) {

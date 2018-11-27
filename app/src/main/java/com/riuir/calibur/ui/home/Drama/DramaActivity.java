@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.AnimeShowInfo;
+
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.anime.AnimeFollowInfo;
 import com.riuir.calibur.net.ApiGet;
@@ -42,6 +42,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,7 +86,7 @@ public class DramaActivity extends BaseActivity {
     @BindView(R.id.drama_activity_sliding_more)
     ImageView slidingMoreBtn;
 
-    AnimeShowInfo.AnimeShowInfoData animeShowInfoData;
+    AnimeShowInfo animeShowInfoData;
 
     int followCount;
 
@@ -219,73 +222,46 @@ public class DramaActivity extends BaseActivity {
     }
 
     private void setFollowNet() {
-        animeFollowInfoCall = apiPost.getCallBangumiToggleFollow("bangumi",animeID);
-        animeFollowInfoCall.enqueue(new Callback<AnimeFollowInfo>() {
-            @Override
-            public void onResponse(Call<AnimeFollowInfo> call, Response<AnimeFollowInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    if (response.body().isData()){
-                        //关注成功
-                        animeFollowBtnText.setText("已关注");
-                        animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_checked);
-                        ToastUtils.showShort(DramaActivity.this,"关注成功！");
-                        followCount++;
-                        animeFollowCount.setText(followCount+"");
-                    }else {
-                        //取消关注
-                        animeFollowBtnText.setText("关注");
-                        animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_normal);
-                        ToastUtils.showShort(DramaActivity.this,"取消关注成功");
-                        followCount--;
-                        animeFollowCount.setText(followCount+"");
-                    }
-
-                }else if (response!=null&&!response.isSuccessful()){
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-
-                    ToastUtils.showShort(DramaActivity.this,info.getMessage());
-                    if (animeShowInfoData.isFollowed()){
-                        animeFollowBtnText.setText("已关注");
-                    }else {
-                        animeFollowBtnText.setText("关注");
-                    }
-                }else {
-                    if (animeShowInfoData.isFollowed()){
-                        animeFollowBtnText.setText("已关注");
-                    }else {
-                        animeFollowBtnText.setText("关注");
-                    }
-                    ToastUtils.showShort(DramaActivity.this,"网络异常，操作失败了");
-                }
-                animeFollowBtn.setClickable(true);
-            }
-
-            @Override
-            public void onFailure(Call<AnimeFollowInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    animeFollowBtn.setClickable(true);
-                    if (animeShowInfoData!=null){
-                        if (animeShowInfoData.isFollowed()){
+        apiService.getCallBangumiToggleFollow("bangumi",animeID)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<Boolean>(){
+                    @Override
+                    public void onSuccess(Boolean isFollow) {
+                        if (isFollow){
+                            //关注成功
                             animeFollowBtnText.setText("已关注");
+                            animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_checked);
+                            ToastUtils.showShort(DramaActivity.this,"关注成功！");
+                            followCount++;
+                            animeFollowCount.setText(followCount+"");
                         }else {
+                            //取消关注
                             animeFollowBtnText.setText("关注");
+                            animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_normal);
+                            ToastUtils.showShort(DramaActivity.this,"取消关注成功");
+                            followCount--;
+                            animeFollowCount.setText(followCount+"");
                         }
-                    }else {
-                        animeFollowBtnText.setText("关注");
+                        animeFollowBtn.setClickable(true);
                     }
-                    CrashReport.postCatchedException(t);
-                    ToastUtils.showShort(DramaActivity.this,"网络异常，操作失败了");
-                }
-            }
-        });
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (animeFollowBtn!=null){
+                            animeFollowBtn.setClickable(true);
+                            if (animeShowInfoData!=null){
+                                if (animeShowInfoData.isFollowed()){
+                                    animeFollowBtnText.setText("已关注");
+                                }else {
+                                    animeFollowBtnText.setText("关注");
+                                }
+                            }else {
+                                animeFollowBtnText.setText("关注");
+                            }
+                        }
+                    }
+                });
     }
 
     @Override
@@ -308,37 +284,19 @@ public class DramaActivity extends BaseActivity {
         }else {
             mApiGet = apiGet;
         }
-        animeShowInfoCall = mApiGet.getCallAnimeShow(animeID);
-        animeShowInfoCall.enqueue(new Callback<AnimeShowInfo>() {
-            @Override
-            public void onResponse(Call<AnimeShowInfo> call, Response<AnimeShowInfo> response) {
-                if (response!=null&&response.isSuccessful()){
-                    if (response.body().getCode() == 0){
-                        LogUtils.d("animeId","11111re  = "+response.body().toString());
-                        animeShowInfoData = response.body().getData();
+        apiService.getCallAnimeShow(animeID)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<AnimeShowInfo>(){
+                    @Override
+                    public void onSuccess(AnimeShowInfo info) {
+                        animeShowInfoData = info;
                         setView();
                     }
-                }else {
-                    String errorStr = "";
-                    try {
-                        errorStr = response.errorBody().string();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
                     }
-                    Gson gson = new Gson();
-                    Event<String> info =gson.fromJson(errorStr,Event.class);
-                    LogUtils.d("animeId","errorStrInfo = "+info.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AnimeShowInfo> call, Throwable t) {
-                if (call.isCanceled()){
-                }else {
-                    LogUtils.d("animeId","t = "+t.getMessage());
-                }
-            }
-        });
+                });
     }
 
     private void setViewPager() {

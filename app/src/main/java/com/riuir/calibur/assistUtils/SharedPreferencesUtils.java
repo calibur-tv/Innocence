@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.riuir.calibur.data.MineUserInfo;
-import com.riuir.calibur.data.anime.BangumiAllList;
+
+
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +15,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import calibur.core.http.models.anime.BangumiAllList;
+import calibur.core.http.models.user.MineUserInfo;
 
 /**
  * SharedPreferencesUtils辅助类
@@ -100,7 +103,7 @@ public class SharedPreferencesUtils
     /**
      * 保存所有动漫信息泛型list
      */
-    public static void putBangumiAllListList(Context context,String key,ArrayList<BangumiAllList.BangumiAllListData> bangumiAllListData){
+    public static void putBangumiAllListList(Context context,String key,ArrayList<BangumiAllList> bangumiAllListData){
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
@@ -114,15 +117,15 @@ public class SharedPreferencesUtils
     /**
      * 获取所有动漫信息泛型list
      */
-    public static ArrayList<BangumiAllList.BangumiAllListData> getBangumiAllListList(Context context,String key){
+    public static ArrayList<BangumiAllList> getBangumiAllListList(Context context,String key){
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         String data = sp.getString(key, "");
         LogUtils.d("SharedPreferences","anime list1 = "+data);
         Gson gson = new Gson();
-        Type listType = new TypeToken<List<BangumiAllList.BangumiAllListData>>() {
+        Type listType = new TypeToken<List<BangumiAllList>>() {
         }.getType();
-        ArrayList<BangumiAllList.BangumiAllListData> list = gson.fromJson(data, listType);
+        ArrayList<BangumiAllList> list = gson.fromJson(data, listType);
         for (int i = 0; i < list.size(); i++) {
 //            LogUtils.d("SharedPreferences","anime item = "+list.toString());
         }
@@ -132,7 +135,7 @@ public class SharedPreferencesUtils
     /**
      * 保存用户信息
      */
-    public static void putUserInfoData(Context context,MineUserInfo.MinEUserInfoData userInfoData){
+    public static void putUserInfoData(Context context,MineUserInfo userInfoData){
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
@@ -145,15 +148,15 @@ public class SharedPreferencesUtils
     /**
      * 获取用户信息
      */
-    public static MineUserInfo.MinEUserInfoData getUserInfoData(Context context){
+    public static MineUserInfo getUserInfoData(Context context){
         SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         String data = sp.getString("userInfoData", "");
         LogUtils.d("SharedPreferences","user 1 = "+data);
         Gson gson = new Gson();
-        Type type = new TypeToken<MineUserInfo.MinEUserInfoData>() {
+        Type type = new TypeToken<MineUserInfo>() {
         }.getType();
-        MineUserInfo.MinEUserInfoData userInfoData = gson.fromJson(data,type);
+        MineUserInfo userInfoData = gson.fromJson(data,type);
         LogUtils.d("SharedPreferences","user ok = "+userInfoData);
         return userInfoData;
     }

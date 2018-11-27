@@ -7,10 +7,12 @@ import android.widget.ImageView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.riuir.calibur.R;
-import com.riuir.calibur.data.AnimeListForTagsSearch;
+
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
+
+import calibur.core.http.models.anime.AnimeListForTagsSearch;
 
 public class DramaTagsAnimeListAdapter extends BaseQuickAdapter<AnimeListForTagsSearch.AnimeListForTagsSearchData,BaseViewHolder> {
 

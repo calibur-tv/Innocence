@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/theme_magic_sakura_primary</item>
+        <item name="colorAccent">@color/theme_magic_sakura_primary</item>
+        <item name="colorPrimaryDark">@color/theme_magic_sakura_primary_dark</item>
+        <item name="android:navigationBarColor">@color/theme_magic_sakura_primary</item>
+    </style>
+
+    <style name="splash" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">@drawable/bg_splash_start</item>
+        <item name="android:navigationBarColor">@color/theme_magic_sakura_primary</item>
+    </style>
+
+    <style name="replyAndComment" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="colorPrimary">@color/theme_magic_sakura_primary</item>
+        <item name="colorAccent">@color/theme_magic_sakura_primary</item>
+        <item name="android:navigationBarColor">@color/theme_magic_sakura_primary</item>
+        <item name="android:windowBackground">@color/transprent</item>
+    </style>
+</resources>

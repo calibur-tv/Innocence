@@ -15,7 +15,7 @@ import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.AnimeListForTagsSearch;
+
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaTagsAnimeListAdapter;
@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import calibur.core.http.models.anime.AnimeListForTagsSearch;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -93,15 +96,15 @@ public class DramaTagsSearchActivity extends BaseActivity {
 
     private void setNet() {
         setPage();
-        callTagsSearch = apiGet.getCallSearchDramaForTags(tagsIDStr,page+"");
-        callTagsSearch.enqueue(new Callback<AnimeListForTagsSearch>() {
-                @Override
-                public void onResponse(Call<AnimeListForTagsSearch> call, Response<AnimeListForTagsSearch> response) {
-                    if (response!=null&&response.isSuccessful()){
-                        animeListForTagsSearch = response.body();
-                        animeListForTagsSearchesData = response.body().getData().getList();
+        apiService.getCallSearchDramaForTags(tagsIDStr,page+"")
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<AnimeListForTagsSearch>(){
+                    @Override
+                    public void onSuccess(AnimeListForTagsSearch animeListInfo) {
+                        animeListForTagsSearch = animeListInfo;
+                        animeListForTagsSearchesData = animeListInfo.getList();
                         if (isFirstLoad){
-                            baseAnimeListForTagsSearchesData = response.body().getData().getList();
+                            baseAnimeListForTagsSearchesData = animeListInfo.getList();
                             refreshLayout.setRefreshing(false);
                             isFirstLoad = false;
                             setAdapter();
@@ -113,59 +116,24 @@ public class DramaTagsSearchActivity extends BaseActivity {
                         if (isLoadMore){
                             setLoadMore();
                         }
-
-                    }else if (response!=null&&!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
-                        ToastUtils.showShort(DramaTagsSearchActivity.this,info.getMessage());
-                        if (isRefresh){
-                            isRefresh = false;
-                            refreshLayout.setRefreshing(false);
-                        }
-                        if (isLoadMore){
-                            isLoadMore = false;
-                            adapter.loadMoreFail();
-                        }
-                        setFailedView();
-                    }else {
-                        ToastUtils.showShort(DramaTagsSearchActivity.this,"未知错误导致加载失败");
-                        if (isRefresh){
-                            isRefresh = false;
-                            refreshLayout.setRefreshing(false);
-                        }
-                        if (isLoadMore){
-                            isLoadMore = false;
-                            adapter.loadMoreFail();
-                        }
-                        setFailedView();
                     }
-                }
 
-                @Override
-                public void onFailure(Call<AnimeListForTagsSearch> call, Throwable t) {
-                    if (call.isCanceled()){
-                    }else {
-                        ToastUtils.showShort(DramaTagsSearchActivity.this,"请检查您的网络哟~");
-                        LogUtils.d("tagSearch","t = "+t.getMessage());
-                        CrashReport.postCatchedException(t);
-                        if (isRefresh){
-                            isRefresh = false;
-                            refreshLayout.setRefreshing(false);
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                        if (refreshLayout!=null){
+                            if (isRefresh){
+                                isRefresh = false;
+                                refreshLayout.setRefreshing(false);
+                            }
+                            if (isLoadMore){
+                                isLoadMore = false;
+                                adapter.loadMoreFail();
+                            }
+                            setFailedView();
                         }
-                        if (isLoadMore){
-                            isLoadMore = false;
-                            adapter.loadMoreFail();
-                        }
-                        setFailedView();
                     }
-                }
-            });
+                });
     }
 
     private void setPage() {
@@ -267,7 +235,7 @@ public class DramaTagsSearchActivity extends BaseActivity {
 
     private void setLoadMore() {
         isLoadMore = false;
-        if (animeListForTagsSearch.getData().isNoMore()) {
+        if (animeListForTagsSearch.isNoMore()) {
             //最后一次加载
             adapter.addData(animeListForTagsSearchesData);
             //数据全部加载完毕

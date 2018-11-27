@@ -13,7 +13,15 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsTranslucent">false</item>
-        <item name="android:windowBackground">@mipmap/splash_background</item>
+        <item name="android:windowBackground">@drawable/bg_splash_start</item>
+    </style>
+
+    <style name="replyAndComment" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/transprent</item>
     </style>
 
 </resources>

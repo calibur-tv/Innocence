@@ -35,7 +35,7 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.data.GeeTestInfo;
-import com.riuir.calibur.data.params.VerificationCodeBody;
+
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.common.IHandler;
 import com.riuir.calibur.ui.common.UIHandler;
@@ -51,6 +51,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.geetest.params.VerificationCodeBody;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -282,31 +286,6 @@ public class RegisterFragment extends BaseFragment {
         });
     }
 
-//    private void initSendVerificationCodeBtn() {
-//
-////        sendVerificationCodeBtn.setOnClickListener(new View.OnClickListener() {
-////            @Override
-////            public void onClick(View v) {
-////                phoneNumber = phoneNumberEdit.getText().toString();
-////
-////                if (phoneNumber == null || phoneNumber.length() != 11 ){
-////
-////                    ToastUtils.showShort(getContext(),"请输入正确的手机号码哟(＾Ｕ＾)ノ~");
-////                }else{
-////                    verificationCodebodyBody.setType("sign_up");
-////                    verificationCodebodyBody.setPhone_number(phoneNumber);
-////                    sendVerificationCodeBtn.setClickable(false);
-////                    sendVerificationCodeBtn.setText("发送中..");
-//////                    sendVerWithOutGee();
-//////                    setNet(NET_GEE_STATUS_captcha);
-////                    GeetestUtils.setGeetestStart(getContext(),apiGet,bindListenerRegister,
-////                            verificationCodeBodyGeeTest,
-////                            gt3GeetestUtilsBindRegister);
-////                }
-////            }
-////        });
-//
-//    }
 
     private void setNet(int NET_STATUS){
 
@@ -314,44 +293,24 @@ public class RegisterFragment extends BaseFragment {
 
             //自定义API2
             LogUtils.d("registerLog","verificationCodebodyBody = "+verificationCodebodyBody.toString());
-            apiPostNoAuth.getGeeTestSendValidate(verificationCodebodyBody).enqueue(new Callback<Event<String>>() {
-                @Override
-                public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                    if (response!=null&&response.isSuccessful()){
-
-                        int code = response.body().getCode();
-                        //发送成功
-                        ToastUtils.showShort(getContext(),response.body().getData());
-                        reSetsendVerificationCodeBtnSecond = 60;
-                        handler.sendEmptyMessage(0);
-
-                    }else if (response!=null&&!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            apiService.getGeeTestSendValidate(verificationCodebodyBody)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<String>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            //发送成功
+                            ToastUtils.showShort(getContext(),s);
+                            reSetsendVerificationCodeBtnSecond = 60;
+                            handler.sendEmptyMessage(0);
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                        ToastUtils.showShort(getContext(),info.getMessage());
-                        handler.sendEmptyMessage(1);
-                    }else {
-                        ToastUtils.showShort(getContext(),"未知原因导致验证失败(返回值为null)");
-                        handler.sendEmptyMessage(1);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Event<String>> call, Throwable t) {
-                    ToastUtils.showShort(getContext(),"请检查您的网络\n  t = "+t.getMessage());
-                    LogUtils.v("AppNetErrorMessage","register t = "+t.getMessage());
-                    CrashReport.postCatchedException(t);
-                    gt3GeetestUtilsBindRegister.gt3TestClose();
-                    handler.sendEmptyMessage(1);
-                }
-            });
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            gt3GeetestUtilsBindRegister.gt3TestClose();
+                            handler.sendEmptyMessage(1);
+                        }
+                    });
         }
         //点击注册
         if (NET_STATUS == NET_REGISTER){
@@ -363,56 +322,31 @@ public class RegisterFragment extends BaseFragment {
             if (inviteCodeStr!=null&&inviteCodeStr.length()!=0){
                 parmas.put("inviteCode",nicknameStr);
             }
-            apiPostNoAuth.getCallRegister(parmas).enqueue(new Callback<Event<String>>() {
-                @Override
-                public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
-                    if (response!=null&&response.isSuccessful()){
-
-                        ToastUtils.showShort(getContext(),"注册成功！✿✿ヽ(°▽°)ノ✿");
-                        //注册成功 返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                        SharedPreferencesUtils.put(App.instance(),"Authorization",response.body().getData());
-                        Constants.ISLOGIN = true;
-                        Constants.AUTH_TOKEN = response.body().getData();
-                        BangumiAllListUtils.setBangumiAllList(getContext(),apiGet);
-//                        Intent intent = new Intent(getContext(),MainActivity.class);
-//                        getActivity().startActivity(intent);
-//                        getActivity().finish();
-
-                    }else if (response!=null&&!response.isSuccessful()){
-                        String errorStr = "";
-                        try {
-                            errorStr = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+            apiService.getCallRegister(parmas)
+                    .compose(Rx2Schedulers.<Response<ResponseBean<String>>>applyObservableAsync())
+                    .subscribe(new ObserverWrapper<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            ToastUtils.showShort(getContext(),"注册成功！✿✿ヽ(°▽°)ノ✿");
+                            //注册成功 返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
+                            SharedPreferencesUtils.put(App.instance(),"Authorization",s);
+                            Constants.ISLOGIN = true;
+                            Constants.AUTH_TOKEN = s;
+                            BangumiAllListUtils.setBangumiAllList(getContext(),apiGet);
                         }
-                        Gson gson = new Gson();
-                        Event<String> info =gson.fromJson(errorStr,Event.class);
 
-                        ToastUtils.showShort(getContext(),info.getMessage());
-                        verificationCodeOk.setText("注册");
-                        verificationCodeOk.setClickable(true);
-                        registerBtn.setText("注册");
-                        registerBtn.setClickable(true);
-                    }else {
-                        ToastUtils.showShort(getContext(),"不明原因导致注册失败了");
-                        verificationCodeOk.setText("注册");
-                        verificationCodeOk.setClickable(true);
-                        registerBtn.setText("注册");
-                        registerBtn.setClickable(true);
-                    }
+                        @Override
+                        public void onFailure(int code, String errorMsg) {
+                            super.onFailure(code, errorMsg);
+                            if (registerBtn!=null){
+                                verificationCodeOk.setText("注册");
+                                verificationCodeOk.setClickable(true);
+                                registerBtn.setText("注册");
+                                registerBtn.setClickable(true);
+                            }
+                        }
+                    });
 
-                }
-
-                @Override
-                public void onFailure(Call<Event<String>> call, Throwable t) {
-                    ToastUtils.showShort(getContext(),"请检查您的网络");
-                    CrashReport.postCatchedException(t);
-                    verificationCodeOk.setText("注册");
-                    verificationCodeOk.setClickable(true);
-                    registerBtn.setText("注册");
-                    registerBtn.setClickable(true);
-                }
-            });
         }
 
     }
@@ -461,11 +395,4 @@ public class RegisterFragment extends BaseFragment {
         }
     }
 
-//    public class RegisterBroadCastReceiver extends BroadcastReceiver {
-//
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            handler.sendEmptyMessage(1);
-//        }
-//    }
 }

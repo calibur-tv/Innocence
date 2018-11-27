@@ -1,12 +1,13 @@
 package com.riuir.calibur.utils;
 
-import com.riuir.calibur.data.AnimeShowInfo;
-import com.riuir.calibur.data.MineUserInfo;
-import com.riuir.calibur.data.anime.BangumiAllList;
-import com.riuir.calibur.data.params.DramaTags;
 
+import com.riuir.calibur.data.params.DramaTags;
 import java.util.ArrayList;
 import java.util.List;
+
+import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.models.anime.BangumiAllList;
+import calibur.core.http.models.user.MineUserInfo;
 
 /**
  * ************************************
@@ -30,9 +31,9 @@ public class Constants {
 
     public static boolean ISLOGIN = false;
 
-    public static MineUserInfo.MinEUserInfoData userInfoData = null;
+    public static MineUserInfo userInfoData = null;
 
-    public static ArrayList<BangumiAllList.BangumiAllListData> bangumiAllListData = null;
+    public static ArrayList<BangumiAllList> bangumiAllListData = null;
 
     public static List<AnimeShowInfo.AnimeShowInfoTags> allTagsList = null;
 
