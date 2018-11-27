@@ -13,6 +13,4 @@ dependencies {
   api 'com.qiniu:happy-dns:0.2.13'
   api 'com.samskivert:jmustache:1.14'
   api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.40'
-  api 'com.tencent.bugly:crashreport_upgrade:latest.release'
-  api 'com.tencent.bugly:nativecrashreport:latest.release'
 }

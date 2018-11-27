@@ -8,7 +8,6 @@ import calibur.core.http.models.base.ResponseBean;
 import calibur.foundation.FoundationContextHolder;
 import calibur.foundation.bus.BusinessBus;
 import com.orhanobut.logger.Logger;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import io.reactivex.observers.DisposableObserver;
 import java.net.ConnectException;
@@ -37,8 +36,6 @@ public abstract class ObserverWrapper<T> extends DisposableObserver<Response<Res
         } catch (Throwable throwable) {
           Logger.e(throwable.getMessage());
           BusinessBus.post(null, "mainModule/postException2Bugly", throwable);
-          //bugly
-          CrashReport.postCatchedException(throwable);
         }
       } else {
         onFailure(bean.getCode(), bean.getMessage());
@@ -77,8 +74,6 @@ public abstract class ObserverWrapper<T> extends DisposableObserver<Response<Res
       errorCode = 0;
       errorMsg = e.getMessage();
     }
-    //bugly
-    CrashReport.postCatchedException(e);
     onFailure(errorCode, errorMsg);
   }
 
