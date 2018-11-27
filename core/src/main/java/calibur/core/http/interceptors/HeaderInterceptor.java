@@ -1,7 +1,5 @@
 package calibur.core.http.interceptors;
 
-import android.util.Log;
-
 import calibur.core.manager.UserSystem;
 import calibur.foundation.utils.AppUtil;
 import java.io.IOException;

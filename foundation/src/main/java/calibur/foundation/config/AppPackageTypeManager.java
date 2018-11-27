@@ -13,38 +13,36 @@ import java.lang.reflect.Method;
  */
 public class AppPackageTypeManager {
 
-    private static AppPackageTypeManager sInstance = null;
-    private static String packType = "";
+  private static AppPackageTypeManager sInstance = null;
+  private static String packType = "";
 
-    private AppPackageTypeManager() {
-    }
+  private AppPackageTypeManager() {
+  }
 
-    public static AppPackageTypeManager getInstance() {
+  public static AppPackageTypeManager getInstance() {
+    if (sInstance == null) {
+      synchronized (AppPackageTypeManager.class) {
         if (sInstance == null) {
-            synchronized (AppPackageTypeManager.class) {
-                if (sInstance == null) {
-                    sInstance = new AppPackageTypeManager();
-                }
-            }
+          sInstance = new AppPackageTypeManager();
         }
-        return sInstance;
+      }
+    }
+    return sInstance;
+  }
+
+  public String getPackageType() {
+    if (TextUtils.isEmpty(packType)) {
+      try {
+        Class<?> packageType = Class.forName("calibur.core.PkType");
+        Method method = packageType.getDeclaredMethod("getType");
+        packType = (String) method.invoke(packageType.newInstance());
+      } catch (Throwable e) {
+        e.printStackTrace();
+        packType = "";
+        BusinessBus.post(null, "mainModule/postException2Bugly", e);
+      }
     }
 
-    public String getPackageType() {
-        if (TextUtils.isEmpty(packType)) {
-            Class<?> packageType;
-            try {
-                packageType = Class.forName("calibur.core.PkType");
-                Method method = packageType.getDeclaredMethod("getType");
-                packType = (String) method.invoke(packageType.newInstance());
-            } catch (Throwable e) {
-                e.printStackTrace();
-                packType = "";
-                BusinessBus.post(null, "mainModule/postException2Bugly", e);
-            }
-        }
-
-        return packType;
-
-    }
+    return packType;
+  }
 }

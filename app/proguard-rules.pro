@@ -204,7 +204,7 @@
 
 # 保持哪些类不被混淆
 -keep public class * extends android.app.Appliction
--keep class calibur.core.**{*;}
+-keep class calibur.core.http.models**{*;}
 
 # ============忽略警告，否则打包可能会不成功=============
 -ignorewarnings
