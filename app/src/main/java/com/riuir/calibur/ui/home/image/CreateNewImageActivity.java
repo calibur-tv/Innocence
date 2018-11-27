@@ -512,9 +512,9 @@ public class CreateNewImageActivity extends BaseActivity {
         imageForAlbum.setImages(qiniuImageParamsDataList);
         apiService.getCreateImageForAlbum(imageForAlbum)
                 .compose(Rx2Schedulers.applyObservableAsync())
-                .subscribe(new ObserverWrapper<Integer>(){
+                .subscribe(new ObserverWrapper<String>(){
                     @Override
-                    public void onSuccess(Integer integer) {
+                    public void onSuccess(String integer) {
                         //相册添加图片成功
                         //跳转进入帖子
                         upLoadDialog.setTitleText("上传成功!")

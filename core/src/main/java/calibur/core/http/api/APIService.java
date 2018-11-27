@@ -327,7 +327,7 @@ public interface APIService {
     Observable<Response<ResponseBean<CreateCard>>> getCreateImageSingle(@Body CreateNewImageSingle createNewImageSingle);
     //新建相册传图
     @POST("image/album/upload")
-    Observable<Response<ResponseBean<Integer>>> getCreateImageForAlbum(@Body CreateNewImageForAlbum createNewImageForAlbum);
+    Observable<Response<ResponseBean<String>>> getCreateImageForAlbum(@Body CreateNewImageForAlbum createNewImageForAlbum);
     //新建相册
     @POST("image/album/create")
     Observable<Response<ResponseBean<CreateNewAlbumInfo>>> getCreateIAlbum(@Body CreateNewAlbum createNewAlbum);
