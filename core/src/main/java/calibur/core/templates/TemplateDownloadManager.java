@@ -71,7 +71,7 @@ public class TemplateDownloadManager {
         if (templateFile.exists()) {
           templateFile.delete();
         }
-        BusinessBus.post(null, "mainApps/postException2Bugly", e);
+        BusinessBus.post(null, "mainModule/postException2Bugly", e);
         return false;
       } finally {
         if (inputStream != null) {

@@ -100,7 +100,7 @@ public abstract class BaseTemplateRender implements ITemplateRender{
       return Mustache.compiler().compile(temp);
     } catch (IOException e) {
       e.printStackTrace();
-      BusinessBus.post(null, "mainApps/postException2Bugly", e);
+      BusinessBus.post(null, "mainModule/postException2Bugly", e);
     }
     return null;
   }
