@@ -46,6 +46,7 @@ public class TemplateDownloadManager {
   }
 
   public boolean serializeTemplateFileToDisk(ResponseBody body, String fileName) {
+    fileName = fileName + ".html";
     final File templateFile = new File(getTemplatePath(), fileName);
     try {
       InputStream inputStream = null;

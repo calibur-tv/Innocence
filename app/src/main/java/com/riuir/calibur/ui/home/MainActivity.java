@@ -10,17 +10,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
-import calibur.core.http.RetrofitManager;
-import calibur.core.http.api.APIService;
 import calibur.core.http.models.AppVersionCheckData;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
-import calibur.core.templates.TemplateRenderManager;
+import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.AppUtil;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
@@ -33,13 +29,8 @@ import com.riuir.calibur.data.RCode;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.widget.MainBottomBar;
 import com.riuir.calibur.utils.Constants;
-import com.tencent.bugly.crashreport.CrashReport;
-import java.io.IOException;
 
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -106,8 +97,8 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         maintabBottombar.setOnSingleClickListener(this);
 
         setCheckVersion();
-        TemplateRenderManager.getInstance().setTemplateRender(new ImageDetailPageTemplateRender());
-        TemplateRenderManager.getInstance().checkAllTemplateForUpdate();
+        TemplateRenderEngine.getInstance().setTemplateRender(new ImageDetailPageTemplateRender());
+        TemplateRenderEngine.getInstance().checkAllTemplateForUpdate();
 
         if (Constants.userInfoData == null){
             Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());

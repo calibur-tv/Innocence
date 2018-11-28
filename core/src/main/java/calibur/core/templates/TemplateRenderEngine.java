@@ -21,10 +21,10 @@ import java.io.FileInputStream;
  * e-mail : who_know_me@163.com
  * time   : 2018/11/22 11:06 PM
  * version: 1.0
- * description:模板管理类
+ * description:模板渲染引擎
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class TemplateRenderManager {
+public class TemplateRenderEngine {
 
   //模板的类型
   public static final String EDITOR = "editor";
@@ -32,20 +32,20 @@ public class TemplateRenderManager {
   public static final String BOOKMARKS = "bookmarks";
   public static final String NOTICE = "notice";
 
-  private static TemplateRenderManager sInstance;
+  private static TemplateRenderEngine sInstance;
   private ITemplateRender editorTemplateRender;
   private ITemplateRender imageDetailPageTemplateRender;
   private ITemplateRender bookmarksTemplateRender;
   private ITemplateRender noticeTemplateRender;
 
-  public static TemplateRenderManager getInstance() {
+  public static TemplateRenderEngine getInstance() {
     if (sInstance == null) {
-      sInstance = new TemplateRenderManager();
+      sInstance = new TemplateRenderEngine();
     }
     return sInstance;
   }
 
-  private TemplateRenderManager() {
+  private TemplateRenderEngine() {
   }
 
   public void setTemplateRender(ITemplateRender render) {

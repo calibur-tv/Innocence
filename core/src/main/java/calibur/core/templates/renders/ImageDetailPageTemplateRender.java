@@ -20,16 +20,11 @@ public class ImageDetailPageTemplateRender extends BaseTemplateRender {
 
   @Override public Template getRenderTemplate() {
     if (mTemplate != null) return mTemplate;
-    return mTemplate = getTemplateFromLocal(TEMPLATE_NAME);
+    return mTemplate = getTemplateFromLocal();
   }
 
-  @Override public void updateTemplateSuccess(TemplateModel templateModel) {
-    TemplateModel model = TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.IMAGE_DETAIL_PAGE_TEMPLATE);
-    if (model == null || !model.getUrl().equals(templateModel.getUrl())) {
-      downloadUpdateFile(templateModel);
-    } else {
-      initTemplate();
-    }
+  @Override public TemplateModel getTemplateModelFromLocal() {
+    return TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.IMAGE_DETAIL_PAGE_TEMPLATE);
   }
 
   @Override public void saveTemplateModel2Local(String json) {

@@ -8,16 +8,18 @@ import calibur.core.http.models.TemplateModel;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.templates.TemplateDownloadManager;
-import calibur.core.templates.TemplateRenderManager;
+import calibur.core.templates.TemplateRenderEngine;
 import calibur.foundation.FoundationContextHolder;
 import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.callback.CallBack1;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
+import calibur.foundation.rxjava.rxbus.RxBus2Consumer;
 import calibur.foundation.utils.JSONUtil;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
-import io.reactivex.functions.Consumer;
+import io.reactivex.Observable;
 import io.reactivex.functions.Function;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import okhttp3.Call;
@@ -33,9 +35,10 @@ import retrofit2.Response;
  * version: 1.0
  * description:
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public abstract class BaseTemplateRender implements ITemplateRender{
 
-  String TEMPLATE_NAME;
+  private String TEMPLATE_NAME;
   Template mTemplate;
 
   @Override public String getTemplateRenderData(String renderStr) {
@@ -51,7 +54,15 @@ public abstract class BaseTemplateRender implements ITemplateRender{
         .compose(Rx2Schedulers.<Response<ResponseBean<TemplateModel>>>applyObservableAsync())
         .subscribe(new ObserverWrapper<TemplateModel>() {
           @Override public void onSuccess(TemplateModel checkTemplateUpdateModel) {
-            updateTemplateSuccess(checkTemplateUpdateModel);
+            TemplateModel oldModel = getTemplateModelFromLocal();
+            if (oldModel == null || (!oldModel.getUrl().equals(checkTemplateUpdateModel.getUrl()) && isTemplateFileNotExists())) {
+              downloadUpdateFile(checkTemplateUpdateModel);
+            } else if (isTemplateFileNotExists()) {
+              downloadUpdateFile(oldModel);
+            } else {
+              if(mTemplate == null)
+                initTemplate();
+            }
           }
 
           @Override public void onFailure(int code, String errorMsg) {
@@ -68,12 +79,12 @@ public abstract class BaseTemplateRender implements ITemplateRender{
       @Override public void onResponse(Call call, okhttp3.Response response) throws IOException {
         ResponseBody body = response.body();
         if (body != null) {
-          io.reactivex.Observable.just(body).map(new Function<ResponseBody, Boolean>() {
+          Observable.just(body).map(new Function<ResponseBody, Boolean>() {
             @Override public Boolean apply(ResponseBody responseBody) {
               return TemplateDownloadManager.getInstance().serializeTemplateFileToDisk(responseBody, TEMPLATE_NAME);
             }
-          }).compose(Rx2Schedulers.<Boolean>applyObservableAsync()).subscribe(new Consumer<Boolean>() {
-            @Override public void accept(Boolean isSuccess){
+          }).compose(Rx2Schedulers.<Boolean>applyObservableAsync()).subscribe(new RxBus2Consumer<Boolean>() {
+            @Override public void consume(Boolean isSuccess) {
               if (isSuccess) {
                 String json = JSONUtil.toJson(model);
                 saveTemplateModel2Local(json);
@@ -89,9 +100,9 @@ public abstract class BaseTemplateRender implements ITemplateRender{
     });
   }
 
-  Template getTemplateFromLocal(String name) {
+  Template getTemplateFromLocal() {
     try {
-      InputStream inputStream = FoundationContextHolder.getContext().getAssets().open(name + ".mustache");
+      InputStream inputStream = FoundationContextHolder.getContext().getAssets().open(TEMPLATE_NAME + ".mustache");
       int size = inputStream.available();
       byte[] buffer = new byte[size];
       inputStream.read(buffer);
@@ -109,8 +120,8 @@ public abstract class BaseTemplateRender implements ITemplateRender{
     TEMPLATE_NAME = name;
   }
 
-  void initTemplate() {
-    TemplateRenderManager.getInstance().initTemplateRender(TEMPLATE_NAME,
+  private void initTemplate() {
+    TemplateRenderEngine.getInstance().initTemplateRender(TEMPLATE_NAME,
         new CallBack1<Template>() {
           @Override public void success(Template template) {
             mTemplate = template;
@@ -122,6 +133,15 @@ public abstract class BaseTemplateRender implements ITemplateRender{
         });
   }
 
-  public abstract void updateTemplateSuccess(TemplateModel templateModel);
+  private boolean isTemplateFileNotExists() {
+    final File templateFile = new File(TemplateDownloadManager.getInstance().getTemplatePath(), templateFileName(TEMPLATE_NAME));
+    return (!templateFile.exists() || templateFile.length() <= 0);
+  }
+
+  private String templateFileName(String name) {
+    return name + ".html";
+  }
+
+  public abstract TemplateModel getTemplateModelFromLocal();
   public abstract void saveTemplateModel2Local(String json);
 }
