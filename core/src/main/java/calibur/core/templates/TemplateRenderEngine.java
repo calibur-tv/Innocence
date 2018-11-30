@@ -5,6 +5,7 @@ import calibur.core.templates.renders.EditorTemplateRender;
 import calibur.core.templates.renders.ITemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
 import calibur.core.templates.renders.NoticeTemplateRender;
+import calibur.core.templates.renders.ReviewTemplateRender;
 import calibur.foundation.callback.CallBack1;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import com.samskivert.mustache.Mustache;
@@ -31,12 +32,15 @@ public class TemplateRenderEngine {
   public static final String IMAGEDETAIL = "image";
   public static final String BOOKMARKS = "bookmarks";
   public static final String NOTICE = "notice";
+  //漫评详情页的模板
+  public static final String REVIEW = "review";
 
   private static TemplateRenderEngine sInstance;
   private ITemplateRender editorTemplateRender;
   private ITemplateRender imageDetailPageTemplateRender;
   private ITemplateRender bookmarksTemplateRender;
   private ITemplateRender noticeTemplateRender;
+  private ITemplateRender reviewTemplateRender;
 
   public static TemplateRenderEngine getInstance() {
     if (sInstance == null) {
@@ -61,6 +65,9 @@ public class TemplateRenderEngine {
     } else if (render instanceof NoticeTemplateRender) {
       render.setTemplateName("NoticeTemplate");
       noticeTemplateRender = render;
+    } else if (render instanceof ReviewTemplateRender) {
+      render.setTemplateName("ReviewTemplate");
+      reviewTemplateRender = render;
     }
   }
 
@@ -74,6 +81,8 @@ public class TemplateRenderEngine {
         return bookmarksTemplateRender;
       case NOTICE:
         return noticeTemplateRender;
+      case REVIEW:
+        return reviewTemplateRender;
       default:
         break;
     }
@@ -85,6 +94,7 @@ public class TemplateRenderEngine {
     checkImageDetailPageTemplateForUpdate();
     checkBookmarksTemplateForUpdate();
     checkNoticeTemplateForUpdate();
+    checkReviewTemplateForUpdate();
   }
 
   public void checkEditorTemplateForUpdate() {
@@ -101,6 +111,11 @@ public class TemplateRenderEngine {
 
   public void checkNoticeTemplateForUpdate() {
     if (noticeTemplateRender != null) noticeTemplateRender.updateTemplateIfNecessary(NOTICE);
+  }
+
+  public void checkReviewTemplateForUpdate() {
+    if(reviewTemplateRender != null)
+      reviewTemplateRender.updateTemplateIfNecessary(REVIEW);
   }
 
   public void initTemplateRender(final String templateName, final CallBack1<Template> callback) {
