@@ -1,6 +1,7 @@
 package calibur.core.templates.renders;
 
 import calibur.core.http.models.TemplateModel;
+import calibur.core.manager.UserSystem;
 import calibur.core.templates.TemplateDownloadManager;
 import calibur.core.utils.ISharedPreferencesKeys;
 import com.samskivert.mustache.Template;
@@ -19,7 +20,7 @@ public class EditorTemplateRender extends BaseTemplateRender {
   @Override public String getTemplateRenderData(String renderStr) {
     Map<String, String> data = new HashMap<>();
     data.put("data", renderStr);
-    data.put("token", renderStr);
+    data.put("token", UserSystem.getUserToken());
     Template template = getRenderTemplate();
     return template != null ? template.execute(data) : "";
   }
