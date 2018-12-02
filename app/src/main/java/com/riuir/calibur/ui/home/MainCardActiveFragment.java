@@ -93,7 +93,6 @@ public class MainCardActiveFragment extends BaseFragment {
     }
 
     private void setNet() {
-        LogUtils.d("cardList","isLogin = "+Constants.ISLOGIN);
         setSeendIdS();
         FolllowListParams params = new FolllowListParams();
         params.setType("post");

@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 import butterknife.BindView;
 import calibur.core.http.models.user.UserNotificationInfo;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -58,12 +59,13 @@ public class MessageFragment extends BaseFragment {
 
     private int minId = 0;
     private UserNotificationInfo notificationData;
-    private List<UserNotificationInfo.UserNotificationInfoList> notificationList;
+    private List<UserNotificationInfo.UserNotificationInfoList> notificationList = new ArrayList<>();
     private List<UserNotificationInfo.UserNotificationInfoList> baseNotificationList = new ArrayList<>();
 
     private boolean isFirstLoad = false;
     private boolean isLoadMore = false;
     private boolean isRefresh = false;
+    private boolean isFirstClick = false;
 
     private int noReadMsgCount;
 
@@ -113,8 +115,7 @@ public class MessageFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         minId = 0;
         isFirstLoad = true;
-//        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
-//        rootView.setPadding(0,stautsBarHeight,0,0);
+        isFirstClick = true;
         setAdapter();
         setNet();
         mainActivity = (MainActivity) getActivity();
@@ -128,8 +129,12 @@ public class MessageFragment extends BaseFragment {
             @Override
             public void OnReFresh(int count) {
                 noReadMsgCount = count;
-                if (noReadMsgCount!=0&&messageRefreshLayout!=null
-                        &&isRefresh == false){
+                if (isFirstClick){
+                    //此处拦截第一次点击底部tab切换到该fragment
+                    //如果不拦截 fragment的加载机制会导致firstLoad和refresh一起加载 数据错乱
+                    isFirstClick = false;
+                }else if (noReadMsgCount!=0&&messageRefreshLayout!=null
+                        &&!isRefresh){
                     //未读消息不为0的时候刷新列表
                     messageRefreshLayout.setRefreshing(true);
                     isRefresh = true;
@@ -147,8 +152,9 @@ public class MessageFragment extends BaseFragment {
     }
 
     private void setMinId() {
-        if (notificationList!=null&&notificationList.size()!=0)
-        minId = notificationList.get(notificationList.size()-1).getId();
+        if (notificationList!=null&&notificationList.size()!=0){
+            minId = notificationList.get(notificationList.size()-1).getId();
+        }
 
         if (isRefresh){
             minId = 0;
@@ -159,8 +165,10 @@ public class MessageFragment extends BaseFragment {
     }
 
     private void setNet() {
-        if (Constants.ISLOGIN){
+        if (UserSystem.getInstance().isLogin()){
             setMinId();
+            LogUtils.d("notificationData","minId = "+minId+",isFirstLoad = "+isFirstLoad+
+                    ",isRefresh = "+isRefresh+",notificationList = "+notificationList.size());
             apiService.getCallUserNotification(minId)
                     .compose(Rx2Schedulers.applyObservableAsync())
                     .subscribe(new ObserverWrapper<UserNotificationInfo>(){
@@ -235,7 +243,7 @@ public class MessageFragment extends BaseFragment {
 
     private void setFirstData(){
         isFirstLoad = false;
-        adapter.addData(baseNotificationList);
+        adapter.setNewData(baseNotificationList);
     }
 
     private void setListener() {

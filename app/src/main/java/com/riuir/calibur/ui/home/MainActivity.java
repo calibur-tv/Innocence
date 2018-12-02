@@ -14,6 +14,8 @@ import calibur.core.http.models.AppVersionCheckData;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.templates.TemplateRenderEngine;
+import calibur.core.templates.renders.BookmarksTemplateRender;
+import calibur.core.templates.renders.EditorTemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.AppUtil;
@@ -98,6 +100,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
         setCheckVersion();
         TemplateRenderEngine.getInstance().setTemplateRender(new ImageDetailPageTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new BookmarksTemplateRender());
         TemplateRenderEngine.getInstance().checkAllTemplateForUpdate();
 
         if (Constants.userInfoData == null){
@@ -229,7 +232,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         }
     }
 
-//
+
 //    private void setNetToGetUserInfo() {
 //        apiPost.getMineUserInfo().enqueue(new Callback<MineUserInfo>() {
 //            @Override

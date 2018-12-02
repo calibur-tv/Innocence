@@ -37,6 +37,11 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/color_FFFFFFFF"></LinearLayout>
+            android:background="@color/color_FFFFFFFF">
+            <com.tencent.smtt.sdk.WebView
+                android:id="@+id/score_create_new_activity_web_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></com.tencent.smtt.sdk.WebView>
+        </LinearLayout>
     </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

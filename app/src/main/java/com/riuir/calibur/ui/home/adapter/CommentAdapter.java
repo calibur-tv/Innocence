@@ -46,6 +46,7 @@ import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
 import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -189,7 +190,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
         commentUpvoteCheckBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Constants.ISLOGIN){
+                if (UserSystem.getInstance().isLogin()){
                     commentUpvoteCheckText.setText("点赞中");
                     RetrofitManager.getInstance().getService(APIService.class)
                             .getCardCommentToggleLike(commentId,type)
@@ -218,8 +219,7 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                                 }
                             });
                 }else {
-                    ToastUtils.showShort(context,"未登录不能点赞哦");
-                    LoginUtils.ReLogin(context);
+                    ToastUtils.showShort(context,"登录信息出错，请重新登录");
                 }
             }
         });

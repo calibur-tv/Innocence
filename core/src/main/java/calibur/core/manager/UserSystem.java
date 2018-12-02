@@ -35,6 +35,12 @@ public class UserSystem {
     return mUserToken;
   }
 
+  //注销登录时使用
+  public static void clearUserToken(){
+    mUserToken = "";
+    SharedPreferencesUtil.remove(ISharedPreferencesKeys.MOBILE_TOKEN);
+  }
+
   public boolean isLogin() {
     return !TextUtils.isEmpty(getUserToken());
   }

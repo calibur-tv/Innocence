@@ -33,6 +33,7 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.Drama.DramaCartoonCommentActivity;
 import com.riuir.calibur.ui.home.Drama.DramaVideoPlayActivity;
 import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
@@ -180,8 +181,10 @@ public class ReplyAndCommentActivity extends BaseActivity {
 
         if (type.equals(ReplyAndCommentView.TYPE_POST)){
             imgBtn.setVisibility(View.VISIBLE);
+            editText.setMaxLines(1000);
         }else {
             imgBtn.setVisibility(View.GONE);
+            editText.setMaxLines(200);
         }
 
         if (content!=null&&content.length()!=0){
@@ -199,6 +202,10 @@ public class ReplyAndCommentActivity extends BaseActivity {
             case ReplyAndCommentView.TYPE_IMAGE:
                 ImageShowInfoActivity img = ImageShowInfoActivity.getInstance();
                 commentAdapter = img.getCommentAdapter();
+                break;
+            case ReplyAndCommentView.TYPE_CARTOON:
+                DramaCartoonCommentActivity dcc = DramaCartoonCommentActivity.getInstance();
+                commentAdapter = dcc.getCommentAdapter();
                 break;
             case ReplyAndCommentView.TYPE_SCORE:
                 ScoreShowInfoActivity score = ScoreShowInfoActivity.getInstance();
@@ -248,10 +255,10 @@ public class ReplyAndCommentActivity extends BaseActivity {
                 //获取当前界面可视部分
                 ReplyAndCommentActivity.this.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
                 //获取屏幕的高度
-                int screenHeight =  ReplyAndCommentActivity.this.getWindow().getDecorView().getRootView().getHeight();
+                int screenHeight =  ScreenUtils.getScreenHeight(ReplyAndCommentActivity.this);
                 //此处就是用来获取键盘的高度的， 在键盘没有弹出的时候 此高度为0 键盘弹出的时候为一个正数
-                int heightDifference = screenHeight - r.bottom;
-                LogUtils.d("KeyboardSize", "Size: " + heightDifference);
+                int heightDifference = screenHeight - (r.bottom);
+                LogUtils.d("KeyboardSize", "Size: " + heightDifference+",sch = "+screenHeight+",bot = "+r.bottom+",top = "+r.top);
                 if (heightDifference!=0){
                     //键盘开启
                     bottomLayout.setTranslationY(-heightDifference);
@@ -379,7 +386,7 @@ public class ReplyAndCommentActivity extends BaseActivity {
     }
 
     private void setQiniuUpLoad() {
-        qiniuUtils.getQiniuUpToken(apiGetHasAuth,ReplyAndCommentActivity.this,uploadUmgUrlList,userInfoData.getId());
+        qiniuUtils.getQiniuUpToken(ReplyAndCommentActivity.this,uploadUmgUrlList,userInfoData.getId(),"all");
         qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
             public void onFailed(String fialMessage) {
@@ -414,11 +421,17 @@ public class ReplyAndCommentActivity extends BaseActivity {
 
     private void sendNet() {
 
+        String upType;
+        if (type.equals(ReplyAndCommentView.TYPE_CARTOON)){
+            upType = "image";
+        }else {
+            upType = type;
+        }
         if (status == ReplyAndCommentView.STATUS_MAIN_COMMENT){
 
             CreateMainComment createMainComment = new CreateMainComment();
             createMainComment.setContent(editText.getText().toString());
-            createMainComment.setType(type);
+            createMainComment.setType(upType);
             createMainComment.setId(id);
             createMainComment.setImages(qiniuImgList);
             apiService.getCreateMainComment(createMainComment)
@@ -467,7 +480,7 @@ public class ReplyAndCommentActivity extends BaseActivity {
             //如果回复的是父评论 设置父评论的用户ID，否则使用子评论用户ID
             if (targetUserId == 0)
                 targetUserId = targetUserMainId;
-            apiService.getReplyComment(editText.getText().toString(),type,mainCommentid,targetUserId)
+            apiService.getReplyComment(editText.getText().toString(),upType,mainCommentid,targetUserId)
                     .compose(Rx2Schedulers.applyObservableAsync())
                     .subscribe(new ObserverWrapper<ReplyCommentInfo>(){
                         @Override

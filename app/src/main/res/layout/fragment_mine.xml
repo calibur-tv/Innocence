@@ -307,7 +307,7 @@
                         android:layout_height="54dp"
                         android:layout_weight="1"
                         android:paddingLeft="19dp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:background="@drawable/app_bg_item_white_gray"
                         >
                         <ImageView

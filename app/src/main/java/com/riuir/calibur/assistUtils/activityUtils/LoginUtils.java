@@ -10,12 +10,15 @@ import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.ui.loginAndRegister.LoginAndRegisterActivity;
 import com.riuir.calibur.utils.Constants;
 
+import calibur.core.manager.UserSystem;
+
 public class LoginUtils {
 
     public static void ReLogin(Context context){
         Constants.ISLOGIN = false;
         Constants.AUTH_TOKEN = "";
         Constants.userInfoData = null;
+        UserSystem.clearUserToken();
         SharedPreferencesUtils.remove(App.instance(),"Authorization");
         SharedPreferencesUtils.remove(App.instance(),"userInfoData");
         Intent intent = new Intent("calibur.activity.loginAndRegister");
@@ -25,6 +28,7 @@ public class LoginUtils {
     public static void CancelLogin(Context context, Activity activity){
         Constants.ISLOGIN = false;
         Constants.AUTH_TOKEN = "";
+        UserSystem.clearUserToken();
         Constants.userInfoData = null;
         SharedPreferencesUtils.remove(App.instance(),"Authorization");
         SharedPreferencesUtils.remove(App.instance(),"userInfoData");

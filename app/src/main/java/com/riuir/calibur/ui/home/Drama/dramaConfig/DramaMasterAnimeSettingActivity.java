@@ -45,6 +45,7 @@ import calibur.core.http.models.anime.AnimeShowInfo;
 import calibur.core.http.models.anime.params.BangumiEditParams;
 import calibur.core.http.models.qiniu.params.QiniuImageParams;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
@@ -104,7 +105,7 @@ public class DramaMasterAnimeSettingActivity extends BaseActivity {
     @Override
     protected void onInit() {
         //如果未登录 结束页面
-        if (!Constants.ISLOGIN){
+        if (!UserSystem.getInstance().isLogin()){
             ToastUtils.showShort(this,"登录之后才能创建偶像");
             finish();
         }
@@ -316,7 +317,7 @@ public class DramaMasterAnimeSettingActivity extends BaseActivity {
         QiniuUtils qiniuUtils = new QiniuUtils();
         ArrayList<String> avatarUrlList = new ArrayList<>();
         avatarUrlList.add(avatarUrl);
-        qiniuUtils.getQiniuUpToken(apiGetHasAuth,DramaMasterAnimeSettingActivity.this,avatarUrlList, userId);
+        qiniuUtils.getQiniuUpToken(DramaMasterAnimeSettingActivity.this,avatarUrlList, userId,"bangumi");
         qiniuUtils.setOnQiniuUploadSuccessedListnener(new QiniuUtils.OnQiniuUploadSuccessedListnener() {
             @Override
             public void onUploadSuccess(ArrayList<QiniuImageParams.QiniuImageParamsData> imageParamsDataList) {
@@ -343,7 +344,7 @@ public class DramaMasterAnimeSettingActivity extends BaseActivity {
         QiniuUtils qiniuUtils = new QiniuUtils();
         ArrayList<String> bannerUrlList = new ArrayList<>();
         bannerUrlList.add(bannerUrl);
-        qiniuUtils.getQiniuUpToken(apiGetHasAuth,DramaMasterAnimeSettingActivity.this,bannerUrlList, userId);
+        qiniuUtils.getQiniuUpToken(DramaMasterAnimeSettingActivity.this,bannerUrlList, userId,"bangumi");
         qiniuUtils.setOnQiniuUploadSuccessedListnener(new QiniuUtils.OnQiniuUploadSuccessedListnener() {
             @Override
             public void onUploadSuccess(ArrayList<QiniuImageParams.QiniuImageParamsData> imageParamsDataList) {

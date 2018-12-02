@@ -1,5 +1,7 @@
 package com.riuir.calibur.ui.home.card;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Message;
@@ -114,8 +116,6 @@ public class CardShowInfoActivity extends BaseActivity {
 
     private int primacyId;
 
-    private Call<CardShowInfoPrimacy> primacyCall;
-    private Call<TrendingShowInfoCommentMain> commentMainCall;
 
     AppListFailedView failedView;
     AppListEmptyView emptyView;
@@ -142,23 +142,11 @@ public class CardShowInfoActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
-        if (primacyCall!=null){
-            primacyCall.cancel();
-        }
-        if (commentMainCall!=null){
-            commentMainCall.cancel();
-        }
         super.onDestroy();
     }
 
     private void setNet(int NET_STATUS) {
-        ApiGet mApiGet;
-        LogUtils.d("cardShow","isLogin = "+Constants.ISLOGIN);
-        if (Constants.ISLOGIN){
-            mApiGet = apiGetHasAuth;
-        }else {
-            mApiGet = apiGet;
-        }
+
         if (NET_STATUS == NET_STATUS_PRIMACY){
             apiService.getCallCardShowPrimacy(cardID)
                     .compose(Rx2Schedulers.applyObservableAsync())

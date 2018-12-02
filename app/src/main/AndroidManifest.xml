@@ -203,7 +203,6 @@
         <activity android:name=".ui.home.score.CreateNewScoreActivity" />
         <activity android:name=".ui.widget.replyAndComment.ReplyAndCommentActivity"
             android:theme="@style/replyAndComment"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize"
             ></activity>
     </application>

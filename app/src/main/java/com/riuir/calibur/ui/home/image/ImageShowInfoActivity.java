@@ -1,5 +1,6 @@
 package com.riuir.calibur.ui.home.image;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Message;
@@ -306,6 +307,7 @@ public class ImageShowInfoActivity extends BaseActivity {
                 trendingLFCView.setCollected(isMark);
             }
         });
+
         commentView.setNetAndListener();
     }
 

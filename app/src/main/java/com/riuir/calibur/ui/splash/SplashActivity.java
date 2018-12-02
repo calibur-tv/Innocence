@@ -26,6 +26,7 @@ import java.io.IOException;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.user.MineUserInfo;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,7 +48,7 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onInit() {
         AUTH_TOKEN = Constants.AUTH_TOKEN;
-        isLogin = Constants.ISLOGIN;
+        isLogin = UserSystem.getInstance().isLogin();
 
         LogUtils.d("Bearer","token = "+AUTH_TOKEN);
 

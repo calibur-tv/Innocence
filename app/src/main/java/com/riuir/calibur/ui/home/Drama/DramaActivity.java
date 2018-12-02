@@ -107,8 +107,6 @@ public class DramaActivity extends BaseActivity {
     //viewpager Tab标题
     private List<String> titles = new ArrayList<>();
 
-    private Call<AnimeShowInfo> animeShowInfoCall;
-    private Call<AnimeFollowInfo> animeFollowInfoCall;
 
     AnimeSettingFinishReceiver finishReceiver;
     IntentFilter intentFilter;
@@ -266,24 +264,13 @@ public class DramaActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
-        if (animeShowInfoCall!=null){
-            animeShowInfoCall.cancel();
-        }
-        if (animeFollowInfoCall!=null){
-            animeFollowInfoCall.cancel();
-        }
         unregisterReceiver(finishReceiver);
         super.onDestroy();
     }
 
     private void setNet() {
         LogUtils.d("animeId","animeId = "+animeID);
-        ApiGet mApiGet;
-        if (Constants.ISLOGIN){
-            mApiGet = apiGetHasAuth;
-        }else {
-            mApiGet = apiGet;
-        }
+
         apiService.getCallAnimeShow(animeID)
                 .compose(Rx2Schedulers.applyObservableAsync())
                 .subscribe(new ObserverWrapper<AnimeShowInfo>(){

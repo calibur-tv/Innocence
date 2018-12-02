@@ -84,6 +84,7 @@ import calibur.core.http.models.create.params.CreateNewImageSingle;
 import calibur.core.http.models.geetest.params.VerificationCodeBody;
 import calibur.core.http.models.qiniu.params.QiniuImageParams;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
@@ -178,7 +179,7 @@ public class CreateNewImageActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
-        if (!Constants.ISLOGIN){
+        if (!UserSystem.getInstance().isLogin()){
             ToastUtils.showShort(this,"登录之后才能发帖");
             finish();
         }
@@ -409,7 +410,7 @@ public class CreateNewImageActivity extends BaseActivity {
     }
     private void setQiniuUpload(){
         qiniuUtils = new QiniuUtils();
-        qiniuUtils.getQiniuUpToken(apiGetHasAuth,CreateNewImageActivity.this,uploadUrlList,userId);
+        qiniuUtils.getQiniuUpToken(CreateNewImageActivity.this,uploadUrlList,userId,"image");
         qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
             public void onFailed(String fialMessage) {

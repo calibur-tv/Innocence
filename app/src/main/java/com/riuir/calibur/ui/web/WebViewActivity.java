@@ -153,11 +153,12 @@ public class WebViewActivity extends BaseActivity {
     }
 
     private void setWithdrawals() {
-        Map<String,String> header = new HashMap<>();
-        header.put("Authorization","Bearer "+ Constants.AUTH_TOKEN);
+//        Map<String,String> header = new HashMap<>();
+//        header.put("Authorization","Bearer "+ Constants.AUTH_TOKEN);
 
         //TODO 交易记录 需拦截html
-        //webView.loadUrl("https://static.calibur.tv/hybrid/templates/self/transactions/v1/v1-c774dc4772c4190144e6f51387cea5ad-48a5598b9781e17fa517c1369ea4a1d8.mustache",header);
+        webView.loadUrl("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache");
+
     }
 
     @Override

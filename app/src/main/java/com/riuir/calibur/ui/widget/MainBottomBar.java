@@ -26,6 +26,8 @@ import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
 import com.riuir.calibur.ui.home.image.CreateNewImageActivity;
 import com.riuir.calibur.utils.Constants;
 
+import calibur.core.manager.UserSystem;
+
 
 /**
  * ************************************
@@ -292,7 +294,7 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         addPost.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Constants.ISLOGIN){
+                if (UserSystem.getInstance().isLogin()){
                     addPopupWindow.dismiss();
                     Intent intent = new Intent(context, CardCreateNewActivity.class);
                     context.startActivity(intent);
@@ -304,12 +306,12 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         addImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Constants.ISLOGIN){
+                if (UserSystem.getInstance().isLogin()){
                     addPopupWindow.dismiss();
                     Intent intent = new Intent(context, CreateNewImageActivity.class);
                     context.startActivity(intent);
                 }else {
-                    ToastUtils.showShort(context,"登录状态才能发帖哦");
+                    ToastUtils.showShort(context,"登录状态才能发图哦");
                 }
             }
         });

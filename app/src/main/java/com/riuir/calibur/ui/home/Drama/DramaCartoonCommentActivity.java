@@ -1,6 +1,8 @@
 package com.riuir.calibur.ui.home.Drama;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,12 +19,13 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.trending.ImageShowInfoPrimacy;
+
 
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
@@ -34,6 +37,7 @@ import java.util.List;
 import butterknife.BindView;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
+import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
@@ -59,7 +63,7 @@ public class DramaCartoonCommentActivity extends BaseActivity {
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> baseCommentMainList = new ArrayList<>();
     private List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> commentMainList;
 
-    private ImageShowInfoPrimacy.ImageShowInfoPrimacyData cartoonData;
+    private ImageShowInfoPrimacy cartoonData;
     private int cartoonId;
 
     private Call<TrendingShowInfoCommentMain> commentMainCall;
@@ -73,6 +77,8 @@ public class DramaCartoonCommentActivity extends BaseActivity {
 
     AppListFailedView failedView;
     AppListEmptyView emptyView;
+
+    private static DramaCartoonCommentActivity instance;
     @Override
     protected int getContentViewId() {
         return R.layout.activity_drama_cartoon_comment;
@@ -80,8 +86,9 @@ public class DramaCartoonCommentActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
+        instance = this;
         Intent intent = getIntent();
-        cartoonData = (ImageShowInfoPrimacy.ImageShowInfoPrimacyData) intent.getSerializableExtra("cartoonData");
+        cartoonData = (ImageShowInfoPrimacy) intent.getSerializableExtra("cartoonData");
         cartoonId = cartoonData.getId();
         setView();
         setAdapter();
@@ -286,7 +293,7 @@ public class DramaCartoonCommentActivity extends BaseActivity {
         commentView.setFromUserName("");
         commentView.setId(cartoonId);
         commentView.setTitleId(cartoonData.getUser().getId());
-        commentView.setType(ReplyAndCommentView.TYPE_IMAGE);
+        commentView.setType(ReplyAndCommentView.TYPE_CARTOON);
         commentView.setTargetUserId(0);
         commentView.setIs_creator(cartoonData.isIs_creator());
         commentView.setLiked(cartoonData.isLiked());
@@ -306,5 +313,13 @@ public class DramaCartoonCommentActivity extends BaseActivity {
     @Override
     protected void handler(Message msg) {
 
+    }
+
+    public CommentAdapter getCommentAdapter(){
+        return commentAdapter;
+    }
+
+    public static DramaCartoonCommentActivity getInstance() {
+        return instance;
     }
 }

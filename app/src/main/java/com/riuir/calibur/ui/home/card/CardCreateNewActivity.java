@@ -70,6 +70,7 @@ import calibur.core.http.models.create.params.CreatePostParams;
 import calibur.core.http.models.geetest.params.VerificationCodeBody;
 import calibur.core.http.models.qiniu.params.QiniuImageParams;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
@@ -155,7 +156,7 @@ public class CardCreateNewActivity extends BaseActivity {
     @Override
     protected void onInit() {
         //如果未登录 结束页面
-        if (!Constants.ISLOGIN){
+        if (!UserSystem.getInstance().isLogin()){
             ToastUtils.showShort(this,"登录之后才能发帖");
             finish();
         }
@@ -401,7 +402,7 @@ public class CardCreateNewActivity extends BaseActivity {
     }
     private void setQiniuUpload(){
         qiniuUtils = new QiniuUtils();
-        qiniuUtils.getQiniuUpToken(apiGetHasAuth,CardCreateNewActivity.this,urlList,userId);
+        qiniuUtils.getQiniuUpToken(CardCreateNewActivity.this,urlList,userId,"post");
         qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
             public void onFailed(String fialMessage) {

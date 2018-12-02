@@ -22,14 +22,16 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import calibur.core.manager.UserSystem;
+import calibur.core.templates.TemplateRenderEngine;
+
 
 public class MyWebViewClient extends WebViewClient {
 
     private OnPageStartedListener onPageStartedListener;
     private OnPageFinishedListener onPageFinishedListener;
 
-    private static final String APP_CACAHE_DIRNAME = "/webcache";
-    String cacheDirPath = App.instance().getFilesDir().getAbsolutePath()+APP_CACAHE_DIRNAME;
+    String url;
 
     @Override
     public void onReceivedSslError(WebView webView, SslErrorHandler sslErrorHandler, SslError sslError) {
@@ -40,6 +42,7 @@ public class MyWebViewClient extends WebViewClient {
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
+        this.url = url;
         if (onPageStartedListener!=null){
             onPageStartedListener.onPageStart();
         }
@@ -55,17 +58,35 @@ public class MyWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView webView, String s) {
+//        if (url.equals("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache")){
+//            String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
+//            LogUtils.d("shouldOverrideUrlLoading","token = "+UserSystem.getUserToken());
+//            LogUtils.d("shouldOverrideUrlLoading","bookMarks = "+bookMarks);
+//            return true;
+//        }
         return super.shouldOverrideUrlLoading(webView, s);
     }
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest webResourceRequest) {
-        return super.shouldInterceptRequest(webView, webResourceRequest);
+//        if (url.equals("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache")){
+            String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
+            LogUtils.d("shouldOverrideUrlLoading1","token = "+UserSystem.getUserToken());
+            LogUtils.d("shouldOverrideUrlLoading1","bookMarks = "+bookMarks);
+            return super.shouldInterceptRequest(webView, bookMarks);
+//        }
+//        return super.shouldInterceptRequest(webView, webResourceRequest);
     }
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
-        return super.shouldInterceptRequest(webView, s);
+//        if (url.equals("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache")){
+            String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
+            LogUtils.d("shouldOverrideUrlLoading2","token = "+UserSystem.getUserToken());
+            LogUtils.d("shouldOverrideUrlLoading2","bookMarks = "+bookMarks);
+            return super.shouldInterceptRequest(webView, bookMarks);
+//        }
+//        return super.shouldInterceptRequest(webView, s);
     }
 
     public void setOnPageStartedListener(OnPageStartedListener onPageStartedListener) {

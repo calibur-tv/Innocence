@@ -47,6 +47,7 @@ import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.user.MineUserInfo;
 import calibur.core.http.models.user.UserDaySign;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -132,7 +133,7 @@ public class MineFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         reSetBtn.setVisibility(View.GONE);
         registerReceiver();
-        if (Constants.ISLOGIN){
+        if (UserSystem.getInstance().isLogin()){
             if (Constants.userInfoData == null){
                 Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
                 if (Constants.userInfoData == null){
@@ -267,7 +268,7 @@ public class MineFragment extends BaseFragment {
                 @Override
                 public void onClick(View view) {
                     reSetBtn.setVisibility(View.GONE);
-                    if (Constants.ISLOGIN){
+                    if (UserSystem.getInstance().isLogin()){
                         setNet(NET_GET_USER_INFO);
                     }else {
                         ToastUtils.showShort(getContext(),"登录状态过时，重新登录");
@@ -380,7 +381,7 @@ public class MineFragment extends BaseFragment {
         logOffBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Constants.ISLOGIN){
+                if (UserSystem.getInstance().isLogin()){
                     setNet(NET_LOG_OFF);
                 }
             }
@@ -480,7 +481,7 @@ public class MineFragment extends BaseFragment {
             Constants.userInfoData.setExp(infoExp);
             setUserInfoView();
         }else {
-            if (Constants.ISLOGIN){
+            if (UserSystem.getInstance().isLogin()){
                 setNet(NET_LOG_OFF);
             }
         }

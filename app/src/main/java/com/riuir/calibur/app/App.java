@@ -11,9 +11,7 @@ import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.riuir.calibur.BuildConfig;
-import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
-import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.album.MyAlbumLoader;
 import com.tencent.bugly.Bugly;
@@ -42,7 +40,7 @@ public class App extends Application  {
     public void onCreate() {
         super.onCreate();
         //正式打包时取消注释
-        isDebug = false;
+//        isDebug = false;
         CaliburInitializer initializer = new CaliburInitializer(this);
         initializer.doLaunching();
         initLogger();

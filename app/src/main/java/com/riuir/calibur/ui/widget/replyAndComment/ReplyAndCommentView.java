@@ -64,6 +64,7 @@ public class ReplyAndCommentView extends LinearLayout{
 
 
     Context context;
+
     TextView jumpBtn;
     EditText editRC;
     TextView sendBtn;
@@ -110,6 +111,7 @@ public class ReplyAndCommentView extends LinearLayout{
     public static final String TYPE_VIDEO = "video";
     public static final String TYPE_POST = "post";
     public static final String TYPE_IMAGE = "image";
+    public static final String TYPE_CARTOON = "cartoon";
     public static final String TYPE_SCORE = "score";
 
     private static final int NET_STATUS_TOGGLE_LIKE = 0;
@@ -576,10 +578,19 @@ public class ReplyAndCommentView extends LinearLayout{
         void onMarkFinish(boolean isMark);
     }
 
+    private OnStartActivityListener onStartActivityListener;
+
+    public void setOnStartActivityListener(OnStartActivityListener onStartActivityListener) {
+        this.onStartActivityListener = onStartActivityListener;
+    }
+
+    public interface OnStartActivityListener{
+        void onStartActivity(Intent intent,View view);
+    }
+
     public void setResultContent(String contentStr){
         jumpBtn.setText(contentStr);
     }
-
 
 
 }

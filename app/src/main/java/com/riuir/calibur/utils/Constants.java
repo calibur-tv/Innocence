@@ -8,6 +8,7 @@ import java.util.List;
 import calibur.core.http.models.anime.AnimeShowInfo;
 import calibur.core.http.models.anime.BangumiAllList;
 import calibur.core.http.models.user.MineUserInfo;
+import calibur.core.manager.UserSystem;
 
 /**
  * ************************************

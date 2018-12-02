@@ -73,6 +73,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         onInit();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        apiService = RetrofitManager.getInstance().getService(APIService.class);
+    }
+
     private void setHandler() {
         handler.setHandler(new IHandler() {
             public void handleMessage(Message msg) {

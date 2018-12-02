@@ -40,6 +40,7 @@ import calibur.core.http.models.anime.AnimeShowInfo;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.delete.DeleteInfo;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import io.reactivex.Observable;
 import retrofit2.Call;
@@ -313,7 +314,7 @@ public class AppHeaderPopupWindows extends RelativeLayout {
     }
 
     public void setDeleteLayout(String modelTag, int modelId, int userId,int primacyUserId,ApiPost apiPost){
-        if (Constants.ISLOGIN&&Constants.userInfoData!=null){
+        if (UserSystem.getInstance().isLogin() &&Constants.userInfoData!=null){
 
             if (userId == Constants.userInfoData.getId()&&
                     (modelTag.equals(POST)||modelTag.equals(IMAGE) || modelTag.equals(SCORE)

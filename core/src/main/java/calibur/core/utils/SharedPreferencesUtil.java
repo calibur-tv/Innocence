@@ -24,4 +24,10 @@ public final class SharedPreferencesUtil {
     return sp.getString(key, "");
   }
 
+  public static void remove( String key)
+  {
+    SharedPreferences sp = FoundationContextHolder.getContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+    sp.edit().remove(key).apply();
+  }
+
 }

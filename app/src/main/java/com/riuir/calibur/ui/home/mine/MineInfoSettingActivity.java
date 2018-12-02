@@ -485,7 +485,7 @@ public class MineInfoSettingActivity extends BaseActivity {
 
         List<String> avatarUrlList = new ArrayList<>();
         avatarUrlList.add(iconUrl);
-        qiniuUtils.getQiniuUpToken(apiGetHasAuth,MineInfoSettingActivity.this,avatarUrlList,userData.getId());
+        qiniuUtils.getQiniuUpToken(MineInfoSettingActivity.this,avatarUrlList,userData.getId(),"user");
 
         qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
@@ -506,7 +506,7 @@ public class MineInfoSettingActivity extends BaseActivity {
 
         List<String> bannerUrlList = new ArrayList<>();
         bannerUrlList.add(bannerUrl);
-        qiniuUtils.getQiniuUpToken(apiGetHasAuth,MineInfoSettingActivity.this,bannerUrlList,userData.getId());
+        qiniuUtils.getQiniuUpToken(MineInfoSettingActivity.this,bannerUrlList,userData.getId(),"user");
 
         qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override

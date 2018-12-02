@@ -50,7 +50,7 @@ public class QiniuUtils {
     private OnQiniuUploadFailedListnener onQiniuUploadFailedListnener;
     private OnQiniuUploadSuccessedListnener onQiniuUploadSuccessedListnener;
 
-    public void getQiniuUpToken(ApiGet apiGetHasAuth, final Context context, List<String> urlList, int userId){
+    public void getQiniuUpToken(final Context context, List<String> urlList, int userId,String type){
         this.urlList = urlList;
         this.context = context;
         this.userId = userId;
@@ -62,7 +62,7 @@ public class QiniuUtils {
                     @Override
                     public void onSuccess(QiniuUpToken qiniuUpToken) {
                         Constants.QINIU_TOKEN = qiniuUpToken.getUpToken();
-                        setQiniuUpLoadCheck();
+                        setQiniuUpLoadCheck(type);
                     }
 
                     @Override
@@ -75,17 +75,17 @@ public class QiniuUtils {
 
     }
 
-    private void setQiniuUpLoadCheck(){
+    private void setQiniuUpLoadCheck(String type){
         if (urlList!=null&&urlList.size()!=0){
             urlTag = 0;
             qiniuImageParamsDataList.clear();
-            setQiniuUpLoad(urlTag);
+            setQiniuUpLoad(urlTag,type);
         }
     }
 
-    private void setQiniuUpLoad(int tag) {
+    private void setQiniuUpLoad(int tag,String type) {
         //上传icon
-        String iconkey = QiniuUtils.getQiniuUpKey(userId,"avatar",urlList.get(tag));
+        String iconkey = QiniuUtils.getQiniuUpKey(userId,type,urlList.get(tag));
         File imgFile = new File(urlList.get(tag));
         if (iconkey!=null){
             uploadManager.put(imgFile, iconkey, Constants.QINIU_TOKEN, new UpCompletionHandler() {
@@ -99,7 +99,7 @@ public class QiniuUtils {
                         qiniuImageParamsDataList.add(params.getData());
                         urlTag++;
                         if (urlTag<urlList.size()){
-                            setQiniuUpLoad(urlTag);
+                            setQiniuUpLoad(urlTag,type);
                         }else {
                             //结束函数回调 发送上传到服务器请求
                             setUpLoadAlbum();

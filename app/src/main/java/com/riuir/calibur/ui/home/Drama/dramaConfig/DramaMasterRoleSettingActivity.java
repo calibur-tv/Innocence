@@ -37,6 +37,7 @@ import butterknife.BindView;
 import calibur.core.http.models.anime.AnimeShowInfo;
 import calibur.core.http.models.qiniu.params.QiniuImageParams;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
@@ -89,7 +90,7 @@ public class DramaMasterRoleSettingActivity extends BaseActivity {
     @Override
     protected void onInit() {
         //如果未登录 结束页面
-        if (!Constants.ISLOGIN){
+        if (!UserSystem.getInstance().isLogin()){
             ToastUtils.showShort(this,"登录之后才能创建偶像");
             finish();
         }
@@ -202,7 +203,7 @@ public class DramaMasterRoleSettingActivity extends BaseActivity {
 
     private void setQiniuUpLoad() {
         qiniuUtils = new QiniuUtils();
-        qiniuUtils.getQiniuUpToken(apiGetHasAuth,DramaMasterRoleSettingActivity.this,urlList,userId);
+        qiniuUtils.getQiniuUpToken(DramaMasterRoleSettingActivity.this,urlList,userId,"role");
         qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
             public void onFailed(String fialMessage) {

@@ -30,6 +30,7 @@ import java.io.IOException;
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
@@ -143,12 +144,12 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
         likeCheckBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Constants.ISLOGIN){
+                if (UserSystem.getInstance().isLogin()){
                     setNetToToggle(NET_STATUS_TOGGLE_LIKE);
                     likeCheckBtn.setClickable(false);
                     likeCheckBtn.setText("喜欢中");
                 }else {
-                    LoginUtils.ReLogin(context);
+                    ToastUtils.showShort(context,"登录信息出错，请重新登录");
                 }
             }
         });
@@ -156,7 +157,7 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
         rewardedBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Constants.ISLOGIN){
+                if (UserSystem.getInstance().isLogin()){
                     if (rewarded){
                         ToastUtils.showShort(context,"只能投食一次哦，您已经投食过了，请勿重复投食~");
                     }else {
@@ -184,7 +185,7 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
                         rewardDialog.show();
                     }
                 }else {
-                    LoginUtils.ReLogin(context);
+                    ToastUtils.showShort(context,"登录信息出错，请重新登录");
                 }
             }
         });
@@ -192,12 +193,12 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
         collectionCheckBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Constants.ISLOGIN){
+                if (UserSystem.getInstance().isLogin()){
                     setNetToToggle(NET_STATUS_TOGGLE_COLLENTION);
                     collectionCheckBtn.setClickable(false);
                     collectionCheckBtn.setText("收藏中");
                 }else {
-                    LoginUtils.ReLogin(context);
+                    ToastUtils.showShort(context,"登录信息出错，请重新登录");
                 }
             }
         });

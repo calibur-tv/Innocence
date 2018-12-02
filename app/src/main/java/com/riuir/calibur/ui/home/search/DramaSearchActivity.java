@@ -293,7 +293,7 @@ public class DramaSearchActivity extends BaseActivity {
 
             if (charSequence.length()!=0){
                 editClear.setVisibility(View.VISIBLE);
-                if (searchEdit!=null){
+                if (searchEdit!=null&&!DramaSearchActivity.this.isDestroyed()){
                     searchPopup.showAsDropDown(searchEdit,0,0);
                 }
             }else {

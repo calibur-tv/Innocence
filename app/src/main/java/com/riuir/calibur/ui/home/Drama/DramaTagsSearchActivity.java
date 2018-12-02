@@ -105,8 +105,10 @@ public class DramaTagsSearchActivity extends BaseActivity {
                         animeListForTagsSearchesData = animeListInfo.getList();
                         if (isFirstLoad){
                             baseAnimeListForTagsSearchesData = animeListInfo.getList();
-                            refreshLayout.setRefreshing(false);
                             isFirstLoad = false;
+                            if (refreshLayout!=null){
+                                refreshLayout.setRefreshing(false);
+                            }
                             setAdapter();
                             setEmptyView();
                         }
@@ -228,7 +230,9 @@ public class DramaTagsSearchActivity extends BaseActivity {
     private void setRefresh() {
         isRefresh = false;
         adapter.setNewData(animeListForTagsSearchesData);
-        refreshLayout.setRefreshing(false);
+        if (refreshLayout!=null){
+            refreshLayout.setRefreshing(false);
+        }
         ToastUtils.showShort(DramaTagsSearchActivity.this,"刷新成功！");
 
     }

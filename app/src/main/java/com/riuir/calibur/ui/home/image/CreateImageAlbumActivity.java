@@ -297,7 +297,7 @@ public class CreateImageAlbumActivity extends BaseActivity {
 
     private void setQiniuUpload(){
         qiniuUtils = new QiniuUtils();
-        qiniuUtils.getQiniuUpToken(apiGetHasAuth,CreateImageAlbumActivity.this,uploadUrlList,userId);
+        qiniuUtils.getQiniuUpToken(CreateImageAlbumActivity.this,uploadUrlList,userId,"image");
         qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
             public void onFailed(String fialMessage) {

@@ -1,7 +1,9 @@
 package com.riuir.calibur.ui.home.score;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -40,6 +42,7 @@ import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
@@ -140,8 +143,6 @@ public class ScoreShowInfoActivity extends BaseActivity {
     private static final int NET_STATUS_PRIMACY = 0;
     private static final int NET_STATUS_MAIN_COMMENT = 1;
 
-    private Call<ScoreShowInfoPrimacy> primacyCall;
-    private Call<TrendingShowInfoCommentMain> commentMainCall;
 
     AppListFailedView failedView;
     AppListEmptyView emptyView;
@@ -167,22 +168,11 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
-        if (primacyCall!=null){
-            primacyCall.cancel();
-        }
-        if (commentMainCall!=null){
-            commentMainCall.cancel();
-        }
+
         super.onDestroy();
     }
 
     private void setNet(int NET_STATUS){
-        ApiGet mApiGet;
-        if (Constants.ISLOGIN){
-            mApiGet = apiGetHasAuth;
-        }else {
-            mApiGet = apiGet;
-        }
 
         if (NET_STATUS == NET_STATUS_PRIMACY){
             apiService.getCallScoreShowPrimacy(scoreID)
@@ -333,6 +323,7 @@ public class ScoreShowInfoActivity extends BaseActivity {
                 trendingLFCView.setCollected(isMark);
             }
         });
+
         commentView.setNetAndListener();
     }
 

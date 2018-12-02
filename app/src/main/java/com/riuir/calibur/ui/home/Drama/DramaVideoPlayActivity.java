@@ -1,8 +1,10 @@
 package com.riuir.calibur.ui.home.Drama;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,6 +54,7 @@ import calibur.core.http.models.anime.AnimeVideosActivityInfo;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -106,8 +109,6 @@ public class DramaVideoPlayActivity extends BaseActivity {
     boolean otherSite = false;
     boolean isRawarded = false;
 
-    private Call<AnimeVideosActivityInfo> primacyCall;
-    private Call<TrendingShowInfoCommentMain> commentMainCall;
 
     AppListFailedView failedView;
     AppListEmptyView emptyView;
@@ -133,12 +134,6 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
 
     private void setNet(int NET_STATUS) {
-        ApiGet mApiGet;
-        if (Constants.ISLOGIN){
-            mApiGet = apiGetHasAuth;
-        }else {
-            mApiGet = apiGet;
-        }
 
         if (NET_STATUS == NET_STATUS_PRIMACY){
             apiService.getCallAnimeVideo(videoId)
@@ -330,7 +325,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
         initVideo();
 
-        if (Constants.ISLOGIN&&Constants.userInfoData!=null){
+        if (UserSystem.getInstance().isLogin()&&Constants.userInfoData!=null){
             if (!otherSite){
                 if (!videoData.isIp_blocked()){
                     //是否必须投食
@@ -597,13 +592,6 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
-
-        if (primacyCall!=null){
-            primacyCall.cancel();
-        }
-        if (commentMainCall!=null){
-            commentMainCall.cancel();
-        }
 
         GSYVideoManager.releaseAllVideos();
 
