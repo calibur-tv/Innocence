@@ -1,31 +1,22 @@
 package com.riuir.calibur.ui.web;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
-
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
+import butterknife.BindView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
-import com.riuir.calibur.assistUtils.VersionUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.utils.Constants;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
-
-
 import java.util.HashMap;
 import java.util.Map;
-
-import butterknife.BindView;
 
 public class WebViewActivity extends BaseActivity {
 
@@ -153,9 +144,6 @@ public class WebViewActivity extends BaseActivity {
     }
 
     private void setWithdrawals() {
-//        Map<String,String> header = new HashMap<>();
-//        header.put("Authorization","Bearer "+ Constants.AUTH_TOKEN);
-
         //TODO 交易记录 需拦截html
         webView.loadUrl("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache");
 

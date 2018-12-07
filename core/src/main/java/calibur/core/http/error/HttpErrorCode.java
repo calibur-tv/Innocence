@@ -33,4 +33,7 @@ public interface HttpErrorCode {
 
   //statusCode 503
   int code7 = 50301;
+
+  //刷新mobile token 失败
+  int code8 = 40107;
 }

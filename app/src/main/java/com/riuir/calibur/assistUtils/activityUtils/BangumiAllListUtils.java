@@ -36,7 +36,7 @@ public class BangumiAllListUtils {
         final Activity activity = (Activity) context;
         RetrofitManager.getInstance().getService(APIService.class)
                 .getBangumiAllList()
-                .compose(Rx2Schedulers.<Response<ResponseBean<ArrayList<BangumiAllList>>>>applyObservableAsync())
+                .compose(Rx2Schedulers.applyObservableAsync())
                 .subscribe(new ObserverWrapper<ArrayList<BangumiAllList>>() {
                     @Override
                     public void onSuccess(ArrayList<BangumiAllList> bangumiAllLists) {

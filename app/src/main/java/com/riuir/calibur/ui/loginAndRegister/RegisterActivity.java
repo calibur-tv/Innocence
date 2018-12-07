@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.core.utils.SharedPreferencesUtil;
 import com.geetest.sdk.Bind.GT3GeetestBindListener;
 import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
 import com.geetest.sdk.GT3GeetestButton;
@@ -49,10 +51,6 @@ import retrofit2.Response;
  */
 
 public class RegisterActivity extends BaseActivity {
-
-
-
-//    String validateURL = Constants.API_BASE_URL + "/door/send";
 
     private static final int NET_GEE_STATUS_captcha = 0;
     private static final int NET_GEE_STATUS_validate = 1;
@@ -249,15 +247,12 @@ public class RegisterActivity extends BaseActivity {
                 @Override
                 public void onResponse(Call<Event<String>> call, Response<Event<String>> response) {
                     if (response!=null&&response.isSuccessful()){
-
-                            ToastUtils.showShort(RegisterActivity.this,"注册成功！✿✿ヽ(°▽°)ノ✿");
-                            //注册成功 返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                            SharedPreferencesUtils.put(App.instance(),"Authorization",response.body().getData());
-                            Constants.ISLOGIN = true;
-                            Constants.AUTH_TOKEN = response.body().getData();
-                            BangumiAllListUtils.setBangumiAllList(RegisterActivity.this,apiGet);
-//                            startActivity(MainActivity.class);
-//                            finish();
+                        ToastUtils.showShort(RegisterActivity.this,"注册成功！✿✿ヽ(°▽°)ノ✿");
+                        //注册成功 返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
+                        SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, response.body().getData());
+                        Constants.ISLOGIN = true;
+                        Constants.AUTH_TOKEN = response.body().getData();
+                        BangumiAllListUtils.setBangumiAllList(RegisterActivity.this,apiGet);
                     }else if (response!=null&&!response.isSuccessful()){
                         String errorStr = "";
                         try {

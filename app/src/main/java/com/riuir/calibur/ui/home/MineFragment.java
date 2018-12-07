@@ -168,7 +168,7 @@ public class MineFragment extends BaseFragment {
     private void setNet(int NET_STATUS) {
         if (NET_STATUS == NET_GET_USER_INFO){
             apiService.getMineUserInfo()
-                    .compose(Rx2Schedulers.<Response<ResponseBean<MineUserInfo>>>applyObservableAsync())
+                    .compose(Rx2Schedulers.applyObservableAsync())
                     .subscribe(new ObserverWrapper<MineUserInfo>(){
                         @Override
                         public void onSuccess(MineUserInfo mineUserInfo) {

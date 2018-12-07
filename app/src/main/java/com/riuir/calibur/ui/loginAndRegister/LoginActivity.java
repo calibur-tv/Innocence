@@ -5,50 +5,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-
-import com.geetest.sdk.Bind.GT3Geetest;
+import butterknife.BindView;
+import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.core.utils.SharedPreferencesUtil;
 import com.geetest.sdk.Bind.GT3GeetestBindListener;
 import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
-import com.geetest.sdk.GT3GeetestButton;
-import com.geetest.sdk.GT3GeetestListener;
-import com.geetest.sdk.GT3GeetestUtils;
-import com.geetest.sdk.Gt3GeetestTestMsg;
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
-import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
 import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.GeeTestInfo;
 import com.riuir.calibur.data.params.VerificationCodeBody;
 import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.MainActivity;
-import com.riuir.calibur.ui.splash.SplashActivity;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.geetest.GeetestUtils;
-
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import org.json.JSONObject;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -183,7 +163,7 @@ public class LoginActivity extends BaseActivity {
                             // 登录成功
                             ToastUtils.showShort(LoginActivity.this,"登录成功！✿✿ヽ(°▽°)ノ✿");
                             //返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                            SharedPreferencesUtils.put(App.instance(),"Authorization",response.body().getData());
+                            SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, response.body().getData());
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = response.body().getData();
 

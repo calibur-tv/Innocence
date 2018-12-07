@@ -219,7 +219,7 @@ public interface APIService {
     Observable<Response<ResponseBean<String>>> getCallReSetPassWord(@Body Map<String, Object> argsMa);
 
     //获取用户信息
-    @POST("door/refresh")
+    @POST("door/current_user")
     Observable<Response<ResponseBean<MineUserInfo>>> getMineUserInfo();
 
     //新建主评论
@@ -331,4 +331,8 @@ public interface APIService {
     //新建相册
     @POST("image/album/create")
     Observable<Response<ResponseBean<CreateNewAlbumInfo>>> getCreateIAlbum(@Body CreateNewAlbum createNewAlbum);
+
+    //刷新用户的Mobile Token
+    @POST("/door/refresh_token")
+    Observable<Response<ResponseBean<String>>> refreshMobileToken();
 }

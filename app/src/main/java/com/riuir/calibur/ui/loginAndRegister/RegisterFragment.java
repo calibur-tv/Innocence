@@ -1,10 +1,5 @@
 package com.riuir.calibur.ui.loginAndRegister;
 
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.Message;
@@ -13,50 +8,32 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.geetest.sdk.Bind.GT3GeetestBindListener;
-import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
-import com.google.gson.Gson;
-import com.riuir.calibur.R;
-import com.riuir.calibur.app.App;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.ScreenUtils;
-import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
-import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.GeeTestInfo;
-
-import com.riuir.calibur.ui.common.BaseFragment;
-import com.riuir.calibur.ui.common.IHandler;
-import com.riuir.calibur.ui.common.UIHandler;
-import com.riuir.calibur.ui.home.MainActivity;
-import com.riuir.calibur.utils.Constants;
-import com.riuir.calibur.utils.geetest.GeetestUtils;
-import com.tencent.bugly.crashreport.CrashReport;
-
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import butterknife.BindView;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.geetest.params.VerificationCodeBody;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.core.utils.SharedPreferencesUtil;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
+import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
+import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ScreenUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
+import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.ui.common.IHandler;
+import com.riuir.calibur.ui.common.UIHandler;
+import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.geetest.GeetestUtils;
+import java.util.HashMap;
+import java.util.Map;
 import retrofit2.Response;
 
 /**
@@ -294,7 +271,7 @@ public class RegisterFragment extends BaseFragment {
             //自定义API2
             LogUtils.d("registerLog","verificationCodebodyBody = "+verificationCodebodyBody.toString());
             apiService.getGeeTestSendValidate(verificationCodebodyBody)
-                    .compose(Rx2Schedulers.<Response<ResponseBean<String>>>applyObservableAsync())
+                    .compose(Rx2Schedulers.applyObservableAsync())
                     .subscribe(new ObserverWrapper<String>() {
                         @Override
                         public void onSuccess(String s) {
@@ -323,13 +300,13 @@ public class RegisterFragment extends BaseFragment {
                 parmas.put("inviteCode",nicknameStr);
             }
             apiService.getCallRegister(parmas)
-                    .compose(Rx2Schedulers.<Response<ResponseBean<String>>>applyObservableAsync())
+                    .compose(Rx2Schedulers.applyObservableAsync())
                     .subscribe(new ObserverWrapper<String>() {
                         @Override
                         public void onSuccess(String s) {
                             ToastUtils.showShort(getContext(),"注册成功！✿✿ヽ(°▽°)ノ✿");
                             //注册成功 返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                            SharedPreferencesUtils.put(App.instance(),"Authorization",s);
+                            SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, s);
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = s;
                             BangumiAllListUtils.setBangumiAllList(getContext(),apiGet);

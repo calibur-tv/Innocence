@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
+import calibur.foundation.bus.BusinessBus;
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.net.NetService;
@@ -67,7 +67,12 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        onInit(savedInstanceState);
+        try {
+            onInit(savedInstanceState);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            BusinessBus.post(null, "mainModule/postException2Bugly", throwable);
+        }
     }
 
     @Override

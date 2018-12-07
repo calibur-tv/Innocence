@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import calibur.foundation.bus.BusinessBus;
 import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.net.ApiGet;
@@ -70,7 +71,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (isRegisterEventBus()) {
             EventBusUtil.register(this);
         }
-        onInit();
+
+        try {
+            onInit();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            BusinessBus.post(null, "mainModule/postException2Bugly", throwable);
+        }
+
     }
 
     @Override

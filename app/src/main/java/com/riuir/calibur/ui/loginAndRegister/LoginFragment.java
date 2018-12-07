@@ -1,53 +1,35 @@
 package com.riuir.calibur.ui.loginAndRegister;
 
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.geetest.sdk.Bind.GT3GeetestBindListener;
-import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
-import com.google.gson.Gson;
-import com.riuir.calibur.R;
-import com.riuir.calibur.app.App;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
-import com.riuir.calibur.data.Event;
-
-import com.riuir.calibur.ui.common.BaseFragment;
-import com.riuir.calibur.utils.Constants;
-import com.riuir.calibur.utils.geetest.GeetestUtils;
-import com.tencent.bugly.crashreport.CrashReport;
-
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import butterknife.BindView;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.geetest.params.VerificationCodeBody;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.core.utils.SharedPreferencesUtil;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
+import com.geetest.sdk.Bind.GT3GeetestBindListener;
+import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
+import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
+import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.geetest.GeetestUtils;
+import java.util.HashMap;
+import java.util.Map;
 import retrofit2.Response;
 
 /**
@@ -196,8 +178,7 @@ public class LoginFragment extends BaseFragment {
                             // 登录成功
                             ToastUtils.showShort(getContext(),"登录成功！✿✿ヽ(°▽°)ノ✿");
                             //返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                            SharedPreferencesUtils.put(App.instance(),"Authorization",s);
-
+                            SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, s);
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = s;
 
