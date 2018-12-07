@@ -7,13 +7,9 @@ import calibur.core.http.error.HttpStatusCode;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.foundation.FoundationContextHolder;
 import calibur.foundation.bus.BusinessBus;
-
-import com.google.gson.Gson;
+import calibur.foundation.utils.JSONUtil;
 import com.orhanobut.logger.Logger;
-
 import io.reactivex.observers.DisposableObserver;
-
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -31,7 +27,7 @@ import retrofit2.Response;
 public abstract class ObserverWrapper<T> extends DisposableObserver<Response<ResponseBean<T>>> {
 
   @Override public void onNext(Response<ResponseBean<T>> response) {
-    if(response == null) return;
+    if (response == null) return;
     ResponseBean bean;
     //改为先判断是否成功在判断非空
     if (response.isSuccessful()) {
@@ -46,17 +42,18 @@ public abstract class ObserverWrapper<T> extends DisposableObserver<Response<Res
         onFailure(response.code(), response.message());
       }
     } else {
-      if (response.errorBody()!=null){
-        String errorStr = "";
+      if (response.errorBody() != null) {
         try {
-          errorStr = response.errorBody().string();
-        } catch (IOException e) {
+          String errorStr = response.errorBody().string();
+          ResponseBean<String> errorInfo = JSONUtil.fromJson(errorStr, ResponseBean.class);
+          if (errorInfo != null) {
+            onFailure(errorInfo.getCode(), errorInfo.getMessage());
+          }
+        } catch (Throwable e) {
           e.printStackTrace();
+          BusinessBus.post(null, "mainModule/postException2Bugly", e);
         }
-        Gson gson = new Gson();
-        ResponseBean<String> errorInfo =gson.fromJson(errorStr,ResponseBean.class);
-        onFailure(errorInfo.getCode(), errorInfo.getMessage());
-      }else {
+      } else {
         onFailure(response.code(), response.message());
       }
     }

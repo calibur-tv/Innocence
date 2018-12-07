@@ -6,12 +6,13 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.text.TextUtils;
 import calibur.core.manager.UserSystem;
+import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.core.utils.SharedPreferencesUtil;
 import calibur.foundation.FoundationContextHolder;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.riuir.calibur.BuildConfig;
-import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.album.MyAlbumLoader;
 import com.tencent.bugly.Bugly;
@@ -47,7 +48,7 @@ public class App extends Application  {
         initBugly();
         initX5Web();
         initAlbum();
-        Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
+        Constants.AUTH_TOKEN = SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN);
         Constants.ISLOGIN = UserSystem.getInstance().isLogin();
     }
 

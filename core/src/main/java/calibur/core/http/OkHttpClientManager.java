@@ -3,6 +3,7 @@ package calibur.core.http;
 import android.util.LruCache;
 import calibur.core.http.dns.HttpDns;
 import calibur.core.http.interceptors.CacheInterceptor;
+import calibur.core.http.interceptors.HttpExceptionInterceptor;
 import calibur.foundation.FoundationContextHolder;
 import io.reactivex.annotations.NonNull;
 import java.io.File;
@@ -87,6 +88,7 @@ public class OkHttpClientManager {
       }
     }
     builder.addInterceptor(new CacheInterceptor());
+    builder.addInterceptor(new HttpExceptionInterceptor());
     builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
     //Executor executor = ContextUtils.getExecutor();
     //if (null != executor && executor instanceof ExecutorService) {
