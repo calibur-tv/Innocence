@@ -15,7 +15,7 @@ import io.reactivex.Observable;
 public class UserSystem {
 
   private volatile static UserSystem sInstance;
-  private static String mUserToken;
+  private volatile static String mUserToken;
 
   private UserSystem() {
   }
@@ -29,14 +29,18 @@ public class UserSystem {
     return sInstance;
   }
 
-  public static String getUserToken() {
+  public synchronized void updateUserToken(String token) {
+    mUserToken = token;
+  }
+
+  public String getUserToken() {
     if(TextUtils.isEmpty(mUserToken))
       mUserToken = SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN);
     return mUserToken;
   }
 
   //注销登录时使用
-  public static void clearUserToken(){
+  public void clearUserToken(){
     mUserToken = "";
     SharedPreferencesUtil.remove(ISharedPreferencesKeys.MOBILE_TOKEN);
   }

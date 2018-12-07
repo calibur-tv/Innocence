@@ -1,10 +1,13 @@
 package calibur.core.http.interceptors;
 
+import android.provider.SyncStateContract;
 import android.text.TextUtils;
 import calibur.core.http.error.HttpErrorCode;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.util.NetworkHost;
+import calibur.core.manager.UserSystem;
 import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.core.utils.SharedPreferencesUtil;
 import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.utils.JSONUtil;
 import java.io.IOException;
@@ -81,6 +84,8 @@ public class HttpExceptionInterceptor implements Interceptor {
       if (response.isSuccessful()) {
         String newToken = response.header(ISharedPreferencesKeys.MOBILE_TOKEN);
         if (!TextUtils.isEmpty(newToken)) {
+          UserSystem.getInstance().updateUserToken(newToken);
+          SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, newToken);
           return newToken;
         }
       }

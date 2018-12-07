@@ -15,7 +15,6 @@ import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.templates.renders.BookmarksTemplateRender;
-import calibur.core.templates.renders.EditorTemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.AppUtil;
@@ -44,7 +43,6 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     @BindView(R.id.maintab_bottombar)
     MainBottomBar maintabBottombar;
 
-
     private MainFragment fragmentMain = MainFragment.newInstance();
     private DramaFragment fragmentDrama = DramaFragment.newInstance();
     private MessageFragment fragmentMessage = MessageFragment.newInstance();
@@ -55,9 +53,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     ImageView childIcon2;
     ImageView childIcon3;
 
-
     private FragmentManager fragmentManager;
-
     String oldVersion;
     String newVersion;
     boolean forceUpdate;
@@ -76,8 +72,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     @Override
     protected void onInit() {
         fragmentManager = getSupportFragmentManager();
-        fragmentManager
-                .beginTransaction()
+        fragmentManager.beginTransaction()
                 .add(R.id.framelayout_main, fragmentMain)
                 .add(R.id.framelayout_main, fragmentDrama)
                 .add(R.id.framelayout_main, fragmentMessage)
@@ -87,8 +82,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .hide(fragmentMessage)
                 .hide(fragmentMine)
                 .commit();
-        fragmentManager
-                .beginTransaction()
+        fragmentManager.beginTransaction()
                 .hide(fragmentDrama)
                 .hide(fragmentMessage)
                 .hide(fragmentMine)
@@ -106,19 +100,12 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         if (Constants.userInfoData == null){
             Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
         }
-        //demo TODO
-//        Logger.d("oninit");
-//        handler.sendEmptyMessageDelayed(0, 200);
-//        EventBusUtil.sendEvent(new Event(RCode.EventCode.A));
-//        setFloatingActionBth();
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         setMessageCount();
-
     }
 
     @Override
@@ -130,8 +117,6 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     }
 
     private void setMessageCount() {
-
-
         apiService.getUserNotificationCount()
                 .compose(Rx2Schedulers.<Response<ResponseBean<Integer>>>applyObservableAsync())
                 .subscribe(new ObserverWrapper<Integer>() {
@@ -149,7 +134,6 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 });
 
     }
-
 
     private void setCheckVersion() {
         oldVersion = AppUtil.getAppVersionName();
@@ -232,49 +216,13 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         }
     }
 
-
-//    private void setNetToGetUserInfo() {
-//        apiPost.getMineUserInfo().enqueue(new Callback<MineUserInfo>() {
-//            @Override
-//            public void onResponse(Call<MineUserInfo> call, Response<MineUserInfo> response) {
-//                if (response!=null&&response.isSuccessful()){
-//                    Constants.userInfoData = response.body().getData();
-//                    SharedPreferencesUtils.putUserInfoData(App.instance(),Constants.userInfoData);
-//                }else  if (!response.isSuccessful()){
-//                    String errorStr = "";
-//                    try {
-//                        errorStr = response.errorBody().string();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Gson gson = new Gson();
-//                    Event<String> info =gson.fromJson(errorStr,Event.class);
-//                    ToastUtils.showShort(MainActivity.this,"mainactivity user="+info.getMessage());
-//                }else {
-//                    ToastUtils.showShort(MainActivity.this,"网络异常,请检查您的网络");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<MineUserInfo> call, Throwable t) {
-//                ToastUtils.showShort(MainActivity.this,"网络异常,请检查您的网络");
-//                CrashReport.postCatchedException(t);
-//            }
-//        });
-//    }
-
-
     @Override
     protected boolean isRegisterEventBus() {
-
         return true;
     }
 
     @Override
     protected void handler(Message msg) {
-        if (msg.what == 0) {
-            ToastUtils.showShort(this,"app launch");
-        }
     }
 
     @Override
@@ -284,8 +232,6 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
             ToastUtils.showShort(this,"event bus received");
         }
     }
-
-
 
     @Override
     public void onClickOne() {
@@ -310,8 +256,6 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .commitAllowingStateLoss();
 
     }
-
-
 
     @Override
     public void onClickThree() {
@@ -339,7 +283,6 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .commitAllowingStateLoss();
 
     }
-
 
     private void hideAllFragment(){
         if (fragmentManager == null)
