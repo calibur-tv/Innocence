@@ -1,7 +1,7 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
-
+apply plugin: 'newrelic'
 apply plugin: 'bugly'
 //符号表
 bugly {
@@ -54,7 +54,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':core')
     if ("$appPackageType".contains("debug")){
-        compile project(':debug')
+      implementation project(':debug')
     }
     //noinspection GradleCompatible
     implementation 'com.android.support:design:27.1.1'
@@ -70,7 +70,6 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.0.0'
 
     //腾讯 bugly
-
     //    implementation 'com.tencent.bugly:crashreport:latest.release'
 
     //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
@@ -153,6 +152,8 @@ dependencies {
 
     //软键盘隐藏监听
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0'
+
+    implementation "com.newrelic.agent.android:android-agent:5.21.2"
 
 }
 

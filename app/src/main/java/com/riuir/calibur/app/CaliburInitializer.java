@@ -9,6 +9,7 @@ import calibur.core.http.RetrofitManager;
 import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.bus.BusinessBusManager;
 import calibur.foundation.config.PackageTypeConfig;
+import com.newrelic.agent.android.NewRelic;
 import com.riuir.calibur.BuildConfig;
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class CaliburInitializer {
       OkHttpClientManager.init(new CaliburHttpContext());
     }
     RetrofitManager.getInstance().init();
+    NewRelic.withApplicationToken("AAa57f0da1dfaa0c520a452934e733f80792e57c3e").start(mApp);
   }
 
   private void generalInit() {

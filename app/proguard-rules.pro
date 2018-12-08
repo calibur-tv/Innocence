@@ -213,3 +213,8 @@
 -keep public class calibur.foundation.bus.**{*;}
 -keepclassmembers public class calibur.foundation.bus.BusinessBusObject {public *;}
 -keep public class * extends calibur.foundation.bus.BusinessBusObject {*;}
+
+#newrelic
+-keep class com.newrelic.** { *; }
+-dontwarn com.newrelic.**
+-keepattributes Exceptions, Signature, InnerClasses, LineNumberTable
