@@ -49,6 +49,7 @@ public abstract class ObserverWrapper<T> extends DisposableObserver<Response<Res
           if (errorInfo != null) {
             onFailure(errorInfo.getCode(), errorInfo.getMessage());
           }
+          BusinessBus.post(null, "mainModule/postException2Bugly", new Throwable(errorStr));
         } catch (Throwable e) {
           e.printStackTrace();
           BusinessBus.post(null, "mainModule/postException2Bugly", e);
@@ -89,6 +90,7 @@ public abstract class ObserverWrapper<T> extends DisposableObserver<Response<Res
       errorMsg = e.getMessage();
     }
     onFailure(errorCode, errorMsg);
+    BusinessBus.post(null, "mainModule/postException2Bugly", e);
   }
 
   @Override public void onComplete() {

@@ -34,14 +34,17 @@ public class HttpExceptionInterceptor implements Interceptor {
     if (!response.isSuccessful()) {
       ResponseBody responseBody = response.body();
       if (responseBody != null) {
-        String data = responseBody.string();
+        byte[] respBytes = responseBody.bytes();
+        String data = new String(respBytes);
         ResponseBean errorInfo = JSONUtil.fromJson(data, ResponseBean.class);
         //处理token失效后，同步刷新token并继续请求数据的逻辑
         if (errorInfo != null && errorInfo.getCode() == HttpErrorCode.TOKEN_EXPIRED_CODE) {
           Response modifiedResponse = tokenExpired(chain, request, response, errorInfo.getMessage());
-          if (modifiedResponse != null) {
-            return modifiedResponse;
-          }
+          if (modifiedResponse != null) return modifiedResponse;
+        } else {// 还原 response
+          response = response.newBuilder()
+              .body(ResponseBody.create(null, respBytes))
+              .build();
         }
       }
     }
