@@ -1,6 +1,5 @@
 package calibur.core.http.interceptors;
 
-import android.provider.SyncStateContract;
 import android.text.TextUtils;
 import calibur.core.http.error.HttpErrorCode;
 import calibur.core.http.models.base.ResponseBean;
@@ -62,6 +61,7 @@ public class HttpExceptionInterceptor implements Interceptor {
     Request modifiedRequest = request.newBuilder()
         .url(url)
         .headers(headers)
+        .header("Authorization", newMobileToken)// Add new user token
         .build();
 
     okhttp3.Response modifiedResponse = chain.proceed(modifiedRequest);
@@ -75,10 +75,11 @@ public class HttpExceptionInterceptor implements Interceptor {
   private synchronized String refreshToken(Headers headers) {
     try {
       OkHttpClient client = new OkHttpClient();
-      String freshUrl = NetworkHost.PRO_HOST + "/door/refresh_token";
+      String freshUrl = NetworkHost.PRO_HOST + "door/refresh_token";
       Request.Builder builder = new Request.Builder().url(freshUrl)
           .post(RequestBody.create(MediaType.parse(""), ""))
-          .headers(headers);
+          .headers(headers)
+          .header("Authorization", UserSystem.getInstance().getUserToken());
       Request request = builder.build();
       okhttp3.Response response = client.newCall(request).execute();
       if (response.isSuccessful()) {

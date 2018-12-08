@@ -1,5 +1,7 @@
 package calibur.core.http.util;
 
+import calibur.foundation.config.PackageTypeConfig;
+
 /**
  * author : J.Chou
  * e-mail : who_know_me@163.com
@@ -8,5 +10,8 @@ package calibur.core.http.util;
  * description:
  */
 public interface NetworkHost {
-  String PRO_HOST = "https://api.calibur.tv/";
+  String HTTPS = "https://";
+  String HTTP = "http://";
+  String HOST = "api.calibur.tv/";
+  String PRO_HOST = PackageTypeConfig.isProductEnv() ? HTTPS : HTTP + HOST;
 }

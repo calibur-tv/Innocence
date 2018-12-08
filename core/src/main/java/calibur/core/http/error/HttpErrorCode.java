@@ -37,6 +37,6 @@ public interface HttpErrorCode {
   //刷新mobile token 失败
   int code8 = 40107;
 
-  //未登录的用户
+  //token过期
   int TOKEN_EXPIRED_CODE = 40104;
 }

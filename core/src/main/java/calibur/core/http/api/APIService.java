@@ -333,6 +333,6 @@ public interface APIService {
     Observable<Response<ResponseBean<CreateNewAlbumInfo>>> getCreateIAlbum(@Body CreateNewAlbum createNewAlbum);
 
     //刷新用户的Mobile Token
-    @POST("/door/refresh_token")
+    @POST("door/refresh_token")
     Observable<Response<ResponseBean<String>>> refreshMobileToken();
 }
