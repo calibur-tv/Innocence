@@ -252,7 +252,7 @@ public class RegisterActivity extends BaseActivity {
                         SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, response.body().getData());
                         Constants.ISLOGIN = true;
                         Constants.AUTH_TOKEN = response.body().getData();
-                        BangumiAllListUtils.setBangumiAllList(RegisterActivity.this,apiGet);
+                        BangumiAllListUtils.setBangumiAllList(RegisterActivity.this);
                     }else if (response!=null&&!response.isSuccessful()){
                         String errorStr = "";
                         try {

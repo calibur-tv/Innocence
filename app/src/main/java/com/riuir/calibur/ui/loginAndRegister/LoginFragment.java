@@ -182,7 +182,7 @@ public class LoginFragment extends BaseFragment {
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = s;
 
-                            BangumiAllListUtils.setBangumiAllList(getContext(),apiGet);
+                            BangumiAllListUtils.setBangumiAllList(getContext());
                         }
 
                         @Override

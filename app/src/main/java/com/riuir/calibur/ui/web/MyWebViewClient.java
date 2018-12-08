@@ -71,7 +71,7 @@ public class MyWebViewClient extends WebViewClient {
     public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest webResourceRequest) {
 //        if (url.equals("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache")){
             String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
-            LogUtils.d("shouldOverrideUrlLoading1","token = "+UserSystem.getUserToken());
+            LogUtils.d("shouldOverrideUrlLoading1","token = "+UserSystem.getInstance().getUserToken());
             LogUtils.d("shouldOverrideUrlLoading1","bookMarks = "+bookMarks);
             return super.shouldInterceptRequest(webView, bookMarks);
 //        }
@@ -82,7 +82,7 @@ public class MyWebViewClient extends WebViewClient {
     public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
 //        if (url.equals("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache")){
             String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
-            LogUtils.d("shouldOverrideUrlLoading2","token = "+UserSystem.getUserToken());
+            LogUtils.d("shouldOverrideUrlLoading2","token = "+UserSystem.getInstance().getUserToken());
             LogUtils.d("shouldOverrideUrlLoading2","bookMarks = "+bookMarks);
             return super.shouldInterceptRequest(webView, bookMarks);
 //        }

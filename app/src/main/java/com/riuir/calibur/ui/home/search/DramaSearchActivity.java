@@ -115,7 +115,7 @@ public class DramaSearchActivity extends BaseActivity {
             Constants.bangumiAllListData = SharedPreferencesUtils.getBangumiAllListList(App.instance(),"bangumiAllListData");
         }
         if (Constants.bangumiAllListData == null){
-            BangumiAllListUtils.setBangumiAllList(this,apiGet);
+            BangumiAllListUtils.setBangumiAllList(this);
         }
 
         bangumiAllLists = Constants.bangumiAllListData;

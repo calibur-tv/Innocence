@@ -167,7 +167,7 @@ public class LoginActivity extends BaseActivity {
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = response.body().getData();
 
-                            BangumiAllListUtils.setBangumiAllList(LoginActivity.this,apiGet);
+                            BangumiAllListUtils.setBangumiAllList(LoginActivity.this);
 //                            startActivity(MainActivity.class);
 //                            finish();
                         }

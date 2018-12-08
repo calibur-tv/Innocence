@@ -46,7 +46,7 @@ public class SplashActivity extends BaseActivity {
           public void onSuccess(MineUserInfo mineUserInfo) {
             Constants.userInfoData = mineUserInfo;
             SharedPreferencesUtils.putUserInfoData(App.instance(), Constants.userInfoData);
-            BangumiAllListUtils.setBangumiAllList(SplashActivity.this, apiGet);
+            BangumiAllListUtils.setBangumiAllList(SplashActivity.this);
           }
 
           @Override

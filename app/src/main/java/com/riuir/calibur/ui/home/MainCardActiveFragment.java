@@ -291,6 +291,7 @@ public class MainCardActiveFragment extends BaseFragment {
             public void onRefresh() {
                 isRefresh = true;
                 setNet();
+                bannerLoopView.setApiGet(apiGet);
             }
         });
     }

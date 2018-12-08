@@ -22,7 +22,7 @@ public class HeaderInterceptor implements Interceptor {
         .addHeader("X-APP-VERSION", AppUtil.getAppVersionName())
         .addHeader("Accept", "application/x.api."+ "v1+json");
     if (UserSystem.getInstance().isLogin()) {
-      requestBuilder.addHeader("Authorization", "Bearer " + UserSystem.getUserToken());
+      requestBuilder.addHeader("Authorization", "Bearer " + UserSystem.getInstance().getUserToken());
     }
     Request request = requestBuilder.build();
     return chain.proceed(request);
