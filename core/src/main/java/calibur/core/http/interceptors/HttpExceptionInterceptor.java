@@ -53,7 +53,7 @@ public class HttpExceptionInterceptor implements Interceptor {
     Headers headers = request.headers();
     String newMobileToken = refreshToken(headers);
     if (TextUtils.isEmpty(newMobileToken)) {//token 刷新失败，也需要重新登录
-      BusinessBus.post(null, "mainApps/userVerificationFailed", errorMessage);
+      BusinessBus.post(null, "mainApps/mobileTokenRefreshFailed", errorMessage);
       return response;
     }
     // Add new header to rejected request and retry it
