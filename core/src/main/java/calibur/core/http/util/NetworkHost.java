@@ -13,5 +13,5 @@ public interface NetworkHost {
   String HTTPS = "https://";
   String HTTP = "http://";
   String HOST = "api.calibur.tv/";
-  String PRO_HOST = PackageTypeConfig.isProductEnv() ? HTTPS : HTTP + HOST;
+  String PRO_HOST = (PackageTypeConfig.isProductEnv() ? HTTPS : HTTP ) + HOST;
 }
