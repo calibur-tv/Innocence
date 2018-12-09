@@ -58,35 +58,17 @@ public class MyWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView webView, String s) {
-//        if (url.equals("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache")){
-//            String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
-//            LogUtils.d("shouldOverrideUrlLoading","token = "+UserSystem.getUserToken());
-//            LogUtils.d("shouldOverrideUrlLoading","bookMarks = "+bookMarks);
-//            return true;
-//        }
         return super.shouldOverrideUrlLoading(webView, s);
     }
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest webResourceRequest) {
-//        if (url.equals("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache")){
-            String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
-            LogUtils.d("shouldOverrideUrlLoading1","token = "+UserSystem.getInstance().getUserToken());
-            LogUtils.d("shouldOverrideUrlLoading1","bookMarks = "+bookMarks);
-            return super.shouldInterceptRequest(webView, bookMarks);
-//        }
-//        return super.shouldInterceptRequest(webView, webResourceRequest);
+        return super.shouldInterceptRequest(webView, webResourceRequest);
     }
 
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
-//        if (url.equals("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache")){
-            String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
-            LogUtils.d("shouldOverrideUrlLoading2","token = "+UserSystem.getInstance().getUserToken());
-            LogUtils.d("shouldOverrideUrlLoading2","bookMarks = "+bookMarks);
-            return super.shouldInterceptRequest(webView, bookMarks);
-//        }
-//        return super.shouldInterceptRequest(webView, s);
+        return super.shouldInterceptRequest(webView, s);
     }
 
     public void setOnPageStartedListener(OnPageStartedListener onPageStartedListener) {

@@ -18,6 +18,10 @@ import com.tencent.smtt.sdk.WebView;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.BindView;
+import calibur.core.manager.UserSystem;
+import calibur.core.templates.TemplateRenderEngine;
+
 public class WebViewActivity extends BaseActivity {
 
     @BindView(R.id.web_view_activity_web_view)
@@ -129,7 +133,7 @@ public class WebViewActivity extends BaseActivity {
 
     private void setInviteLoad() {
         Map<String,String> header = new HashMap<>();
-        header.put("Authorization","Bearer "+ Constants.AUTH_TOKEN);
+        header.put("Authorization",UserSystem.getInstance().getUserToken());
 
         webView.loadUrl("https://m.calibur.tv/app/invite",header);
     }
@@ -144,8 +148,9 @@ public class WebViewActivity extends BaseActivity {
     }
 
     private void setWithdrawals() {
-        //TODO 交易记录 需拦截html
-        webView.loadUrl("https://static.calibur.tv/hybrid/templates/self/bookmarks/v1/v1-f7f83c9e52fdbb535d64154849cb05dc-8f010bbe472265b12c3a1e00ac8f57b3.mustache");
+
+        String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
+        webView.loadDataWithBaseURL(null,bookMarks,"text/html","utf-8",null);
 
     }
 

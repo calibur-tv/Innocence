@@ -1,5 +1,7 @@
 package calibur.core.http.observer;
 
+import android.util.Log;
+
 import calibur.core.R;
 import calibur.core.http.NetworkManager;
 import calibur.core.http.error.HttpErrorCode;
@@ -49,7 +51,6 @@ public abstract class ObserverWrapper<T> extends DisposableObserver<Response<Res
           if (errorInfo != null) {
             onFailure(errorInfo.getCode(), errorInfo.getMessage());
           }
-          BusinessBus.post(null, "mainModule/postException2Bugly", new Throwable(errorStr));
         } catch (Throwable e) {
           e.printStackTrace();
           BusinessBus.post(null, "mainModule/postException2Bugly", e);

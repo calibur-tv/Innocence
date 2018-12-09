@@ -3,6 +3,7 @@ package calibur.core.http;
 import android.util.LruCache;
 import calibur.core.http.dns.HttpDns;
 import calibur.core.http.interceptors.CacheInterceptor;
+import calibur.core.http.interceptors.HeaderInterceptor;
 import calibur.core.http.interceptors.HttpExceptionInterceptor;
 import calibur.foundation.FoundationContextHolder;
 import io.reactivex.annotations.NonNull;

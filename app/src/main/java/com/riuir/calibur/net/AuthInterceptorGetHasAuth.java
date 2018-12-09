@@ -7,6 +7,7 @@ import com.riuir.calibur.utils.Constants;
 
 import java.io.IOException;
 
+import calibur.core.manager.UserSystem;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -21,7 +22,7 @@ public class AuthInterceptorGetHasAuth implements Interceptor {
             Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
         }
         Headers headers = request.headers().newBuilder()
-                .add("Authorization","Bearer "+Constants.AUTH_TOKEN)
+                .add("Authorization",UserSystem.getInstance().getUserToken())
                 .add("Accept", "application/x.api."+ Constants.API_VERSION+"+json")
                 .add("X-APP-NAME","Sakura")
                 .add("X-APP-VERSION", VersionUtils.getLocalVersionName())

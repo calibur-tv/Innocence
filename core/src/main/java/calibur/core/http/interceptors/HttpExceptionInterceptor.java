@@ -92,6 +92,10 @@ public class HttpExceptionInterceptor implements Interceptor {
           SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, newToken);
           return newToken;
         }
+      }else {
+          if (response.message()!=null){
+            BusinessBus.post(null, "mainApps/postException2Bugly", response.message());
+          }
       }
     } catch (Throwable e) {
       e.printStackTrace();
