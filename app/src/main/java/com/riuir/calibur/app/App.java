@@ -48,7 +48,7 @@ public class App extends Application  {
         initBugly();
         initX5Web();
         initAlbum();
-        Constants.AUTH_TOKEN = SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN);
+        Constants.AUTH_TOKEN = UserSystem.getInstance().getUserToken();
         Constants.ISLOGIN = UserSystem.getInstance().isLogin();
     }
 

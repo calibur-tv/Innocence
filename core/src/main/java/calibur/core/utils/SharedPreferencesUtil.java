@@ -16,11 +16,7 @@ public final class SharedPreferencesUtil {
 
   public static void putString(String key, String value) {
     SharedPreferences sp = FoundationContextHolder.getContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
-    if (key.equals(ISharedPreferencesKeys.MOBILE_TOKEN)){
-      sp.edit().putString(key,"Bearer "+ value).apply();
-    }else {
-      sp.edit().putString(key, value).apply();
-    }
+    sp.edit().putString(key, value).apply();
   }
 
   public static String getString(String key) {

@@ -132,7 +132,6 @@ public class CardShowInfoActivity extends BaseActivity {
         Intent intent = getIntent();
         cardID = intent.getIntExtra("cardID",0);
         LogUtils.d("cardInfo","cardID = "+cardID);
-        LogUtils.d("cardInfo","userToken = "+Constants.AUTH_TOKEN);
         setBackBtn();
         setAdapter();
         isFirstLoad = true;

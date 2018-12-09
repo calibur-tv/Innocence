@@ -104,6 +104,7 @@
             android:paddingRight="15dp"
             android:text="发送"
             android:gravity="center"
+            android:layout_gravity="center_vertical"
             android:textSize="13sp"
             android:textColor="@color/color_FFFFFFFF"
             android:background="@drawable/app_bg_btn_send"

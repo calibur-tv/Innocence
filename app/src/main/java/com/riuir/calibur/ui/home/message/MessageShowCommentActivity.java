@@ -121,7 +121,6 @@ public class MessageShowCommentActivity extends BaseActivity {
         reply_id = intent.getIntExtra("reply_id",0);
         main_card_id = intent.getIntExtra("main_card_id",0);
         type = intent.getStringExtra("type");
-        LogUtils.d("messageShow","comment_id = "+comment_id+",reply_id = "+reply_id+",main_card_id = "+main_card_id+",type = "+type);
         setListener();
         setNet();
     }
