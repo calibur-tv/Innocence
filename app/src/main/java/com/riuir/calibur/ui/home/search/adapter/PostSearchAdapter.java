@@ -142,7 +142,11 @@ public class PostSearchAdapter extends BaseQuickAdapter<SearchAnimeInfo.SearchAn
             littleGroup.setVisibility(View.GONE);
             bigOne.setVisibility(View.VISIBLE);
 
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
+            GlideUtils.loadImageView(context,
+                    GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),
+                            GlideUtils.FULL_SCREEN,
+                            item.getImages().get(0).getHeight()),
+                    bigOne);
 
         } else {
             littleGroup.setVisibility(View.VISIBLE);

@@ -15,7 +15,13 @@ import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.templates.renders.BookmarksTemplateRender;
+import calibur.core.templates.renders.EditorTemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
+import calibur.core.templates.renders.NoticeTemplateRender;
+import calibur.core.templates.renders.NotificationTemplateRender;
+import calibur.core.templates.renders.PostDetailPageTemplateRender;
+import calibur.core.templates.renders.ReviewTemplateRender;
+import calibur.core.templates.renders.TransactionsTemplateRender;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.AppUtil;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
@@ -93,14 +99,15 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         maintabBottombar.setOnSingleClickListener(this);
 
         setCheckVersion();
-        TemplateRenderEngine.getInstance().setTemplateRender(new ImageDetailPageTemplateRender());
-        TemplateRenderEngine.getInstance().setTemplateRender(new BookmarksTemplateRender());
-        TemplateRenderEngine.getInstance().checkAllTemplateForUpdate();
+        downloadAndCheckTemplates();
+
 
         if (Constants.userInfoData == null){
             Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
         }
     }
+
+
 
     @Override
     protected void onResume() {
@@ -153,7 +160,18 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                     super.onFailure(code, errorMsg);
                 }
             });
+    }
 
+    private void downloadAndCheckTemplates() {
+        TemplateRenderEngine.getInstance().setTemplateRender(new ImageDetailPageTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new BookmarksTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new EditorTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new NoticeTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new ReviewTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new PostDetailPageTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new NotificationTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new TransactionsTemplateRender());
+        TemplateRenderEngine.getInstance().checkAllTemplateForUpdate();
     }
 
     private void setIsVerUpDate() {

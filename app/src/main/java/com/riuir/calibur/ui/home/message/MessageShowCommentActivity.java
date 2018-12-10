@@ -217,7 +217,8 @@ public class MessageShowCommentActivity extends BaseActivity {
                 commentImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 GlideUtils.loadImageView(MessageShowCommentActivity.this,
                         GlideUtils.setImageUrl(MessageShowCommentActivity.this,
-                                commentData.getImages().get(i).getUrl(),GlideUtils.HALF_SCREEN)
+                                commentData.getImages().get(i).getUrl(),GlideUtils.HALF_SCREEN,
+                                commentData.getImages().get(i).getHeight())
                         ,commentImage);
                 commentImageLayout.addView(commentImage);
             }

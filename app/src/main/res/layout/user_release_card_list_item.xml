@@ -97,7 +97,7 @@
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/user_release_list_item_big_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="170dp"
             android:visibility="gone"
             android:layout_marginTop="10dp"
             android:transitionName="preview_card_picture"

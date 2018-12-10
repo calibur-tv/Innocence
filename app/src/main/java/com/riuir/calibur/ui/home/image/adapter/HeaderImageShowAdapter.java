@@ -39,7 +39,7 @@ public class HeaderImageShowAdapter extends BaseQuickAdapter<ImageShowInfoPrimac
         ViewGroup.LayoutParams params = imageView.getLayoutParams();
         params.height = height;
         GlideUtils.loadImageView(context,
-                GlideUtils.setImageUrl(context,item.getUrl(),GlideUtils.FULL_SCREEN),
+                GlideUtils.setImageUrl(context,item.getUrl(),GlideUtils.FULL_SCREEN,String.valueOf(item.getHeight())),
                 imageView);
 
         helper.addOnClickListener(R.id.image_show_info_header_image_list_adapter_image);

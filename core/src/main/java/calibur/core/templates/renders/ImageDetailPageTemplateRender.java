@@ -1,9 +1,13 @@
 package calibur.core.templates.renders;
 
 import calibur.core.http.models.TemplateModel;
+import calibur.core.manager.UserSystem;
 import calibur.core.templates.TemplateDownloadManager;
 import calibur.core.utils.ISharedPreferencesKeys;
 import com.samskivert.mustache.Template;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * author : J.Chou
@@ -15,9 +19,14 @@ import com.samskivert.mustache.Template;
 public class ImageDetailPageTemplateRender extends BaseTemplateRender {
 
   @Override public String getTemplateRenderData(String renderStr) {
-    return null;
+    Map<String, String> data = new HashMap<>();
+    data.put("data", renderStr);
+    data.put("token", UserSystem.getInstance().getUserToken());
+    Template template = getRenderTemplate();
+    return template != null ? template.execute(data) : "";
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Override public Template getRenderTemplate() {
     if (mTemplate != null) return mTemplate;
     return mTemplate = getTemplateFromLocal();

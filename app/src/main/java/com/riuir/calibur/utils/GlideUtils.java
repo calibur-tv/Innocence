@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -304,13 +305,32 @@ public class GlideUtils {
             imageUrl = url;
         }
 
-//        if (imageUrl.contains("gif")){
-//        }else {
-//            imageUrl = imageUrl+"/format/webp";
-//        }
         LogUtils.d("activetrending","image url finish = "+imageUrl);
 
 
+        return imageUrl;
+    }
+
+    public static String setImageUrl(Context context,String url,int style,String pictureHeight){
+
+        if (url.contains(Constants.API_IMAGE_BASE_URL)){
+        }else {
+            url = Constants.API_IMAGE_BASE_URL+url;
+        }
+
+        String imageUrl = "";
+        int height = 0;
+        try {
+            height = Integer.valueOf(pictureHeight);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        if (height<4096){
+            imageUrl = setImageUrl(context,url,style);
+        }else {
+            imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/x4096";
+        }
+        LogUtils.d("picture_img_url","url = "+imageUrl);
         return imageUrl;
     }
 
@@ -324,12 +344,8 @@ public class GlideUtils {
         }
 
         String imageUrl = "";
-
 //        imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/"+width+"x/format/webp";
         imageUrl = url+"?imageMogr2/auto-orient/strip/thumbnail/"+width+"x";
-
-        LogUtils.d("activetrendingWWW","image url finish = "+imageUrl);
-
         return imageUrl;
     }
 
@@ -350,12 +366,8 @@ public class GlideUtils {
         }else {
             px = width;
         }
-
         imageUrl = url+"?imageMogr2/auto-orient/strip/gravity/Center/crop/"+px+"x"+px
                     +"/thumbnail/"+(screenWidth/3)+"x/format/webp";
-
-        LogUtils.d("activetrendingTTT","image url finish = "+imageUrl);
-
 
         return imageUrl;
     }
@@ -413,6 +425,8 @@ public class GlideUtils {
                 ",heigth = "+h+" , width = "+w);
 
         double height = (screenWidth/pictureNumber-padding)*m;
+
+        if (height>4096) height=4096;
 
         return DensityUtils.dp2px(context, (float) height);
     }

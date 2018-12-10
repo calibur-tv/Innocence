@@ -164,16 +164,12 @@ public class CardActiveListAdapter extends BaseQuickAdapter<MainTrendingInfo.Mai
             littleGroup.setVisibility(View.GONE);
             bigOne.setVisibility(View.VISIBLE);
 
-//            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
-//
-//            params.height = GlideUtils.getPostListImageHeightDp(context,Integer.parseInt(item.getImages().get(0).getHeight()),
-//                    Integer.parseInt(item.getImages().get(0).getWidth()),30,1);
-//            bigOne.setLayoutParams(params);
-
-//            GlideUtils.loadImageViewRoundedCorners(context, GlideUtils.setImageCropHeightUrl(context,item.getImages().get(0).getUrl(),
-//                    Integer.parseInt(item.getImages().get(0).getWidth()),Integer.parseInt(item.getImages().get(0).getHeight())), bigOne,15);
-
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
+            GlideUtils.loadImageView(context,
+                    GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),
+                            GlideUtils.FULL_SCREEN,
+                            item.getImages().get(0).getHeight()
+                            ),
+                    bigOne);
 
         } else {
             littleGroup.setVisibility(View.VISIBLE);

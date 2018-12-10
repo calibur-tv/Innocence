@@ -139,14 +139,17 @@ public class ReleaseCardListAdapter extends BaseQuickAdapter<MainTrendingInfo.Ma
         } else if (item.getImages().size() == 1) {
             littleGroup.setVisibility(View.GONE);
 
-            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
-            params.height = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(0).getHeight()),
-                    Integer.parseInt(item.getImages().get(0).getWidth()),30,1);
-            bigOne.setLayoutParams(params);
+//            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
+//            params.height = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getImages().get(0).getHeight()),
+//                    Integer.parseInt(item.getImages().get(0).getWidth()),30,1);
+//            bigOne.setLayoutParams(params);
 
             bigOne.setVisibility(View.VISIBLE);
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
-
+            GlideUtils.loadImageView(context,
+                    GlideUtils.setImageUrl(context,item.getImages().get(0).getUrl(),
+                            GlideUtils.FULL_SCREEN,
+                            item.getImages().get(0).getHeight()),
+                    bigOne);
         } else {
             littleGroup.setVisibility(View.VISIBLE);
             bigOne.setVisibility(View.GONE);

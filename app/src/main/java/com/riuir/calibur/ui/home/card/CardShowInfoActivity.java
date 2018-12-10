@@ -414,7 +414,10 @@ public class CardShowInfoActivity extends BaseActivity {
                 primacyImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
                 GlideUtils.loadImageView(CardShowInfoActivity.this,
-                        GlideUtils.setImageUrl(CardShowInfoActivity.this,primacyData.getPost().getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                        GlideUtils.setImageUrl(CardShowInfoActivity.this,
+                                primacyData.getPost().getImages().get(i).getUrl(),
+                                GlideUtils.FULL_SCREEN,
+                                primacyData.getPost().getImages().get(i).getHeight()),
                         primacyImageView);
 
                 final int finalI = i;

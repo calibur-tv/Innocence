@@ -54,16 +54,18 @@ public class ReplyCardListAdapter extends BaseQuickAdapter<UserReplyCardInfo.Use
         } else if (item.getPost().getImages().size() == 1) {
             littleGroup.setVisibility(View.GONE);
 
-            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
-
-            params.height = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getPost().getImages().get(0).getHeight()),
-                    Integer.parseInt(item.getPost().getImages().get(0).getWidth()),30,1);
-            bigOne.setLayoutParams(params);
+//            ViewGroup.LayoutParams params = bigOne.getLayoutParams();
+//
+//            params.height = GlideUtils.getImageHeightDp(context,Integer.parseInt(item.getPost().getImages().get(0).getHeight()),
+//                    Integer.parseInt(item.getPost().getImages().get(0).getWidth()),30,1);
+//            bigOne.setLayoutParams(params);
 
             bigOne.setVisibility(View.VISIBLE);
-            GlideUtils.loadImageView(context, GlideUtils.setImageUrl(context,item.getPost().getImages().get(0).getUrl(),GlideUtils.FULL_SCREEN), bigOne);
-
-
+            GlideUtils.loadImageView(context,
+                    GlideUtils.setImageUrl(context,item.getPost().getImages().get(0).getUrl(),
+                            GlideUtils.FULL_SCREEN,
+                            item.getPost().getImages().get(0).getHeight()),
+                    bigOne);
         } else {
             littleGroup.setVisibility(View.VISIBLE);
             bigOne.setVisibility(View.GONE);

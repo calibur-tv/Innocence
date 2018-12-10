@@ -148,10 +148,7 @@ public class WebViewActivity extends BaseActivity {
     }
 
     private void setWithdrawals() {
-
-        String bookMarks = TemplateRenderEngine.getInstance().getTemplateRender(TemplateRenderEngine.BOOKMARKS).getTemplateRenderData("");
-        webView.loadDataWithBaseURL(null,bookMarks,"text/html","utf-8",null);
-
+        WebTemplatesUtils.loadTemplates(webView,TemplateRenderEngine.BOOKMARKS,"");
     }
 
     @Override

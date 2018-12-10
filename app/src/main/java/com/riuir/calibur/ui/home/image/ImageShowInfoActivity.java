@@ -395,12 +395,15 @@ public class ImageShowInfoActivity extends BaseActivity {
                     DensityUtils.dp2px(ImageShowInfoActivity.this,12),
                     DensityUtils.dp2px(ImageShowInfoActivity.this,4));
             primacyImageView.setLayoutParams(params);
-            primacyImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            primacyImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 primacyImageView.setTransitionName("ToPreviewImageActivity");
             }
             GlideUtils.loadImageView(ImageShowInfoActivity.this,
-                    GlideUtils.setImageUrl(ImageShowInfoActivity.this,primacyData.getSource().getUrl(),GlideUtils.FULL_SCREEN),
+                    GlideUtils.setImageUrl(ImageShowInfoActivity.this,
+                            primacyData.getSource().getUrl(),
+                            GlideUtils.FULL_SCREEN,
+                            String.valueOf(primacyData.getSource().getHeight())),
                     primacyImageView);
 
             primacyImageView.setOnClickListener(new View.OnClickListener() {

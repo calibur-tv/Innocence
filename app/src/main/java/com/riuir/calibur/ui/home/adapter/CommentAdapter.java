@@ -250,7 +250,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                     params1.height = height1;
                     commentMainImageView1.setLayoutParams(params1);
                     GlideUtils.loadImageView(context,
-                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            GlideUtils.setImageUrl(context,
+                                    item.getImages().get(i).getUrl(),
+                                    GlideUtils.FULL_SCREEN,
+                                    item.getImages().get(i).getHeight()),
                             commentMainImageView1);
                     break;
                 case 1:
@@ -260,7 +263,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                     params2 = commentMainImageView2.getLayoutParams();
                     params2.height = height2;
                     GlideUtils.loadImageView(context,
-                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            GlideUtils.setImageUrl(context,
+                                    item.getImages().get(i).getUrl(),
+                                    GlideUtils.FULL_SCREEN,
+                                    item.getImages().get(i).getHeight()),
                             commentMainImageView2);
                     break;
                 case 2:
@@ -270,7 +276,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                     params3 = commentMainImageView3.getLayoutParams();
                     params3.height = height3;
                     GlideUtils.loadImageView(context,
-                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            GlideUtils.setImageUrl(context,
+                                    item.getImages().get(i).getUrl(),
+                                    GlideUtils.FULL_SCREEN,
+                                    item.getImages().get(i).getHeight()),
                             commentMainImageView3);
                     break;
                 case 3:
@@ -280,7 +289,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                     params4 = commentMainImageView4.getLayoutParams();
                     params4.height = height4;
                     GlideUtils.loadImageView(context,
-                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            GlideUtils.setImageUrl(context,
+                                    item.getImages().get(i).getUrl(),
+                                    GlideUtils.FULL_SCREEN,
+                                    item.getImages().get(i).getHeight()),
                             commentMainImageView4);
                     break;
                 case 4:
@@ -290,7 +302,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                     params5 = commentMainImageView5.getLayoutParams();
                     params5.height = height5;
                     GlideUtils.loadImageView(context,
-                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            GlideUtils.setImageUrl(context,
+                                    item.getImages().get(i).getUrl(),
+                                    GlideUtils.FULL_SCREEN,
+                                    item.getImages().get(i).getHeight()),
                             commentMainImageView5);
                     break;
                 case 5:
@@ -300,7 +315,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                     params6 = commentMainImageView6.getLayoutParams();
                     params6.height = height6;
                     GlideUtils.loadImageView(context,
-                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            GlideUtils.setImageUrl(context,
+                                    item.getImages().get(i).getUrl(),
+                                    GlideUtils.FULL_SCREEN,
+                                    item.getImages().get(i).getHeight()),
                             commentMainImageView6);
                     break;
                 case 6:
@@ -310,7 +328,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                     params7 = commentMainImageView7.getLayoutParams();
                     params7.height = height7;
                     GlideUtils.loadImageView(context,
-                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            GlideUtils.setImageUrl(context,
+                                    item.getImages().get(i).getUrl(),
+                                    GlideUtils.FULL_SCREEN,
+                                    item.getImages().get(i).getHeight()),
                             commentMainImageView7);
                     break;
                 case 7:
@@ -320,7 +341,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                     params8 = commentMainImageView8.getLayoutParams();
                     params8.height = height8;
                     GlideUtils.loadImageView(context,
-                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            GlideUtils.setImageUrl(context,
+                                    item.getImages().get(i).getUrl(),
+                                    GlideUtils.FULL_SCREEN,
+                                    item.getImages().get(i).getHeight()),
                             commentMainImageView8);
                     break;
                 case 8:
@@ -330,7 +354,10 @@ public class CommentAdapter extends BaseQuickAdapter<TrendingShowInfoCommentMain
                     params9 = commentMainImageView9.getLayoutParams();
                     params9.height = height9;
                     GlideUtils.loadImageView(context,
-                            GlideUtils.setImageUrl(context,item.getImages().get(i).getUrl(),GlideUtils.FULL_SCREEN),
+                            GlideUtils.setImageUrl(context,
+                                    item.getImages().get(i).getUrl(),
+                                    GlideUtils.FULL_SCREEN,
+                                    item.getImages().get(i).getHeight()),
                             commentMainImageView9);
                     break;
                 default:

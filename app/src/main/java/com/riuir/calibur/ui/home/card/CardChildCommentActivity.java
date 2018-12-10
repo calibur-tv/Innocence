@@ -160,7 +160,8 @@ public class CardChildCommentActivity extends BaseActivity {
                 commentImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 GlideUtils.loadImageView(CardChildCommentActivity.this,
                         GlideUtils.setImageUrl(CardChildCommentActivity.this,
-                                mainComment.getImages().get(i).getUrl(),GlideUtils.HALF_SCREEN)
+                                mainComment.getImages().get(i).getUrl(),GlideUtils.HALF_SCREEN,
+                                mainComment.getImages().get(i).getHeight())
                         ,commentImage);
                 commentImageLayout.addView(commentImage);
             }

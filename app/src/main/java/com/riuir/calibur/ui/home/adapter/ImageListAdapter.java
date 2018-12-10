@@ -59,7 +59,9 @@ public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTren
         }
 
         GlideUtils.loadImageView(context,
-                GlideUtils.setImageUrl(mContext,item.getSource().getUrl(),GlideUtils.HALF_SCREEN),
+                GlideUtils.setImageUrl(mContext,item.getSource().getUrl(),
+                        GlideUtils.HALF_SCREEN,
+                        String.valueOf(item.getSource().getHeight())),
                 img);
         helper.setText(R.id.main_image_list_item_image_name,item.getName());
 

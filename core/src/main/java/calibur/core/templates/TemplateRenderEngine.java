@@ -5,7 +5,10 @@ import calibur.core.templates.renders.EditorTemplateRender;
 import calibur.core.templates.renders.ITemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
 import calibur.core.templates.renders.NoticeTemplateRender;
+import calibur.core.templates.renders.NotificationTemplateRender;
+import calibur.core.templates.renders.PostDetailPageTemplateRender;
 import calibur.core.templates.renders.ReviewTemplateRender;
+import calibur.core.templates.renders.TransactionsTemplateRender;
 import calibur.foundation.callback.CallBack1;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import com.samskivert.mustache.Mustache;
@@ -34,6 +37,9 @@ public class TemplateRenderEngine {
   public static final String NOTICE = "notice";
   //漫评详情页的模板
   public static final String REVIEW = "review";
+  public static final String POST = "post";
+  public static final String NOTIFICATION = "notification";
+  public static final String TRANSACTIONS = "transactions";
 
   private static TemplateRenderEngine sInstance;
   private ITemplateRender editorTemplateRender;
@@ -41,6 +47,9 @@ public class TemplateRenderEngine {
   private ITemplateRender bookmarksTemplateRender;
   private ITemplateRender noticeTemplateRender;
   private ITemplateRender reviewTemplateRender;
+  private ITemplateRender postDetailPageTemplateRender;
+  private ITemplateRender notificationTemplateRender;
+  private ITemplateRender transactionsTemplateRender;
 
   public static TemplateRenderEngine getInstance() {
     if (sInstance == null) {
@@ -68,6 +77,15 @@ public class TemplateRenderEngine {
     } else if (render instanceof ReviewTemplateRender) {
       render.setTemplateName("ReviewTemplate");
       reviewTemplateRender = render;
+    }else if (render instanceof PostDetailPageTemplateRender) {
+      render.setTemplateName("PostDetailPageTemplate");
+      postDetailPageTemplateRender = render;
+    }else if (render instanceof NotificationTemplateRender) {
+      render.setTemplateName("NotificationTemplate");
+      notificationTemplateRender = render;
+    }else if (render instanceof TransactionsTemplateRender) {
+      render.setTemplateName("TransactionsTemplate");
+      transactionsTemplateRender = render;
     }
   }
 
@@ -83,6 +101,12 @@ public class TemplateRenderEngine {
         return noticeTemplateRender;
       case REVIEW:
         return reviewTemplateRender;
+      case POST:
+        return postDetailPageTemplateRender;
+      case NOTIFICATION:
+        return notificationTemplateRender;
+      case TRANSACTIONS:
+        return transactionsTemplateRender;
       default:
         break;
     }
@@ -95,6 +119,9 @@ public class TemplateRenderEngine {
     checkBookmarksTemplateForUpdate();
     checkNoticeTemplateForUpdate();
     checkReviewTemplateForUpdate();
+    checkPostDetailPageTemplateForUpdate();
+    checkNotificationTemplateForUpdate();
+    checkTransactionTemplateForUpdate();
   }
 
   public void checkEditorTemplateForUpdate() {
@@ -114,9 +141,21 @@ public class TemplateRenderEngine {
   }
 
   public void checkReviewTemplateForUpdate() {
-    if(reviewTemplateRender != null)
-      reviewTemplateRender.updateTemplateIfNecessary(REVIEW);
+    if(reviewTemplateRender != null) reviewTemplateRender.updateTemplateIfNecessary(REVIEW);
   }
+
+  public void checkPostDetailPageTemplateForUpdate() {
+    if(postDetailPageTemplateRender != null) postDetailPageTemplateRender.updateTemplateIfNecessary(POST);
+  }
+
+  public void checkNotificationTemplateForUpdate() {
+    if(notificationTemplateRender != null) notificationTemplateRender.updateTemplateIfNecessary(NOTIFICATION);
+  }
+
+  public void checkTransactionTemplateForUpdate() {
+    if(transactionsTemplateRender != null) transactionsTemplateRender.updateTemplateIfNecessary(TRANSACTIONS);
+  }
+
 
   public void initTemplateRender(final String templateName, final CallBack1<Template> callback) {
     Observable.create(new ObservableOnSubscribe<Template>() {

@@ -106,7 +106,9 @@ public class CardPreviewPictureActivity extends BaseActivity {
             final PhotoView photoView = view.findViewById(R.id.preview_view_pager_item_photo_view);
             final TextView saveBtn = view.findViewById(R.id.preview_view_pager_item_save_btn);
             GlideUtils.loadImageView(CardPreviewPictureActivity.this,
-                    GlideUtils.setImageUrl(CardPreviewPictureActivity.this,url,GlideUtils.FULL_SCREEN),photoView);
+                    GlideUtils.setImageUrl(CardPreviewPictureActivity.this
+                            ,url,GlideUtils.FULL_SCREEN)
+                    ,photoView);
 
             photoView.setOnClickListener(new View.OnClickListener() {
                 @Override

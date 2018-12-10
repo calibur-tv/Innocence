@@ -45,7 +45,7 @@
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/user_reply_list_item_card_big_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="170dp"
                 android:scaleType="centerCrop"
                 app:riv_oval="false"
                 app:riv_corner_radius="15dp"
