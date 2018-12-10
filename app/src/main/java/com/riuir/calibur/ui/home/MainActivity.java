@@ -18,7 +18,7 @@ import calibur.core.templates.renders.BookmarksTemplateRender;
 import calibur.core.templates.renders.EditorTemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
 import calibur.core.templates.renders.NoticeTemplateRender;
-import calibur.core.templates.renders.NotificationTemplateRender;
+import calibur.core.templates.renders.NotificationsTemplateRender;
 import calibur.core.templates.renders.PostDetailPageTemplateRender;
 import calibur.core.templates.renders.ReviewTemplateRender;
 import calibur.core.templates.renders.TransactionsTemplateRender;
@@ -169,7 +169,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         TemplateRenderEngine.getInstance().setTemplateRender(new NoticeTemplateRender());
         TemplateRenderEngine.getInstance().setTemplateRender(new ReviewTemplateRender());
         TemplateRenderEngine.getInstance().setTemplateRender(new PostDetailPageTemplateRender());
-        TemplateRenderEngine.getInstance().setTemplateRender(new NotificationTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new NotificationsTemplateRender());
         TemplateRenderEngine.getInstance().setTemplateRender(new TransactionsTemplateRender());
         TemplateRenderEngine.getInstance().checkAllTemplateForUpdate();
     }

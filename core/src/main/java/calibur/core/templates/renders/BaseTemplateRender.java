@@ -1,6 +1,8 @@
 package calibur.core.templates.renders;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
+
 import calibur.core.http.OkHttpClientManager;
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
@@ -111,7 +113,7 @@ public abstract class BaseTemplateRender implements ITemplateRender{
       return Mustache.compiler().compile(temp);
     } catch (IOException e) {
       e.printStackTrace();
-      BusinessBus.post(null, "mainModule/postException2Bugly", e);
+      Log.d("checkWebData","basedata e= "+e.toString());
     }
     return null;
   }

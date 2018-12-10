@@ -1,5 +1,7 @@
 package calibur.core.templates.renders;
 
+import android.util.Log;
+
 import com.samskivert.mustache.Template;
 
 import java.util.HashMap;
@@ -10,7 +12,7 @@ import calibur.core.manager.UserSystem;
 import calibur.core.templates.TemplateDownloadManager;
 import calibur.core.utils.ISharedPreferencesKeys;
 
-public class NotificationTemplateRender extends BaseTemplateRender {
+public class NotificationsTemplateRender extends BaseTemplateRender {
     @Override
     public String getTemplateRenderData(String renderStr) {
         Map<String, String> data = new HashMap<>();

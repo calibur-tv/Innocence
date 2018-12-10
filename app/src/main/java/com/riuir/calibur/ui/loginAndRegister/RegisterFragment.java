@@ -18,6 +18,7 @@ import butterknife.BindView;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.geetest.params.VerificationCodeBody;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
 import calibur.core.utils.ISharedPreferencesKeys;
 import calibur.core.utils.SharedPreferencesUtil;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
@@ -307,6 +308,7 @@ public class RegisterFragment extends BaseFragment {
                             ToastUtils.showShort(getContext(),"注册成功！✿✿ヽ(°▽°)ノ✿");
                             //注册成功 返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
                             SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, s);
+                            UserSystem.getInstance().updateUserToken(s);
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = s;
                             BangumiAllListUtils.setBangumiAllList(getContext());

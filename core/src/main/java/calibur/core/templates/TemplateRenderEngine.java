@@ -5,7 +5,7 @@ import calibur.core.templates.renders.EditorTemplateRender;
 import calibur.core.templates.renders.ITemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
 import calibur.core.templates.renders.NoticeTemplateRender;
-import calibur.core.templates.renders.NotificationTemplateRender;
+import calibur.core.templates.renders.NotificationsTemplateRender;
 import calibur.core.templates.renders.PostDetailPageTemplateRender;
 import calibur.core.templates.renders.ReviewTemplateRender;
 import calibur.core.templates.renders.TransactionsTemplateRender;
@@ -38,7 +38,7 @@ public class TemplateRenderEngine {
   //漫评详情页的模板
   public static final String REVIEW = "review";
   public static final String POST = "post";
-  public static final String NOTIFICATION = "notification";
+  public static final String NOTIFICATIONS = "notifications";
   public static final String TRANSACTIONS = "transactions";
 
   private static TemplateRenderEngine sInstance;
@@ -80,8 +80,8 @@ public class TemplateRenderEngine {
     }else if (render instanceof PostDetailPageTemplateRender) {
       render.setTemplateName("PostDetailPageTemplate");
       postDetailPageTemplateRender = render;
-    }else if (render instanceof NotificationTemplateRender) {
-      render.setTemplateName("NotificationTemplate");
+    }else if (render instanceof NotificationsTemplateRender) {
+      render.setTemplateName("NotificationsTemplate");
       notificationTemplateRender = render;
     }else if (render instanceof TransactionsTemplateRender) {
       render.setTemplateName("TransactionsTemplate");
@@ -103,7 +103,7 @@ public class TemplateRenderEngine {
         return reviewTemplateRender;
       case POST:
         return postDetailPageTemplateRender;
-      case NOTIFICATION:
+      case NOTIFICATIONS:
         return notificationTemplateRender;
       case TRANSACTIONS:
         return transactionsTemplateRender;
@@ -149,7 +149,7 @@ public class TemplateRenderEngine {
   }
 
   public void checkNotificationTemplateForUpdate() {
-    if(notificationTemplateRender != null) notificationTemplateRender.updateTemplateIfNecessary(NOTIFICATION);
+    if(notificationTemplateRender != null) notificationTemplateRender.updateTemplateIfNecessary(NOTIFICATIONS);
   }
 
   public void checkTransactionTemplateForUpdate() {

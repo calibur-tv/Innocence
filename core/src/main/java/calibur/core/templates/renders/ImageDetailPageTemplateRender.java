@@ -19,11 +19,7 @@ import java.util.Map;
 public class ImageDetailPageTemplateRender extends BaseTemplateRender {
 
   @Override public String getTemplateRenderData(String renderStr) {
-    Map<String, String> data = new HashMap<>();
-    data.put("data", renderStr);
-    data.put("token", UserSystem.getInstance().getUserToken());
-    Template template = getRenderTemplate();
-    return template != null ? template.execute(data) : "";
+    return null;
   }
 
   @SuppressWarnings("ResultOfMethodCallIgnored")

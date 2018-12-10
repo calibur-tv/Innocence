@@ -14,8 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -30,12 +30,14 @@ import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.home.message.MessageShowCommentActivity;
 import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
+import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.tencent.smtt.sdk.WebView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ import butterknife.BindView;
 import calibur.core.http.models.user.UserNotificationInfo;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.UserSystem;
+import calibur.core.templates.TemplateRenderEngine;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,6 +74,9 @@ public class MessageFragment extends BaseFragment {
 
     @BindView(R.id.main_user_message_list_view)
     RecyclerView messageListView;
+
+    @BindView(R.id.main_user_message_webView)
+    WebView msgWebView;
 
     @BindView(R.id.main_user_message_refresh_layout)
     SwipeRefreshLayout messageRefreshLayout;
@@ -179,7 +185,6 @@ public class MessageFragment extends BaseFragment {
                             for (int i = 0; i < notificationList.size(); i++) {
                                 LogUtils.d("notificationData","msg list = "+notificationList.get(i).toString());
                             }
-
                             if (isFirstLoad){
                                 baseNotificationList = userNotificationInfo.getList();
                                 setFirstData();
@@ -190,6 +195,7 @@ public class MessageFragment extends BaseFragment {
                             if (isRefresh){
                                 setRefresh();
                             }
+                            setWebView();
                             setEmptyView();
                         }
 
@@ -214,6 +220,12 @@ public class MessageFragment extends BaseFragment {
             //未登录状态
             ToastUtils.showShort(getContext(),"登录之后才能查看消息哦！");
         }
+    }
+
+    private void setWebView() {
+        Gson gson= new Gson();
+        String data = gson.toJson(notificationData,UserNotificationInfo.class);
+        WebTemplatesUtils.loadTemplates(msgWebView,TemplateRenderEngine.NOTIFICATIONS,data);
     }
 
     private void setAdapter() {

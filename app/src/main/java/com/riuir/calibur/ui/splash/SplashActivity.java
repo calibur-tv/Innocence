@@ -32,7 +32,6 @@ public class SplashActivity extends BaseActivity {
     isLogin = UserSystem.getInstance().isLogin();
     LogUtils.d("Bearer", "token = " + AUTH_TOKEN);
     if (isLogin) {
-      handler.sendEmptyMessageDelayed(0, 1500);
       setNetToGetUserInfo();
     } else {
       handler.sendEmptyMessageDelayed(1, 1500);
@@ -52,6 +51,7 @@ public class SplashActivity extends BaseActivity {
           @Override
           public void onFailure(int code, String errorMsg) {
             super.onFailure(code, errorMsg);
+            handler.sendEmptyMessageDelayed(1, 0);
           }
         });
   }
