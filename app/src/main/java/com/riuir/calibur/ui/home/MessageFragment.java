@@ -195,7 +195,7 @@ public class MessageFragment extends BaseFragment {
                             if (isRefresh){
                                 setRefresh();
                             }
-                            setWebView();
+//                            setWebView();
                             setEmptyView();
                         }
 

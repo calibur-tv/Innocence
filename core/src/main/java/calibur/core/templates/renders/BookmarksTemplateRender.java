@@ -20,7 +20,7 @@ public class BookmarksTemplateRender extends BaseTemplateRender {
   @Override public String getTemplateRenderData(String renderStr) {
     Map<String, String> data = new HashMap<>();
     data.put("data", renderStr);
-    data.put("token", UserSystem.getInstance().getUserToken());
+    data.put("token", "Bearer "+ UserSystem.getInstance().getUserToken());
     Template template = getRenderTemplate();
     return template != null ? template.execute(data) : "";
   }

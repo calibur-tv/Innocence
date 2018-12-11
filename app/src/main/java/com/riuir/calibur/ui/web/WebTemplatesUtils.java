@@ -26,6 +26,7 @@ public class WebTemplatesUtils {
      */
     public static void loadTemplates(WebView webView,String tempName,String renderStr){
         String baseData = TemplateRenderEngine.getInstance().getTemplateRender(tempName).getTemplateRenderData(renderStr);
+        LogUtils.d("checkWebData","baseData = "+baseData);
         webView.loadDataWithBaseURL(null,baseData,"text/html","utf-8",null);
     }
 }

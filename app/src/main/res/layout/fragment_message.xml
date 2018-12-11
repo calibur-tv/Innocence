@@ -47,11 +47,12 @@
             android:id="@+id/main_user_message_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"></android.support.v7.widget.RecyclerView>
+            android:visibility="visible"></android.support.v7.widget.RecyclerView>
         <com.tencent.smtt.sdk.WebView
             android:id="@+id/main_user_message_webView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"></com.tencent.smtt.sdk.WebView>
+            android:layout_height="match_parent"
+            android:visibility="gone"></com.tencent.smtt.sdk.WebView>
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

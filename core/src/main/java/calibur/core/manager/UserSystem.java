@@ -35,7 +35,7 @@ public class UserSystem {
 
   public String getUserToken() {
     if(TextUtils.isEmpty(mUserToken))
-      mUserToken ="Bearer "+SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN);
+      mUserToken =SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN);
     return mUserToken;
   }
 

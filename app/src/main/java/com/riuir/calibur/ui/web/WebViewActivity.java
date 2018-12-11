@@ -133,7 +133,7 @@ public class WebViewActivity extends BaseActivity {
 
     private void setInviteLoad() {
         Map<String,String> header = new HashMap<>();
-        header.put("Authorization",UserSystem.getInstance().getUserToken());
+        header.put("Authorization","Bearer "+ UserSystem.getInstance().getUserToken());
 
         webView.loadUrl("https://m.calibur.tv/app/invite",header);
     }

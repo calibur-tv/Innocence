@@ -151,6 +151,10 @@
                             android:layout_height="wrap_content"
                             android:paddingBottom="10dp"
                             ></android.support.v7.widget.RecyclerView>
+                        <com.tencent.smtt.sdk.WebView
+                            android:id="@+id/image_show_info_webview"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"></com.tencent.smtt.sdk.WebView>
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>

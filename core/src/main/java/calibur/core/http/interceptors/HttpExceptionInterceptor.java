@@ -82,7 +82,7 @@ public class HttpExceptionInterceptor implements Interceptor {
       Request.Builder builder = new Request.Builder().url(freshUrl)
           .post(RequestBody.create(MediaType.parse(""), ""))
           .headers(headers)
-          .header("Authorization", UserSystem.getInstance().getUserToken());
+          .header("Authorization","Bearer "+ UserSystem.getInstance().getUserToken());
       Request request = builder.build();
       okhttp3.Response response = client.newCall(request).execute();
       if (response.isSuccessful()) {

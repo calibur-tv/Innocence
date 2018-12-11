@@ -33,6 +33,7 @@ import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.adapter.HeaderImageShowAdapter;
+import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
@@ -42,6 +43,7 @@ import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.tencent.smtt.sdk.WebView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,7 +53,9 @@ import butterknife.BindView;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
 import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
+import calibur.core.http.models.user.UserNotificationInfo;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.templates.TemplateRenderEngine;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,6 +73,9 @@ public class ImageShowInfoActivity extends BaseActivity {
     ReplyAndCommentView commentView;
     @BindView(R.id.image_show_info_list_header_card_more)
     AppHeaderPopupWindows headerMore;
+
+    @BindView(R.id.image_show_info_webview)
+    WebView webView;
 
     int primacyId;
 
@@ -164,6 +171,7 @@ public class ImageShowInfoActivity extends BaseActivity {
                         public void onSuccess(ImageShowInfoPrimacy imageShowInfoPrimacy) {
                             primacyData = imageShowInfoPrimacy;
                             //两次网络请求都完成后开始加载数据
+                            setWeb();
                             if (isFirstLoad){
                                 isFirstLoad = false;
                                 if (refreshLayout!=null&&imageShowInfoListView!=null){
@@ -247,6 +255,13 @@ public class ImageShowInfoActivity extends BaseActivity {
                     });
         }
 
+    }
+
+    private void setWeb() {
+        Gson gson= new Gson();
+        String data = gson.toJson(primacyData,ImageShowInfoPrimacy.class);
+        LogUtils.d("checkWebData","data = "+data);
+        WebTemplatesUtils.loadTemplates(webView,TemplateRenderEngine.IMAGEDETAIL,data);
     }
 
     private void setAdapter() {
