@@ -5,6 +5,7 @@ import calibur.core.http.dns.HttpDns;
 import calibur.core.http.interceptors.CacheInterceptor;
 import calibur.core.http.interceptors.HeaderInterceptor;
 import calibur.core.http.interceptors.HttpExceptionInterceptor;
+import calibur.core.http.interceptors.RefreshUserTokenInterceptor;
 import calibur.foundation.FoundationContextHolder;
 import io.reactivex.annotations.NonNull;
 import java.io.File;
@@ -89,6 +90,7 @@ public class OkHttpClientManager {
       }
     }
     builder.addInterceptor(new CacheInterceptor());
+    builder.addInterceptor(new RefreshUserTokenInterceptor());
     builder.addInterceptor(new HttpExceptionInterceptor());
     builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
     //Executor executor = ContextUtils.getExecutor();

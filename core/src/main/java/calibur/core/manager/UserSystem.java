@@ -30,8 +30,10 @@ public class UserSystem {
   }
 
   public synchronized void updateUserToken(String token) {
-    mUserToken = "Bearer " + token;
-    SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, token);
+    if (!TextUtils.isEmpty(token)) {
+      mUserToken = "Bearer " + token;
+      SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, token);
+    }
   }
 
   public String getUserToken() {
@@ -47,7 +49,7 @@ public class UserSystem {
   }
 
   public boolean isLogin() {
-    return !TextUtils.isEmpty(SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN));
+    return !TextUtils.isEmpty(getUserToken());
   }
 
   public Observable<Object> getUserInfo(long userId) {
