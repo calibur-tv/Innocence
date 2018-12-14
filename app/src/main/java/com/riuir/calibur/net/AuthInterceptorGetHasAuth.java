@@ -22,7 +22,7 @@ public class AuthInterceptorGetHasAuth implements Interceptor {
             Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
         }
         Headers headers = request.headers().newBuilder()
-                .add("Authorization","Bearer "+UserSystem.getInstance().getUserToken())
+                .add("Authorization",UserSystem.getInstance().getUserToken())
                 .add("Accept", "application/x.api."+ Constants.API_VERSION+"+json")
                 .add("X-APP-NAME","Sakura")
                 .add("X-APP-VERSION", VersionUtils.getLocalVersionName())

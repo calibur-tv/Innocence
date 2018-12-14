@@ -5,4 +5,18 @@
       Id="d07841a6e4"
       AppKey="7d2003f7-9ede-4d8b-90d3-bc385ad5518a"/>
 
+  <QQ
+      AppId="101524534"
+      AppKey="37511a5e03bac36e263be19feb53c629"
+      RedirectUrl=""/>
+
+  <!-- 微信开放平台 -->
+  <Wechat
+      AppId="wx067af14ab53fb0ad"
+      AppSecret="8718f300c48c6b2877cf3278eb19b27b"/>
+
+  <!-- 微信公众平台 -->
+  <WechatMoments
+      AppId="wx36b50dae30706bd0"
+      AppSecret="5d99f8d17e9009cd70c4d2d0f598558d"/>
 </DevInfor>

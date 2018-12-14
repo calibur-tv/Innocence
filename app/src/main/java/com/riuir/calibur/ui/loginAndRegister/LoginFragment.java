@@ -179,7 +179,6 @@ public class LoginFragment extends BaseFragment {
                             // 登录成功
                             ToastUtils.showShort(getContext(),"登录成功！✿✿ヽ(°▽°)ノ✿");
                             //返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                            SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, s);
                             UserSystem.getInstance().updateUserToken(s);
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = s;

@@ -15,12 +15,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import butterknife.BindView;
-import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.geetest.params.VerificationCodeBody;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.UserSystem;
-import calibur.core.utils.ISharedPreferencesKeys;
-import calibur.core.utils.SharedPreferencesUtil;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
 import com.riuir.calibur.R;
@@ -35,7 +32,6 @@ import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.geetest.GeetestUtils;
 import java.util.HashMap;
 import java.util.Map;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -307,7 +303,6 @@ public class RegisterFragment extends BaseFragment {
                         public void onSuccess(String s) {
                             ToastUtils.showShort(getContext(),"注册成功！✿✿ヽ(°▽°)ノ✿");
                             //注册成功 返回JWT-Token(userToken) 存储下来 作为判断用户是否登录的凭证
-                            SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, s);
                             UserSystem.getInstance().updateUserToken(s);
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = s;

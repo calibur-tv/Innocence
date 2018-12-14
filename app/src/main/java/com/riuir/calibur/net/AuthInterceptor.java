@@ -42,7 +42,7 @@ public class AuthInterceptor implements Interceptor {
 //        String ANDROID_ID = Installation.id(App.instance());
 
         Headers headers = request.headers().newBuilder()
-                .add("Authorization","Bearer "+UserSystem.getInstance().getUserToken())
+                .add("Authorization",UserSystem.getInstance().getUserToken())
                 .add("Accept", "application/x.api."+ Constants.API_VERSION+"+json")
                 .add("X-APP-NAME","Sakura")
                 .add("X-APP-VERSION", VersionUtils.getLocalVersionName())

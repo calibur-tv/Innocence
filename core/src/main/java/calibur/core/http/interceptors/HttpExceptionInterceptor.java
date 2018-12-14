@@ -64,7 +64,7 @@ public class HttpExceptionInterceptor implements Interceptor {
     Request modifiedRequest = request.newBuilder()
         .url(url)
         .headers(headers)
-        .header("Authorization", newMobileToken)// Add new user token
+        .header("Authorization", UserSystem.getInstance().getUserToken())// Add new user token
         .build();
 
     okhttp3.Response modifiedResponse = chain.proceed(modifiedRequest);
@@ -82,14 +82,13 @@ public class HttpExceptionInterceptor implements Interceptor {
       Request.Builder builder = new Request.Builder().url(freshUrl)
           .post(RequestBody.create(MediaType.parse(""), ""))
           .headers(headers)
-          .header("Authorization","Bearer "+ UserSystem.getInstance().getUserToken());
+          .header("Authorization", UserSystem.getInstance().getUserToken());
       Request request = builder.build();
       okhttp3.Response response = client.newCall(request).execute();
       if (response.isSuccessful()) {
         String newToken = response.header(ISharedPreferencesKeys.MOBILE_TOKEN);
         if (!TextUtils.isEmpty(newToken)) {
           UserSystem.getInstance().updateUserToken(newToken);
-          SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, newToken);
           return newToken;
         }
       }else {

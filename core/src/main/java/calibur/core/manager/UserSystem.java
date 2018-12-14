@@ -30,12 +30,13 @@ public class UserSystem {
   }
 
   public synchronized void updateUserToken(String token) {
-    mUserToken = token;
+    mUserToken = "Bearer " + token;
+    SharedPreferencesUtil.putString(ISharedPreferencesKeys.MOBILE_TOKEN, token);
   }
 
   public String getUserToken() {
     if(TextUtils.isEmpty(mUserToken))
-      mUserToken =SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN);
+      mUserToken = "Bearer " + SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN);
     return mUserToken;
   }
 
