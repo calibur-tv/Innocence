@@ -3,6 +3,7 @@ package com.riuir.calibur;
 import android.content.Context;
 import calibur.foundation.bus.BusinessBusObject;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.utils.Constants;
 import com.tencent.bugly.crashreport.CrashReport;
 
 /**
@@ -24,6 +25,9 @@ public class MainModuleBusAcceptor extends BusinessBusObject {
       String msg = (String) param[0];
       ToastUtils.toastShort(msg);
     } else if ("mainModule/postException2Bugly".equalsIgnoreCase(bizName)) {
+      if (Constants.userInfoData != null) {
+        CrashReport.setUserId(Constants.userInfoData.getNickname());
+      }
       Throwable throwable = (Throwable) param[0];
       CrashReport.postCatchedException(throwable);
     }
