@@ -25,6 +25,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 
+import calibur.foundation.FoundationContextHolder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
@@ -47,6 +48,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 import static butterknife.internal.Utils.arrayOf;
 
@@ -86,19 +88,19 @@ public class SaveImageFromViewUtils {
 
         @Override
         protected Bitmap doInBackground(String... params) {
-
-            String imgUrl =  params[0];
-            final Bitmap[] bm = new Bitmap[1];
             try {
+                String imgUrl =  params[0];
                 File imgPath = Glide.with(context)
                         .load(imgUrl)
                         .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                         .get();
-                Bitmap bitmap=BitmapFactory.decodeFile(imgPath.getAbsolutePath());
-                return bitmap;
-            } catch (Exception ex) {
-                return null;
+                return BitmapFactory.decodeFile(imgPath.getAbsolutePath());
+            } catch (OutOfMemoryError ex) {
+                Glide.get(FoundationContextHolder.getContext()).clearMemory();
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
+            return null;
         }
 
         @Override

@@ -9,6 +9,7 @@ import calibur.core.manager.UserSystem;
 import calibur.core.utils.ISharedPreferencesKeys;
 import calibur.core.utils.SharedPreferencesUtil;
 import calibur.foundation.FoundationContextHolder;
+import com.bumptech.glide.Glide;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
@@ -157,7 +158,7 @@ public class App extends Application  {
         super.onTrimMemory(level);
         switch (level) {
             case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
-                //TODO:
+                Glide.get(instance).clearMemory();
                 break;
         }
     }

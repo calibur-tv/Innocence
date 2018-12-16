@@ -1,12 +1,11 @@
 package com.riuir.calibur.ui.widget;
 
-import android.app.Activity;
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -17,21 +16,15 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
-
+import butterknife.BindView;
 import com.riuir.calibur.R;
-import com.riuir.calibur.assistUtils.PermissionUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
-
 import com.riuir.calibur.utils.GlideUtils;
-
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-
-import butterknife.BindView;
 
 public class SelectorImagesActivity extends BaseActivity {
 
@@ -66,14 +59,22 @@ public class SelectorImagesActivity extends BaseActivity {
         return R.layout.activity_selector_images;
     }
 
+    @SuppressLint("CheckResult")
     @Override
     protected void onInit() {
         allImageUrls = new ArrayList<>();
         selectorImageUrls = new ArrayList<>();
         Intent intent = getIntent();
         code = intent.getIntExtra("code",0);
-        getImages();
-
+        RxPermissions rxPermissions = new RxPermissions(this);
+        rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(grand -> {
+            if (grand) {
+                getImages();
+            } else {
+                ToastUtils.showShort(SelectorImagesActivity.this, "未取得授权，无法选择图片");
+                finish();
+            }
+        });
         setListener();
     }
 
@@ -118,7 +119,6 @@ public class SelectorImagesActivity extends BaseActivity {
      * 利用ContentProvider扫描手机中的图片，此方法在运行在子线程中
      */
     private void getImages() {
-        PermissionUtils.chekReadAndWritePermission(SelectorImagesActivity.this);
         if (!Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED)) {
                 return;
@@ -153,26 +153,6 @@ public class SelectorImagesActivity extends BaseActivity {
             }).start();
         }
     }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PermissionUtils.REQUEST_EXTERNAL_STORAGE: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // 权限被用户同意，可以做你要做的事情了。
-                    getImages();
-                } else {
-                    // 权限被用户拒绝了，可以提示用户,关闭界面等等。
-                    ToastUtils.showShort(SelectorImagesActivity.this, "未取得授权，无法选择图片");
-                    finish();
-                }
-                return;
-            }
-        }
-    }
-
 
     @Override
     protected void handler(Message msg) {

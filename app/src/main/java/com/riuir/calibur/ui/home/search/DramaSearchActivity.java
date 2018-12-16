@@ -1,7 +1,5 @@
 package com.riuir.calibur.ui.home.search;
 
-import android.content.Intent;
-
 import android.graphics.Color;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -9,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -20,17 +17,16 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import calibur.core.http.models.anime.BangumiAllList;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.DensityUtils;
@@ -38,34 +34,12 @@ import com.riuir.calibur.assistUtils.KeyBoardUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
-import com.riuir.calibur.data.Event;
-
-import com.riuir.calibur.data.anime.SearchAnimeInfo;
 import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.Drama.DramaActivity;
-import com.riuir.calibur.ui.home.Drama.DramaCardFragment;
-import com.riuir.calibur.ui.home.Drama.DramaCartoonFragment;
-import com.riuir.calibur.ui.home.Drama.DramaImageFragment;
-import com.riuir.calibur.ui.home.Drama.DramaRoleFragment;
-import com.riuir.calibur.ui.home.Drama.DramaScoreFragment;
-import com.riuir.calibur.ui.home.Drama.DramaSeasonVideoFragment;
-import com.riuir.calibur.ui.home.search.adapter.DramaSearchAdapter;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
-import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
-import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
-import com.tencent.bugly.crashreport.CrashReport;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
-import calibur.core.http.models.anime.BangumiAllList;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class DramaSearchActivity extends BaseActivity {
 
@@ -293,7 +267,7 @@ public class DramaSearchActivity extends BaseActivity {
 
             if (charSequence.length()!=0){
                 editClear.setVisibility(View.VISIBLE);
-                if (searchEdit!=null&&!DramaSearchActivity.this.isDestroyed()){
+                if (searchEdit!=null&&!DramaSearchActivity.this.isFinishing()){
                     searchPopup.showAsDropDown(searchEdit,0,0);
                 }
             }else {

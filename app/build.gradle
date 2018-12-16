@@ -155,6 +155,8 @@ dependencies {
 
     implementation "com.newrelic.agent.android:android-agent:5.21.2"
 
+    implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
+
 }
 
 task configPackageType {
