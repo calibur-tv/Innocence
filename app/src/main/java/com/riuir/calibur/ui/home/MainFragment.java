@@ -13,7 +13,6 @@ import android.util.TypedValue;
 import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
-import com.riuir.calibur.ui.widget.BannerLoopView;
 import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.utils.ActivityUtils;
 
@@ -40,11 +39,11 @@ public class MainFragment extends BaseFragment {
     @BindView(R.id.main_search_layout)
     SearchLayout searchLayout;
 
-    MainCardActiveFragment mainCardActiveFragment;
+    MainPostListFragment mainCardActiveFragment;
 //    MainCardHotFragment mainCardHotFragment;
 //    MainCardNewFragment mainCardNewFragment;
-    MainImageFragment mainImageFragment;
-    MainScoreFragment mainScoreFragment;
+    MainImageListFragment mainImageFragment;
+    MainScoreListFragment mainScoreFragment;
 
     /**
      * 获取当前屏幕的密度
@@ -136,17 +135,17 @@ public class MainFragment extends BaseFragment {
             switch (position) {
                 case 0:
                     if (mainCardActiveFragment == null){
-                        mainCardActiveFragment = new MainCardActiveFragment();
+                        mainCardActiveFragment = new MainPostListFragment();
                     }
                     return mainCardActiveFragment;
                 case 1:
                     if (mainImageFragment == null) {
-                        mainImageFragment = new MainImageFragment();
+                        mainImageFragment = new MainImageListFragment();
                     }
                     return mainImageFragment;
                 case 2:
                     if (mainScoreFragment == null) {
-                        mainScoreFragment = new MainScoreFragment();
+                        mainScoreFragment = new MainScoreListFragment();
                     }
                     return mainScoreFragment;
 

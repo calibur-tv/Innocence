@@ -1,15 +1,8 @@
 package com.riuir.calibur.ui.web;
 
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
-import com.tencent.smtt.sdk.WebView;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
+import android.webkit.WebView;
 import calibur.core.templates.TemplateRenderEngine;
+import com.riuir.calibur.assistUtils.LogUtils;
 
 public class WebTemplatesUtils {
     /**

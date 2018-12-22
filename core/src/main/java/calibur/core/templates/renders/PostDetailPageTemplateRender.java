@@ -1,5 +1,6 @@
 package calibur.core.templates.renders;
 
+import calibur.foundation.utils.AppUtil;
 import com.samskivert.mustache.Template;
 
 import java.util.HashMap;
@@ -12,11 +13,17 @@ import calibur.core.utils.ISharedPreferencesKeys;
 
 public class PostDetailPageTemplateRender extends BaseTemplateRender {
 
+    public PostDetailPageTemplateRender() {
+       setTemplateName("PostDetailPageTemplate");
+    }
+
     @Override
     public String getTemplateRenderData(String renderStr) {
         Map<String, String> data = new HashMap<>();
         data.put("data", renderStr);
         data.put("token", UserSystem.getInstance().getUserToken());
+        data.put("name", "Android");
+        data.put("version", AppUtil.getAppVersionName());
         Template template = getRenderTemplate();
         return template != null ? template.execute(data) : "";
     }

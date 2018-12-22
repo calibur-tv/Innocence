@@ -45,7 +45,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainScoreFragment extends BaseFragment {
+public class MainScoreListFragment extends BaseFragment {
 
     String seenIds = "";
     List<Integer> seenIdList = new ArrayList<>();

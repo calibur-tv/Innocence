@@ -9,4 +9,10 @@ dependencies {
 
   // logger
   api "com.orhanobut:logger:$logger_version"
+
+  //kotlin
+  api "org.jetbrains.kotlin:kotlin-stdlib-jre7:${kotlinVersion}"
+  api "org.jetbrains.anko:anko-sdk15:${ankoVersion}"
+  api "org.jetbrains.anko:anko-sqlite:${ankoVersion}"
+  api "org.jetbrains.anko:anko-support-v4:${ankoVersion}"
 }

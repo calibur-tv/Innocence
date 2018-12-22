@@ -47,12 +47,12 @@
             android:id="@+id/main_user_message_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"></android.support.v7.widget.RecyclerView>
-        <com.tencent.smtt.sdk.WebView
+            android:visibility="visible"/>
+        <calibur.core.widget.webview.AthenaWebView
             android:id="@+id/main_user_message_webView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"></com.tencent.smtt.sdk.WebView>
+            android:visibility="gone"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

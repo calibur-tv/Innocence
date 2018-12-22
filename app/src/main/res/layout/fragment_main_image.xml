@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.MainImageFragment">
+    tools:context=".ui.home.MainImageListFragment">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/main_image_refresh_layout"

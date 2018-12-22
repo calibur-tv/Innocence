@@ -1,6 +1,5 @@
 package com.riuir.calibur.ui.home.image;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Message;
@@ -12,53 +11,40 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import calibur.core.http.models.base.ResponseBean;
+import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
+import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.templates.TemplateRenderEngine;
+import calibur.core.widget.webview.AthenaWebView;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
-import com.riuir.calibur.data.Event;
-
-import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
-import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.image.adapter.HeaderImageShowAdapter;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
-import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
-import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.GlideUtils;
-import com.tencent.bugly.crashreport.CrashReport;
-import com.tencent.smtt.sdk.WebView;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
-import calibur.core.http.models.base.ResponseBean;
-import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
-import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
-import calibur.core.http.models.user.UserNotificationInfo;
-import calibur.core.http.observer.ObserverWrapper;
-import calibur.core.templates.TemplateRenderEngine;
-import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ImageShowInfoActivity extends BaseActivity {
@@ -75,7 +61,7 @@ public class ImageShowInfoActivity extends BaseActivity {
     AppHeaderPopupWindows headerMore;
 
     @BindView(R.id.image_show_info_webview)
-    WebView webView;
+    AthenaWebView webView;
 
     int primacyId;
 

@@ -7,6 +7,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
+import calibur.core.manager.UserSystem;
+import calibur.core.templates.TemplateRenderEngine;
+import calibur.core.widget.webview.AthenaWebView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -14,18 +17,13 @@ import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.utils.Constants;
 import com.tencent.smtt.sdk.WebSettings;
-import com.tencent.smtt.sdk.WebView;
 import java.util.HashMap;
 import java.util.Map;
-
-import butterknife.BindView;
-import calibur.core.manager.UserSystem;
-import calibur.core.templates.TemplateRenderEngine;
 
 public class WebViewActivity extends BaseActivity {
 
     @BindView(R.id.web_view_activity_web_view)
-    WebView webView;
+    AthenaWebView webView;
     @BindView(R.id.web_view_activity_back_btn)
     ImageView backBtn;
     @BindView(R.id.web_view_activity_web_view_swipe_refresh)
@@ -86,7 +84,6 @@ public class WebViewActivity extends BaseActivity {
         }
 
         setClient();
-        webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         String cacheDirPath = App.instance().getFilesDir().getAbsolutePath()+APP_CACAHE_DIRNAME;

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import calibur.foundation.config.PackageTypeConfig;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
@@ -51,7 +52,7 @@ import retrofit2.Response;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainImageFragment extends BaseFragment {
+public class MainImageListFragment extends BaseFragment {
 
     String seenIds = "";
     List<Integer> seenIdList = new ArrayList<>();

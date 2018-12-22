@@ -1,29 +1,12 @@
 package com.riuir.calibur.ui.web;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Bundle;
-
-
-import com.riuir.calibur.app.App;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
-import com.tencent.smtt.export.external.interfaces.SslError;
-import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
-import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
-import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
-import com.tencent.smtt.sdk.WebSettings;
-import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
-
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import calibur.core.manager.UserSystem;
-import calibur.core.templates.TemplateRenderEngine;
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 
 public class MyWebViewClient extends WebViewClient {

@@ -25,13 +25,13 @@
                 android:id="@+id/web_view_activity_web_view_swipe_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <com.tencent.smtt.sdk.WebView
+                <calibur.core.widget.webview.AthenaWebView
                     android:id="@+id/web_view_activity_web_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/color_FFFFFFFF"
                     >
-                </com.tencent.smtt.sdk.WebView>
+                </calibur.core.widget.webview.AthenaWebView>
             </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
         <ImageView

@@ -92,20 +92,36 @@ public class TemplateRenderEngine {
   public ITemplateRender getTemplateRender(String name) {
     switch (name) {
       case EDITOR:
+        if(editorTemplateRender == null)
+          editorTemplateRender = new EditorTemplateRender();
         return editorTemplateRender;
       case IMAGEDETAIL:
+        if(imageDetailPageTemplateRender == null)
+          imageDetailPageTemplateRender = new ImageDetailPageTemplateRender();
         return imageDetailPageTemplateRender;
       case BOOKMARKS:
+        if(bookmarksTemplateRender == null)
+          bookmarksTemplateRender = new BookmarksTemplateRender();
         return bookmarksTemplateRender;
       case NOTICE:
+        if(noticeTemplateRender == null)
+          noticeTemplateRender = new NoticeTemplateRender();
         return noticeTemplateRender;
       case REVIEW:
+        if(reviewTemplateRender == null)
+          reviewTemplateRender = new ReviewTemplateRender();
         return reviewTemplateRender;
       case POST:
+        if(postDetailPageTemplateRender == null)
+          postDetailPageTemplateRender = new PostDetailPageTemplateRender();
         return postDetailPageTemplateRender;
       case NOTIFICATIONS:
+        if(notificationTemplateRender == null)
+          notificationTemplateRender = new NotificationsTemplateRender();
         return notificationTemplateRender;
       case TRANSACTIONS:
+        if(transactionsTemplateRender == null)
+          transactionsTemplateRender = new TransactionsTemplateRender();
         return transactionsTemplateRender;
       default:
         break;
@@ -145,7 +161,7 @@ public class TemplateRenderEngine {
   }
 
   public void checkPostDetailPageTemplateForUpdate() {
-    if(postDetailPageTemplateRender != null) postDetailPageTemplateRender.updateTemplateIfNecessary(POST);
+    if(getTemplateRender(TemplateRenderEngine.POST) != null) postDetailPageTemplateRender.updateTemplateIfNecessary(POST);
   }
 
   public void checkNotificationTemplateForUpdate() {

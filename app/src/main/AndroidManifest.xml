@@ -204,7 +204,9 @@
         <activity android:name=".ui.widget.replyAndComment.ReplyAndCommentActivity"
             android:theme="@style/replyAndComment"
             android:windowSoftInputMode="stateVisible|adjustResize"
-            ></activity>
+            />
+        <activity android:name=".ui.home.card.PostDetailActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

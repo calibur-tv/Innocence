@@ -1,6 +1,8 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'newrelic'
 apply plugin: 'bugly'
 //符号表

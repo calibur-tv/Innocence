@@ -1,6 +1,5 @@
 package com.riuir.calibur.ui.home;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,45 +9,35 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
-import com.riuir.calibur.R;
-import com.riuir.calibur.app.App;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
-import com.riuir.calibur.data.Event;
-
-import com.riuir.calibur.net.ApiGet;
-import com.riuir.calibur.ui.common.BaseFragment;
-import com.riuir.calibur.ui.home.adapter.CardActiveListAdapter;
-import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.widget.BannerLoopView;
-import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
-import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
-import com.riuir.calibur.utils.Constants;
-import com.tencent.bugly.crashreport.CrashReport;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.followList.MainTrendingInfo;
 import calibur.core.http.models.followList.params.FolllowListParams;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.config.PackageTypeConfig;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.riuir.calibur.R;
+import com.riuir.calibur.app.App;
+import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
+import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.ui.home.adapter.CardActiveListAdapter;
+import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
+import com.riuir.calibur.ui.widget.BannerLoopView;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import java.util.ArrayList;
+import java.util.List;
 import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainCardActiveFragment extends BaseFragment {
+public class MainPostListFragment extends BaseFragment {
     String seenIds = "";
     List<Integer> seenIdList = new ArrayList<>();
 
@@ -258,6 +247,15 @@ public class MainCardActiveFragment extends BaseFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //item被点击，跳转页面
+                if (PackageTypeConfig.isDebugEnv()) {
+                    Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+                    MainTrendingInfo.MainTrendingInfoList cardInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
+                    int cardID = cardInfo.getId();
+                    intent.putExtra("cardID",cardID);
+                    startActivity(intent);
+                    return;
+                }
+
                 Intent intent = new Intent(getActivity(), CardShowInfoActivity.class);
                 MainTrendingInfo.MainTrendingInfoList cardInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
                 int cardID = cardInfo.getId();

@@ -3,6 +3,7 @@ package com.riuir.calibur.app;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.text.TextUtils;
 import calibur.core.http.CaliburHttpContext;
 import calibur.core.http.OkHttpClientManager;
 import calibur.core.http.RetrofitManager;
@@ -10,8 +11,22 @@ import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.bus.BusinessBusManager;
 import calibur.foundation.config.PackageTypeConfig;
 import com.newrelic.agent.android.NewRelic;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
 import com.riuir.calibur.BuildConfig;
+import com.riuir.calibur.utils.album.MyAlbumLoader;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.crashreport.CrashReport;
+import com.tencent.smtt.sdk.QbSdk;
+import com.yanzhenjie.album.Album;
+import com.yanzhenjie.album.AlbumConfig;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
+
+import static com.riuir.calibur.assistUtils.LogUtils.isDebug;
 
 /**
  * author : J.Chou
@@ -63,6 +78,101 @@ public class CaliburInitializer {
         if (android.os.Process.myPid() == appProcessInfo.pid) {
           return appProcessInfo.processName;
         }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 初始化日志工具
+   */
+
+  private void initLogger() {
+    PrettyFormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
+        .showThreadInfo(true)  // (Optional) Whether to show thread info or not. Default true
+        .tag("r_logger")   // (Optional) Global tag for every log. Default PRETTY_LOGGER
+        .build();
+    Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy) {
+      @Override
+      public boolean isLoggable(int priority, String tag) {
+        return BuildConfig.DEBUG;
+      }
+    });
+  }
+
+  /**
+   * 初始化腾讯bugly管理工具
+   */
+  private void initBugly() {
+    Context context = App.instance();
+    // 获取当前包名
+    String packageName = context.getPackageName();
+    // 获取当前进程名
+    String processName = getProcessName(android.os.Process.myPid());
+    // 设置是否为上报进程
+    CrashReport.UserStrategy strategy = new CrashReport.UserStrategy(context);
+    strategy.setUploadProcess(processName == null || processName.equals(packageName));
+    // 初始化Bugly
+    //        CrashReport.initCrashReport(context, "d07841a6e4", isDebug, strategy);
+    Bugly.init(context, "d07841a6e4", isDebug, strategy);
+  }
+
+  /**
+   * 初始化X5浏览器内核
+   */
+
+  private void initX5Web() {
+    QbSdk.PreInitCallback cb = new QbSdk.PreInitCallback() {
+      @Override
+      public void onViewInitFinished(boolean arg0) {
+        // TODO Auto-generated method stub            Log.d("app", " onViewInitFinished is " + arg0);
+        //x5内核初始化完成回调接口，此接口回调并表示已经加载起来了x5，有可能特殊情况下x5内核加载失败，切换到系统内核
+      }
+
+      @Override
+      public void onCoreInitFinished() {
+        // TODO Auto-generated method stub
+        //x5内核初始化完成回调接口，可通过参数判断是否加载起来了x5内核
+      }
+    };
+    //x5内核初始化接口
+    QbSdk.initX5Environment(App.instance(),  cb);
+
+  }
+
+  /**
+   * 初始化album
+   */
+  private void initAlbum() {
+    Album.initialize(AlbumConfig.newBuilder(App.instance())
+        .setAlbumLoader(new MyAlbumLoader())
+        .build());
+  }
+
+  /**
+   * 获取进程号对应的进程名
+   *
+   * @param pid 进程号
+   * @return 进程名
+   */
+  private static String getProcessName(int pid) {
+    BufferedReader reader = null;
+    try {
+      reader = new BufferedReader(new FileReader("/proc/" + pid + "/cmdline"));
+      String processName = reader.readLine();
+      if (!TextUtils.isEmpty(processName)) {
+        processName = processName.trim();
+      }
+      return processName;
+    } catch (Throwable throwable) {
+      throwable.printStackTrace();
+    } finally {
+      try {
+        if (reader != null) {
+          reader.close();
+        }
+      } catch (IOException exception) {
+        exception.printStackTrace();
       }
     }
     return null;

@@ -1,8 +1,6 @@
 package com.riuir.calibur.ui.loginAndRegister;
 
-import android.app.Activity;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,10 +11,6 @@ import android.util.TypedValue;
 
 import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.MainCardActiveFragment;
-import com.riuir.calibur.ui.home.MainFragment;
-import com.riuir.calibur.ui.home.MainImageFragment;
-import com.riuir.calibur.ui.home.MainScoreFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 
 import butterknife.BindView;

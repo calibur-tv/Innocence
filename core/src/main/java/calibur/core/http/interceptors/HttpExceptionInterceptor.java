@@ -56,7 +56,7 @@ public class HttpExceptionInterceptor implements Interceptor {
     Headers headers = request.headers();
     String newMobileToken = refreshToken(headers);
     if (TextUtils.isEmpty(newMobileToken)) {//token 刷新失败，也需要重新登录
-      BusinessBus.post(null, "mainApps/mobileTokenRefreshFailed", errorMessage);
+      BusinessBus.post(null, "mainModule/mobileTokenRefreshFailed", errorMessage);
       return response;
     }
     // Add new header to rejected request and retry it
@@ -69,7 +69,7 @@ public class HttpExceptionInterceptor implements Interceptor {
 
     okhttp3.Response modifiedResponse = chain.proceed(modifiedRequest);
     if (!modifiedResponse.isSuccessful()) {
-      BusinessBus.post(null, "mainApps/userVerificationFailed", errorMessage);
+      BusinessBus.post(null, "mainModule/userVerificationFailed", errorMessage);
       return response;
     }
     return modifiedResponse;
@@ -93,12 +93,12 @@ public class HttpExceptionInterceptor implements Interceptor {
         }
       }else {
           if (response.message()!=null){
-            BusinessBus.post(null, "mainApps/postException2Bugly", response.message());
+            BusinessBus.post(null, "mainModule/postException2Bugly", response.message());
           }
       }
     } catch (Throwable e) {
       e.printStackTrace();
-      BusinessBus.post(null, "mainApps/postException2Bugly", e);
+      BusinessBus.post(null, "mainModule/postException2Bugly", e);
     }
     return "";
   }

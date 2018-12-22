@@ -4,7 +4,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,16 +11,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import calibur.core.http.models.user.UserNotificationInfo;
+import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.manager.UserSystem;
+import calibur.core.templates.TemplateRenderEngine;
+import calibur.core.widget.webview.AthenaWebView;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
-import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
-import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.DramaVideoPlayActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
@@ -35,24 +37,9 @@ import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.ActivityUtils;
-import com.riuir.calibur.utils.Constants;
-import com.tencent.bugly.crashreport.CrashReport;
-import com.tencent.smtt.sdk.WebView;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import butterknife.BindView;
-import calibur.core.http.models.user.UserNotificationInfo;
-import calibur.core.http.observer.ObserverWrapper;
-import calibur.core.manager.UserSystem;
-import calibur.core.templates.TemplateRenderEngine;
-import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 /**
@@ -76,7 +63,7 @@ public class MessageFragment extends BaseFragment {
     RecyclerView messageListView;
 
     @BindView(R.id.main_user_message_webView)
-    WebView msgWebView;
+    AthenaWebView msgWebView;
 
     @BindView(R.id.main_user_message_refresh_layout)
     SwipeRefreshLayout messageRefreshLayout;

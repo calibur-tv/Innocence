@@ -166,6 +166,10 @@ public interface APIService {
     @GET("post/{id}/show")
     Observable<Response<ResponseBean<CardShowInfoPrimacy>>> getCallCardShowPrimacy(@Path("id")int id);
 
+    //获取帖子详情
+    @GET("post/{id}/show")
+    Observable<Response<ResponseBean<Object>>> getPostDetailData(@Path("id")int id);
+
     //获取图片详情
     @GET("image/{id}/show")
     Observable<Response<ResponseBean<ImageShowInfoPrimacy>>> getCallImageShowPrimacy(@Path("id")int id);

@@ -74,11 +74,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         try {
             onInit();
+            onLoadData();
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             BusinessBus.post(null, "mainModule/postException2Bugly", throwable);
         }
-
     }
 
     @Override
@@ -110,6 +110,8 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 初始化
      */
     protected abstract void onInit();
+
+    protected void onLoadData(){};
 
     /**
      * 是否注册事件分发
