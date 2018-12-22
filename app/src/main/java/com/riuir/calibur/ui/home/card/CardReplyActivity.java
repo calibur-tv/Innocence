@@ -1,14 +1,7 @@
 package com.riuir.calibur.ui.home.card;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Rect;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Message;
-import android.os.PersistableBundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,22 +10,17 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import butterknife.BindView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-
 import com.riuir.calibur.R;
-import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.widget.SelectorImagesActivity;
 import com.riuir.calibur.utils.GlideUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.BindView;
 
 public class CardReplyActivity extends BaseActivity  {
 
@@ -114,12 +102,6 @@ public class CardReplyActivity extends BaseActivity  {
         imageGridAdapter.setFooterView(view);
 
     }
-
-    @Override
-    protected void handler(Message msg) {
-
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

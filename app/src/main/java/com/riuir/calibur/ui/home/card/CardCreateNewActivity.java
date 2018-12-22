@@ -1,68 +1,17 @@
 package com.riuir.calibur.ui.home.card;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.geetest.sdk.Bind.GT3GeetestBindListener;
-import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
-import com.google.gson.Gson;
-import com.makeramen.roundedimageview.RoundedImageView;
-import com.qiniu.android.http.ResponseInfo;
-import com.qiniu.android.storage.Configuration;
-import com.qiniu.android.storage.UpCompletionHandler;
-import com.qiniu.android.storage.UploadManager;
-import com.riuir.calibur.R;
-import com.riuir.calibur.app.App;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.PermissionUtils;
-import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
-
-import com.riuir.calibur.data.Event;
-
-import com.riuir.calibur.data.qiniu.QiniuUpToken;
-import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterAnimeSettingActivity;
-import com.riuir.calibur.ui.home.Drama.dramaConfig.adapter.AnimeSettingTagAdapter;
-import com.riuir.calibur.ui.home.Drama.dramaConfig.choose.DramaMasterSettingChooseTagActivity;
-import com.riuir.calibur.ui.home.MineFragment;
-import com.riuir.calibur.ui.home.choose.CardChooseTagsActivity;
-import com.riuir.calibur.ui.home.choose.ChooseNewCardBangumiActivity;
-import com.riuir.calibur.ui.home.adapter.CreateCardImageGridAdapter;
-
-import com.riuir.calibur.ui.home.image.CreateImageAlbumActivity;
-import com.riuir.calibur.ui.widget.SelectorImagesActivity;
-import com.riuir.calibur.utils.Constants;
-import com.riuir.calibur.utils.GlideUtils;
-import com.riuir.calibur.utils.QiniuUtils;
-import com.riuir.calibur.utils.album.MyAlbumUtils;
-import com.riuir.calibur.utils.geetest.GeetestUtils;
-import com.suke.widget.SwitchButton;
-import com.yanzhenjie.album.AlbumFile;
-
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import calibur.core.http.models.anime.AnimeShowInfo;
 import calibur.core.http.models.create.CreateCard;
@@ -73,9 +22,31 @@ import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
+import com.makeramen.roundedimageview.RoundedImageView;
+import com.qiniu.android.storage.Configuration;
+import com.qiniu.android.storage.UploadManager;
+import com.riuir.calibur.R;
+import com.riuir.calibur.app.App;
+import com.riuir.calibur.assistUtils.PermissionUtils;
+import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.Drama.dramaConfig.adapter.AnimeSettingTagAdapter;
+import com.riuir.calibur.ui.home.MineFragment;
+import com.riuir.calibur.ui.home.adapter.CreateCardImageGridAdapter;
+import com.riuir.calibur.ui.home.choose.CardChooseTagsActivity;
+import com.riuir.calibur.ui.home.choose.ChooseNewCardBangumiActivity;
+import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.GlideUtils;
+import com.riuir.calibur.utils.QiniuUtils;
+import com.riuir.calibur.utils.album.MyAlbumUtils;
+import com.riuir.calibur.utils.geetest.GeetestUtils;
+import com.suke.widget.SwitchButton;
+import com.yanzhenjie.album.AlbumFile;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CardCreateNewActivity extends BaseActivity {
 
@@ -501,11 +472,6 @@ public class CardCreateNewActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         setCancelListener();
-    }
-
-    @Override
-    protected void handler(Message msg) {
-
     }
 
     private void setChooseFinishImageLoad(ArrayList<AlbumFile> albumFiles){

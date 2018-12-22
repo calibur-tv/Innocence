@@ -9,9 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-
-import com.bumptech.glide.Glide;
+import butterknife.BindView;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -19,10 +17,7 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.utils.GlideUtils;
 import com.riuir.calibur.utils.glide.SaveImageFromViewUtils;
-
 import java.util.ArrayList;
-
-import butterknife.BindView;
 
 public class CardPreviewPictureActivity extends BaseActivity {
 
@@ -79,11 +74,6 @@ public class CardPreviewPictureActivity extends BaseActivity {
                 previewViewpager.setCurrentItem(i);
             }
         }
-    }
-
-    @Override
-    protected void handler(Message msg) {
-
     }
 
     class PerviewPictureViewPagerAdapter extends PagerAdapter{

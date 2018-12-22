@@ -1,10 +1,7 @@
 package com.riuir.calibur.ui.home.card;
 
-import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,48 +12,34 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
-import com.riuir.calibur.R;
-import com.riuir.calibur.assistUtils.DensityUtils;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
-import com.riuir.calibur.assistUtils.activityUtils.RecyclerViewUtils;
-import com.riuir.calibur.assistUtils.TimeUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
-import com.riuir.calibur.data.Event;
-
-
-import com.riuir.calibur.net.ApiGet;
-import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.Drama.DramaActivity;
-import com.riuir.calibur.ui.home.adapter.CommentAdapter;
-import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
-import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
-import com.riuir.calibur.ui.widget.BangumiForShowView;
-import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
-import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
-import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
-import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
-import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
-import com.riuir.calibur.utils.Constants;
-import com.riuir.calibur.utils.GlideUtils;
-import com.tencent.bugly.crashreport.CrashReport;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
 import calibur.core.http.models.followList.post.CardShowInfoPrimacy;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.DensityUtils;
+import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.TimeUtils;
+import com.riuir.calibur.assistUtils.ToastUtils;
+import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
+import com.riuir.calibur.assistUtils.activityUtils.RecyclerViewUtils;
+import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
+import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.Drama.DramaActivity;
+import com.riuir.calibur.ui.home.adapter.CommentAdapter;
+import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
+import com.riuir.calibur.ui.widget.BangumiForShowView;
+import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
+import com.riuir.calibur.utils.GlideUtils;
+import java.util.ArrayList;
+import java.util.List;
 import retrofit2.Response;
 
 public class CardShowInfoActivity extends BaseActivity {
@@ -684,10 +667,6 @@ public class CardShowInfoActivity extends BaseActivity {
             }
         });
         commentView.setNetAndListener();
-    }
-    @Override
-    protected void handler(Message msg) {
-
     }
 
     public CommentAdapter getCommentAdapter(){

@@ -17,42 +17,27 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
-import com.google.gson.Gson;
-import com.riuir.calibur.R;
-import com.riuir.calibur.assistUtils.DensityUtils;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.TimeUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
-import com.riuir.calibur.data.Event;
-
-
-import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.adapter.CommentAdapter;
-import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
-import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
-import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
-import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
-import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
-import com.riuir.calibur.utils.GlideUtils;
-import com.tencent.bugly.crashreport.CrashReport;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import calibur.core.http.models.comment.TrendingChildCommentInfo;
 import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.DensityUtils;
+import com.riuir.calibur.assistUtils.TimeUtils;
+import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
+import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
+import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
+import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
+import com.riuir.calibur.utils.GlideUtils;
+import java.util.ArrayList;
+import java.util.List;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CardChildCommentActivity extends BaseActivity {
 
@@ -348,11 +333,6 @@ public class CardChildCommentActivity extends BaseActivity {
         failedView = new AppListFailedView(CardChildCommentActivity.this);
         failedView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         childCommentListAdapter.setEmptyView(failedView);
-    }
-
-    @Override
-    protected void handler(Message msg) {
-
     }
 
     public class CardChildCommentListAdapter extends BaseQuickAdapter<TrendingChildCommentInfo.TrendingChildCommentInfoList,BaseViewHolder>{

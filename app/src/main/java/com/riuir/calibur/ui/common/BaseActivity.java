@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,8 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected ApiGet apiGet,apiGetHasAuth;
     protected APIService apiService;
     protected CompositeDisposable compositeDisposable = null;
-
-    private View contentViewGroup;
+    private SwipeRefreshLayout mLoadView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,7 +126,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 子类处理消息
      * @param msg
      */
-    protected abstract void handler(Message msg);
+    protected void handler(Message msg) {}
 
     /**
      * [页面跳转]
@@ -190,7 +190,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param event 事件
      */
     protected void receiveEvent(Event event) {
-
     }
 
     /**
@@ -199,7 +198,18 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param event 粘性事件
      */
     protected void receiveStickyEvent(Event event) {
+    }
 
+    protected void setLoadingView(View view) {
+        this.mLoadView = (SwipeRefreshLayout) view;
+    }
+
+    protected void showLoading() {
+        if(mLoadView != null) mLoadView.setRefreshing(true);
+    }
+
+    protected void hideLoading() {
+        if(mLoadView != null) mLoadView.setRefreshing(false);
     }
 
     @Override

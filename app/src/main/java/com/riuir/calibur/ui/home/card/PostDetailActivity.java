@@ -1,13 +1,11 @@
 package com.riuir.calibur.ui.home.card;
 
 import android.os.Handler;
-import android.os.Message;
 import android.webkit.WebView;
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
-import calibur.core.jsbridge.JsBridgeContract;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
 import calibur.core.jsbridge.utils.JsBridgeUtil;
 import calibur.core.templates.TemplateRenderEngine;
@@ -48,9 +46,11 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
   }
 
   private void initCommentView() {
+    setLoadingView(findViewById(R.id.refresh_layout));
   }
 
   @Override protected void onLoadData() {
+    showLoading();
     RetrofitManager.getInstance().getService(APIService.class).getPostDetailData(postId)
         .compose(Rx2Schedulers.applyObservableAsync())
         .subscribe(new ObserverWrapper<Object>() {
@@ -62,16 +62,16 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
           @Override public void onFailure(int code, String errorMsg) {
             super.onFailure(code, errorMsg);
           }
+
+          @Override public void onComplete() {
+            hideLoading();
+          }
         });
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
-  }
-
-  @Override protected void handler(Message msg) {
-
   }
 
   @Override public void onPointerCaptureChanged(boolean hasCapture) {
