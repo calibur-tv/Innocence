@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * version: 1.0
  * description:可构建多个service并支持缓存
  */
-@SuppressWarnings({ "unchecked", "WeakerAccess" })
+@SuppressWarnings({ "unchecked", "WeakerAccess", "unused" })
 public class RetrofitManager {
 
   private OkHttpClient mOkHttpClient;

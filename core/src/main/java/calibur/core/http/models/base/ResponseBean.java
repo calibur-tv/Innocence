@@ -1,7 +1,6 @@
 package calibur.core.http.models.base;
 
 import calibur.core.http.error.HttpStatusCode;
-import java.io.Serializable;
 
 /**
  * author : J.Chou
@@ -10,7 +9,7 @@ import java.io.Serializable;
  * version: 1.0
  * description:
  */
-public class ResponseBean<T> implements Serializable, Cloneable {
+public class ResponseBean<T> implements IBaseResponse {
   /** HTTP status code. */
   protected int code;
   /** HTTP status message or null if unknown. */

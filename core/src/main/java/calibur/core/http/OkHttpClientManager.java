@@ -3,7 +3,6 @@ package calibur.core.http;
 import android.util.LruCache;
 import calibur.core.http.dns.HttpDns;
 import calibur.core.http.interceptors.CacheInterceptor;
-import calibur.core.http.interceptors.HeaderInterceptor;
 import calibur.core.http.interceptors.HttpExceptionInterceptor;
 import calibur.core.http.interceptors.RefreshUserTokenInterceptor;
 import calibur.foundation.FoundationContextHolder;
@@ -27,6 +26,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
  * version: 1.0
  * description:
  */
+@SuppressWarnings({ "unused", "ResultOfMethodCallIgnored", "WeakerAccess" })
 public class OkHttpClientManager {
 
   private static IHttpContext sContext;

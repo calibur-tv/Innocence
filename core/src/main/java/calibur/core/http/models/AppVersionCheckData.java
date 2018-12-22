@@ -1,5 +1,7 @@
 package calibur.core.http.models;
 
+import calibur.core.http.models.base.IBaseResponse;
+
 /**
  * author : J.Chou
  * e-mail : who_know_me@163.com
@@ -7,7 +9,7 @@ package calibur.core.http.models;
  * version: 1.0
  * description:
  */
-public class AppVersionCheckData {
+public class AppVersionCheckData implements IBaseResponse {
   private String latest_version;
   private boolean force_update;
   private String download_url;
