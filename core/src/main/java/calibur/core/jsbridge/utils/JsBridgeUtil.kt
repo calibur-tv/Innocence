@@ -11,7 +11,7 @@ import java.util.HashMap
  * description:
  */
 object JsBridgeUtil {
-  const val BRIDGE_NAME = "_AndroidBridge"
+  const val BRIDGE_NAME = "__AndroidBridge"
 
   fun httpHeaders(): Map<String, String> {
     val additionalHttpHeaders = HashMap<String, String>()

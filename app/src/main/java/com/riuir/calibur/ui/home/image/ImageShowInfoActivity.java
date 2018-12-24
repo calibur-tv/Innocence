@@ -16,11 +16,8 @@ import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
 import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
 import calibur.core.http.observer.ObserverWrapper;
-import calibur.core.templates.TemplateRenderEngine;
-import calibur.core.widget.webview.AthenaWebView;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -34,7 +31,6 @@ import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.ui.home.image.adapter.HeaderImageShowAdapter;
-import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
@@ -59,9 +55,6 @@ public class ImageShowInfoActivity extends BaseActivity {
     ReplyAndCommentView commentView;
     @BindView(R.id.image_show_info_list_header_card_more)
     AppHeaderPopupWindows headerMore;
-
-    @BindView(R.id.image_show_info_webview)
-    AthenaWebView webView;
 
     int primacyId;
 
@@ -156,8 +149,6 @@ public class ImageShowInfoActivity extends BaseActivity {
                         @Override
                         public void onSuccess(ImageShowInfoPrimacy imageShowInfoPrimacy) {
                             primacyData = imageShowInfoPrimacy;
-                            //两次网络请求都完成后开始加载数据
-                            setWeb();
                             if (isFirstLoad){
                                 isFirstLoad = false;
                                 if (refreshLayout!=null&&imageShowInfoListView!=null){
@@ -241,13 +232,6 @@ public class ImageShowInfoActivity extends BaseActivity {
                     });
         }
 
-    }
-
-    private void setWeb() {
-        Gson gson= new Gson();
-        String data = gson.toJson(primacyData,ImageShowInfoPrimacy.class);
-        LogUtils.d("checkWebData","data = "+data);
-        WebTemplatesUtils.loadTemplates(webView,TemplateRenderEngine.IMAGEDETAIL,data);
     }
 
     private void setAdapter() {

@@ -150,11 +150,6 @@
                             android:layout_height="wrap_content"
                             android:paddingBottom="10dp"
                             />
-                        <calibur.core.widget.webview.AthenaWebView
-                            android:id="@+id/image_show_info_webview"
-                            android:layout_width="match_parent"
-                            android:layout_height="200dp">
-                        </calibur.core.widget.webview.AthenaWebView>
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>

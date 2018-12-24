@@ -24,6 +24,9 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
     val jsFun = funs as IH5JsCallApp
     when (func) {
       IBaseJsCallApp.getUserInfo -> {
+        jsFun.getUserInfo()
+      }
+      IBaseJsCallApp.getDeviceInfo -> {
         jsFun.getDeviceInfo()
       }
     }

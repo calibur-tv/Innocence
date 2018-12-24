@@ -17,7 +17,6 @@ import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.utils.Constants;
 import java.util.Map;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
@@ -78,12 +77,11 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
 
   }
 
-  @Nullable @Override public String getDeviceInfo() {
+  @Override public String getDeviceInfo() {
     return null;
   }
 
-  @Nullable @Override public String getUserInfo() {
-    String userDataStr = JSONUtil.toJson(Constants.userInfoData);
-    return userDataStr;
+  @Override public String getUserInfo() {
+    return JSONUtil.toJson(Constants.userInfoData);
   }
 }
