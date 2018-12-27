@@ -1,7 +1,11 @@
 package com.riuir.calibur.ui.home.card;
 
 import android.os.Handler;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
+
+import butterknife.BindView;
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
 import calibur.core.http.observer.ObserverWrapper;
@@ -15,6 +19,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
 import java.util.Map;
 import org.json.JSONObject;
@@ -24,6 +29,12 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
   private WebView mWebView;
   public AbsJsBridge mJavaScriptNativeBridge;
   private int postId;
+
+  @BindView(R.id.card_show_info_back_btn)
+  ImageView backBtn;
+
+
+  ReplyAndCommentView commentView;
 
   @Override
   protected int getContentViewId() {
@@ -45,12 +56,18 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
   }
 
   private void initCommentView() {
+      backBtn.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              finish();
+          }
+      });
     setLoadingView(findViewById(R.id.refresh_layout));
   }
 
   @Override protected void onLoadData() {
     showLoading();
-    RetrofitManager.getInstance().getService(APIService.class).getPostDetailData(postId)
+    apiService.getPostDetailData(postId)
         .compose(Rx2Schedulers.applyObservableAsync())
         .subscribe(new ObserverWrapper<Object>() {
           @Override public void onSuccess(Object data) {

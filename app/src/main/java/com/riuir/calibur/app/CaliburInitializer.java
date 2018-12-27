@@ -55,6 +55,8 @@ public class CaliburInitializer {
 
   private void initBase() {
     BusinessBusManager.init();
+    initBugly();
+    initAlbum();
   }
 
   private void mainProcessInit() {

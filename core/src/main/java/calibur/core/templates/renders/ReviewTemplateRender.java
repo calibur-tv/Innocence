@@ -4,6 +4,8 @@ import calibur.core.http.models.TemplateModel;
 import calibur.core.manager.UserSystem;
 import calibur.core.templates.TemplateDownloadManager;
 import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.foundation.utils.AppUtil;
+
 import com.samskivert.mustache.Template;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +23,8 @@ public class ReviewTemplateRender extends BaseTemplateRender {
     Map<String, String> data = new HashMap<>();
     data.put("data", renderStr);
     data.put("token", UserSystem.getInstance().getUserToken());
+    data.put("name", "Android");
+    data.put("version", AppUtil.getAppVersionName());
     Template template = getRenderTemplate();
     return template != null ? template.execute(data) : "";
   }

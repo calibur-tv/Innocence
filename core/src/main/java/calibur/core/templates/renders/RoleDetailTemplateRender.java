@@ -11,7 +11,7 @@ import calibur.core.templates.TemplateDownloadManager;
 import calibur.core.utils.ISharedPreferencesKeys;
 import calibur.foundation.utils.AppUtil;
 
-public class TransactionsTemplateRender extends BaseTemplateRender {
+public class RoleDetailTemplateRender extends BaseTemplateRender {
     @Override
     public String getTemplateRenderData(String renderStr) {
         Map<String, String> data = new HashMap<>();
@@ -31,10 +31,10 @@ public class TransactionsTemplateRender extends BaseTemplateRender {
     }
 
     @Override public TemplateModel getTemplateModelFromLocal() {
-        return TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.TRANSACTIONS_PAGE_TEMPLATE);
+        return TemplateDownloadManager.getInstance().getTemplate(ISharedPreferencesKeys.ROLE_PAGE_TEMPLATE);
     }
 
     @Override public void saveTemplateModel2Local(String json) {
-        TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.TRANSACTIONS_PAGE_TEMPLATE, json);
+        TemplateDownloadManager.getInstance().saveTemplate(ISharedPreferencesKeys.ROLE_PAGE_TEMPLATE, json);
     }
 }

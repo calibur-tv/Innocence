@@ -4,19 +4,26 @@ import android.content.Intent;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
+import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.UserSystem;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.widget.webview.AthenaWebView;
+import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
+
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.utils.Constants;
-import com.tencent.smtt.sdk.WebSettings;
+
+
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +44,8 @@ public class WebViewActivity extends BaseActivity {
     public static final String TYPE_RULE = "rule";
     public static final String TYPE_INVITE = "invite";
     public static final String TYPE_WITHDRAWALS = "withdrawals";
+    public static final String TYPE_BOOKMARKS = "bookMarks";
+    public static final String TYPE_NOTICE = "notice";
 
     private String type = "";
     private String uri = "";
@@ -84,21 +93,26 @@ public class WebViewActivity extends BaseActivity {
         }
 
         setClient();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-        String cacheDirPath = App.instance().getFilesDir().getAbsolutePath()+APP_CACAHE_DIRNAME;
-        //设置  Application Caches 缓存目录
-        webSettings.setAppCachePath(cacheDirPath);
-        webSettings.setAppCacheMaxSize(20*1024*1024);
-        // 设置 WebView 的缓存模式
-        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        // 支持启用缓存模式
-        webSettings.setAppCacheEnabled(true);
+//        webSettings = webView.getSettings();
+//        webSettings.setJavaScriptEnabled(true);
+//        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+//        String cacheDirPath = App.instance().getFilesDir().getAbsolutePath()+APP_CACAHE_DIRNAME;
+//        //设置  Application Caches 缓存目录
+//        webSettings.setAppCachePath(cacheDirPath);
+//        webSettings.setAppCacheMaxSize(20*1024*1024);
+//        // 设置 WebView 的缓存模式
+//        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+//        // 支持启用缓存模式
+//        webSettings.setAppCacheEnabled(true);
 
         if (type.equals(TYPE_INVITE)){
             setInviteLoad();
         }else if (type.equals(TYPE_WITHDRAWALS)){
             setWithdrawals();
+        }else if (type.equals(TYPE_BOOKMARKS)){
+            setBookMarks();
+        }else if (type.equals(TYPE_NOTICE)){
+            setNotice();
         }else {
             setRuleLoad();
         }
@@ -145,7 +159,25 @@ public class WebViewActivity extends BaseActivity {
     }
 
     private void setWithdrawals() {
+        apiService.getUserTransactions()
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<Object>(){
+                    @Override
+                    public void onSuccess(Object data) {
+                        JSONObject jsonObj = new JSONObject((Map) data);
+                        WebTemplatesUtils.loadTemplates(webView,TemplateRenderEngine.TRANSACTIONS,jsonObj.toString());
+                    }
+                });
+    }
+
+
+    private void setBookMarks() {
         WebTemplatesUtils.loadTemplates(webView,TemplateRenderEngine.BOOKMARKS,"");
+    }
+
+
+    private void setNotice() {
+        WebTemplatesUtils.loadTemplates(webView,TemplateRenderEngine.NOTICE,"");
     }
 
     @Override

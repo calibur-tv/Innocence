@@ -29,6 +29,8 @@ import com.riuir.calibur.ui.home.adapter.ImageListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
+import com.riuir.calibur.ui.home.image.ImageDetailActivity;
 import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
@@ -98,6 +100,14 @@ public class MainImageListFragment extends BaseFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //item被点击，跳转页面
+                if (PackageTypeConfig.isDebugEnv()) {
+                    Intent intent = new Intent(getActivity(), ImageDetailActivity.class);
+                    MainTrendingInfo.MainTrendingInfoList imageInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
+                    int imageID = imageInfo.getId();
+                    intent.putExtra("imageID",imageID);
+                    startActivity(intent);
+                    return;
+                }
                 Intent intent = new Intent(getActivity(), ImageShowInfoActivity.class);
                 MainTrendingInfo.MainTrendingInfoList imageInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
                 int imageID = imageInfo.getId();

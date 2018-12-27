@@ -174,9 +174,17 @@ public interface APIService {
     @GET("image/{id}/show")
     Observable<Response<ResponseBean<ImageShowInfoPrimacy>>> getCallImageShowPrimacy(@Path("id")int id);
 
+    //获取图片详情
+    @GET("image/{id}/show")
+    Observable<Response<ResponseBean<Object>>> getImageDetailData(@Path("id")int id);
+
     //获取漫评详情
     @GET("score/{id}/show")
     Observable<Response<ResponseBean<ScoreShowInfoPrimacy>>> getCallScoreShowPrimacy(@Path("id")int id);
+
+    //获取漫评详情
+    @GET("score/{id}/show")
+    Observable<Response<ResponseBean<Object>>> getScoreDetailData(@Path("id")int id);
 
     //消息列表页跳转评论
     @GET("comment/main/item")
@@ -197,6 +205,10 @@ public interface APIService {
     //消息列表
     @GET("user/notification/list")
     Observable<Response<ResponseBean<UserNotificationInfo>>> getCallUserNotification(@Query("minId")int minId);
+
+    //消息列表
+    @GET("user/notification/list")
+    Observable<Response<ResponseBean<Object>>> getUserNotification(@Query("minId")int minId);
 
     //获取用户相册列表
     @GET("image/album/users")
@@ -339,4 +351,8 @@ public interface APIService {
     //刷新用户的Mobile Token
     @POST("door/refresh_token")
     Observable<Response<ResponseBean<String>>> refreshMobileToken();
+
+    //交易记录
+    @GET("user/transactions")
+    Observable<Response<ResponseBean<Object>>> getUserTransactions();
 }

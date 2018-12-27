@@ -2,12 +2,14 @@ package calibur.core.templates;
 
 import calibur.core.templates.renders.BookmarksTemplateRender;
 import calibur.core.templates.renders.EditorTemplateRender;
+import calibur.core.templates.renders.HomeTemplateRender;
 import calibur.core.templates.renders.ITemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
 import calibur.core.templates.renders.NoticeTemplateRender;
 import calibur.core.templates.renders.NotificationsTemplateRender;
 import calibur.core.templates.renders.PostDetailPageTemplateRender;
 import calibur.core.templates.renders.ReviewTemplateRender;
+import calibur.core.templates.renders.RoleDetailTemplateRender;
 import calibur.core.templates.renders.TransactionsTemplateRender;
 import calibur.foundation.callback.CallBack1;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
@@ -40,6 +42,8 @@ public class TemplateRenderEngine {
   public static final String POST = "post";
   public static final String NOTIFICATIONS = "notifications";
   public static final String TRANSACTIONS = "transactions";
+  public static final String HOME = "home";
+  public static final String ROLE = "role";
 
   private static TemplateRenderEngine sInstance;
   private ITemplateRender editorTemplateRender;
@@ -50,6 +54,8 @@ public class TemplateRenderEngine {
   private ITemplateRender postDetailPageTemplateRender;
   private ITemplateRender notificationTemplateRender;
   private ITemplateRender transactionsTemplateRender;
+  private ITemplateRender homeTemplateRender;
+  private ITemplateRender roleDetailTemplateRender;
 
   public static TemplateRenderEngine getInstance() {
     if (sInstance == null) {
@@ -86,6 +92,12 @@ public class TemplateRenderEngine {
     }else if (render instanceof TransactionsTemplateRender) {
       render.setTemplateName("TransactionsTemplate");
       transactionsTemplateRender = render;
+    }else if (render instanceof HomeTemplateRender) {
+      render.setTemplateName("HomeTemplate");
+      homeTemplateRender = render;
+    }else if (render instanceof RoleDetailTemplateRender) {
+      render.setTemplateName("RoleDetailTemplate");
+      roleDetailTemplateRender = render;
     }
   }
 
@@ -123,6 +135,14 @@ public class TemplateRenderEngine {
         if(transactionsTemplateRender == null)
           transactionsTemplateRender = new TransactionsTemplateRender();
         return transactionsTemplateRender;
+      case HOME:
+        if(homeTemplateRender == null)
+          homeTemplateRender = new HomeTemplateRender();
+        return homeTemplateRender;
+      case ROLE:
+        if(roleDetailTemplateRender == null)
+          roleDetailTemplateRender = new RoleDetailTemplateRender();
+        return roleDetailTemplateRender;
       default:
         break;
     }
@@ -138,6 +158,8 @@ public class TemplateRenderEngine {
     checkPostDetailPageTemplateForUpdate();
     checkNotificationTemplateForUpdate();
     checkTransactionTemplateForUpdate();
+    checkHomeTemplateForUpdate();
+    checkRoleDetailTemplateForUpdate();
   }
 
   public void checkEditorTemplateForUpdate() {
@@ -170,6 +192,14 @@ public class TemplateRenderEngine {
 
   public void checkTransactionTemplateForUpdate() {
     if(transactionsTemplateRender != null) transactionsTemplateRender.updateTemplateIfNecessary(TRANSACTIONS);
+  }
+
+  private void checkHomeTemplateForUpdate() {
+    if (homeTemplateRender != null) homeTemplateRender.updateTemplateIfNecessary(HOME);
+  }
+
+  private void checkRoleDetailTemplateForUpdate() {
+    if (roleDetailTemplateRender != null) roleDetailTemplateRender.updateTemplateIfNecessary(ROLE);
   }
 
 

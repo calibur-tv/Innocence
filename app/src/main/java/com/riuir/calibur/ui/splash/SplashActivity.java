@@ -51,11 +51,12 @@ public class SplashActivity extends BaseActivity {
 
           @Override
           public void onFailure(int code, String errorMsg) {
+            handler.sendEmptyMessage(1);
             super.onFailure(code, errorMsg);
           }
         });
   }
-
+  
   @Override
   protected void handler(Message msg) {
     switch (msg.what) {

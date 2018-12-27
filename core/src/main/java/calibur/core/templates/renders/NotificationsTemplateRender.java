@@ -11,6 +11,7 @@ import calibur.core.http.models.TemplateModel;
 import calibur.core.manager.UserSystem;
 import calibur.core.templates.TemplateDownloadManager;
 import calibur.core.utils.ISharedPreferencesKeys;
+import calibur.foundation.utils.AppUtil;
 
 public class NotificationsTemplateRender extends BaseTemplateRender {
     @Override
@@ -18,6 +19,8 @@ public class NotificationsTemplateRender extends BaseTemplateRender {
         Map<String, String> data = new HashMap<>();
         data.put("data", renderStr);
         data.put("token", UserSystem.getInstance().getUserToken());
+        data.put("name", "Android");
+        data.put("version", AppUtil.getAppVersionName());
         Template template = getRenderTemplate();
         return template != null ? template.execute(data) : "";
     }

@@ -16,11 +16,13 @@ import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.templates.renders.BookmarksTemplateRender;
 import calibur.core.templates.renders.EditorTemplateRender;
+import calibur.core.templates.renders.HomeTemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
 import calibur.core.templates.renders.NoticeTemplateRender;
 import calibur.core.templates.renders.NotificationsTemplateRender;
 import calibur.core.templates.renders.PostDetailPageTemplateRender;
 import calibur.core.templates.renders.ReviewTemplateRender;
+import calibur.core.templates.renders.RoleDetailTemplateRender;
 import calibur.core.templates.renders.TransactionsTemplateRender;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.AppUtil;
@@ -52,6 +54,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     private MainFragment fragmentMain = MainFragment.newInstance();
     private DramaFragment fragmentDrama = DramaFragment.newInstance();
     private MessageFragment fragmentMessage = MessageFragment.newInstance();
+    private NotificationListFragment fragmentNotificationList = NotificationListFragment.newInstance();
     private MineFragment fragmentMine = MineFragment.newInstance();
 
     FloatingActionMenu actionMenu;
@@ -82,15 +85,18 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .add(R.id.framelayout_main, fragmentMain)
                 .add(R.id.framelayout_main, fragmentDrama)
                 .add(R.id.framelayout_main, fragmentMessage)
+                .add(R.id.framelayout_main, fragmentNotificationList)
                 .add(R.id.framelayout_main, fragmentMine)
                 .hide(fragmentMain)
                 .hide(fragmentDrama)
                 .hide(fragmentMessage)
+                .hide(fragmentNotificationList)
                 .hide(fragmentMine)
                 .commit();
         fragmentManager.beginTransaction()
                 .hide(fragmentDrama)
                 .hide(fragmentMessage)
+                .hide(fragmentNotificationList)
                 .hide(fragmentMine)
                 .show(fragmentMain)
                 .commitAllowingStateLoss();
@@ -171,6 +177,8 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         TemplateRenderEngine.getInstance().setTemplateRender(new PostDetailPageTemplateRender());
         TemplateRenderEngine.getInstance().setTemplateRender(new NotificationsTemplateRender());
         TemplateRenderEngine.getInstance().setTemplateRender(new TransactionsTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new HomeTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new RoleDetailTemplateRender());
         TemplateRenderEngine.getInstance().checkAllTemplateForUpdate();
     }
 
@@ -282,7 +290,8 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         hideAllFragment();
         fragmentManager
                 .beginTransaction()
-                .show(fragmentMessage)
+//                .show(fragmentMessage)
+                .show(fragmentNotificationList)
                 .commitAllowingStateLoss();
 
         if (onRefreshMessageList!=null){
@@ -310,6 +319,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .hide(fragmentMain)
                 .hide(fragmentDrama)
                 .hide(fragmentMessage)
+                .hide(fragmentNotificationList)
                 .hide(fragmentMine)
                 .commitAllowingStateLoss();
     }

@@ -81,6 +81,10 @@ public class MineFragment extends BaseFragment {
     RelativeLayout mineDraftLayout;
     @BindView(R.id.mine_fragment_mine_invite_layout)
     RelativeLayout mineInviteLayout;
+    @BindView(R.id.mine_fragment_mine_notice_layout)
+    RelativeLayout mineNoticeLayout;
+    @BindView(R.id.mine_fragment_mine_book_marks_layout)
+    RelativeLayout mineBookMarksLayout;
     @BindView(R.id.mine_fragment_mine_withdrawals_layout)
     RelativeLayout mineWithdrawalsLayout;
     @BindView(R.id.mine_fragment_clear_cache_layout)
@@ -319,6 +323,22 @@ public class MineFragment extends BaseFragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), WebViewActivity.class);
                 intent.putExtra("type",WebViewActivity.TYPE_INVITE);
+                startActivity(intent);
+            }
+        });
+        mineNoticeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), WebViewActivity.class);
+                intent.putExtra("type",WebViewActivity.TYPE_NOTICE);
+                startActivity(intent);
+            }
+        });
+        mineBookMarksLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), WebViewActivity.class);
+                intent.putExtra("type",WebViewActivity.TYPE_BOOKMARKS);
                 startActivity(intent);
             }
         });
