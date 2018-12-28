@@ -5,6 +5,7 @@ import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
 import android.os.Environment;
 import android.webkit.CookieManager;
+import calibur.foundation.config.PackageTypeConfig;
 import java.io.File;
 import java.util.Arrays;
 import android.content.pm.ApplicationInfo;
@@ -478,6 +479,7 @@ public class AthenaWebView extends WebView {
     }
     setMixedContentAllowed(webSettings, true);
     setThirdPartyCookiesEnabled(true);
+    setWebContentDebuggable();
     super.setWebViewClient(mDefaultWebClient);
     super.setWebChromeClient(mDefaultWebChromeClient);
     setDownloadListener(new DownloadListener() {
@@ -491,6 +493,12 @@ public class AthenaWebView extends WebView {
         }
       }
     });
+  }
+
+  protected void setWebContentDebuggable() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ) {
+      WebView.setWebContentsDebuggingEnabled(PackageTypeConfig.isDebugEnv());
+    }
   }
 
   private WebViewClient mDefaultWebClient = new WebViewClient() {

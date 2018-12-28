@@ -55,9 +55,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':core')
-    if ("$appPackageType".contains("debug")) {
-        implementation project(':debug')
-    }
+//    if ("$appPackageType".contains("debug")) {
+//        implementation project(':debug')
+//    }
     //noinspection GradleCompatible
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
