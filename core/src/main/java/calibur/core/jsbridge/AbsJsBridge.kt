@@ -100,11 +100,12 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
     webView.post(object : Runnable {
       override fun run() {
         if (!TextUtils.isEmpty(webView.url)) {
-          val message = JsBridgeMessage()
-          message.callbackId = nativeCallJsFunsRegister.generateCallbackIdByFunName(callbackName)
-          message.func = jsFName
-          message.params = args
           try {
+            val message = JsBridgeMessage().apply {
+              this.callbackId = nativeCallJsFunsRegister.generateCallbackIdByFunName(callbackName)
+              this.func = jsFName
+              this.params = JSONUtil.toJson(args)
+            }
             val param = JSONUtil.toJson(message, JsBridgeMessage::class.java)
             webView.loadUrl("javascript:M.invoker.appCallJs('$param')")
           } catch (r: Throwable) {
@@ -131,13 +132,14 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
    * }
    * }
    */
-  fun handleJsCallback(args: Any, callbackId: String) {
+  fun handleJsCallback(args: Any?, callbackId: String) {
     if (!TextUtils.isEmpty(webView.url) ) {
-      val msg = JsBridgeMessage()
-      msg.callbackId = callbackId
-      msg.params = args
       try {
-        val param = JSONUtil.toJson(msg, JsBridgeMessage::class.java)
+        val msg = JsBridgeMessage().apply {
+          this.callbackId = callbackId
+          this.params = JSONUtil.toJson(args)
+        }
+        val param = JSONUtil.toJson(msg)
         webView.loadUrl("javascript:M.invoker.JsCallAppCallback('$param')")
       } catch (r: Throwable) {
         r.printStackTrace()
@@ -146,17 +148,23 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
     }
   }
 
+  /**
+   * 通过callbackId异步执行js的回调
+   */
   fun executeJsCallbackByCallbackId(callbackId: String) {
     executeJsCallbackByCallbackId("", callbackId)
   }
 
-  fun executeJsCallbackByCallbackId(args: Any, callbackId: String) {
+  /**
+   * 通过callbackId异步执行js的回调
+   */
+  fun executeJsCallbackByCallbackId(args: Any?, callbackId: String) {
     val callback = jsCallNativeFunsRegister.getCallback(callbackId)
     callback?.onResponse(args, callbackId)
   }
 
   interface IJsCallNativeCallback {
-    fun onResponse(args: Any, callbackId: String)
+    fun onResponse(args: Any?, callbackId: String)
   }
 
   interface INativeCallJsCallback {

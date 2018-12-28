@@ -18,16 +18,20 @@ import calibur.foundation.utils.JSONUtil
  */
 class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallNativeFunsRegister(handler, absJsBridge) {
 
-  override fun jsCallNative(funs: JsBridgeContract?, jsonString: String): String {
+  override fun jsCallNative(funs: JsBridgeContract?, jsonString: String): String? {
     val bridgeMessage = JSONUtil.fromJson(jsonString, JsBridgeMessage::class.java)
     val func = bridgeMessage.func
     val jsFun = funs as IH5JsCallApp
     when (func) {
       IBaseJsCallApp.getUserInfo -> {
-        jsFun.getUserInfo()
+        handler.post {
+          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.getUserInfo(), bridgeMessage.callbackId)
+        }
       }
       IBaseJsCallApp.getDeviceInfo -> {
-        jsFun.getDeviceInfo()
+        handler.post {
+          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.getDeviceInfo(), bridgeMessage.callbackId)
+        }
       }
     }
     return ""

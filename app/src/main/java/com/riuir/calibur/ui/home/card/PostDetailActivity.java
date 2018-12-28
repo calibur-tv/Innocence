@@ -94,11 +94,11 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
 
   }
 
-  @Override public String getDeviceInfo() {
+  @Override public Object getDeviceInfo() {
     return null;
   }
 
-  @Override public String getUserInfo() {
-    return JSONUtil.toJson(Constants.userInfoData);
+  @Override public Object getUserInfo() {
+    return Constants.userInfoData;
   }
 }

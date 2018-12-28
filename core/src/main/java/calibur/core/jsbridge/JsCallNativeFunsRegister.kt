@@ -41,7 +41,7 @@ abstract class JsCallNativeFunsRegister(protected var handler: Handler, absJsBri
     //如果这个 callbackId != ‘-1’，那么在 Native 执行完被调用的方法后，使用这个 callbackId 将结果回调给 Javascript，否则不用回调
     if (!TextUtils.isEmpty(baseH5Obj.callbackId) && baseH5Obj.callbackId != emptyCallbackId) {
       this.putCallBack(baseH5Obj.callbackId, object : AbsJsBridge.IJsCallNativeCallback {
-        override fun onResponse(args: Any, callbackId: String) {
+        override fun onResponse(args: Any?, callbackId: String) {
           javaScriptNativeBridge.handleJsCallback(args, callbackId)
         }
       })
