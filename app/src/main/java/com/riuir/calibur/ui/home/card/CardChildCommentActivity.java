@@ -85,8 +85,8 @@ public class CardChildCommentActivity extends BaseActivity {
     String commentReplyString;
 
     int commentId;
-    int maxId;
     String type;
+    int maxId;
     boolean isFirstLoad =false;
     boolean isLoadMore = false;
     boolean isRefresh = false;

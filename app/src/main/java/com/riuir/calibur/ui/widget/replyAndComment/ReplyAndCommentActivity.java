@@ -196,20 +196,20 @@ public class ReplyAndCommentActivity extends BaseActivity {
     private void getCommentAdapter() {
         switch (type){
             case ReplyAndCommentView.TYPE_POST:
-                CardShowInfoActivity card = CardShowInfoActivity.getInstance();
-                commentAdapter = card.getCommentAdapter();
+//                CardShowInfoActivity card = CardShowInfoActivity.getInstance();
+//                commentAdapter = card.getCommentAdapter();
                 break;
             case ReplyAndCommentView.TYPE_IMAGE:
-                ImageShowInfoActivity img = ImageShowInfoActivity.getInstance();
-                commentAdapter = img.getCommentAdapter();
+//                ImageShowInfoActivity img = ImageShowInfoActivity.getInstance();
+//                commentAdapter = img.getCommentAdapter();
                 break;
             case ReplyAndCommentView.TYPE_CARTOON:
                 DramaCartoonCommentActivity dcc = DramaCartoonCommentActivity.getInstance();
                 commentAdapter = dcc.getCommentAdapter();
                 break;
             case ReplyAndCommentView.TYPE_SCORE:
-                ScoreShowInfoActivity score = ScoreShowInfoActivity.getInstance();
-                commentAdapter = score.getCommentAdapter();
+//                ScoreShowInfoActivity score = ScoreShowInfoActivity.getInstance();
+//                commentAdapter = score.getCommentAdapter();
                 break;
             case ReplyAndCommentView.TYPE_VIDEO:
                 DramaVideoPlayActivity video = DramaVideoPlayActivity.getInstance();
@@ -440,11 +440,15 @@ public class ReplyAndCommentActivity extends BaseActivity {
                         @Override
                         public void onSuccess(CreateMainCommentInfo info) {
                             createMainCommentInfo = info;
-                            if (type.equals(ReplyAndCommentView.TYPE_POST)){
-                                commentAdapter.addData(info.getData());
-                            }else {
-                                commentAdapter.addData(0,info.getData());
+                            if (commentAdapter!=null){
+                                if (type.equals(ReplyAndCommentView.TYPE_POST)){
+                                    commentAdapter.addData(info.getData());
+                                }else {
+                                    commentAdapter.addData(0,info.getData());
+                                }
                             }
+                            RCView.setMainCommentSuccessResult(info);
+
                             if (Constants.userInfoData!=null&&Constants.userInfoData.getId()!=titleId){
                                 ToastUtils.showShort(ReplyAndCommentActivity.this,info.getMessage());
                                 Intent intent = new Intent(MineFragment.EXPCHANGE);

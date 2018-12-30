@@ -2,7 +2,7 @@ package calibur.core.http.models.user;
 
 import java.io.Serializable;
 
-public class MineUserInfo implements Serializable {
+public class MineUserInfo extends Object implements Serializable {
     private int id;
     private String zone;
     private String avatar;

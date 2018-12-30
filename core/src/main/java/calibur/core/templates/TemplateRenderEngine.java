@@ -1,6 +1,7 @@
 package calibur.core.templates;
 
 import calibur.core.templates.renders.BookmarksTemplateRender;
+import calibur.core.templates.renders.CommentItemTemplateRender;
 import calibur.core.templates.renders.EditorTemplateRender;
 import calibur.core.templates.renders.HomeTemplateRender;
 import calibur.core.templates.renders.ITemplateRender;
@@ -44,6 +45,7 @@ public class TemplateRenderEngine {
   public static final String TRANSACTIONS = "transactions";
   public static final String HOME = "home";
   public static final String ROLE = "role";
+  public static final String COMMENT = "comment";
 
   private static TemplateRenderEngine sInstance;
   private ITemplateRender editorTemplateRender;
@@ -56,6 +58,7 @@ public class TemplateRenderEngine {
   private ITemplateRender transactionsTemplateRender;
   private ITemplateRender homeTemplateRender;
   private ITemplateRender roleDetailTemplateRender;
+  private ITemplateRender commentItemTemplateRender;
 
   public static TemplateRenderEngine getInstance() {
     if (sInstance == null) {
@@ -98,6 +101,9 @@ public class TemplateRenderEngine {
     }else if (render instanceof RoleDetailTemplateRender) {
       render.setTemplateName("RoleDetailTemplate");
       roleDetailTemplateRender = render;
+    }else if (render instanceof CommentItemTemplateRender) {
+      render.setTemplateName("CommentItemPageTemplate");
+      commentItemTemplateRender = render;
     }
   }
 
@@ -143,6 +149,10 @@ public class TemplateRenderEngine {
         if(roleDetailTemplateRender == null)
           roleDetailTemplateRender = new RoleDetailTemplateRender();
         return roleDetailTemplateRender;
+      case COMMENT:
+        if(commentItemTemplateRender == null)
+          commentItemTemplateRender = new CommentItemTemplateRender();
+        return commentItemTemplateRender;
       default:
         break;
     }
@@ -160,6 +170,7 @@ public class TemplateRenderEngine {
     checkTransactionTemplateForUpdate();
     checkHomeTemplateForUpdate();
     checkRoleDetailTemplateForUpdate();
+    checkCommentItemTemplateForUpdate();
   }
 
   public void checkEditorTemplateForUpdate() {
@@ -194,12 +205,16 @@ public class TemplateRenderEngine {
     if(transactionsTemplateRender != null) transactionsTemplateRender.updateTemplateIfNecessary(TRANSACTIONS);
   }
 
-  private void checkHomeTemplateForUpdate() {
+  public void checkHomeTemplateForUpdate() {
     if (homeTemplateRender != null) homeTemplateRender.updateTemplateIfNecessary(HOME);
   }
 
-  private void checkRoleDetailTemplateForUpdate() {
+  public void checkRoleDetailTemplateForUpdate() {
     if (roleDetailTemplateRender != null) roleDetailTemplateRender.updateTemplateIfNecessary(ROLE);
+  }
+
+  public void checkCommentItemTemplateForUpdate() {
+    if (commentItemTemplateRender != null) commentItemTemplateRender.updateTemplateIfNecessary(COMMENT);
   }
 
 

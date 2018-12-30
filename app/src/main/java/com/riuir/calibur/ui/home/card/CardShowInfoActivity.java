@@ -31,6 +31,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
+import com.riuir.calibur.ui.home.comment.CommentDetailActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
@@ -550,7 +551,7 @@ public class CardShowInfoActivity extends BaseActivity {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 List<TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList> dataList =  adapter.getData();
                 int commentId = dataList.get(position).getId();
-                Intent intent = new Intent(CardShowInfoActivity.this,CardChildCommentActivity.class);
+                Intent intent = new Intent(CardShowInfoActivity.this,CommentDetailActivity.class);
                 intent.putExtra("id",commentId);
                 intent.putExtra("mainComment",dataList.get(position));
                 intent.putExtra("type","post");

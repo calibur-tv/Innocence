@@ -15,7 +15,7 @@
         android:background="@color/theme_magic_sakura_primary"
         >
         <ImageView
-            android:id="@+id/score_detail_back_btn"
+            android:id="@+id/role_detail_back_btn"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
@@ -27,7 +27,7 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:text="漫评"
+            android:text="偶像"
             android:textColor="@color/albumPageLight"
             android:textSize="18sp"
             tools:ignore="HardcodedText"
@@ -40,19 +40,10 @@
         android:layout_above="@+id/comment_view"
         android:layout_below="@+id/page_header">
         <calibur.core.widget.webview.AthenaWebView
-            android:id="@+id/score_detail_webview"
+            android:id="@+id/role_detail_webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView
-        android:id="@+id/comment_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:visibility="visible"
-        android:minHeight="45dp"
-        >
-    </com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView>
 </RelativeLayout>

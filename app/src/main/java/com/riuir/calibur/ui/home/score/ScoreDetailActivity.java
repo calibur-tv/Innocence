@@ -12,6 +12,7 @@ import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
 
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,9 @@ import org.json.JSONObject;
 import java.util.Map;
 
 import butterknife.BindView;
+import calibur.core.http.models.comment.CreateMainCommentInfo;
+import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
+import calibur.core.http.models.followList.score.ScoreShowInfoPrimacy;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
@@ -37,6 +41,13 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
     @BindView(R.id.score_detail_back_btn)
     ImageView backBtn;
 
+    @BindView(R.id.comment_view)
+    ReplyAndCommentView commentView;
+
+    ScoreShowInfoPrimacy primacyData;
+
+    private static ScoreDetailActivity instance;
+
     @Override
     protected int getContentViewId() {
         return R.layout.activity_score_detail;
@@ -44,10 +55,22 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @Override
     protected void onInit() {
+        instance = this;
         scoreID = getIntent().getIntExtra("scoreID", 0);
         initWebView();
-        initCommentView();
+        initView();
+
         TemplateRenderEngine.getInstance().checkReviewTemplateForUpdate();
+    }
+
+    private void initView() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        setLoadingView(findViewById(R.id.refresh_layout));
     }
 
     private void initWebView() {
@@ -57,13 +80,33 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     private void initCommentView() {
-        backBtn.setOnClickListener(new View.OnClickListener() {
+        commentView.setStatus(ReplyAndCommentView.STATUS_MAIN_COMMENT);
+        commentView.setFromUserName("");
+        commentView.setId(scoreID);
+        commentView.setTitleId(primacyData.getUser().getId());
+        commentView.setType(ReplyAndCommentView.TYPE_SCORE);
+        commentView.setTargetUserId(0);
+        commentView.setIs_creator(primacyData.isIs_creator());
+        commentView.setLiked(primacyData.isLiked());
+        commentView.setRewarded(primacyData.isRewarded());
+        commentView.setMarked(primacyData.isMarked());
+        commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
             @Override
-            public void onClick(View v) {
-                finish();
+            public void onRewardFinish() {
+//              trendingLFCView.setRewarded(true);
+            }
+
+            @Override
+            public void onLikeFinish(boolean isLike) {
+//              trendingLFCView.setLiked(isLike);
+            }
+
+            @Override
+            public void onMarkFinish(boolean isMark) {
+//              trendingLFCView.setCollected(isMark);
             }
         });
-        setLoadingView(findViewById(R.id.refresh_layout));
+        commentView.setNetAndListener();
     }
 
     @Override
@@ -76,6 +119,8 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
                         JSONObject jsonObj = new JSONObject((Map) data);
                         LogUtils.d("imagedetail","data = "+jsonObj.toString());
                         WebTemplatesUtils.loadTemplates(mWebView,TemplateRenderEngine.REVIEW, jsonObj.toString());
+                        primacyData = JSONUtil.fromJson(jsonObj.toString(),ScoreShowInfoPrimacy.class);
+                        initCommentView();
                     }
 
                     @Override public void onFailure(int code, String errorMsg) {
@@ -101,7 +146,57 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     @Override
+    public void setUserInfo(@Nullable Object params) {
+
+    }
+
+    @Override
+    public void toNativePage(@Nullable Object params) {
+
+    }
+
+    @Override
+    public void previewImages(@Nullable Object params) {
+
+    }
+
+    @Override
+    public void createMainComment(@Nullable Object params) {
+
+    }
+
+    @Override
+    public void createSubComment(@Nullable Object params) {
+
+    }
+
+    @Override
+    public void toggleClick(@Nullable Object params) {
+
+    }
+
+    @Nullable
+    @Override
+    public Object showConfirm(@Nullable Object params) {
+        return null;
+    }
+
+
+    @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
+
+    public static ScoreDetailActivity getInstance() {
+        return instance;
+    }
+
+    /**
+     * 评论成功时执行该函数（由ReplyAndCommentView调用）
+     * 将数据通过AppCallJS传递给模板
+     */
+    public void setCommentSuccessResult(CreateMainCommentInfo info){
+
+    }
+
 }

@@ -55,4 +55,12 @@ public class PhoneSystemUtils {
     }
 
 
+    /**
+     * 传给js的deviceInfo
+     * @return 手机厂商
+     */
+
+    public static String getDeviceInfo() {
+        return android.os.Build.BRAND+"-"+android.os.Build.MODEL+"-"+android.os.Build.VERSION.RELEASE;
+    }
 }

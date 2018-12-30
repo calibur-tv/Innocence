@@ -20,6 +20,8 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
+import com.riuir.calibur.ui.home.role.RoleDetailActivity;
 import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.role.adapter.RoleListAdapter;
@@ -36,6 +38,7 @@ import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.followList.MainTrendingInfo;
 import calibur.core.http.models.followList.params.FolllowListParams;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.foundation.config.PackageTypeConfig;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -262,6 +265,15 @@ public class DramaRolesListFragment extends BaseFragment {
         roleListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                //item被点击，跳转页面
+                if (PackageTypeConfig.isDebugEnv()) {
+                    Intent intent = new Intent(getContext(),RoleDetailActivity.class);
+                    MainTrendingInfo.MainTrendingInfoList roleInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
+                    intent.putExtra("roleId",roleInfo.getId());
+                    startActivity(intent);
+                    return;
+                }
+
                 Intent intent = new Intent(getContext(),RolesShowInfoActivity.class);
                 MainTrendingInfo.MainTrendingInfoList roleInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
                 intent.putExtra("roleId",roleInfo.getId());

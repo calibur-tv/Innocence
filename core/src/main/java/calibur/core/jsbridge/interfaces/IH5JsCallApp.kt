@@ -17,4 +17,12 @@ interface IH5JsCallApp: IBaseJsCallApp {
     const val toggleClick = "toggleClick"
     const val showConfirm = "showConfirm"
   }
+
+  fun setUserInfo(params:Any?)
+  fun toNativePage(params:Any?)
+  fun previewImages(params:Any?)
+  fun createMainComment(params:Any?)
+  fun createSubComment(params:Any?)
+  fun toggleClick(params:Any?)
+  fun showConfirm(params:Any?): Any?
 }

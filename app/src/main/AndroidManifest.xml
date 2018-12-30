@@ -212,14 +212,23 @@
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".ui.home.card.PostDetailActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".ui.home.user.UserHomeActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".ui.home.image.ImageDetailActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".ui.home.score.ScoreDetailActivity"></activity>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".ui.home.score.ScoreDetailActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".ui.home.comment.CommentDetailActivity" />
+        <activity android:name=".ui.home.marked.BookMarksActivity" />
+        <activity android:name=".ui.home.role.RoleDetailActivity"></activity>
     </application>
 
 </manifest>

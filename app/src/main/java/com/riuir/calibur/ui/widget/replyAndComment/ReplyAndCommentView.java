@@ -36,6 +36,10 @@ import com.riuir.calibur.data.trending.TrendingToggleInfo;
 import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
+import com.riuir.calibur.ui.home.comment.CommentDetailActivity;
+import com.riuir.calibur.ui.home.image.ImageDetailActivity;
+import com.riuir.calibur.ui.home.score.ScoreDetailActivity;
 import com.riuir.calibur.ui.home.search.DramaSearchActivity;
 import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.utils.Constants;
@@ -463,10 +467,12 @@ public class ReplyAndCommentView extends LinearLayout{
                         @Override
                         public void onSuccess(CreateMainCommentInfo info) {
                             createMainCommentInfo = info;
-                            if (type.equals(TYPE_POST)){
-                                commentAdapter.addData(info.getData());
-                            }else {
-                                commentAdapter.addData(0,info.getData());
+                            if (commentAdapter!=null){
+                                if (type.equals(TYPE_POST)){
+                                    commentAdapter.addData(info.getData());
+                                }else {
+                                    commentAdapter.addData(0,info.getData());
+                                }
                             }
                             if (Constants.userInfoData!=null&&Constants.userInfoData.getId()!=titleId){
                                 ToastUtils.showShort(getContext(),info.getMessage());
@@ -500,7 +506,10 @@ public class ReplyAndCommentView extends LinearLayout{
                         @Override
                         public void onSuccess(ReplyCommentInfo info) {
                             replyCommentInfo = info;
-                            childCommentAdapter.addData(info.getData());
+                            if (childCommentAdapter!=null){
+                                childCommentAdapter.addData(info.getData());
+                            }
+                            setSubCommentSuccessResult(info);
                             if (Constants.userInfoData!=null&&Constants.userInfoData.getId()!=targetUserId){
                                 ToastUtils.showShort(getContext(),info.getMessage());
                                 Intent intent = new Intent(MineFragment.EXPCHANGE);
@@ -592,5 +601,30 @@ public class ReplyAndCommentView extends LinearLayout{
         jumpBtn.setText(contentStr);
     }
 
+    public void setMainCommentSuccessResult(CreateMainCommentInfo info){
+        switch (type){
+            case TYPE_POST:
+                PostDetailActivity postDetailActivity = PostDetailActivity.getInstance();
+                if (postDetailActivity!=null) postDetailActivity.setCommentSuccessResult(info);
+                break;
+            case TYPE_IMAGE:
+                ImageDetailActivity imageDetailActivity = ImageDetailActivity.getInstance();
+                if (imageDetailActivity!=null) imageDetailActivity.setCommentSuccessResult(info);
+                break;
+            case TYPE_SCORE:
+                ScoreDetailActivity scoreDetailActivity = ScoreDetailActivity.getInstance();
+                if (scoreDetailActivity!=null) scoreDetailActivity.setCommentSuccessResult(info);
+                break;
+        }
+    }
+
+    public void setSubCommentSuccessResult(ReplyCommentInfo info){
+        switch (type){
+            case TYPE_SUB_MESSAGE:
+                CommentDetailActivity commentDetailActivity = CommentDetailActivity.getInstance();
+                if (commentDetailActivity!=null) commentDetailActivity.setCommentSuccessResult(info);
+                break;
+        }
+    }
 
 }

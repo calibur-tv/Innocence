@@ -15,6 +15,7 @@ import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.templates.renders.BookmarksTemplateRender;
+import calibur.core.templates.renders.CommentItemTemplateRender;
 import calibur.core.templates.renders.EditorTemplateRender;
 import calibur.core.templates.renders.HomeTemplateRender;
 import calibur.core.templates.renders.ImageDetailPageTemplateRender;
@@ -179,6 +180,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
         TemplateRenderEngine.getInstance().setTemplateRender(new TransactionsTemplateRender());
         TemplateRenderEngine.getInstance().setTemplateRender(new HomeTemplateRender());
         TemplateRenderEngine.getInstance().setTemplateRender(new RoleDetailTemplateRender());
+        TemplateRenderEngine.getInstance().setTemplateRender(new CommentItemTemplateRender());
         TemplateRenderEngine.getInstance().checkAllTemplateForUpdate();
     }
 

@@ -33,6 +33,41 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
           javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.getDeviceInfo(), bridgeMessage.callbackId)
         }
       }
+      IH5JsCallApp.setUserInfo ->{
+        handler.post {
+          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.setUserInfo(bridgeMessage.params),bridgeMessage.callbackId)
+        }
+      }
+      IH5JsCallApp.toNativePage ->{
+        handler.post {
+          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.toNativePage(bridgeMessage.params),bridgeMessage.callbackId)
+        }
+      }
+      IH5JsCallApp.previewImages ->{
+        handler.post {
+          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.previewImages(bridgeMessage.params),bridgeMessage.callbackId)
+        }
+      }
+      IH5JsCallApp.createMainComment ->{
+        handler.post {
+          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.createMainComment(bridgeMessage.params),bridgeMessage.callbackId)
+        }
+      }
+      IH5JsCallApp.createSubComment ->{
+        handler.post {
+          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.createSubComment(bridgeMessage.params),bridgeMessage.callbackId)
+        }
+      }
+      IH5JsCallApp.toggleClick ->{
+        handler.post {
+          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.toggleClick(bridgeMessage.params),bridgeMessage.callbackId)
+        }
+      }
+      IH5JsCallApp.showConfirm ->{
+        handler.post {
+          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.showConfirm(bridgeMessage.params),bridgeMessage.callbackId)
+        }
+      }
     }
     return ""
   }

@@ -28,6 +28,7 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
+import com.riuir.calibur.ui.home.marked.BookMarksActivity;
 import com.riuir.calibur.ui.home.mine.ClearCacheActivity;
 import com.riuir.calibur.ui.home.mine.MineInfoSettingActivity;
 import com.riuir.calibur.ui.home.report.FeedbackActivity;
@@ -337,8 +338,7 @@ public class MineFragment extends BaseFragment {
         mineBookMarksLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), WebViewActivity.class);
-                intent.putExtra("type",WebViewActivity.TYPE_BOOKMARKS);
+                Intent intent = new Intent(getContext(), BookMarksActivity.class);
                 startActivity(intent);
             }
         });

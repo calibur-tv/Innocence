@@ -142,6 +142,10 @@ public interface APIService {
     @GET("cartoon_role/{roleId}/show")
     Observable<Response<ResponseBean<RoleShowInfo>>> getCallRoleShowPrimacy(@Path("roleId")int roleId);
 
+    //获取角色详情
+    @GET("cartoon_role/{roleId}/show")
+    Observable<Response<ResponseBean<Object>>> getRoleDetail(@Path("roleId")int roleId);
+
     //获取角色应援列表
     @GET("cartoon_role/{roleId}/fans")
     Observable<Response<ResponseBean<RoleFansListInfo>>> getCallRolesFansList(@Path("roleId")int roleId, @Query("sort")String sort, @Query("seenIds")String seenIds );
@@ -355,4 +359,8 @@ public interface APIService {
     //交易记录
     @GET("user/transactions")
     Observable<Response<ResponseBean<Object>>> getUserTransactions();
+
+    //获取评论详情数据
+    @GET("comment/main/item")
+    Observable<Response<ResponseBean<Object>>> getCommentItem(@Query("type")String type,@Query("comment_id")int comment_id,@Query("reply_id")int reply_id);
 }

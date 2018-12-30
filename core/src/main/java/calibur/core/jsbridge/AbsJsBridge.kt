@@ -137,7 +137,8 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
       try {
         val msg = JsBridgeMessage().apply {
           this.callbackId = callbackId
-          this.params = JSONUtil.toJson(args)
+          //取消 JSONUtil.tojson 否则JSCallAPP不通
+          this.params = args
         }
         val param = JSONUtil.toJson(msg)
         webView.loadUrl("javascript:M.invoker.JsCallAppCallback('$param')")
