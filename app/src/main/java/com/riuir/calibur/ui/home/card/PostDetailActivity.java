@@ -25,6 +25,7 @@ import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.DialogHelper;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -168,6 +169,12 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     @Override
     public Object showConfirm(@Nullable Object params) {
         if (params instanceof H5ShowConfirmModel) {
+            DialogHelper.getConfirmDialog(this,
+                ((H5ShowConfirmModel) params).getTitle(),
+                ((H5ShowConfirmModel) params).getMessage(),
+                ((H5ShowConfirmModel) params).getCancelButtonText(),
+                ((H5ShowConfirmModel) params).getSubmitButtonText(),
+                false).show();
         }
         return null;
     }

@@ -1,7 +1,9 @@
 package calibur.core.http.models.jsbridge;
 
+import calibur.core.http.models.jsbridge.models.H5CallAppBusinessModel;
 import calibur.core.http.models.jsbridge.models.H5ImageModel;
 import calibur.core.http.models.jsbridge.models.H5ShowConfirmModel;
+import calibur.core.http.models.jsbridge.models.IAppBusiness;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
 import calibur.foundation.utils.JSONUtil;
 import com.google.gson.JsonObject;
@@ -50,6 +52,13 @@ public class H5RespModel implements Serializable{
       return H5ImageModel.class;
     } else if (IH5JsCallApp.showConfirm.equals(func)) {
       return H5ShowConfirmModel.class;
+    } else if (IAppBusiness.bizName1.equals(func)
+        || IAppBusiness.bizName2.equals(func)
+        || IAppBusiness.bizName3.equals(func)
+        || IAppBusiness.bizName4.equals(func)
+        || IAppBusiness.bizName5.equals(func)
+        || IAppBusiness.bizName6.equals(func)) {
+      return H5CallAppBusinessModel.class;
     }
     return null;
   }
