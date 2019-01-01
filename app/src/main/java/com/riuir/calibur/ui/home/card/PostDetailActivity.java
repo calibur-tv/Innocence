@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home.card;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.WebView;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import calibur.core.http.models.comment.CreateMainCommentInfo;
 import calibur.core.http.models.followList.post.CardShowInfoPrimacy;
+import calibur.core.http.models.jsbridge.models.H5ShowConfirmModel;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
@@ -149,11 +151,6 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     @Override
-    public void setUserInfo(@Nullable Object params) {
-        LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));
-    }
-
-    @Override
     public void createMainComment(@Nullable Object params) {
         LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));
     }
@@ -170,7 +167,8 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @Override
     public Object showConfirm(@Nullable Object params) {
-        LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));
+        if (params instanceof H5ShowConfirmModel) {
+        }
         return null;
     }
 

@@ -73,11 +73,6 @@ public class BookMarksActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     @Override
-    public void setUserInfo(@Nullable Object params) {
-
-    }
-
-    @Override
     public void createMainComment(@Nullable Object params) {
 
     }

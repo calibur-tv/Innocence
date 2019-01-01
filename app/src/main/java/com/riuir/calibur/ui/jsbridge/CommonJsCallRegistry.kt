@@ -1,8 +1,7 @@
 package com.riuir.calibur.ui.jsbridge
 
 import android.os.Handler
-import calibur.core.http.models.jsbridge.H5BeanObject
-import calibur.core.http.models.jsbridge.H5ParamsData
+import calibur.core.http.models.jsbridge.H5RespModel
 import calibur.core.jsbridge.AbsJsBridge
 import calibur.core.jsbridge.JsBridgeContract
 import calibur.core.jsbridge.JsCallNativeFunsRegister
@@ -22,10 +21,10 @@ import java.util.ArrayList
 class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallNativeFunsRegister(handler, absJsBridge) {
 
   override fun jsCallNative(funs: JsBridgeContract?, jsonString: String): String? {
-    val bridgeMessage = JSONUtil.fromJson(jsonString, H5BeanObject::class.java)
+
+    val bridgeMessage = JSONUtil.fromJson(jsonString, H5RespModel::class.java)
     val func = bridgeMessage.func
     val jsFun = funs as IH5JsCallApp
-    var h5Data: H5ParamsData? = bridgeMessage.params
     when (func) {
       IBaseJsCallApp.getUserInfo -> {
         handler.post {
@@ -39,7 +38,7 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
       }
       IH5JsCallApp.setUserInfo -> {
         handler.post {
-          javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.setUserInfo(bridgeMessage.params), bridgeMessage.callbackId)
+          javaScriptNativeBridge.executeJsCallbackByCallbackId("", bridgeMessage.callbackId)
         }
       }
       IH5JsCallApp.toNativePage -> {
@@ -49,16 +48,16 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
       }
       IH5JsCallApp.previewImages -> { //跳转到大图浏览
         handler.post {
-          h5Data?.let {
-            val images: MutableList<String>? = it.let {
+          bridgeMessage?.let {
+            val images: MutableList<String>? = it.imagesInfo.let {
               val imageList: MutableList<String> = mutableListOf()
               it.images?.forEach {
                 imageList.add(it.url)
               }
               imageList
             }
+            val clickUrl = images?.get(bridgeMessage.imagesInfo.index)
             images?.let {
-              val clickUrl = images.get(h5Data.index)
               PreviewImageUtils.startPreviewImage(javaScriptNativeBridge.mContext, images as ArrayList<String>?, clickUrl, null)
             }
           }

@@ -18,7 +18,6 @@ interface IH5JsCallApp: IBaseJsCallApp {
     const val showConfirm = "showConfirm"
   }
 
-  fun setUserInfo(params:Any?)
   fun createMainComment(params:Any?)
   fun createSubComment(params:Any?)
   fun toggleClick(params:Any?)

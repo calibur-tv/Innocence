@@ -1,4 +1,4 @@
-package calibur.core.http.models.jsbridge;
+package calibur.core.http.models.jsbridge.models;
 
 import calibur.core.http.models.base.IBaseResponse;
 
