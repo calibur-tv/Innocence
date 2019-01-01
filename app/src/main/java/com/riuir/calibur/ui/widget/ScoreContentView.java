@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.DensityUtils;
-import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
+import com.riuir.calibur.assistUtils.activityUtils.PreviewImageUtils;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.ArrayList;
@@ -104,7 +104,7 @@ public class ScoreContentView extends LinearLayout{
                         public void onClick(View view) {
 
                             String url = contentS.get(finalI).getUrl();
-                            PerviewImageUtils.startPerviewImage(context, previewImagesLists,url,view);
+                            PreviewImageUtils.startPreviewImage(context, previewImagesLists,url,view);
                         }
                     });
                     layout.addView(primacyImageView);

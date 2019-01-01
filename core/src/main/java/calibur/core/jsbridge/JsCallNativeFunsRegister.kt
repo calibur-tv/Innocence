@@ -3,7 +3,9 @@ package calibur.core.jsbridge
 import android.os.Handler
 import android.text.TextUtils
 import calibur.core.http.models.jsbridge.JsBridgeMessage
+import calibur.core.jsbridge.interfaces.IBaseJsCallApp
 import calibur.foundation.bus.BusinessBus
+import calibur.foundation.config.PackageTypeConfig
 import calibur.foundation.utils.JSONUtil
 import java.util.HashMap
 
@@ -43,6 +45,9 @@ abstract class JsCallNativeFunsRegister(protected var handler: Handler, absJsBri
       this.putCallBack(baseH5Obj.callbackId, object : AbsJsBridge.IJsCallNativeCallback {
         override fun onResponse(args: Any?, callbackId: String) {
           javaScriptNativeBridge.handleJsCallback(args, callbackId)
+          if (PackageTypeConfig.isDebugEnv()) {
+            javaScriptNativeBridge.callJavascript(IBaseJsCallApp.logMsg, args, null)
+          }
         }
       })
     }

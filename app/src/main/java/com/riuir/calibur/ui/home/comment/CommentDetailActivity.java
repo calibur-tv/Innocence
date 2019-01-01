@@ -1,30 +1,12 @@
 package com.riuir.calibur.ui.home.comment;
 
-
-
 import android.content.Intent;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
-
-import com.riuir.calibur.R;
-import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
-import com.riuir.calibur.ui.web.WebTemplatesUtils;
-import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
-import com.riuir.calibur.utils.Constants;
-
-import org.jetbrains.annotations.Nullable;
-import org.json.JSONObject;
-
-import java.util.Map;
-
 import butterknife.BindView;
-import calibur.core.http.models.comment.CreateMainCommentInfo;
 import calibur.core.http.models.comment.ReplyCommentInfo;
-import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
-import calibur.core.http.models.followList.post.CardShowInfoPrimacy;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
@@ -32,6 +14,15 @@ import calibur.core.jsbridge.utils.JsBridgeUtil;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.JSONUtil;
+import com.riuir.calibur.R;
+import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
+import com.riuir.calibur.ui.web.WebTemplatesUtils;
+import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
+import com.riuir.calibur.utils.Constants;
+import java.util.Map;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONObject;
 
 public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp {
 
@@ -140,16 +131,6 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
 
     @Override
     public void setUserInfo(@Nullable Object params) {
-
-    }
-
-    @Override
-    public void toNativePage(@Nullable Object params) {
-
-    }
-
-    @Override
-    public void previewImages(@Nullable Object params) {
 
     }
 

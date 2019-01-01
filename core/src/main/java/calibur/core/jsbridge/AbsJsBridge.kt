@@ -22,7 +22,7 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
     private var jsCallContract: JsBridgeContract?,
     private var webView: WebView) {
 
-  private var mContext: Context? = null
+  var mContext: Context? = null
   private var nativeCallJsFunsRegister: NativeCallJsFunsRegister
   private var jsCallNativeFunsRegister: JsCallNativeFunsRegister
 
@@ -95,7 +95,7 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
    * "callbackId": “-1”
    * }
    */
-  fun callJavascript(jsFName: String, args: Any, callbackName: INativeCallJsCallback?) {
+  fun callJavascript(jsFName: String, args: Any?, callbackName: INativeCallJsCallback?) {
     if(mContext == null || (mContext as Activity).isFinishing) return
     webView.post(object : Runnable {
       override fun run() {
@@ -104,7 +104,7 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
             val message = JsBridgeMessage().apply {
               this.callbackId = nativeCallJsFunsRegister.generateCallbackIdByFunName(callbackName)
               this.func = jsFName
-              this.params = JSONUtil.toJson(args)
+              this.params = args
             }
             val param = JSONUtil.toJson(message, JsBridgeMessage::class.java)
             webView.loadUrl("javascript:M.invoker.appCallJs('$param')")

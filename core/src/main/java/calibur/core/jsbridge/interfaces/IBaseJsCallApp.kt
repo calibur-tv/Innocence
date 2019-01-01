@@ -13,9 +13,9 @@ interface IBaseJsCallApp: JsBridgeContract {
   companion object {
     const val getDeviceInfo = "getDeviceInfo"
     const val getUserInfo = "getUserInfo"
+    const val logMsg = "log"
   }
 
   fun getDeviceInfo(): Any?
-
   fun getUserInfo(): Any?
 }

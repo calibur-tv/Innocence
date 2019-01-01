@@ -2,17 +2,13 @@ package com.riuir.calibur.ui.home.image.adapter;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.riuir.calibur.R;
-import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
 
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.List;
@@ -48,7 +44,7 @@ public class HeaderImageShowAdapter extends BaseQuickAdapter<ImageShowInfoPrimac
 //            public void onClick(View view) {
 //
 //                String url = item.getUrl();
-//                PerviewImageUtils.startPerviewImage(context,previewImagesList,url,view);
+//                PreviewImageUtils.startPreviewImage(context,previewImagesList,url,view);
 //            }
 //        });
     }

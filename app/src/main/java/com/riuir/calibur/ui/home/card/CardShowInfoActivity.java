@@ -24,7 +24,7 @@ import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
+import com.riuir.calibur.assistUtils.activityUtils.PreviewImageUtils;
 import com.riuir.calibur.assistUtils.activityUtils.RecyclerViewUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
@@ -410,7 +410,7 @@ public class CardShowInfoActivity extends BaseActivity {
                     public void onClick(View view) {
 
                         String url = primacyData.getPost().getImages().get(finalI).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 });
 
@@ -484,55 +484,55 @@ public class CardShowInfoActivity extends BaseActivity {
                 if (view.getId() == R.id.card_show_info_list_comment_item_image1){
                     if (view.getVisibility() == View.VISIBLE){
                         String url = dataList.get(position).getImages().get(0).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 }
                 if (view.getId() == R.id.card_show_info_list_comment_item_image2){
                     if (view.getVisibility() == View.VISIBLE){
                         String url = dataList.get(position).getImages().get(1).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 }
                 if (view.getId() == R.id.card_show_info_list_comment_item_image3){
                     if (view.getVisibility() == View.VISIBLE){
                         String url = dataList.get(position).getImages().get(2).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 }
                 if (view.getId() == R.id.card_show_info_list_comment_item_image4){
                     if (view.getVisibility() == View.VISIBLE){
                         String url = dataList.get(position).getImages().get(3).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 }
                 if (view.getId() == R.id.card_show_info_list_comment_item_image5){
                     if (view.getVisibility() == View.VISIBLE){
                         String url = dataList.get(position).getImages().get(4).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 }
                 if (view.getId() == R.id.card_show_info_list_comment_item_image6){
                     if (view.getVisibility() == View.VISIBLE){
                         String url = dataList.get(position).getImages().get(5).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 }
                 if (view.getId() == R.id.card_show_info_list_comment_item_image7){
                     if (view.getVisibility() == View.VISIBLE){
                         String url = dataList.get(position).getImages().get(6).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 }
                 if (view.getId() == R.id.card_show_info_list_comment_item_image8){
                     if (view.getVisibility() == View.VISIBLE){
                         String url = dataList.get(position).getImages().get(7).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 }
                 if (view.getId() == R.id.card_show_info_list_comment_item_image9){
                     if (view.getVisibility() == View.VISIBLE){
                         String url = dataList.get(position).getImages().get(8).getUrl();
-                        PerviewImageUtils.startPerviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
+                        PreviewImageUtils.startPreviewImage(CardShowInfoActivity.this,previewImagesList,url,view);
                     }
                 }
 

@@ -1,16 +1,13 @@
 package com.riuir.calibur.ui.home.card;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
-
 import butterknife.BindView;
-import calibur.core.http.RetrofitManager;
-import calibur.core.http.api.APIService;
 import calibur.core.http.models.comment.CreateMainCommentInfo;
 import calibur.core.http.models.followList.post.CardShowInfoPrimacy;
-import calibur.core.http.models.user.MineUserInfo;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
@@ -18,8 +15,6 @@ import calibur.core.jsbridge.utils.JsBridgeUtil;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.JSONUtil;
-
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.PhoneSystemUtils;
@@ -29,8 +24,6 @@ import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
 import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
@@ -74,6 +67,7 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
         setLoadingView(findViewById(R.id.refresh_layout));
     }
 
+    @SuppressLint("JavascriptInterface")
     private void initWebView() {
         mWebView = findViewById(R.id.post_detail_webview);
         mJavaScriptNativeBridge = new CommonJsBridgeImpl(this, new Handler(), this, mWebView);
@@ -154,19 +148,8 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
         return Constants.userInfoData;
     }
 
-    @Nullable
     @Override
     public void setUserInfo(@Nullable Object params) {
-        LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));
-    }
-
-    @Override
-    public void toNativePage(@Nullable Object params) {
-        LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));
-    }
-
-    @Override
-    public void previewImages(@Nullable Object params) {
         LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));
     }
 
@@ -185,7 +168,6 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
         LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));
     }
 
-    @Nullable
     @Override
     public Object showConfirm(@Nullable Object params) {
         LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));

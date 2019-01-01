@@ -23,7 +23,7 @@ import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.assistUtils.activityUtils.PerviewImageUtils;
+import com.riuir.calibur.assistUtils.activityUtils.PreviewImageUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
@@ -396,7 +396,7 @@ public class ImageShowInfoActivity extends BaseActivity {
                 public void onClick(View view) {
 
                     String url = primacyData.getSource().getUrl();
-                    PerviewImageUtils.startPerviewImage(ImageShowInfoActivity.this,previewImagesList,url,view);
+                    PreviewImageUtils.startPreviewImage(ImageShowInfoActivity.this,previewImagesList,url,view);
                 }
             });
 
@@ -420,7 +420,7 @@ public class ImageShowInfoActivity extends BaseActivity {
                                 ImageShowInfoPrimacy.ImageShowInfoPrimacyImages item =
                                         (ImageShowInfoPrimacy.ImageShowInfoPrimacyImages) adapter.getItem(position);
                                 String url = item.getUrl();
-                                PerviewImageUtils.startPerviewImage(ImageShowInfoActivity.this,previewImagesList,url,view);
+                                PreviewImageUtils.startPreviewImage(ImageShowInfoActivity.this,previewImagesList,url,view);
                                 break;
                             default:
                                 break;
