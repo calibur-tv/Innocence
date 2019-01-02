@@ -10,8 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.PhoneSystemUtils;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
+import com.riuir.calibur.utils.Constants;
 
 import org.json.JSONObject;
 
@@ -20,6 +22,7 @@ import java.util.Map;
 import butterknife.BindView;
 import calibur.core.http.models.user.UserNotificationInfo;
 import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.jsbridge.interfaces.IH5JsCallApp;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.widget.webview.AthenaWebView;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
@@ -27,7 +30,7 @@ import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NotificationListFragment extends BaseFragment {
+public class NotificationListFragment extends BaseFragment implements IH5JsCallApp {
 
     @BindView(R.id.notification_list_fragment_web_view_swipe_refresh)
     SwipeRefreshLayout refreshLayout;
@@ -70,5 +73,38 @@ public class NotificationListFragment extends BaseFragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void createMainComment(@org.jetbrains.annotations.Nullable Object params) {
+
+    }
+
+    @Override
+    public void createSubComment(@org.jetbrains.annotations.Nullable Object params) {
+
+    }
+
+    @Override
+    public void toggleClick(@org.jetbrains.annotations.Nullable Object params) {
+
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public Object showConfirm(@org.jetbrains.annotations.Nullable Object params) {
+        return null;
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public Object getDeviceInfo() {
+        return PhoneSystemUtils.getDeviceInfo();
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public Object getUserInfo() {
+        return Constants.userInfoData;
     }
 }

@@ -9,12 +9,14 @@ import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 
 import butterknife.BindView;
-
+@Route(path = RouteUtils.userLoginPath)
 public class LoginAndRegisterActivity extends BaseActivity {
 
 

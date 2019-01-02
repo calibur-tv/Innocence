@@ -14,9 +14,12 @@ import calibur.core.jsbridge.utils.JsBridgeUtil;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.JSONUtil;
+
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
+import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
@@ -24,6 +27,7 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+@Route(path = RouteUtils.commentDetailPath)
 public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     private WebView mWebView;
@@ -38,6 +42,7 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
 
     int commentId;
     String type;
+    int reply_id;
 //    TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList mainComment;
 
     private static CommentDetailActivity instance;
@@ -52,6 +57,7 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
         Intent intent = getIntent();
         commentId = intent.getIntExtra("id",0);
         type = intent.getStringExtra("type");
+        reply_id = intent.getIntExtra("reply_id",0);
 
         initWebView();
         initView();
@@ -77,7 +83,7 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
     @Override
     protected void onLoadData() {
         showLoading();
-        apiService.getCommentItem(type,commentId,0)
+        apiService.getCommentItem(type,commentId,reply_id)
                 .compose(Rx2Schedulers.applyObservableAsync())
                 .subscribe(new ObserverWrapper<Object>() {
                     @Override

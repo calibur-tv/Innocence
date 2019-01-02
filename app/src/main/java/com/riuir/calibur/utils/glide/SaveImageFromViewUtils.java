@@ -34,7 +34,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
-import com.riuir.calibur.utils.GlideApp;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,7 +48,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 
 import static butterknife.internal.Utils.arrayOf;
 

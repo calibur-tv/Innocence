@@ -4,13 +4,17 @@ import android.os.Handler
 import calibur.core.http.models.jsbridge.H5RespModel
 import calibur.core.http.models.jsbridge.models.H5CallAppBusinessModel
 import calibur.core.http.models.jsbridge.models.IAppBusiness
+import calibur.core.http.models.user.MineUserInfo
 import calibur.core.jsbridge.AbsJsBridge
 import calibur.core.jsbridge.JsBridgeContract
 import calibur.core.jsbridge.JsCallNativeFunsRegister
 import calibur.core.jsbridge.interfaces.IBaseJsCallApp
 import calibur.core.jsbridge.interfaces.IH5JsCallApp
 import calibur.foundation.utils.JSONUtil
+import com.riuir.calibur.assistUtils.LogUtils
 import com.riuir.calibur.assistUtils.activityUtils.PreviewImageUtils
+import com.riuir.calibur.ui.route.RouteUtils
+import com.riuir.calibur.utils.Constants
 import java.util.ArrayList
 
 /**
@@ -23,7 +27,6 @@ import java.util.ArrayList
 class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallNativeFunsRegister(handler, absJsBridge) {
 
   override fun jsCallNative(funs: JsBridgeContract?, jsonString: String): String? {
-
     val bridgeMessage = JSONUtil.fromJson(jsonString, H5RespModel::class.java)
     val func = bridgeMessage.func
     val jsFun = funs as IH5JsCallApp
@@ -40,7 +43,7 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
       }
       IH5JsCallApp.setUserInfo -> {
         handler.post {
-          javaScriptNativeBridge.executeJsCallbackByCallbackId("", bridgeMessage.callbackId)
+          jsSetUserInfo(bridgeMessage.params)
         }
       }
       IH5JsCallApp.toNativePage -> {
@@ -94,26 +97,32 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
    */
   private fun jsCallNativeBusiness(biz: Any?) {
     val bizName: H5CallAppBusinessModel = biz as H5CallAppBusinessModel
-    when (bizName.uri) {
-      IAppBusiness.bizName1 ->{
-        ///:TODO 跳转到用户
-      }
-      IAppBusiness.bizName2 ->{
-        ///:TODO 跳转到帖子详情
-      }
-      IAppBusiness.bizName3 ->{
-        ///:TODO 跳转到漫评详情
-      }
-      IAppBusiness.bizName4 ->{
-        ///:TODO 跳转到相册详情
-      }
-      IAppBusiness.bizName5 ->{
-        ///:TODO 跳转到番剧详情
-      }
-      IAppBusiness.bizName6 ->{
-        ///:TODO 跳转到系统公告
-      }
-    }
+    RouteUtils.toPage(bizName.uri)
+//    when (bizName.uri) {
+//      IAppBusiness.bizName1 ->{
+//        ///:TODO 跳转到用户
+//      }
+//      IAppBusiness.bizName2 ->{
+//        ///:TODO 跳转到帖子详情
+//      }
+//      IAppBusiness.bizName3 ->{
+//        ///:TODO 跳转到漫评详情
+//      }
+//      IAppBusiness.bizName4 ->{
+//        ///:TODO 跳转到相册详情
+//      }
+//      IAppBusiness.bizName5 ->{
+//        ///:TODO 跳转到番剧详情
+//      }
+//      IAppBusiness.bizName6 ->{
+//        ///:TODO 跳转到系统公告
+//      }
+//    }
+  }
+
+  private fun jsSetUserInfo(biz: Any?){
+    val bizData: MineUserInfo = biz as MineUserInfo
+    Constants.userInfoData = bizData
   }
 
 

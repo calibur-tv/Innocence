@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -31,6 +32,7 @@ import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterAnimeSettingActivity;
 import com.riuir.calibur.ui.home.Drama.dramaInfo.DramaInfoActivity;
+import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
@@ -52,7 +54,7 @@ import retrofit2.Response;
 /**
  * 动漫主页
  */
-
+@Route(path = RouteUtils.bangumiDetailPath)
 public class DramaActivity extends BaseActivity {
 
     @BindView(R.id.drama_activity_anime_icon)

@@ -1,5 +1,7 @@
 package com.riuir.calibur.ui.home.score;
 
+import android.app.Activity;
+import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.WebView;
@@ -14,10 +16,13 @@ import calibur.core.jsbridge.utils.JsBridgeUtil;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.JSONUtil;
+
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
+import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
@@ -25,6 +30,7 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+@Route(path = RouteUtils.scoreDetailPath)
 public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     private WebView mWebView;

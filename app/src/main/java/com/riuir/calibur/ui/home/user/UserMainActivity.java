@@ -14,11 +14,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.GlideUtils;
@@ -38,6 +40,7 @@ import retrofit2.Response;
 /**
  * 用户主页
  */
+@Route(path = RouteUtils.userColumnPath)
 public class UserMainActivity extends BaseActivity {
 
     @BindView(R.id.user_main_activity_banner)
@@ -89,7 +92,6 @@ public class UserMainActivity extends BaseActivity {
         dm = getResources().getDisplayMetrics();
 
         Intent intent = getIntent();
-        userId = intent.getIntExtra("userId",0);
         zone = intent.getStringExtra("zone");
 
         setListener();
@@ -118,9 +120,6 @@ public class UserMainActivity extends BaseActivity {
         userCardFragment = null;
         userFollowedScoreFragment = null;
 
-
-
-        userId = intent.getIntExtra("userId",0);
         zone = intent.getStringExtra("zone");
         setListener();
         setNet();
@@ -142,6 +141,7 @@ public class UserMainActivity extends BaseActivity {
                     @Override
                     public void onSuccess(UserMainInfo info) {
                         userData = info;
+                        userId = userData.getId();
                         setView();
                     }
 

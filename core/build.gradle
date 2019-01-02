@@ -1,6 +1,17 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: '../common_build.gradle'
+
+android{
+    defaultConfig{
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+}
+
 dependencies {
 
   implementation fileTree(dir: 'libs', include: ['*.jar'])

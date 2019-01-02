@@ -10,6 +10,8 @@ import calibur.core.http.RetrofitManager;
 import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.bus.BusinessBusManager;
 import calibur.foundation.config.PackageTypeConfig;
+
+import com.alibaba.android.arouter.launcher.ARouter;
 import com.newrelic.agent.android.NewRelic;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
@@ -57,7 +59,9 @@ public class CaliburInitializer {
     BusinessBusManager.init();
     initBugly();
     initAlbum();
+    initARoute();
   }
+
 
   private void mainProcessInit() {
     //if (PackageTypeConfig.isDebugEnv()) {
@@ -149,6 +153,15 @@ public class CaliburInitializer {
     Album.initialize(AlbumConfig.newBuilder(App.instance())
         .setAlbumLoader(new MyAlbumLoader())
         .build());
+  }
+
+
+  private void initARoute() {
+    if (isDebug){
+      ARouter.openDebug();
+      ARouter.openLog();
+    }
+    ARouter.init(App.instance());
   }
 
   /**

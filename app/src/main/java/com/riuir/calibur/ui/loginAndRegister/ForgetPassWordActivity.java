@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.geetest.sdk.Bind.GT3GeetestBindListener;
 import com.geetest.sdk.Bind.GT3GeetestUtilsBind;
 import com.google.gson.Gson;
@@ -28,6 +29,7 @@ import com.riuir.calibur.data.GeeTestInfo;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.home.image.CreateImageAlbumActivity;
+import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.utils.geetest.GeetestUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -46,7 +48,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+@Route(path = RouteUtils.userForgetPswPath)
 public class ForgetPassWordActivity extends BaseActivity {
 
     private static final int NET_GEE_STATUS_captcha = 0;

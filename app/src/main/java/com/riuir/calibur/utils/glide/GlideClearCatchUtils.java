@@ -2,7 +2,6 @@ package com.riuir.calibur.utils.glide;
 
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.utils.GlideApp;
 
 import java.io.File;
 import java.math.BigDecimal;
