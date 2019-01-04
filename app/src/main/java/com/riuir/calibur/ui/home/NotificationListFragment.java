@@ -1,31 +1,27 @@
 package com.riuir.calibur.ui.home;
 
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.PhoneSystemUtils;
 import com.riuir.calibur.ui.common.BaseFragment;
+import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
+
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.utils.Constants;
 
-import org.json.JSONObject;
-
-import java.util.Map;
-
 import butterknife.BindView;
-import calibur.core.http.models.user.UserNotificationInfo;
-import calibur.core.http.observer.ObserverWrapper;
+import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
+import calibur.core.jsbridge.utils.JsBridgeUtil;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.widget.webview.AthenaWebView;
-import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +33,8 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
     @BindView(R.id.notification_list_fragment_web_view)
     AthenaWebView mWebView;
     MainActivity mainActivity;
+
+    public AbsJsBridge mJavaScriptNativeBridge;
 
     boolean isLoad = false;
 
@@ -55,6 +53,7 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
     @Override
     protected void onInit(@Nullable Bundle savedInstanceState) {
         mainActivity = (MainActivity) getActivity();
+        refreshLayout.setEnabled(false);
     }
 
     @Override
@@ -63,6 +62,7 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
         setWeb();
     }
 
+    @SuppressLint("JavascriptInterface")
     private void setWeb() {
         mainActivity.setOnRefreshMessageList(new MainActivity.OnRefreshMessageList() {
             @Override
@@ -73,6 +73,8 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
                 }
             }
         });
+        mJavaScriptNativeBridge = new CommonJsBridgeImpl(getContext(), new Handler(), this, mWebView);
+        mWebView.addJavascriptInterface(mJavaScriptNativeBridge, JsBridgeUtil.BRIDGE_NAME);
     }
 
     @Override
@@ -88,12 +90,6 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
     @Override
     public void toggleClick(@org.jetbrains.annotations.Nullable Object params) {
 
-    }
-
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public Object showConfirm(@org.jetbrains.annotations.Nullable Object params) {
-        return null;
     }
 
     @org.jetbrains.annotations.Nullable

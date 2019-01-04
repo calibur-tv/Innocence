@@ -1,7 +1,9 @@
 package com.riuir.calibur.ui.home.marked;
 
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.utils.Constants;
+
 import org.jetbrains.annotations.Nullable;
 
 @Route(path = RouteUtils.userBookmarkPath)
@@ -29,6 +32,8 @@ public class BookMarksActivity extends BaseActivity implements IH5JsCallApp {
 
     @BindView(R.id.book_marks_back_btn)
     ImageView backBtn;
+    @BindView(R.id.refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     @Override
     protected int getContentViewId() {
@@ -49,9 +54,11 @@ public class BookMarksActivity extends BaseActivity implements IH5JsCallApp {
                 finish();
             }
         });
-        setLoadingView(findViewById(R.id.refresh_layout));
+        setLoadingView(refreshLayout);
+        refreshLayout.setEnabled(false);
     }
 
+    @SuppressLint("JavascriptInterface")
     private void initWebView() {
         mWebView = findViewById(R.id.book_marks_webview);
         mJavaScriptNativeBridge = new CommonJsBridgeImpl(this, new Handler(), this, mWebView);
@@ -88,11 +95,5 @@ public class BookMarksActivity extends BaseActivity implements IH5JsCallApp {
 
     @Override
     public void toggleClick(@Nullable Object params) {
-    }
-
-    @Nullable
-    @Override
-    public Object showConfirm(@Nullable Object params) {
-        return null;
     }
 }

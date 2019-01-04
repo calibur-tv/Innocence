@@ -32,7 +32,9 @@ import com.riuir.calibur.ui.home.marked.BookMarksActivity;
 import com.riuir.calibur.ui.home.mine.ClearCacheActivity;
 import com.riuir.calibur.ui.home.mine.MineInfoSettingActivity;
 import com.riuir.calibur.ui.home.report.FeedbackActivity;
+import com.riuir.calibur.ui.home.user.UserBulletinActivity;
 import com.riuir.calibur.ui.home.user.UserMainActivity;
+import com.riuir.calibur.ui.home.user.UserTransactionsActivity;
 import com.riuir.calibur.ui.web.WebViewActivity;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
@@ -330,8 +332,7 @@ public class MineFragment extends BaseFragment {
         mineNoticeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), WebViewActivity.class);
-                intent.putExtra("type",WebViewActivity.TYPE_NOTICE);
+                Intent intent = new Intent(getContext(), UserBulletinActivity.class);
                 startActivity(intent);
             }
         });
@@ -345,8 +346,7 @@ public class MineFragment extends BaseFragment {
         mineWithdrawalsLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), WebViewActivity.class);
-                intent.putExtra("type",WebViewActivity.TYPE_WITHDRAWALS);
+                Intent intent = new Intent(getContext(), UserTransactionsActivity.class);
                 startActivity(intent);
             }
         });

@@ -1,5 +1,6 @@
 package com.riuir.calibur.ui.home.comment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Handler;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
+
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -64,6 +66,7 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
         TemplateRenderEngine.getInstance().checkCommentItemTemplateForUpdate();
     }
 
+    @SuppressLint("JavascriptInterface")
     private void initWebView() {
         mWebView = findViewById(R.id.comment_detail_webview);
         mJavaScriptNativeBridge = new CommonJsBridgeImpl(this, new Handler(), this, mWebView);
@@ -150,11 +153,6 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
 
     }
 
-    @Nullable
-    @Override
-    public Object showConfirm(@Nullable Object params) {
-        return null;
-    }
 
     public static CommentDetailActivity getInstance() {
         return instance;
@@ -165,7 +163,7 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
      * 将数据通过AppCallJS传递给模板
      */
     public void setCommentSuccessResult(ReplyCommentInfo info) {
-
+        mJavaScriptNativeBridge.callJavascript(IH5JsCallApp.createSubComment, info, null);
     }
 
 }

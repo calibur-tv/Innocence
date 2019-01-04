@@ -1,15 +1,15 @@
 package com.riuir.calibur.ui.home.card;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import butterknife.BindView;
 import calibur.core.http.models.comment.CreateMainCommentInfo;
 import calibur.core.http.models.followList.post.CardShowInfoPrimacy;
-import calibur.core.http.models.jsbridge.models.H5ShowConfirmModel;
+import calibur.core.http.models.jsbridge.models.H5ToggleModel;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
@@ -28,7 +28,7 @@ import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
-import com.riuir.calibur.utils.DialogHelper;
+
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -45,6 +45,8 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @BindView(R.id.comment_view)
     ReplyAndCommentView commentView;
+    @BindView(R.id.refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     CardShowInfoPrimacy primacyData;
 
@@ -71,7 +73,8 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
                 finish();
             }
         });
-        setLoadingView(findViewById(R.id.refresh_layout));
+        setLoadingView(refreshLayout);
+        refreshLayout.setEnabled(false);
     }
 
     @SuppressLint("JavascriptInterface")
@@ -95,17 +98,23 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
         commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
             @Override
             public void onRewardFinish() {
-//              trendingLFCView.setRewarded(true);
+                H5ToggleModel model = new H5ToggleModel();
+                model.setAll("post","reward",primacyData.getPost().getId(),true);
+                mJavaScriptNativeBridge.callJavascript("app-invoker-toggleClick",model,null);
             }
 
             @Override
             public void onLikeFinish(boolean isLike) {
-//              trendingLFCView.setLiked(isLike);
+                H5ToggleModel model = new H5ToggleModel();
+                model.setAll("post","like",primacyData.getPost().getId(),true);
+                mJavaScriptNativeBridge.callJavascript("app-invoker-toggleClick",model,null);
             }
 
             @Override
             public void onMarkFinish(boolean isMark) {
-//              trendingLFCView.setCollected(isMark);
+                H5ToggleModel model = new H5ToggleModel();
+                model.setAll("post","mark",primacyData.getPost().getId(),true);
+                mJavaScriptNativeBridge.callJavascript("app-invoker-toggleClick",model,null);
             }
         });
         commentView.setNetAndListener();
@@ -167,21 +176,21 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @Override
     public void toggleClick(@Nullable Object params) {
-        LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));
-    }
-
-    @Nullable
-    @Override
-    public Object showConfirm(@Nullable Object params) {
-        if (params instanceof H5ShowConfirmModel) {
-            DialogHelper.getConfirmDialog(this,
-                ((H5ShowConfirmModel) params).getTitle(),
-                ((H5ShowConfirmModel) params).getMessage(),
-                ((H5ShowConfirmModel) params).getCancelButtonText(),
-                ((H5ShowConfirmModel) params).getSubmitButtonText(),
-                false).show();
+        LogUtils.d("toggleClick","data = "+String.valueOf(params));
+        if (params instanceof H5ToggleModel){
+            H5ToggleModel toggleModel = (H5ToggleModel) params;
+            switch (toggleModel.getType()){
+                case "reward":
+                    commentView.setRewarded(toggleModel.getResult().isRewarded());
+                    break;
+                case "like":
+                    break;
+                case "mark":
+                    break;
+                case "follow":
+                    break;
+            }
         }
-        return null;
     }
 
     public static PostDetailActivity getInstance() {
@@ -193,6 +202,6 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
      * 将数据通过AppCallJS传递给模板
      */
     public void setCommentSuccessResult(CreateMainCommentInfo info) {
-
+        mJavaScriptNativeBridge.callJavascript(IH5JsCallApp.createMainComment, info, null);
     }
 }

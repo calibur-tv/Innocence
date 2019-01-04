@@ -1,8 +1,8 @@
 package com.riuir.calibur.ui.home.score;
 
-import android.app.Activity;
-import android.os.Bundle;
+import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
@@ -26,6 +26,7 @@ import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
+
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -42,6 +43,8 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @BindView(R.id.comment_view)
     ReplyAndCommentView commentView;
+    @BindView(R.id.refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     ScoreShowInfoPrimacy primacyData;
 
@@ -69,9 +72,11 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
                 finish();
             }
         });
-        setLoadingView(findViewById(R.id.refresh_layout));
+        setLoadingView(refreshLayout);
+        refreshLayout.setEnabled(false);
     }
 
+    @SuppressLint("JavascriptInterface")
     private void initWebView() {
         mWebView = findViewById(R.id.score_detail_webview);
         mJavaScriptNativeBridge = new CommonJsBridgeImpl(this, new Handler(), this, mWebView);
@@ -159,12 +164,6 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     }
 
-    @Nullable
-    @Override
-    public Object showConfirm(@Nullable Object params) {
-        return null;
-    }
-
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
@@ -180,7 +179,7 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
      * 将数据通过AppCallJS传递给模板
      */
     public void setCommentSuccessResult(CreateMainCommentInfo info){
-
+        mJavaScriptNativeBridge.callJavascript(IH5JsCallApp.createMainComment, info, null);
     }
 
 }

@@ -21,5 +21,4 @@ interface IH5JsCallApp: IBaseJsCallApp {
   fun createMainComment(params:Any?)
   fun createSubComment(params:Any?)
   fun toggleClick(params:Any?)
-  fun showConfirm(params:Any?): Any?
 }

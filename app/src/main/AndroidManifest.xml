@@ -215,7 +215,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".ui.home.user.UserHomeActivity"
+            android:name=".ui.home.user.UserBulletinActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
         <activity
@@ -228,7 +228,8 @@
             android:windowSoftInputMode="adjustNothing" />
         <activity android:name=".ui.home.comment.CommentDetailActivity" />
         <activity android:name=".ui.home.marked.BookMarksActivity" />
-        <activity android:name=".ui.home.role.RoleDetailActivity"></activity>
+        <activity android:name=".ui.home.role.RoleDetailActivity" />
+        <activity android:name=".ui.home.user.UserTransactionsActivity"></activity>
     </application>
 
 </manifest>

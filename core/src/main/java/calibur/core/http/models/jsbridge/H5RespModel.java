@@ -3,7 +3,7 @@ package calibur.core.http.models.jsbridge;
 import calibur.core.http.models.jsbridge.models.H5CallAppBusinessModel;
 import calibur.core.http.models.jsbridge.models.H5ImageModel;
 import calibur.core.http.models.jsbridge.models.H5ShowConfirmModel;
-import calibur.core.http.models.jsbridge.models.IAppBusiness;
+import calibur.core.http.models.jsbridge.models.H5ToggleModel;
 import calibur.core.http.models.user.MineUserInfo;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
 import calibur.foundation.utils.JSONUtil;
@@ -53,17 +53,12 @@ public class H5RespModel implements Serializable{
       return H5ImageModel.class;
     } else if (IH5JsCallApp.showConfirm.equals(func)) {
       return H5ShowConfirmModel.class;
-    } else if (IH5JsCallApp.toNativePage.equals(func)
-//        || IAppBusiness.bizName1.equals(func)
-//        || IAppBusiness.bizName2.equals(func)
-//        || IAppBusiness.bizName3.equals(func)
-//        || IAppBusiness.bizName4.equals(func)
-//        || IAppBusiness.bizName5.equals(func)
-//        || IAppBusiness.bizName6.equals(func)
-        ) {
+    } else if (IH5JsCallApp.toNativePage.equals(func)) {
       return H5CallAppBusinessModel.class;
     }else if (IH5JsCallApp.setUserInfo.equals(func)) {
       return MineUserInfo.class;
+    }else if (IH5JsCallApp.toggleClick.equals(func)) {
+      return H5ToggleModel.class;
     }
     return null;
   }
