@@ -257,32 +257,68 @@ public class ReplyAndCommentView extends LinearLayout{
         }
     }
 
+    public void setClickToSubComment(int targetUserId,String fromUserName){
+        this.targetUserId = targetUserId;
+        this.fromUserName = fromUserName;
+        if (targetUserId!=0&&!TextUtils.isEmpty(fromUserName)){
+            setRequestFocus();
+        }
+    }
+
+    public void setJSToSubComment(String type,int parentCommentId,int targetUserId,String targetUserName){
+        this.type = type;
+        this.mainCommentid = parentCommentId;
+        this.targetUserId = targetUserId;
+        this.fromUserName = targetUserName;
+        setRequestFocus();
+    }
+
+    public boolean getIsClickedSubItem(){
+        return !TextUtils.isEmpty(fromUserName);
+    }
+
+    public String getContentText(){
+        if (TextUtils.isEmpty(jumpBtn.getText())){
+            return "";
+        }else {
+            return jumpBtn.getText().toString();
+        }
+    }
+
+    public void toJumpBtn(){
+        toJumpBtn(this.type,this.id);
+    }
+
+    public void toJumpBtn(String type,int id){
+        String content = getContentText();
+        Intent toSearchActivityIntent = new Intent(getContext(), ReplyAndCommentActivity.class);
+        toSearchActivityIntent.putExtra("type",type);
+        toSearchActivityIntent.putExtra("subType",subType);
+        toSearchActivityIntent.putExtra("id",id);
+        toSearchActivityIntent.putExtra("titleId",titleId);
+        toSearchActivityIntent.putExtra("status",status);
+        toSearchActivityIntent.putExtra("mainCommentid",mainCommentid);
+        toSearchActivityIntent.putExtra("targetUserId",targetUserId);
+        toSearchActivityIntent.putExtra("targetUserMainId",targetUserMainId);
+        toSearchActivityIntent.putExtra("fromUserName",fromUserName);
+        toSearchActivityIntent.putExtra("content",content);
+
+        //版本大于5.0的时候带有动画
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            context.startActivity(toSearchActivityIntent, ActivityOptions.makeSceneTransitionAnimation((Activity) context,
+                    jumpBtn, "ToReplyAndCommentActivity").toBundle());
+        }else {
+            context.startActivity(toSearchActivityIntent);
+        }
+    }
+
     public void setNetAndListener(){
 
         setView();
         jumpBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                String content = jumpBtn.getText().toString();
-                Intent toSearchActivityIntent = new Intent(getContext(), ReplyAndCommentActivity.class);
-                toSearchActivityIntent.putExtra("type",type);
-                toSearchActivityIntent.putExtra("subType",subType);
-                toSearchActivityIntent.putExtra("id",id);
-                toSearchActivityIntent.putExtra("titleId",titleId);
-                toSearchActivityIntent.putExtra("status",status);
-                toSearchActivityIntent.putExtra("mainCommentid",mainCommentid);
-                toSearchActivityIntent.putExtra("targetUserId",targetUserId);
-                toSearchActivityIntent.putExtra("targetUserMainId",targetUserMainId);
-                toSearchActivityIntent.putExtra("fromUserName",fromUserName);
-                toSearchActivityIntent.putExtra("content",content);
-
-                //版本大于5.0的时候带有动画
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    context.startActivity(toSearchActivityIntent, ActivityOptions.makeSceneTransitionAnimation((Activity) context,
-                            view, "ToReplyAndCommentActivity").toBundle());
-                }else {
-                    context.startActivity(toSearchActivityIntent);
-                }
+                toJumpBtn();
             }
         });
         sendBtn.setOnClickListener(new OnClickListener() {
@@ -454,7 +490,7 @@ public class ReplyAndCommentView extends LinearLayout{
     private void sendNet() {
 
         if (status == STATUS_MAIN_COMMENT){
-
+            //该分支暂时作废
             CreateMainComment createMainComment = new CreateMainComment();
             createMainComment.setContent(editRC.getText().toString());
             createMainComment.setType(type);
@@ -497,7 +533,7 @@ public class ReplyAndCommentView extends LinearLayout{
                     });
         }else if (status == STATUS_SUB_COMMENT){
             //如果回复的是父评论 设置父评论的用户ID，否则使用子评论用户ID
-            if (targetUserId == 0)
+            if (targetUserId == 0&&targetUserMainId!=0)
                 targetUserId = targetUserMainId;
             RetrofitManager.getInstance().getService(APIService.class)
                     .getReplyComment(editRC.getText().toString(),type,mainCommentid,targetUserId)

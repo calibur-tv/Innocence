@@ -18,13 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.riuir.calibur.R;
-import com.riuir.calibur.assistUtils.DensityUtils;
-import com.riuir.calibur.assistUtils.ScreenUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
 import com.riuir.calibur.ui.home.image.CreateNewImageActivity;
-import com.riuir.calibur.utils.Constants;
 
 import calibur.core.manager.UserSystem;
 
@@ -60,7 +56,7 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
     private RelativeLayout maintabMsg;
     private ImageView maintabMsgIv;
     private TextView maintabMsgTv;
-    private ImageView maintabMsgReddot;
+    private TextView maintabMsgReddot;
     private RelativeLayout maintabMine;
     private ImageView maintabMineIv;
     private TextView maintabMineTv;
@@ -111,7 +107,7 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         maintabMsg = (RelativeLayout) view.findViewById(R.id.maintab_msg);
         maintabMsgIv = (ImageView) view.findViewById(R.id.maintab_msg_iv);
         maintabMsgTv = (TextView) view.findViewById(R.id.maintab_msg_tv);
-        maintabMsgReddot = (ImageView) view.findViewById(R.id.maintab_msg_reddot);
+        maintabMsgReddot = (TextView) view.findViewById(R.id.maintab_msg_reddot);
 
         maintabMine = (RelativeLayout) view.findViewById(R.id.maintab_mine);
         maintabMineIv = (ImageView) view.findViewById(R.id.maintab_mine_iv);
@@ -192,7 +188,13 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
     public void updateMsgRedDot(int count) {
         if (count > 0) {
             maintabMsgReddot.setVisibility(View.VISIBLE);
+            if (count>99){
+                maintabMsgReddot.setText("99");
+            }else {
+                maintabMsgReddot.setText(count+"");
+            }
         } else {
+            maintabMsgReddot.setText("0");
             maintabMsgReddot.setVisibility(View.GONE);
         }
     }

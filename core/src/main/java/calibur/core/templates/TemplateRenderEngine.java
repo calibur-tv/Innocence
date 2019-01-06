@@ -160,13 +160,13 @@ public class TemplateRenderEngine {
   }
 
   public void checkAllTemplateForUpdate() {
+    checkNotificationTemplateForUpdate();
     checkEditorTemplateForUpdate();
     checkImageDetailPageTemplateForUpdate();
     checkBookmarksTemplateForUpdate();
     checkNoticeTemplateForUpdate();
     checkReviewTemplateForUpdate();
     checkPostDetailPageTemplateForUpdate();
-    checkNotificationTemplateForUpdate();
     checkTransactionTemplateForUpdate();
     checkHomeTemplateForUpdate();
     checkRoleDetailTemplateForUpdate();

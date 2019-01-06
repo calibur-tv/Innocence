@@ -8,24 +8,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.Event;
-import com.riuir.calibur.data.MainTrendingInfo;
 
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaCartoonListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,9 +26,7 @@ import calibur.core.http.models.followList.CartoonListInfo;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Query;
 
 /**
  * A simple {@link Fragment} subclass.

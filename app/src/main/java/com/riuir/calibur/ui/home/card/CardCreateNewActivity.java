@@ -420,7 +420,7 @@ public class CardCreateNewActivity extends BaseActivity {
                                     @Override
                                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                                         if (id!=0){
-                                            Intent intent = new Intent(CardCreateNewActivity.this,CardShowInfoActivity.class);
+                                            Intent intent = new Intent(CardCreateNewActivity.this,PostDetailActivity.class);
                                             intent.putExtra("cardID",id);
                                             startActivity(intent);
                                             finish();

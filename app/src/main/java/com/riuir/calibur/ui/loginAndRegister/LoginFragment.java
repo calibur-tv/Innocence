@@ -26,6 +26,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.BangumiAllListUtils;
+import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.geetest.GeetestUtils;
@@ -182,8 +183,7 @@ public class LoginFragment extends BaseFragment {
                             UserSystem.getInstance().updateUserToken(s);
                             Constants.ISLOGIN = true;
                             Constants.AUTH_TOKEN = s;
-
-                            BangumiAllListUtils.setBangumiAllList(getContext());
+                            LoginUtils.getUserInfo(getContext());
                         }
 
                         @Override

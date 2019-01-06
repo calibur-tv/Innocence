@@ -24,6 +24,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
 
 import java.util.Map;
@@ -43,6 +44,8 @@ public class RoleDetailActivity extends BaseActivity implements IH5JsCallApp {
     SwipeRefreshLayout refreshLayout;
 
     RoleShowInfo roleShowInfo;
+    @BindView(R.id.role_detail_header_more)
+    AppHeaderPopupWindows headerMore;
 
     @Override
     protected int getContentViewId() {
@@ -52,9 +55,9 @@ public class RoleDetailActivity extends BaseActivity implements IH5JsCallApp {
     @Override
     protected void onInit() {
         roleId = getIntent().getIntExtra("roleId", 0);
+        TemplateRenderEngine.getInstance().checkRoleDetailTemplateForUpdate();
         initWebView();
         initView();
-        TemplateRenderEngine.getInstance().checkRoleDetailTemplateForUpdate();
     }
 
     private void initView() {
@@ -86,6 +89,7 @@ public class RoleDetailActivity extends BaseActivity implements IH5JsCallApp {
                         JSONObject jsonObj = new JSONObject((Map) data);
                         WebTemplatesUtils.loadTemplates(mWebView, TemplateRenderEngine.ROLE, jsonObj.toString());
                         roleShowInfo = JSONUtil.fromJson(jsonObj.toString(), RoleShowInfo.class);
+                        setHeaderMore();
                     }
 
                     @Override
@@ -98,6 +102,11 @@ public class RoleDetailActivity extends BaseActivity implements IH5JsCallApp {
                         hideLoading();
                     }
                 });
+    }
+
+    private void setHeaderMore() {
+        headerMore.setReportModelTag(AppHeaderPopupWindows.ROLE,roleShowInfo.getData().getId());
+        headerMore.setShareLayout(roleShowInfo.getData().getName(),AppHeaderPopupWindows.ROLE,roleShowInfo.getData().getId(),"");
     }
 
     @Nullable
@@ -114,16 +123,17 @@ public class RoleDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @Override
     public void createMainComment(@Nullable Object params) {
-
     }
 
     @Override
     public void createSubComment(@Nullable Object params) {
-
     }
 
     @Override
     public void toggleClick(@Nullable Object params) {
+    }
 
+    @Override
+    public void readNotification(@Nullable Object params) {
     }
 }

@@ -25,7 +25,6 @@ import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
-import com.google.gson.Gson;
 import com.hedgehog.ratingbar.RatingBar;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -33,17 +32,12 @@ import com.riuir.calibur.assistUtils.activityUtils.RecyclerViewUtils;
 import com.riuir.calibur.assistUtils.TimeUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
-import com.riuir.calibur.data.Event;
 
-import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
-import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.ScoreContentView;
@@ -51,11 +45,8 @@ import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
-import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
-import com.tencent.bugly.crashreport.CrashReport;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,8 +56,6 @@ import calibur.core.http.models.comment.TrendingShowInfoCommentMain;
 import calibur.core.http.models.followList.score.ScoreShowInfoPrimacy;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ScoreShowInfoActivity extends BaseActivity {

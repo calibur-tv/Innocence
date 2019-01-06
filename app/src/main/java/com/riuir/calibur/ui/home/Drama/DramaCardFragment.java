@@ -16,21 +16,16 @@ import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
-import com.riuir.calibur.data.Event;
-
 
 import com.riuir.calibur.data.trending.dramaTopPost.DramaTopPostInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaCardListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
-import com.riuir.calibur.ui.widget.BannerLoopView;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
+
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
-import com.tencent.bugly.crashreport.CrashReport;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +36,6 @@ import calibur.core.http.models.followList.params.FolllowListParams;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 
@@ -312,7 +306,7 @@ public class DramaCardFragment extends BaseFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //item被点击，跳转页面
-                Intent intent = new Intent(getActivity(), CardShowInfoActivity.class);
+                Intent intent = new Intent(getActivity(), PostDetailActivity.class);
                 MainTrendingInfo.MainTrendingInfoList cardInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
                 int cardID = cardInfo.getId();
                 intent.putExtra("cardID",cardID);

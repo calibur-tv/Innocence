@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import calibur.core.http.models.comment.CreateMainCommentInfo;
 import calibur.core.http.models.followList.post.CardShowInfoPrimacy;
+import calibur.core.http.models.jsbridge.models.H5CreateMainComment;
 import calibur.core.http.models.jsbridge.models.H5ToggleModel;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
@@ -26,6 +27,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
 
@@ -40,15 +42,18 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     public AbsJsBridge mJavaScriptNativeBridge;
     private int postId;
 
-    @BindView(R.id.card_show_info_back_btn)
+    @BindView(R.id.post_detail_back_btn)
     ImageView backBtn;
 
     @BindView(R.id.comment_view)
     ReplyAndCommentView commentView;
     @BindView(R.id.refresh_layout)
     SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.post_detail_header_more)
+    AppHeaderPopupWindows headerCardMore;
 
     CardShowInfoPrimacy primacyData;
+
 
     private static PostDetailActivity instance;
 
@@ -61,9 +66,9 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     protected void onInit() {
         instance = this;
         postId = getIntent().getIntExtra("cardID", 0);
+        TemplateRenderEngine.getInstance().checkPostDetailPageTemplateForUpdate();
         initWebView();
         initView();
-        TemplateRenderEngine.getInstance().checkPostDetailPageTemplateForUpdate();
     }
 
     private void initView() {
@@ -82,6 +87,46 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
         mWebView = findViewById(R.id.post_detail_webview);
         mJavaScriptNativeBridge = new CommonJsBridgeImpl(this, new Handler(), this, mWebView);
         mWebView.addJavascriptInterface(mJavaScriptNativeBridge, JsBridgeUtil.BRIDGE_NAME);
+    }
+
+    @Override
+    protected void onLoadData() {
+        showLoading();
+        apiService.getPostDetailData(postId)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<Object>() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        JSONObject jsonObj = new JSONObject((Map) data);
+                        WebTemplatesUtils.loadTemplates(mWebView, TemplateRenderEngine.POST, jsonObj.toString());
+                        primacyData = JSONUtil.fromJson(jsonObj.toString(), CardShowInfoPrimacy.class);
+                        initCommentView();
+                        setHeaderMore();
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        hideLoading();
+                    }
+                });
+    }
+
+    private void setHeaderMore() {
+        headerCardMore.setReportModelTag(AppHeaderPopupWindows.POST,primacyData.getPost().getId());
+        headerCardMore.setShareLayout(primacyData.getPost().getTitle(),AppHeaderPopupWindows.POST,primacyData.getPost().getId(),"");
+        headerCardMore.setDeleteLayout(AppHeaderPopupWindows.POST,primacyData.getPost().getId(),
+                primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
+        headerCardMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+            @Override
+            public void deleteFinish() {
+                finish();
+            }
+        });
     }
 
     private void initCommentView() {
@@ -121,32 +166,6 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     @Override
-    protected void onLoadData() {
-        showLoading();
-        apiService.getPostDetailData(postId)
-                .compose(Rx2Schedulers.applyObservableAsync())
-                .subscribe(new ObserverWrapper<Object>() {
-                    @Override
-                    public void onSuccess(Object data) {
-                        JSONObject jsonObj = new JSONObject((Map) data);
-                        WebTemplatesUtils.loadTemplates(mWebView, TemplateRenderEngine.POST, jsonObj.toString());
-                        primacyData = JSONUtil.fromJson(jsonObj.toString(), CardShowInfoPrimacy.class);
-                        initCommentView();
-                    }
-
-                    @Override
-                    public void onFailure(int code, String errorMsg) {
-                        super.onFailure(code, errorMsg);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        hideLoading();
-                    }
-                });
-    }
-
-    @Override
     public void onDestroy() {
         instance = null;
         super.onDestroy();
@@ -166,7 +185,11 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @Override
     public void createMainComment(@Nullable Object params) {
-        LogUtils.d("postSetUserInfo","data = "+String.valueOf(params));
+        if (params instanceof H5CreateMainComment){
+            commentView.toJumpBtn(((H5CreateMainComment) params).getModel_type(),
+                    ((H5CreateMainComment) params).getModel_id());
+        }
+
     }
 
     @Override
@@ -191,6 +214,10 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
                     break;
             }
         }
+    }
+
+    @Override
+    public void readNotification(@Nullable Object params) {
     }
 
     public static PostDetailActivity getInstance() {

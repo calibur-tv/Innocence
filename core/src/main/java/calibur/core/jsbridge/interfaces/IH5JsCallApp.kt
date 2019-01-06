@@ -16,9 +16,11 @@ interface IH5JsCallApp: IBaseJsCallApp {
     const val createSubComment = "createSubComment"
     const val toggleClick = "toggleClick"
     const val showConfirm = "showConfirm"
+    const val readNotification = "readNotification"
   }
 
   fun createMainComment(params:Any?)
   fun createSubComment(params:Any?)
   fun toggleClick(params:Any?)
+  fun readNotification(params: Any?)
 }

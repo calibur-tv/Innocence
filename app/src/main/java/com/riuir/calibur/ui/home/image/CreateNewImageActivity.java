@@ -485,7 +485,7 @@ public class CreateNewImageActivity extends BaseActivity {
                                     @Override
                                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                                         if (id!=0){
-                                            Intent intent = new Intent(CreateNewImageActivity.this,ImageShowInfoActivity.class);
+                                            Intent intent = new Intent(CreateNewImageActivity.this,ImageDetailActivity.class);
                                             intent.putExtra("imageID",id);
                                             startActivity(intent);
                                             finish();
@@ -525,7 +525,7 @@ public class CreateNewImageActivity extends BaseActivity {
                                     @Override
                                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                                         if (albumId!=0){
-                                            Intent intent = new Intent(CreateNewImageActivity.this,ImageShowInfoActivity.class);
+                                            Intent intent = new Intent(CreateNewImageActivity.this,ImageDetailActivity.class);
                                             intent.putExtra("imageID",albumId);
                                             startActivity(intent);
                                             finish();

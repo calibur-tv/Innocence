@@ -3,6 +3,7 @@ package com.riuir.calibur.ui.web;
 import android.content.Intent;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.widget.webview.AthenaWebView;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -27,6 +29,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+@Route(path = "/browser/base")
 public class WebViewActivity extends BaseActivity {
 
     @BindView(R.id.web_view_activity_web_view)
@@ -43,15 +46,11 @@ public class WebViewActivity extends BaseActivity {
 
     public static final String TYPE_RULE = "rule";
     public static final String TYPE_INVITE = "invite";
-    public static final String TYPE_WITHDRAWALS = "withdrawals";
-    public static final String TYPE_BOOKMARKS = "bookMarks";
-    public static final String TYPE_NOTICE = "notice";
+    public static final String TYPE_BROWSER_BASE = "browserBase";
 
     private String type = "";
-    private String uri = "";
+    private String baseUrl = "";
     private int index = 0;
-
-    private static final String APP_CACAHE_DIRNAME = "/webcache";
 
     @Override
     protected int getContentViewId() {
@@ -65,6 +64,8 @@ public class WebViewActivity extends BaseActivity {
         if (type.equals(TYPE_RULE)){
             index = intent.getIntExtra("index",0);
         }
+        baseUrl = intent.getStringExtra("baseUrl");
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,39 +89,18 @@ public class WebViewActivity extends BaseActivity {
     }
 
     private void setWebView() {
-        if (Constants.AUTH_TOKEN==null||Constants.AUTH_TOKEN.length()==0){
-            Constants.AUTH_TOKEN = (String) SharedPreferencesUtils.get(App.instance(),"Authorization",new String());
-        }
 
         setClient();
-//        webSettings = webView.getSettings();
-//        webSettings.setJavaScriptEnabled(true);
-//        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-//        String cacheDirPath = App.instance().getFilesDir().getAbsolutePath()+APP_CACAHE_DIRNAME;
-//        //设置  Application Caches 缓存目录
-//        webSettings.setAppCachePath(cacheDirPath);
-//        webSettings.setAppCacheMaxSize(20*1024*1024);
-//        // 设置 WebView 的缓存模式
-//        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-//        // 支持启用缓存模式
-//        webSettings.setAppCacheEnabled(true);
-
         if (type.equals(TYPE_INVITE)){
             setInviteLoad();
-        }else if (type.equals(TYPE_WITHDRAWALS)){
-            setWithdrawals();
-        }else if (type.equals(TYPE_BOOKMARKS)){
-            setBookMarks();
-        }else if (type.equals(TYPE_NOTICE)){
-            setNotice();
+        }else if (type.equals(TYPE_BROWSER_BASE)){
+            setBrowserBase();
         }else {
             setRuleLoad();
         }
     }
 
     private void setClient() {
-//        chromeClient = new WebChromeClient();
-//        webView.setWebChromeClient(chromeClient);
         client = new MyWebViewClient();
         client.setOnPageStartedListener(new MyWebViewClient.OnPageStartedListener() {
             @Override
@@ -150,7 +130,6 @@ public class WebViewActivity extends BaseActivity {
     }
 
     private void setRuleLoad() {
-        LogUtils.d("WebViewIndex","index = "+index);
         if (index!=0){
             webView.loadUrl("https://m.calibur.tv/app/handbook?index="+index);
         }else {
@@ -158,26 +137,11 @@ public class WebViewActivity extends BaseActivity {
         }
     }
 
-    private void setWithdrawals() {
-        apiService.getUserTransactions()
-                .compose(Rx2Schedulers.applyObservableAsync())
-                .subscribe(new ObserverWrapper<Object>(){
-                    @Override
-                    public void onSuccess(Object data) {
-                        JSONObject jsonObj = new JSONObject((Map) data);
-                        WebTemplatesUtils.loadTemplates(webView,TemplateRenderEngine.TRANSACTIONS,jsonObj.toString());
-                    }
-                });
-    }
 
-
-    private void setBookMarks() {
-        WebTemplatesUtils.loadTemplates(webView,TemplateRenderEngine.BOOKMARKS,"");
-    }
-
-
-    private void setNotice() {
-        WebTemplatesUtils.loadTemplates(webView,TemplateRenderEngine.NOTICE,"");
+    private void setBrowserBase() {
+        if (!TextUtils.isEmpty(baseUrl)){
+            webView.loadUrl(baseUrl);
+        }
     }
 
     @Override

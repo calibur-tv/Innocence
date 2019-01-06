@@ -91,12 +91,18 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
                     jsShowConfrim(bridgeMessage.params, bridgeMessage.callbackId)
                 }
             }
+            IH5JsCallApp.readNotification -> {
+                handler.post {
+                    jsFun.readNotification(bridgeMessage.params)
+                }
+            }
         }
         return ""
     }
 
     /**
      * H5 调用ative的业务
+     * 页面跳转
      */
     private fun jsCallNativeBusiness(biz: Any?) {
         val bizName: H5CallAppBusinessModel = biz as H5CallAppBusinessModel

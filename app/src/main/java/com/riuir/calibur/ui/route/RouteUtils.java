@@ -3,6 +3,7 @@ package com.riuir.calibur.ui.route;
 import com.alibaba.android.arouter.exception.HandlerException;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.ui.web.WebViewActivity;
 
 import java.util.ArrayList;
 
@@ -23,6 +24,7 @@ public class RouteUtils {
     public static final String userBookmarkPath = "/user/bookmark";
     public static final String userBulletinPath = "/user/bulletin";
     public static final String userTrasactionRecordPath = "/user/trasaction/record";
+    public static final String browserBase = "/browser/base";
 
     public static void toPage(String path){
         LogUtils.d("routeLog","path = "+path);
@@ -34,6 +36,7 @@ public class RouteUtils {
         String idName = "";
         String idName2 = "";
         String commentType = "";
+        String baseUrl = "";
         int id = 0;
         int id2 = 0;
         if (path.contains("?")){
@@ -76,6 +79,9 @@ public class RouteUtils {
                         id = Integer.parseInt(params[1].replace("comment_id=",""));
                         id2 = Integer.parseInt(params[2].replace("reply_id=",""));
                         break;
+                    case browserBase:
+                        baseUrl = str[1].replace("uri=","");
+                        break;
 
                 }
             }
@@ -95,6 +101,11 @@ public class RouteUtils {
                         .withString("type",commentType)
                         .withInt(idName,id)
                         .withInt(idName2,id2)
+                        .navigation();
+            }else if (baseUrl.length()!=0){
+                ARouter.getInstance().build(uri)
+                        .withString("type",WebViewActivity.TYPE_BROWSER_BASE)
+                        .withString("baseUrl",baseUrl)
                         .navigation();
             }else {
                 ARouter.getInstance().build(uri)

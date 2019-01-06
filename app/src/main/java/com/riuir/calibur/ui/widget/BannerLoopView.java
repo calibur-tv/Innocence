@@ -13,7 +13,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,9 +22,9 @@ import com.riuir.calibur.assistUtils.DensityUtils;
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.IHandler;
 import com.riuir.calibur.ui.common.UIHandler;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
-import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
+import com.riuir.calibur.ui.home.image.ImageDetailActivity;
+import com.riuir.calibur.ui.home.score.ScoreDetailActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.ArrayList;
@@ -192,13 +191,13 @@ public class BannerLoopView extends RelativeLayout {
             idStr = url.replace(type,"").replace("/","");
             id = Integer.parseInt(idStr);
             if (type.equals("post")){
-                intent.setClass(context, CardShowInfoActivity.class);
+                intent.setClass(context, PostDetailActivity.class);
                 intent.putExtra("cardID",id);
             }else if (type.equals("pin")){
-                intent.setClass(context, ImageShowInfoActivity.class);
+                intent.setClass(context, ImageDetailActivity.class);
                 intent.putExtra("imageID",id);
             }else {
-                intent.setClass(context, ScoreShowInfoActivity.class);
+                intent.setClass(context, ScoreDetailActivity.class);
                 intent.putExtra("scoreID",id);
             }
             activity.startActivity(intent);

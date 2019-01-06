@@ -139,13 +139,20 @@
             android:textColor="@drawable/maintab_text_color"
             android:textSize="12sp" />
 
-        <ImageView
+        <TextView
             android:id="@+id/maintab_msg_reddot"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:minWidth="15dp"
+            android:layout_height="15dp"
             android:layout_marginTop="2dp"
-            android:layout_toRightOf="@+id/maintab_msg_tv"
-            android:src="@mipmap/common_new_tips"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="center"
+            android:text="99"
+            android:textSize="10sp"
+            android:textColor="@color/color_FFFFFFFF"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/app_ntf_count_bg"
             android:visibility="invisible" />
     </RelativeLayout>
 

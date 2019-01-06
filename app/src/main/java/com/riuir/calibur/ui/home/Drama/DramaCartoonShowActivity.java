@@ -12,30 +12,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.adapter.DramaCartoonShowAdapter;
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
-import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
 import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class DramaCartoonShowActivity extends BaseActivity {
 

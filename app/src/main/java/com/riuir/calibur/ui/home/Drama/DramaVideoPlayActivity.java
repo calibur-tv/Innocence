@@ -30,8 +30,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.widget.BangumiForShowView;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
@@ -345,7 +344,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
                             whyRewardLevel.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    Intent intent = new Intent(DramaVideoPlayActivity.this, CardShowInfoActivity.class);
+                                    Intent intent = new Intent(DramaVideoPlayActivity.this, PostDetailActivity.class);
                                     intent.putExtra("cardID",2282);
                                     startActivity(intent);
                                 }
@@ -367,7 +366,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
                             whyRewardLevel.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    Intent intent = new Intent(DramaVideoPlayActivity.this, CardShowInfoActivity.class);
+                                    Intent intent = new Intent(DramaVideoPlayActivity.this, PostDetailActivity.class);
                                     intent.putExtra("cardID",2279);
                                     startActivity(intent);
                                 }

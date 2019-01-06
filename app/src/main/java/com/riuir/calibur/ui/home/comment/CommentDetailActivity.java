@@ -8,6 +8,8 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import butterknife.BindView;
 import calibur.core.http.models.comment.ReplyCommentInfo;
+import calibur.core.http.models.comment.TrendingShowInfoCommentItem;
+import calibur.core.http.models.jsbridge.models.H5CreateSubComment;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
@@ -22,6 +24,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
 
@@ -34,18 +37,20 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
 
     private WebView mWebView;
     public AbsJsBridge mJavaScriptNativeBridge;
-    private int postId;
 
     @BindView(R.id.comment_detail_back_btn)
     ImageView backBtn;
-
     @BindView(R.id.comment_view)
     ReplyAndCommentView commentView;
+    @BindView(R.id.comment_detail_header_more)
+    AppHeaderPopupWindows headerMore;
 
+    private
     int commentId;
     String type;
     int reply_id;
-//    TrendingShowInfoCommentMain.TrendingShowInfoCommentMainList mainComment;
+
+    TrendingShowInfoCommentItem commentItem;
 
     private static CommentDetailActivity instance;
     @Override
@@ -93,7 +98,9 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
                     public void onSuccess(Object data) {
                         JSONObject jsonObj = new JSONObject((Map) data);
                         WebTemplatesUtils.loadTemplates(mWebView, TemplateRenderEngine.COMMENT, jsonObj.toString());
+                        commentItem = JSONUtil.fromJson(jsonObj.toString(), TrendingShowInfoCommentItem.class);
                         initCommentView();
+                        setHeaderMore();
                     }
 
                     @Override
@@ -116,14 +123,49 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
         commentView.setMainCommentid(commentId);
         commentView.setType(type);
         commentView.setTargetUserId(0);
-//        commentView.setTargetUserMainId(commentData.getFrom_user_id());
+        commentView.setTargetUserMainId(commentId);
         commentView.setNetAndListener();
+    }
+
+    private void setHeaderMore() {
+        if (type.equals("post")){
+            headerMore.setReportModelTag(AppHeaderPopupWindows.POST_COMMENT,commentItem.getId());
+            headerMore.setDeleteLayout(AppHeaderPopupWindows.POST_COMMENT,commentItem.getId(),commentItem.getFrom_user_id()
+                    ,0,apiPost);
+        }else if (type.equals("image")){
+            headerMore.setReportModelTag(AppHeaderPopupWindows.IMAGE_COMMENT,commentItem.getId());
+            headerMore.setDeleteLayout(AppHeaderPopupWindows.IMAGE_COMMENT,commentItem.getId(),commentItem.getFrom_user_id()
+                    ,0,apiPost);
+        }else if (type.equals("score")){
+            headerMore.setReportModelTag(AppHeaderPopupWindows.SCORE_COMMENT,commentItem.getId());
+            headerMore.setDeleteLayout(AppHeaderPopupWindows.SCORE_COMMENT,commentItem.getId(),commentItem.getFrom_user_id()
+                    ,0,apiPost);
+        }else if (type.equals("video")){
+            headerMore.setReportModelTag(AppHeaderPopupWindows.VIDEO_COMMENT,commentItem.getId());
+            headerMore.setDeleteLayout(AppHeaderPopupWindows.VIDEO_COMMENT,commentItem.getId(),commentItem.getFrom_user_id()
+                    ,0,apiPost);
+        }
+        headerMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+            @Override
+            public void deleteFinish() {
+                finish();
+            }
+        });
     }
 
     @Override
     public void onDestroy() {
         instance = null;
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (commentView.getIsClickedSubItem()){
+            commentView.setClickToSubComment(0,"");
+        }else {
+            super.onBackPressed();
+        }
     }
 
     @Nullable
@@ -145,12 +187,20 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
 
     @Override
     public void createSubComment(@Nullable Object params) {
-
+        if (params instanceof H5CreateSubComment){
+            commentView.setJSToSubComment(((H5CreateSubComment) params).getModel_type(),
+                    ((H5CreateSubComment) params).getParent_comment_id(),
+                    ((H5CreateSubComment) params).getTarget_user_id(),
+                    ((H5CreateSubComment) params).getTarget_user_name());
+        }
     }
 
     @Override
     public void toggleClick(@Nullable Object params) {
+    }
 
+    @Override
+    public void readNotification(@Nullable Object params) {
     }
 
 
@@ -165,5 +215,4 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
     public void setCommentSuccessResult(ReplyCommentInfo info) {
         mJavaScriptNativeBridge.callJavascript(IH5JsCallApp.createSubComment, info, null);
     }
-
 }

@@ -1,8 +1,6 @@
 package com.riuir.calibur.ui.home.Drama.dramaConfig;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
 import android.widget.EditText;
@@ -10,8 +8,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
@@ -20,16 +16,13 @@ import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
+import com.riuir.calibur.ui.home.role.RoleDetailActivity;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 import com.riuir.calibur.utils.QiniuUtils;
 import com.riuir.calibur.utils.album.MyAlbumUtils;
 import com.yanzhenjie.album.AlbumFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +34,6 @@ import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class DramaMasterRoleSettingActivity extends BaseActivity {
 
@@ -270,7 +261,7 @@ public class DramaMasterRoleSettingActivity extends BaseActivity {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             //上传成功 点击事件 跳转到偶像详情页
-                            Intent intent = new Intent(DramaMasterRoleSettingActivity.this, RolesShowInfoActivity.class);
+                            Intent intent = new Intent(DramaMasterRoleSettingActivity.this, RoleDetailActivity.class);
                             intent.putExtra("roleId",responseRoleId);
                             startActivity(intent);
                             upLoadDialog.dismiss();

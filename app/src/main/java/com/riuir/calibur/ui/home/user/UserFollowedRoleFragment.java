@@ -8,29 +8,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
-import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.Event;
 
-import com.riuir.calibur.data.user.UserFollowedBangumiInfo;
-import com.riuir.calibur.data.user.UserFollowedRoleInfo;
 import com.riuir.calibur.ui.common.BaseFragment;
-import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
-import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
+import com.riuir.calibur.ui.home.role.RoleDetailActivity;
 import com.riuir.calibur.ui.home.user.adapter.FollowedRoleAdapter;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -201,7 +193,7 @@ public class UserFollowedRoleFragment extends BaseFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 MainTrendingInfo.MainTrendingInfoList data = (MainTrendingInfo.MainTrendingInfoList)adapter.getData().get(position);
-                Intent intent = new Intent(getContext(), RolesShowInfoActivity.class);
+                Intent intent = new Intent(getContext(), RoleDetailActivity.class);
                 intent.putExtra("roleId",data.getId());
                 startActivity(intent);
             }

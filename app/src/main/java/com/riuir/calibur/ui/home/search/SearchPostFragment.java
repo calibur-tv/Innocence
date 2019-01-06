@@ -9,29 +9,22 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.ui.common.BaseFragment;
-import com.riuir.calibur.ui.home.Drama.DramaActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.home.search.adapter.DramaSearchAdapter;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
 import com.riuir.calibur.ui.home.search.adapter.PostSearchAdapter;
 import com.riuir.calibur.ui.home.user.UserMainActivity;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
-import com.tencent.bugly.crashreport.CrashReport;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +34,6 @@ import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -71,7 +63,6 @@ public class SearchPostFragment extends BaseFragment {
     private List<SearchAnimeInfo.SearchAnimeInfoList> searchList;
     private List<SearchAnimeInfo.SearchAnimeInfoList> baseSearchList = new ArrayList<>();
 
-    private Call<SearchAnimeInfo> searchCall;
     @Override
     protected int getContentViewID() {
         return R.layout.fragment_search_post;
@@ -83,14 +74,6 @@ public class SearchPostFragment extends BaseFragment {
 
         setListAdapter();
         setEmptyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (searchCall!=null){
-            searchCall.cancel();
-        }
-        super.onDestroy();
     }
 
     private void setListAdapter() {
@@ -196,7 +179,7 @@ public class SearchPostFragment extends BaseFragment {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //item被点击，跳转页面
                 SearchAnimeInfo.SearchAnimeInfoList info = (SearchAnimeInfo.SearchAnimeInfoList) adapter.getData().get(position);
-                Intent intent = new Intent(getContext(), CardShowInfoActivity.class);
+                Intent intent = new Intent(getContext(), PostDetailActivity.class);
                 int cardID = info.getId();
                 intent.putExtra("cardID",cardID);
                 startActivity(intent);

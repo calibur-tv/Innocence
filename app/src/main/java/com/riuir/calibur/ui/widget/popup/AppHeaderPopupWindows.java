@@ -325,7 +325,7 @@ public class AppHeaderPopupWindows extends RelativeLayout {
 
                 deleteLayout.setVisibility(VISIBLE);
                 deleteModelTag = modelTag;
-                setDeleteCall(modelTag,modelId,apiPost);
+                setDeleteCall(modelTag,modelId);
                 setDeleteDialog();
                 deleteBtn.setOnClickListener(new OnClickListener() {
                     @Override
@@ -337,7 +337,7 @@ public class AppHeaderPopupWindows extends RelativeLayout {
             }else if (primacyUserId == Constants.userInfoData.getId()){
                 deleteLayout.setVisibility(VISIBLE);
                 deleteModelTag = modelTag;
-                setDeleteCall(modelTag,modelId,apiPost);
+                setDeleteCall(modelTag,modelId);
                 setDeleteDialog();
                 deleteBtn.setOnClickListener(new OnClickListener() {
                     @Override
@@ -352,7 +352,7 @@ public class AppHeaderPopupWindows extends RelativeLayout {
         }
     }
 
-    private void setDeleteCall(String modelTag,int id,ApiPost apiPost) {
+    private void setDeleteCall(String modelTag,int id) {
         if (modelTag.equals(POST)){
             deleteApi = apiService.getCallDeletePost(id);
         }else if (modelTag.equals(IMAGE)){

@@ -27,7 +27,6 @@ import org.json.JSONObject;
 import java.util.Map;
 
 import butterknife.BindView;
-import calibur.core.http.models.jsbridge.models.H5ShowConfirmModel;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
@@ -117,5 +116,9 @@ public class UserTransactionsActivity extends BaseActivity implements IH5JsCallA
     @Override
     public Object getUserInfo() {
         return Constants.userInfoData;
+    }
+
+    @Override
+    public void readNotification(@Nullable Object params) {
     }
 }

@@ -12,25 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.ui.common.BaseFragment;
-import com.riuir.calibur.ui.home.Drama.adapter.DramaScoreListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.adapter.ScoreListAdapter;
-import com.riuir.calibur.ui.home.image.ImageDetailActivity;
 import com.riuir.calibur.ui.home.score.ScoreDetailActivity;
-import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
-import com.tencent.bugly.crashreport.CrashReport;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +32,7 @@ import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.followList.MainTrendingInfo;
 import calibur.core.http.models.followList.params.FolllowListParams;
 import calibur.core.http.observer.ObserverWrapper;
-import calibur.foundation.config.PackageTypeConfig;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -231,19 +221,16 @@ public class MainScoreListFragment extends BaseFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //item被点击，跳转页面
-                if (PackageTypeConfig.isDebugEnv()) {
-                    Intent intent = new Intent(getActivity(), ScoreDetailActivity.class);
-                    MainTrendingInfo.MainTrendingInfoList scoreInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
-                    int scoreID = scoreInfo.getId();
-                    intent.putExtra("scoreID",scoreID);
-                    startActivity(intent);
-                    return;
-                }
-                Intent intent = new Intent(getActivity(), ScoreShowInfoActivity.class);
+                Intent intent = new Intent(getActivity(), ScoreDetailActivity.class);
                 MainTrendingInfo.MainTrendingInfoList scoreInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
                 int scoreID = scoreInfo.getId();
                 intent.putExtra("scoreID",scoreID);
                 startActivity(intent);
+//                Intent intent = new Intent(getActivity(), ScoreShowInfoActivity.class);
+//                MainTrendingInfo.MainTrendingInfoList scoreInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
+//                int scoreID = scoreInfo.getId();
+//                intent.putExtra("scoreID",scoreID);
+//                startActivity(intent);
 
             }
         });

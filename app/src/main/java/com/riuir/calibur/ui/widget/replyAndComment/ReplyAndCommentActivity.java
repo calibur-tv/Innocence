@@ -1,12 +1,9 @@
 package com.riuir.calibur.ui.widget.replyAndComment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -21,7 +18,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.KeyBoardUtils;
@@ -30,7 +26,6 @@ import com.riuir.calibur.assistUtils.PermissionUtils;
 import com.riuir.calibur.assistUtils.ScreenUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaCartoonCommentActivity;
@@ -38,11 +33,7 @@ import com.riuir.calibur.ui.home.Drama.DramaVideoPlayActivity;
 import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
-import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
-import com.riuir.calibur.ui.home.image.ImageShowInfoActivity;
 import com.riuir.calibur.ui.home.message.MessageShowCommentActivity;
-import com.riuir.calibur.ui.home.score.ScoreShowInfoActivity;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.QiniuUtils;
 import com.riuir.calibur.utils.album.MyAlbumUtils;
@@ -51,7 +42,6 @@ import com.yanzhenjie.album.AlbumFile;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

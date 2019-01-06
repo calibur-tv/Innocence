@@ -96,4 +96,8 @@ public class BookMarksActivity extends BaseActivity implements IH5JsCallApp {
     @Override
     public void toggleClick(@Nullable Object params) {
     }
+
+    @Override
+    public void readNotification(@Nullable Object params) {
+    }
 }

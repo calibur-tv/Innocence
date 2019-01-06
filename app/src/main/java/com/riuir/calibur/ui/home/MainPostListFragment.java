@@ -25,7 +25,6 @@ import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.home.adapter.CardActiveListAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.home.card.PostDetailActivity;
 import com.riuir.calibur.ui.widget.BannerLoopView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
@@ -247,20 +246,16 @@ public class MainPostListFragment extends BaseFragment {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 //item被点击，跳转页面
-                if (PackageTypeConfig.isDebugEnv()) {
-                    Intent intent = new Intent(getActivity(), PostDetailActivity.class);
-                    MainTrendingInfo.MainTrendingInfoList cardInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
-                    int cardID = cardInfo.getId();
-                    intent.putExtra("cardID",cardID);
-                    startActivity(intent);
-                    return;
-                }
-
-                Intent intent = new Intent(getActivity(), CardShowInfoActivity.class);
+                Intent intent = new Intent(getActivity(), PostDetailActivity.class);
                 MainTrendingInfo.MainTrendingInfoList cardInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
                 int cardID = cardInfo.getId();
                 intent.putExtra("cardID",cardID);
                 startActivity(intent);
+//                Intent intent = new Intent(getActivity(), CardShowInfoActivity.class);
+//                MainTrendingInfo.MainTrendingInfoList cardInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
+//                int cardID = cardInfo.getId();
+//                intent.putExtra("cardID",cardID);
+//                startActivity(intent);
 
             }
         });

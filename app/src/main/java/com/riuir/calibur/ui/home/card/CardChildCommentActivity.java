@@ -393,10 +393,7 @@ public class CardChildCommentActivity extends BaseActivity {
             replyContent.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View view) {
-
-                    replyView.setTargetUserId(item.getFrom_user_id());
-                    replyView.setFromUserName(item.getFrom_user_name().replace("\n",""));
-                    replyView.setRequestFocus();
+                    replyView.setClickToSubComment(item.getFrom_user_id(),item.getFrom_user_name().replace("\n",""));
                 }
 
                 @Override

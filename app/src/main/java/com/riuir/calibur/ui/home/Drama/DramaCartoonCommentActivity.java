@@ -1,8 +1,6 @@
 package com.riuir.calibur.ui.home.Drama;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,24 +11,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.assistUtils.activityUtils.UserMainUtils;
-import com.riuir.calibur.data.Event;
-
 
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
-import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +33,6 @@ import calibur.core.http.models.followList.image.ImageShowInfoPrimacy;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DramaCartoonCommentActivity extends BaseActivity {
@@ -66,7 +57,6 @@ public class DramaCartoonCommentActivity extends BaseActivity {
     private ImageShowInfoPrimacy cartoonData;
     private int cartoonId;
 
-    private Call<TrendingShowInfoCommentMain> commentMainCall;
 
 
     int fetchId = 0;
@@ -96,14 +86,6 @@ public class DramaCartoonCommentActivity extends BaseActivity {
         isFirstLoad = true;
         setNet();
         setListener();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (commentMainCall!=null){
-            commentMainCall.cancel();
-        }
-        super.onDestroy();
     }
 
     private void setView() {

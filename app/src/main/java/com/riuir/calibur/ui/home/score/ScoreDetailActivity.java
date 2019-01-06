@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import calibur.core.http.models.comment.CreateMainCommentInfo;
 import calibur.core.http.models.followList.score.ScoreShowInfoPrimacy;
+import calibur.core.http.models.jsbridge.models.H5CreateMainComment;
+import calibur.core.http.models.jsbridge.models.H5ToggleModel;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
@@ -24,6 +26,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
+import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
 
@@ -40,6 +43,8 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @BindView(R.id.score_detail_back_btn)
     ImageView backBtn;
+    @BindView(R.id.score_detail_header_more)
+    AppHeaderPopupWindows headerMore;
 
     @BindView(R.id.comment_view)
     ReplyAndCommentView commentView;
@@ -59,10 +64,10 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
     protected void onInit() {
         instance = this;
         scoreID = getIntent().getIntExtra("scoreID", 0);
+        TemplateRenderEngine.getInstance().checkReviewTemplateForUpdate();
         initWebView();
         initView();
 
-        TemplateRenderEngine.getInstance().checkReviewTemplateForUpdate();
     }
 
     private void initView() {
@@ -83,6 +88,31 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
         mWebView.addJavascriptInterface(mJavaScriptNativeBridge, JsBridgeUtil.BRIDGE_NAME);
     }
 
+    @Override
+    protected void onLoadData() {
+        showLoading();
+        apiService.getScoreDetailData(scoreID)
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<Object>() {
+                    @Override public void onSuccess(Object data) {
+                        JSONObject jsonObj = new JSONObject((Map) data);
+                        LogUtils.d("imagedetail","data = "+jsonObj.toString());
+                        WebTemplatesUtils.loadTemplates(mWebView,TemplateRenderEngine.REVIEW, jsonObj.toString());
+                        primacyData = JSONUtil.fromJson(jsonObj.toString(),ScoreShowInfoPrimacy.class);
+                        initCommentView();
+                        setHeaderMore();
+                    }
+
+                    @Override public void onFailure(int code, String errorMsg) {
+                        super.onFailure(code, errorMsg);
+                    }
+
+                    @Override public void onComplete() {
+                        hideLoading();
+                    }
+                });
+    }
+
     private void initCommentView() {
         commentView.setStatus(ReplyAndCommentView.STATUS_MAIN_COMMENT);
         commentView.setFromUserName("");
@@ -97,44 +127,39 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
         commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
             @Override
             public void onRewardFinish() {
-//              trendingLFCView.setRewarded(true);
+                H5ToggleModel model = new H5ToggleModel();
+                model.setAll("score","reward",primacyData.getId(),true);
+                mJavaScriptNativeBridge.callJavascript("app-invoker-toggleClick",model,null);
             }
 
             @Override
             public void onLikeFinish(boolean isLike) {
-//              trendingLFCView.setLiked(isLike);
+                H5ToggleModel model = new H5ToggleModel();
+                model.setAll("score","like",primacyData.getId(),true);
+                mJavaScriptNativeBridge.callJavascript("app-invoker-toggleClick",model,null);
             }
 
             @Override
             public void onMarkFinish(boolean isMark) {
-//              trendingLFCView.setCollected(isMark);
+                H5ToggleModel model = new H5ToggleModel();
+                model.setAll("score","mark",primacyData.getId(),true);
+                mJavaScriptNativeBridge.callJavascript("app-invoker-toggleClick",model,null);
             }
         });
         commentView.setNetAndListener();
     }
 
-    @Override
-    protected void onLoadData() {
-        showLoading();
-        apiService.getScoreDetailData(scoreID)
-                .compose(Rx2Schedulers.applyObservableAsync())
-                .subscribe(new ObserverWrapper<Object>() {
-                    @Override public void onSuccess(Object data) {
-                        JSONObject jsonObj = new JSONObject((Map) data);
-                        LogUtils.d("imagedetail","data = "+jsonObj.toString());
-                        WebTemplatesUtils.loadTemplates(mWebView,TemplateRenderEngine.REVIEW, jsonObj.toString());
-                        primacyData = JSONUtil.fromJson(jsonObj.toString(),ScoreShowInfoPrimacy.class);
-                        initCommentView();
-                    }
-
-                    @Override public void onFailure(int code, String errorMsg) {
-                        super.onFailure(code, errorMsg);
-                    }
-
-                    @Override public void onComplete() {
-                        hideLoading();
-                    }
-                });
+    private void setHeaderMore() {
+        headerMore.setReportModelTag(AppHeaderPopupWindows.SCORE,primacyData.getId());
+        headerMore.setShareLayout(primacyData.getTitle(),AppHeaderPopupWindows.SCORE,primacyData.getId(),"");
+        headerMore.setDeleteLayout(AppHeaderPopupWindows.SCORE,primacyData.getId(),
+                primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
+        headerMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+            @Override
+            public void deleteFinish() {
+                finish();
+            }
+        });
     }
 
     @Nullable
@@ -151,23 +176,40 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @Override
     public void createMainComment(@Nullable Object params) {
-
+        if (params instanceof H5CreateMainComment){
+            commentView.toJumpBtn(((H5CreateMainComment) params).getModel_type(),
+                    ((H5CreateMainComment) params).getModel_id());
+        }
     }
 
     @Override
     public void createSubComment(@Nullable Object params) {
-
     }
 
     @Override
     public void toggleClick(@Nullable Object params) {
-
+        if (params instanceof H5ToggleModel){
+            H5ToggleModel toggleModel = (H5ToggleModel) params;
+            switch (toggleModel.getType()){
+                case "reward":
+                    commentView.setRewarded(toggleModel.getResult().isRewarded());
+                    break;
+                case "like":
+                    break;
+                case "mark":
+                    break;
+                case "follow":
+                    break;
+            }
+        }
     }
 
+    @Override
+    public void readNotification(@Nullable Object params) {
+    }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
-
     }
 
     public static ScoreDetailActivity getInstance() {
@@ -181,5 +223,6 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
     public void setCommentSuccessResult(CreateMainCommentInfo info){
         mJavaScriptNativeBridge.callJavascript(IH5JsCallApp.createMainComment, info, null);
     }
+
 
 }

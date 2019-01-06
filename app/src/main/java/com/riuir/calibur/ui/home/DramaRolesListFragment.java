@@ -12,24 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.ui.common.BaseFragment;
-import com.riuir.calibur.ui.home.card.PostDetailActivity;
 import com.riuir.calibur.ui.home.role.RoleDetailActivity;
-import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.role.adapter.RoleListAdapter;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
-import com.tencent.bugly.crashreport.CrashReport;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -274,7 +268,7 @@ public class DramaRolesListFragment extends BaseFragment {
                     return;
                 }
 
-                Intent intent = new Intent(getContext(),RolesShowInfoActivity.class);
+                Intent intent = new Intent(getContext(),RoleDetailActivity.class);
                 MainTrendingInfo.MainTrendingInfoList roleInfo = (MainTrendingInfo.MainTrendingInfoList) adapter.getData().get(position);
                 intent.putExtra("roleId",roleInfo.getId());
                 startActivity(intent);

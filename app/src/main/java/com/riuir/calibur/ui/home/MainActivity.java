@@ -54,7 +54,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
     private MainFragment fragmentMain = MainFragment.newInstance();
     private DramaFragment fragmentDrama = DramaFragment.newInstance();
-    private MessageFragment fragmentMessage = MessageFragment.newInstance();
+//    private MessageFragment fragmentMessage = MessageFragment.newInstance();
     private NotificationListFragment fragmentNotificationList = NotificationListFragment.newInstance();
     private MineFragment fragmentMine = MineFragment.newInstance();
 
@@ -81,22 +81,23 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
     @Override
     protected void onInit() {
+//        downloadAndCheckTemplates();
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .add(R.id.framelayout_main, fragmentMain)
                 .add(R.id.framelayout_main, fragmentDrama)
-                .add(R.id.framelayout_main, fragmentMessage)
+//                .add(R.id.framelayout_main, fragmentMessage)
                 .add(R.id.framelayout_main, fragmentNotificationList)
                 .add(R.id.framelayout_main, fragmentMine)
                 .hide(fragmentMain)
                 .hide(fragmentDrama)
-                .hide(fragmentMessage)
+//                .hide(fragmentMessage)
                 .hide(fragmentNotificationList)
                 .hide(fragmentMine)
                 .commit();
         fragmentManager.beginTransaction()
                 .hide(fragmentDrama)
-                .hide(fragmentMessage)
+//                .hide(fragmentMessage)
                 .hide(fragmentNotificationList)
                 .hide(fragmentMine)
                 .show(fragmentMain)
@@ -104,10 +105,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
 
         maintabBottombar.init();
         maintabBottombar.setOnSingleClickListener(this);
-
         setCheckVersion();
-        downloadAndCheckTemplates();
-
 
         if (Constants.userInfoData == null){
             Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
@@ -320,7 +318,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
                 .beginTransaction()
                 .hide(fragmentMain)
                 .hide(fragmentDrama)
-                .hide(fragmentMessage)
+//                .hide(fragmentMessage)
                 .hide(fragmentNotificationList)
                 .hide(fragmentMine)
                 .commitAllowingStateLoss();
@@ -355,6 +353,10 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
     public void setNoReadMsgZero() {
         messageCount = 0;
         maintabBottombar.updateMsgRedDot(0);
+    }
+    public void setNoReadMsgCount(int count){
+        messageCount = count;
+        maintabBottombar.updateMsgRedDot(count);
     }
 
 }

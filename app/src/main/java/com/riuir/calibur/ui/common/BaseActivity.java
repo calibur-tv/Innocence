@@ -111,7 +111,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected abstract void onInit();
 
-    protected void onLoadData(){};
+    protected void onLoadData(){}
 
     /**
      * 是否注册事件分发

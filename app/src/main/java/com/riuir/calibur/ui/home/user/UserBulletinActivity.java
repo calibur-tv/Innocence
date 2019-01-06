@@ -71,7 +71,6 @@ public class UserBulletinActivity extends BaseActivity implements IH5JsCallApp {
 
     @Override
     public void createSubComment(@Nullable Object params) {
-
     }
 
     @Override
@@ -90,5 +89,9 @@ public class UserBulletinActivity extends BaseActivity implements IH5JsCallApp {
     @Override
     public Object getUserInfo() {
         return Constants.userInfoData;
+    }
+
+    @Override
+    public void readNotification(@Nullable Object params) {
     }
 }
