@@ -110,7 +110,7 @@ public abstract class BaseTemplateRender implements ITemplateRender{
       inputStream.read(buffer);
       inputStream.close();
       String temp = new String(buffer, "UTF-8");
-      return Mustache.compiler().compile(temp);
+      return Mustache.compiler().defaultValue("").compile(temp);
     } catch (IOException e) {
       e.printStackTrace();
       Log.d("checkWebData","basedata e= "+e.toString());

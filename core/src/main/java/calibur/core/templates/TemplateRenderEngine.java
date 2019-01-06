@@ -232,7 +232,7 @@ public class TemplateRenderEngine {
             inputStream.read(buffer);
             inputStream.close();
             String temp = new String(buffer, "UTF-8");
-            template = Mustache.compiler().compile(temp);
+            template = Mustache.compiler().defaultValue("").compile(temp);
             emitter.onNext(template);
           } catch (Throwable e) {
             e.printStackTrace();
