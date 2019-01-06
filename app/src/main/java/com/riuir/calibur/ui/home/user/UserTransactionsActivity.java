@@ -2,7 +2,6 @@ package com.riuir.calibur.ui.home.user;
 
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
@@ -14,12 +13,9 @@ import com.riuir.calibur.assistUtils.PhoneSystemUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 
-import calibur.core.http.models.jsbridge.models.H5ShowConfirmResultModel;
-
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.utils.Constants;
-import com.riuir.calibur.utils.DialogHelper;
 
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;

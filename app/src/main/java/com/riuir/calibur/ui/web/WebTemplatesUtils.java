@@ -2,6 +2,8 @@ package com.riuir.calibur.ui.web;
 
 import android.webkit.WebView;
 import calibur.core.templates.TemplateRenderEngine;
+
+import com.orhanobut.logger.Logger;
 import com.riuir.calibur.assistUtils.LogUtils;
 
 public class WebTemplatesUtils {

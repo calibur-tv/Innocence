@@ -167,6 +167,7 @@ public class MainActivity extends BaseActivity implements MainBottomBar.OnSingle
             });
     }
 
+    //模板的检查放到SplashActivity中
     private void downloadAndCheckTemplates() {
         TemplateRenderEngine.getInstance().setTemplateRender(new ImageDetailPageTemplateRender());
         TemplateRenderEngine.getInstance().setTemplateRender(new BookmarksTemplateRender());

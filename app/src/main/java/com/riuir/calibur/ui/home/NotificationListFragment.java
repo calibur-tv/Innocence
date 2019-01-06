@@ -26,7 +26,6 @@ import calibur.core.jsbridge.interfaces.IH5JsCallApp;
 import calibur.core.jsbridge.utils.JsBridgeUtil;
 import calibur.core.manager.UserSystem;
 import calibur.core.templates.TemplateRenderEngine;
-import calibur.core.utils.SharedPreferencesUtil;
 import calibur.core.widget.webview.AthenaWebView;
 
 /**
@@ -69,16 +68,18 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
 
     @SuppressLint("JavascriptInterface")
     private void setWeb() {
-//        mainActivity.setOnRefreshMessageList(new MainActivity.OnRefreshMessageList() {
-//            @Override
-//            public void OnReFresh(int count) {
-//                if (!isLoad){
-//                    WebTemplatesUtils.loadTemplates(mWebView,TemplateRenderEngine.NOTIFICATIONS, "");
-//                    isLoad = true;
-//                }
-//            }
-//        });
-        WebTemplatesUtils.loadTemplates(mWebView,TemplateRenderEngine.NOTIFICATIONS, "");
+        //点击底部“消息按钮之后加载”
+        mainActivity.setOnRefreshMessageList(new MainActivity.OnRefreshMessageList() {
+            @Override
+            public void OnReFresh(int count) {
+                if (!isLoad){
+                    WebTemplatesUtils.loadTemplates(mWebView,TemplateRenderEngine.NOTIFICATIONS, "");
+                    isLoad = true;
+                }
+            }
+        });
+        //直接加载
+//        WebTemplatesUtils.loadTemplates(mWebView,TemplateRenderEngine.NOTIFICATIONS, "");
         mWebView.setListener(getActivity(), new AthenaWebView.Listener() {
             @Override
             public void onPageStarted(String url, Bitmap favicon) {
