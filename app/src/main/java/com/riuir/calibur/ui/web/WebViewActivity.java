@@ -6,17 +6,13 @@ import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.View;
-import android.webkit.WebSettings;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import butterknife.BindView;
 import calibur.core.manager.UserSystem;
 import calibur.core.widget.webview.AthenaWebView;
-
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
-
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.utils.GlideUtils;
 
@@ -30,14 +26,10 @@ public class WebViewActivity extends BaseActivity {
     AthenaWebView webView;
     @BindView(R.id.web_view_activity_back_btn)
     ImageView backBtn;
-    @BindView(R.id.web_view_activity_web_view_title_Layout)
-    RelativeLayout titleLayout;
 
     @BindView(R.id.web_activity_loading_view)
     ImageView webPageLoadingView;
 
-    MyWebViewClient client;
-    WebSettings webSettings;
 
     public static final String TYPE_RULE = "rule";
     public static final String TYPE_INVITE = "invite";
@@ -60,7 +52,6 @@ public class WebViewActivity extends BaseActivity {
             index = intent.getIntExtra("index",0);
         }
         baseUrl = intent.getStringExtra("baseUrl");
-
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,7 +63,6 @@ public class WebViewActivity extends BaseActivity {
 
 
     private void setWebView() {
-//        setClient();
         GlideUtils.loadImageViewStaticGif(this,R.mipmap.web_page_loading,webPageLoadingView);
         setLoadingView(webPageLoadingView);
         webView.setListener(this, new AthenaWebView.Listener() {
@@ -111,32 +101,24 @@ public class WebViewActivity extends BaseActivity {
         }
     }
 
-    private void setInviteLoad() {
-        Map<String,String> header = new HashMap<>();
-        header.put("Authorization",UserSystem.getInstance().getUserToken());
-        LogUtils.d("notificationWeb","token = "+UserSystem.getInstance().getUserToken());
-        LogUtils.d("notificationWeb","header = "+header.get("Authorization"));
-        webView.loadUrl("https://m.calibur.tv/app/invite",header);
+  private void setInviteLoad() {
+    Map<String, String> header = new HashMap<>();
+    header.put("Authorization", UserSystem.getInstance().getUserToken());
+    webView.loadUrl("https://m.calibur.tv/app/invite", header);
+  }
+
+  private void setRuleLoad() {
+    if (index != 0) {
+      webView.loadUrl("https://m.calibur.tv/app/handbook?index=" + index);
+    } else {
+      webView.loadUrl("https://m.calibur.tv/app/handbook");
     }
+  }
 
-    private void setRuleLoad() {
-        if (index!=0){
-            webView.loadUrl("https://m.calibur.tv/app/handbook?index="+index);
-        }else {
-            webView.loadUrl("https://m.calibur.tv/app/handbook");
-        }
+  private void setBrowserBase() {
+    LogUtils.d("notificationWeb", "baseUrl = " + baseUrl);
+    if (!TextUtils.isEmpty(baseUrl)) {
+      webView.loadUrl(baseUrl);
     }
-
-
-    private void setBrowserBase() {
-        LogUtils.d("notificationWeb","baseUrl = "+baseUrl);
-        if (!TextUtils.isEmpty(baseUrl)){
-            webView.loadUrl(baseUrl);
-        }
-    }
-
-    @Override
-    protected void handler(Message msg) {
-
-    }
+  }
 }

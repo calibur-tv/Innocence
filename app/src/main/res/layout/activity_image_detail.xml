@@ -14,7 +14,7 @@
         <RelativeLayout
             android:id="@+id/page_header"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:background="@color/theme_magic_sakura_primary"
             >
             <ImageView

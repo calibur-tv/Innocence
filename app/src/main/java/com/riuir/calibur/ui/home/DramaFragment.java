@@ -106,7 +106,7 @@ public class DramaFragment extends BaseFragment {
 //        dramaPagerTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, dm));
         dramaPagerTab.setIndicatorHeight(DensityUtils.dp2px(getContext(),2));
         // 设置Tab标题文字的大小
-        dramaPagerTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 18, dm));
+        dramaPagerTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16, dm));
         //设置textclolo
         dramaPagerTab.setTextColorResource(R.color.color_FFFFFFFF);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)

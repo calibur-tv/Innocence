@@ -100,7 +100,7 @@ public class MainFragment extends BaseFragment {
         // 设置Tab Indicator的高度
         mainCardTab.setIndicatorHeight((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, dm));
         // 设置Tab标题文字的大小
-        mainCardTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 18, dm));
+        mainCardTab.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16, dm));
         //设置textclolo
         mainCardTab.setTextColorResource(R.color.color_FFFFFFFF);
         // 设置选中Tab文字的颜色 (这是我自定义的一个方法)
