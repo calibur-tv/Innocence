@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.home.user.UserTransactionsActivity">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         android:background="@color/theme_magic_sakura_primary"
-        android:orientation="vertical">
+        >
         <RelativeLayout
+            android:id="@+id/user_transactions_header"
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <ImageView
@@ -22,17 +23,26 @@
                 android:padding="10dp"
                 android:layout_centerVertical="true"
                 />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="交易记录"
+                android:textColor="@color/color_FFFFFFFF"
+                android:textSize="18sp"/>
         </RelativeLayout>
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/user_transactions_activity_refresh_layout"
+        <calibur.core.widget.webview.AthenaWebView
+            android:id="@+id/user_transactions_activity_web_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            >
-            <calibur.core.widget.webview.AthenaWebView
-                android:id="@+id/user_transactions_activity_web_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"></calibur.core.widget.webview.AthenaWebView>
-        </android.support.v4.widget.SwipeRefreshLayout>
-    </LinearLayout>
+            android:layout_below="@id/user_transactions_header"/>
+        <ImageView
+            android:id="@+id/user_transactions_activity_loading_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:scaleType="centerInside"
+            android:visibility="gone"/>
+    </RelativeLayout>
 
 </android.support.v4.widget.DrawerLayout>

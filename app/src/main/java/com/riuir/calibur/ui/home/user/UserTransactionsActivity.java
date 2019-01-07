@@ -2,6 +2,7 @@ package com.riuir.calibur.ui.home.user;
 
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.GlideUtils;
 
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -34,8 +36,8 @@ import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 @Route(path = RouteUtils.userTrasactionRecordPath)
 public class UserTransactionsActivity extends BaseActivity implements IH5JsCallApp {
 
-    @BindView(R.id.user_transactions_activity_refresh_layout)
-    SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.user_transactions_activity_loading_view)
+    ImageView webPageLoadingView;
     @BindView(R.id.user_transactions_activity_web_view)
     AthenaWebView mWebView;
     @BindView(R.id.user_transactions_back_btn)
@@ -50,21 +52,49 @@ public class UserTransactionsActivity extends BaseActivity implements IH5JsCallA
 
     @Override
     protected void onInit() {
-        refreshLayout.setEnabled(false);
-        setLoadingView(refreshLayout);
+        TemplateRenderEngine.getInstance().checkTransactionTemplateForUpdate();
+        initView();
+        initWebView();
+    }
+
+    private void initView() {
+        GlideUtils.loadImageViewStaticGif(this,R.mipmap.web_page_loading,webPageLoadingView);
+        setLoadingView(webPageLoadingView);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        initWebView();
     }
 
     @SuppressLint("JavascriptInterface")
     private void initWebView() {
         mJavaScriptNativeBridge = new CommonJsBridgeImpl(this, new Handler(), this, mWebView);
         mWebView.addJavascriptInterface(mJavaScriptNativeBridge, JsBridgeUtil.BRIDGE_NAME);
+        mWebView.setListener(this, new AthenaWebView.Listener() {
+            @Override
+            public void onPageStarted(String url, Bitmap favicon) {
+                showLoading();
+            }
+
+            @Override
+            public void onPageFinished(String url) {
+                hideLoading();
+            }
+
+            @Override
+            public void onPageError(int errorCode, String description, String failingUrl) {
+            }
+
+            @Override
+            public void onDownloadRequested(String url, String suggestedFilename, String mimeType, long contentLength, String contentDisposition, String userAgent) {
+            }
+
+            @Override
+            public void onExternalPageRequest(String url) {
+            }
+        });
     }
 
     @Override

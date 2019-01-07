@@ -9,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 
 import calibur.foundation.bus.BusinessBus;
 import com.riuir.calibur.data.Event;
@@ -46,6 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected APIService apiService;
     protected CompositeDisposable compositeDisposable = null;
     private SwipeRefreshLayout mLoadView;
+    private ImageView mImgLoadView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -201,15 +203,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void setLoadingView(View view) {
-        this.mLoadView = (SwipeRefreshLayout) view;
+        if (view instanceof SwipeRefreshLayout) this.mLoadView = (SwipeRefreshLayout) view;
+        if (view instanceof ImageView) this.mImgLoadView = (ImageView) view;
     }
 
     protected void showLoading() {
         if(mLoadView != null) mLoadView.setRefreshing(true);
+        if(mImgLoadView != null) mImgLoadView.setVisibility(View.VISIBLE);
     }
 
     protected void hideLoading() {
         if(mLoadView != null) mLoadView.setRefreshing(false);
+        if(mImgLoadView != null) mImgLoadView.setVisibility(View.GONE);
     }
 
     @Override

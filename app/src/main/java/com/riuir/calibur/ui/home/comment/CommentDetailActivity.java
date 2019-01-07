@@ -2,6 +2,7 @@ package com.riuir.calibur.ui.home.comment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.WebView;
@@ -15,6 +16,7 @@ import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
 import calibur.core.jsbridge.utils.JsBridgeUtil;
 import calibur.core.templates.TemplateRenderEngine;
+import calibur.core.widget.webview.AthenaWebView;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.JSONUtil;
 
@@ -27,6 +29,7 @@ import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +38,7 @@ import org.json.JSONObject;
 @Route(path = RouteUtils.commentDetailPath)
 public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp {
 
-    private WebView mWebView;
+    private AthenaWebView mWebView;
     public AbsJsBridge mJavaScriptNativeBridge;
 
     @BindView(R.id.comment_detail_back_btn)
@@ -45,6 +48,8 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
     @BindView(R.id.comment_detail_header_more)
     AppHeaderPopupWindows headerMore;
 
+    @BindView(R.id.comment_detail_activity_loading_view)
+    ImageView webPageLoadingView;
     private
     int commentId;
     String type;
@@ -66,8 +71,8 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
         type = intent.getStringExtra("type");
         reply_id = intent.getIntExtra("reply_id",0);
 
-        initWebView();
         initView();
+        initWebView();
         TemplateRenderEngine.getInstance().checkCommentItemTemplateForUpdate();
     }
 
@@ -76,6 +81,29 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
         mWebView = findViewById(R.id.comment_detail_webview);
         mJavaScriptNativeBridge = new CommonJsBridgeImpl(this, new Handler(), this, mWebView);
         mWebView.addJavascriptInterface(mJavaScriptNativeBridge, JsBridgeUtil.BRIDGE_NAME);
+        mWebView.setListener(this, new AthenaWebView.Listener() {
+            @Override
+            public void onPageStarted(String url, Bitmap favicon) {
+                showLoading();
+            }
+
+            @Override
+            public void onPageFinished(String url) {
+                hideLoading();
+            }
+
+            @Override
+            public void onPageError(int errorCode, String description, String failingUrl) {
+            }
+
+            @Override
+            public void onDownloadRequested(String url, String suggestedFilename, String mimeType, long contentLength, String contentDisposition, String userAgent) {
+            }
+
+            @Override
+            public void onExternalPageRequest(String url) {
+            }
+        });
     }
 
     private void initView() {
@@ -85,7 +113,8 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
                 finish();
             }
         });
-        setLoadingView(findViewById(R.id.refresh_layout));
+        GlideUtils.loadImageViewStaticGif(this,R.mipmap.web_page_loading,webPageLoadingView);
+        setLoadingView(webPageLoadingView);
     }
 
     @Override

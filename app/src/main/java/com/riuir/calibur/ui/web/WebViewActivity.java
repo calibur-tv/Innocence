@@ -18,6 +18,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,10 +30,11 @@ public class WebViewActivity extends BaseActivity {
     AthenaWebView webView;
     @BindView(R.id.web_view_activity_back_btn)
     ImageView backBtn;
-    @BindView(R.id.web_view_activity_web_view_swipe_refresh)
-    SwipeRefreshLayout refreshLayout;
     @BindView(R.id.web_view_activity_web_view_title_Layout)
     RelativeLayout titleLayout;
+
+    @BindView(R.id.web_activity_loading_view)
+    ImageView webPageLoadingView;
 
     MyWebViewClient client;
     WebSettings webSettings;
@@ -65,15 +67,14 @@ public class WebViewActivity extends BaseActivity {
                 finish();
             }
         });
-        refreshLayout.setEnabled(false);
         setWebView();
     }
 
 
     private void setWebView() {
-
 //        setClient();
-        setLoadingView(refreshLayout);
+        GlideUtils.loadImageViewStaticGif(this,R.mipmap.web_page_loading,webPageLoadingView);
+        setLoadingView(webPageLoadingView);
         webView.setListener(this, new AthenaWebView.Listener() {
             @Override
             public void onPageStarted(String url, Bitmap favicon) {
@@ -113,7 +114,8 @@ public class WebViewActivity extends BaseActivity {
     private void setInviteLoad() {
         Map<String,String> header = new HashMap<>();
         header.put("Authorization",UserSystem.getInstance().getUserToken());
-
+        LogUtils.d("notificationWeb","token = "+UserSystem.getInstance().getUserToken());
+        LogUtils.d("notificationWeb","header = "+header.get("Authorization"));
         webView.loadUrl("https://m.calibur.tv/app/invite",header);
     }
 

@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home.card;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
@@ -16,6 +17,7 @@ import calibur.core.jsbridge.AbsJsBridge;
 import calibur.core.jsbridge.interfaces.IH5JsCallApp;
 import calibur.core.jsbridge.utils.JsBridgeUtil;
 import calibur.core.templates.TemplateRenderEngine;
+import calibur.core.widget.webview.AthenaWebView;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.utils.JSONUtil;
 
@@ -30,6 +32,7 @@ import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
 import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.GlideUtils;
 
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +41,7 @@ import org.json.JSONObject;
 @Route(path = RouteUtils.posterDetailPath)
 public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
 
-    private WebView mWebView;
+    private AthenaWebView mWebView;
     public AbsJsBridge mJavaScriptNativeBridge;
     private int postId;
 
@@ -47,10 +50,10 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @BindView(R.id.comment_view)
     ReplyAndCommentView commentView;
-    @BindView(R.id.refresh_layout)
-    SwipeRefreshLayout refreshLayout;
     @BindView(R.id.post_detail_header_more)
     AppHeaderPopupWindows headerCardMore;
+    @BindView(R.id.post_detail_activity_loading_view)
+    ImageView webPageLoadingView;
 
     CardShowInfoPrimacy primacyData;
 
@@ -67,8 +70,8 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
         instance = this;
         postId = getIntent().getIntExtra("cardID", 0);
         TemplateRenderEngine.getInstance().checkPostDetailPageTemplateForUpdate();
-        initWebView();
         initView();
+        initWebView();
     }
 
     private void initView() {
@@ -78,8 +81,8 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
                 finish();
             }
         });
-        setLoadingView(refreshLayout);
-        refreshLayout.setEnabled(false);
+        GlideUtils.loadImageViewStaticGif(this,R.mipmap.web_page_loading,webPageLoadingView);
+        setLoadingView(webPageLoadingView);
     }
 
     @SuppressLint("JavascriptInterface")
@@ -87,6 +90,29 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
         mWebView = findViewById(R.id.post_detail_webview);
         mJavaScriptNativeBridge = new CommonJsBridgeImpl(this, new Handler(), this, mWebView);
         mWebView.addJavascriptInterface(mJavaScriptNativeBridge, JsBridgeUtil.BRIDGE_NAME);
+        mWebView.setListener(this, new AthenaWebView.Listener() {
+            @Override
+            public void onPageStarted(String url, Bitmap favicon) {
+                showLoading();
+            }
+
+            @Override
+            public void onPageFinished(String url) {
+                hideLoading();
+            }
+
+            @Override
+            public void onPageError(int errorCode, String description, String failingUrl) {
+            }
+
+            @Override
+            public void onDownloadRequested(String url, String suggestedFilename, String mimeType, long contentLength, String contentDisposition, String userAgent) {
+            }
+
+            @Override
+            public void onExternalPageRequest(String url) {
+            }
+        });
     }
 
     @Override

@@ -250,6 +250,11 @@ public class GlideUtils {
         GlideApp.with(mContext).asBitmap().load(path).into(mImageView);
     }
 
+    //设置静态GIF加载方式
+    public static void loadImageViewStaticGif(Context mContext, int drawable, ImageView mImageView) {
+        GlideApp.with(mContext).asGif().load(drawable).into(mImageView);
+    }
+
     //设置监听的用处 可以用于监控请求发生错误来源，以及图片来源 是内存还是磁盘
 
     //设置监听请求接口

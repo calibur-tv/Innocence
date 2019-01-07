@@ -152,7 +152,6 @@ public class MineFragment extends BaseFragment {
             }else {
                 setUserInfoView();
             }
-
         }
     }
 
