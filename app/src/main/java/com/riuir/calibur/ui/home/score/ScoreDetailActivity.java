@@ -124,6 +124,9 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
         commentView.setLiked(primacyData.isLiked());
         commentView.setRewarded(primacyData.isRewarded());
         commentView.setMarked(primacyData.isMarked());
+        commentView.setLikeCount(primacyData.getLike_users().getTotal());
+        commentView.setMarkCount(primacyData.getMark_users().getTotal());
+        commentView.setRewardCount(primacyData.getReward_users().getTotal());
         commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
             @Override
             public void onRewardFinish() {
@@ -192,7 +195,7 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
             H5ToggleModel toggleModel = (H5ToggleModel) params;
             switch (toggleModel.getType()){
                 case "reward":
-                    commentView.setRewarded(toggleModel.getResult().isRewarded());
+                    commentView.setRewardedChange(toggleModel.getResult().isRewarded());
                     break;
                 case "like":
                     break;

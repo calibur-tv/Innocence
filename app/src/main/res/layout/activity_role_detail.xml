@@ -46,7 +46,6 @@
             android:id="@+id/refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/comment_view"
             android:layout_below="@+id/page_header"
             android:background="@color/color_FFFFFFFF">
             <calibur.core.widget.webview.AthenaWebView

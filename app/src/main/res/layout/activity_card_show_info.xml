@@ -51,7 +51,7 @@
             android:id="@+id/card_show_info_comment_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="45dp">
+            android:minHeight="50dp">
         </com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView>
     </LinearLayout>
 

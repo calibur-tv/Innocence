@@ -296,6 +296,9 @@ public class ScoreShowInfoActivity extends BaseActivity {
         commentView.setLiked(primacyData.isLiked());
         commentView.setRewarded(primacyData.isRewarded());
         commentView.setMarked(primacyData.isMarked());
+        commentView.setLikeCount(primacyData.getLike_users().getTotal());
+        commentView.setMarkCount(primacyData.getMark_users().getTotal());
+        commentView.setRewardCount(primacyData.getReward_users().getTotal());
         commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
             @Override
             public void onRewardFinish() {
@@ -398,19 +401,19 @@ public class ScoreShowInfoActivity extends BaseActivity {
             @Override
             public void onLikedFinish(boolean isLiked) {
                 if (commentView!=null){
-                    commentView.setLiked(isLiked);
+                    commentView.setLikedChange(isLiked);
                 }
             }
             @Override
             public void onCollectedFinish(boolean isMarked) {
                 if (commentView!=null){
-                    commentView.setMarked(isMarked);
+                    commentView.setMarkedChange(isMarked);
                 }
             }
             @Override
             public void onRewardFinish() {
                 if (commentView!=null){
-                    commentView.setRewarded(true);
+                    commentView.setRewardedChange(true);
                 }
             }
         });

@@ -69,14 +69,18 @@ public class ReplyAndCommentView extends LinearLayout{
 
     Context context;
 
-    TextView jumpBtn;
+    RelativeLayout jumpBtn;
+    TextView jumpBtnText;
     EditText editRC;
     TextView sendBtn;
     LinearLayout btnLayout;
     LinearLayout editLayout;
     ImageView zanIcon;
+    TextView likeNumber;
     ImageView markIcon;
+    TextView markNumber;
     ImageView rewardIcon;
+    TextView rewardNumber;
     private  AlertDialog rewardDialog;
 
     String type;
@@ -97,6 +101,10 @@ public class ReplyAndCommentView extends LinearLayout{
     boolean rewarded = false;
     boolean marked = false;
     boolean is_creator = false;
+
+    int likeCount = -1;
+    int rewardCount = -1;
+    int markCount = -1;
 
     //创建主评论的列表adapter
     CommentAdapter commentAdapter;
@@ -151,11 +159,15 @@ public class ReplyAndCommentView extends LinearLayout{
         editRC = view.findViewById(R.id.reply_and_comment_edit);
         sendBtn = view.findViewById(R.id.reply_and_comment_send_btn);
         jumpBtn = view.findViewById(R.id.reply_and_comment_jump);
+        jumpBtnText = view.findViewById(R.id.reply_and_comment_jump_text);
         btnLayout = view.findViewById(R.id.reply_and_comment_button_layout);
         editLayout = view.findViewById(R.id.reply_and_comment_edit_layout);
         zanIcon = view.findViewById(R.id.reply_and_comment_zan_icon);
         rewardIcon = view.findViewById(R.id.reply_and_comment_reward_icon);
         markIcon = view.findViewById(R.id.reply_and_comment_marked_icon);
+        likeNumber = view.findViewById(R.id.reply_and_comment_like_number);
+        markNumber = view.findViewById(R.id.reply_and_comment_marked_number);
+        rewardNumber = view.findViewById(R.id.reply_and_comment_reward_number);
     }
 
     public void setSubType(String subType) {
@@ -206,6 +218,37 @@ public class ReplyAndCommentView extends LinearLayout{
         setLFCStatus();
     }
 
+    public void setLikedChange(boolean liked) {
+        this.liked = liked;
+        setLFCChange();
+    }
+
+
+    public void setRewardedChange(boolean rewarded) {
+        this.rewarded = rewarded;
+        setLFCChange();
+    }
+
+    public void setMarkedChange(boolean marked) {
+        this.marked = marked;
+        setLFCChange();
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+        setLFCStatus();
+    }
+
+    public void setRewardCount(int rewardCount) {
+        this.rewardCount = rewardCount;
+        setLFCStatus();
+    }
+
+    public void setMarkCount(int markCount) {
+        this.markCount = markCount;
+        setLFCStatus();
+    }
+
     public void setTargetUserMainId(int targetUserMainId) {
         this.targetUserMainId = targetUserMainId;
     }
@@ -230,20 +273,58 @@ public class ReplyAndCommentView extends LinearLayout{
     private void setLFCStatus() {
         if (is_creator){
             zanIcon.setVisibility(GONE);
+            likeNumber.setVisibility(GONE);
             rewardIcon.setVisibility(VISIBLE);
+            rewardNumber.setVisibility(GONE);
         }else {
             zanIcon.setVisibility(VISIBLE);
+            likeNumber.setVisibility(GONE);
             rewardIcon.setVisibility(GONE);
+            rewardNumber.setVisibility(GONE);
         }
+
         if (liked){
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.ic_zan_active));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like_active));
         }else {
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.ic_zan_normal));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like));
         }
+
         if (marked){
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.ic_mark_active));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect_active));
         }else {
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.ic_mark_normal));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect));
+        }
+        if (rewarded){
+            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money_active));
+        }else {
+            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money));
+        }
+    }
+
+
+    private void setLFCChange() {
+        if (liked){
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like_active));
+            likeCount++;
+        }else {
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like));
+            likeCount--;
+        }
+
+        if (marked){
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect_active));
+            markCount++;
+        }else {
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect));
+            markCount--;
+        }
+        likeNumber.setText(String.valueOf(likeCount));
+        markNumber.setText(String.valueOf(markCount));
+        if (rewarded){
+            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money_active));
+            rewardNumber.setText(String.valueOf(rewardCount+1));
+        }else {
+            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money));
         }
     }
 
@@ -278,10 +359,10 @@ public class ReplyAndCommentView extends LinearLayout{
     }
 
     public String getContentText(){
-        if (TextUtils.isEmpty(jumpBtn.getText())){
+        if (TextUtils.isEmpty(jumpBtnText.getText())){
             return "";
         }else {
-            return jumpBtn.getText().toString();
+            return jumpBtnText.getText().toString();
         }
     }
 
@@ -381,7 +462,7 @@ public class ReplyAndCommentView extends LinearLayout{
 
     private void setView() {
         editRC.setHint("说点什么吧...");
-        jumpBtn.setHint("说点什么吧...");
+        jumpBtnText.setHint("说点什么吧...");
 
         if (status == STATUS_MAIN_COMMENT){
             btnLayout.setVisibility(VISIBLE);
@@ -392,7 +473,7 @@ public class ReplyAndCommentView extends LinearLayout{
         }
         fromUserName = "";
         targetUserId = 0;
-        jumpBtn.setText("");
+        jumpBtnText.setText("");
 
         setLFCStatus();
 
@@ -577,25 +658,35 @@ public class ReplyAndCommentView extends LinearLayout{
             onLFCNetFinish.onLikeFinish(isLiked);
         }
         if (isLiked){
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.ic_zan_active));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like_active));
+            likeCount++;
         }else {
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.ic_zan_normal));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like));
+            likeCount--;
         }
+        likeNumber.setText(String.valueOf(likeCount));
     }
     private void setMarkSuccess(boolean isMarked) {
         if (onLFCNetFinish!=null){
             onLFCNetFinish.onMarkFinish(isMarked);
         }
         if (isMarked){
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.ic_mark_active));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect_active));
+            markCount++;
         }else {
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.ic_mark_normal));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect));
+            markCount--;
         }
+        markNumber.setText(String.valueOf(markCount));
     }
     private void setRewardSuccess() {
         if (onLFCNetFinish!=null){
             onLFCNetFinish.onRewardFinish();
         }
+        rewarded = true;
+        rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money_active));
+        rewardNumber.setText(String.valueOf(rewardCount+1));
+
     }
     private void setLikeFail() {
 
@@ -634,7 +725,7 @@ public class ReplyAndCommentView extends LinearLayout{
     }
 
     public void setResultContent(String contentStr){
-        jumpBtn.setText(contentStr);
+        jumpBtnText.setText(contentStr);
     }
 
     public void setMainCommentSuccessResult(CreateMainCommentInfo info){

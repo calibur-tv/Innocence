@@ -281,7 +281,9 @@ public class DramaCartoonCommentActivity extends BaseActivity {
         commentView.setLiked(cartoonData.isLiked());
         commentView.setRewarded(cartoonData.isRewarded());
         commentView.setMarked(cartoonData.isMarked());
-
+        commentView.setLikeCount(cartoonData.getLike_users().getTotal());
+        commentView.setMarkCount(cartoonData.getMark_users().getTotal());
+        commentView.setRewardCount(cartoonData.getReward_users().getTotal());
         commentView.setNetAndListener();
     }
 

@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:visibility="visible"
-            android:minHeight="45dp"
+            android:minHeight="50dp"
             >
         </com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView>
     </RelativeLayout>

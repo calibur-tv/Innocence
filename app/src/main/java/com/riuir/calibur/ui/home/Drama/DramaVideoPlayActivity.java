@@ -259,14 +259,14 @@ public class DramaVideoPlayActivity extends BaseActivity {
                 videoData.getInfo().setRewarded(true);
                 checkVideo();
                 if (commentView!=null){
-                    commentView.setRewarded(true);
+                    commentView.setRewardedChange(true);
                 }
             }
 
             @Override
             public void onLikedFinish(boolean isLiked) {
                 if (commentView!=null){
-                    commentView.setLiked(isLiked);
+                    commentView.setLikedChange(isLiked);
                 }
             }
 
@@ -274,7 +274,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
             public void onCollectedFinish(boolean isMarked) {
                 if (commentView!=null){
                     if (commentView!=null){
-                        commentView.setMarked(isMarked);
+                        commentView.setMarkedChange(isMarked);
                     }
                 }
             }
@@ -294,6 +294,9 @@ public class DramaVideoPlayActivity extends BaseActivity {
         commentView.setLiked(videoData.getInfo().isLiked());
         commentView.setRewarded(videoData.getInfo().isRewarded());
         commentView.setMarked(videoData.getInfo().isMarked());
+        commentView.setLikeCount(videoData.getInfo().getLike_users().getTotal());
+        commentView.setMarkCount(videoData.getInfo().getMark_users().getTotal());
+        commentView.setRewardCount(videoData.getInfo().getReward_users().getTotal());
         commentView.setOnLFCNetFinish(new ReplyAndCommentView.OnLFCNetFinish() {
             @Override
             public void onRewardFinish() {

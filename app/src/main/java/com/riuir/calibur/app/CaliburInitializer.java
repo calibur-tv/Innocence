@@ -56,7 +56,7 @@ public class CaliburInitializer {
   }
 
   private void initBase() {
-//    isDebug = false;
+    isDebug = false;
     BusinessBusManager.init();
     initBugly();
     initAlbum();

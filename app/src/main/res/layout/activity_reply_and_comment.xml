@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.widget.replyAndComment.ReplyAndCommentActivity"
-    android:background="#00FFFFFF"
+    android:background="#22000000"
     android:id="@+id/reply_and_comment_activity_keyboard_layout">
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,23 +33,22 @@
                 android:minHeight="45dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="7dp"
-                android:background="@color/color_FFFFFFFF"
+                android:paddingTop="18dp"
+                android:paddingBottom="18dp"
+                android:background="@drawable/bg_rc_activity_view"
                 android:orientation="vertical">
                 <EditText
                     android:id="@+id/reply_and_comment_activity_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="35dp"
+                    android:minHeight="70dp"
                     android:maxHeight="120dp"
-                    android:background="@drawable/bg_edittext_normal"
+                    android:background="@color/color_FFFFFFFF"
                     android:maxLength="200"
-                    android:hint="我也来说一句..."
+                    android:hint="说点什么吧"
+                    android:textColorHint="@color/color_text_gray"
                     android:textSize="14sp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:gravity="center_vertical"
+                    android:gravity="top"
                     android:transitionName="ToReplyAndCommentActivity"
                     android:imeOptions="actionSend"
                     />
@@ -57,22 +56,22 @@
             <RelativeLayout
                 android:id="@+id/reply_and_comment_activity_button_layout"
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
+                android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:paddingBottom="5dp"
+                android:paddingBottom="18dp"
                 android:background="@color/color_FFFFFFFF">
                 <ImageView
                     android:id="@+id/reply_and_comment_activity_image_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
-                    android:src="@mipmap/ic_rc_view_img"
+                    android:src="@mipmap/icon_comment_photo"
                     android:layout_marginLeft="2dp"
                     />
                 <TextView
                     android:id="@+id/reply_and_comment_activity_send_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="66dp"
+                    android:layout_height="27dp"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
                     android:text="发送"

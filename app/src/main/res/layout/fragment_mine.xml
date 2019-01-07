@@ -49,7 +49,6 @@
                         app:riv_border_width="2dp"
                         app:riv_border_color="@color/color_FFFFFFFF"
                         app:riv_oval="true"
-
                         />
                     <TextView
                         android:id="@+id/mine_fragment_mine_name"
@@ -79,9 +78,8 @@
                         android:textSize="11sp"
                         android:paddingLeft="9dp"
                         android:paddingRight="9dp"
-                        android:layout_alignTop="@id/mine_fragment_mine_icon"
                         android:layout_toRightOf="@id/mine_fragment_mine_name"
-                        android:layout_marginTop="10dp"
+                        android:layout_alignBaseline="@id/mine_fragment_mine_name"
                         android:layout_marginLeft="6dp"
                         />
                     <TextView

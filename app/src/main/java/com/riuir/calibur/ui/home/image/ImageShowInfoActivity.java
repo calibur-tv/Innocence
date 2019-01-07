@@ -325,20 +325,20 @@ public class ImageShowInfoActivity extends BaseActivity {
             @Override
             public void onLikedFinish(boolean isLiked) {
                 if (commentView!=null){
-                    commentView.setLiked(isLiked);
+                    commentView.setLikedChange(isLiked);
                 }
             }
 
             @Override
             public void onCollectedFinish(boolean isMarked) {
                 if (commentView!=null){
-                    commentView.setMarked(isMarked);
+                    commentView.setMarkedChange(isMarked);
                 }
             }
             @Override
             public void onRewardFinish() {
                 if (commentView!=null){
-                    commentView.setRewarded(true);
+                    commentView.setRewardedChange(true);
                 }
             }
         });
