@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/theme_magic_sakura_primary"
-        ></com.riuir.calibur.ui.widget.SearchLayout>
+        />
 
     <RelativeLayout
         android:id="@+id/drama_pager_header_layout"
@@ -19,7 +19,7 @@
             android:id="@+id/drama_pager_tab"
             android:layout_width="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_height="42dp"
+            android:layout_height="40dp"
             >
         </com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
     </RelativeLayout>

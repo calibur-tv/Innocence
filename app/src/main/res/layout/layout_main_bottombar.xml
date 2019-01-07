@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/maintab_menu"
     android:layout_width="match_parent"
-    android:layout_height="54dp"
-    android:clickable="true">
+    android:layout_height="45dp"
+    android:layout_gravity="center"
+    tools:background="@color/cpb_green"
+    android:clickable="true"
+    >
 
     <View
         android:layout_width="0dp"
@@ -14,10 +17,9 @@
 
     <RelativeLayout
         android:id="@+id/maintab_dis"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="4dp">
+        android:layout_width="40dp"
+        android:gravity="center_vertical"
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/maintab_dis_iv"
@@ -33,10 +35,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/maintab_dis_iv"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="1.5dp"
             android:text="社区"
             android:textColor="@drawable/maintab_text_color"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
 
         <ImageView
             android:id="@+id/maintab_dis_reddot"
@@ -57,10 +58,9 @@
 
     <RelativeLayout
         android:id="@+id/maintab_circle"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="4dp">
+        android:layout_width="40dp"
+        android:gravity="center_vertical"
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/maintab_circle_iv"
@@ -76,10 +76,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/maintab_circle_iv"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="1.5dp"
             android:text="番剧"
             android:textColor="@drawable/maintab_text_color"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
 
         <ImageView
             android:id="@+id/maintab_circle_reddot"
@@ -100,8 +99,8 @@
 
     <ImageView
         android:id="@+id/maintab_add"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:visibility="visible"
         android:src="@mipmap/maintab_new_normal"
         android:layout_gravity="center_vertical"
@@ -116,10 +115,9 @@
 
     <RelativeLayout
         android:id="@+id/maintab_msg"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="4dp">
+        android:layout_width="40dp"
+        android:gravity="center_vertical"
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/maintab_msg_iv"
@@ -134,10 +132,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/maintab_msg_iv"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="1.5dp"
             android:text="消息"
             android:textColor="@drawable/maintab_text_color"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/maintab_msg_reddot"
@@ -164,10 +161,9 @@
 
     <RelativeLayout
         android:id="@+id/maintab_mine"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="4dp">
+        android:layout_width="40dp"
+        android:gravity="center_vertical"
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/maintab_mine_iv"
@@ -182,10 +178,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/maintab_mine_iv"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="1.5dp"
             android:text="我的"
             android:textColor="@drawable/maintab_text_color"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
 
         <ImageView
             android:id="@+id/maintab_mine_reddot"
