@@ -180,6 +180,7 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
                 finish();
             }
         });
+        headerMore.setShowBtnWhite();
     }
 
     @Override

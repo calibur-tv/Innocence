@@ -210,9 +210,11 @@ public class AppHeaderPopupWindows extends RelativeLayout {
         }
     }
 
+    public void setShowBtnWhite(){
+        showBtn.setImageDrawable(getResources().getDrawable(R.mipmap.app_btn_more_white));
+    }
+
     public void setReportModelTag(final String reportModelTag, final int reportId){
-
-
         if (reportModelTag.equals(USER)|| reportModelTag.equals(BANGUMI)
                 ||reportModelTag.equals(POST)||reportModelTag.equals(IMAGE)
                 || reportModelTag.equals(SCORE)||reportModelTag.equals(ROLE)){
