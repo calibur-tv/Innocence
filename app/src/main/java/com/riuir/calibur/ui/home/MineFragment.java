@@ -68,10 +68,8 @@ public class MineFragment extends BaseFragment {
     RoundedImageView userIcon;
     @BindView(R.id.mine_fragment_mine_name)
     TextView userName;
-    @BindView(R.id.mine_fragment_coin_number)
-    TextView coinNumber;
-    @BindView(R.id.mine_fragment_id_number)
-    TextView idNumber;
+
+
     @BindView(R.id.mine_fragment_day_sign_in_btn)
     TextView daySignBtn;
     @BindView(R.id.mine_fragment_mine_user_log_off)
@@ -80,12 +78,8 @@ public class MineFragment extends BaseFragment {
     Button reSetBtn;
     @BindView(R.id.mine_fragment_mine_home_layout)
     RelativeLayout mineMainPage;
-    @BindView(R.id.mine_fragment_mine_draft_layout)
-    RelativeLayout mineDraftLayout;
     @BindView(R.id.mine_fragment_mine_invite_layout)
     RelativeLayout mineInviteLayout;
-    @BindView(R.id.mine_fragment_mine_notice_layout)
-    RelativeLayout mineNoticeLayout;
     @BindView(R.id.mine_fragment_mine_book_marks_layout)
     RelativeLayout mineBookMarksLayout;
     @BindView(R.id.mine_fragment_mine_withdrawals_layout)
@@ -98,11 +92,20 @@ public class MineFragment extends BaseFragment {
     RelativeLayout mineFeedbackLayout;
     @BindView(R.id.mine_fragment_tips_layout)
     RelativeLayout tipsLayout;
-
     @BindView(R.id.mine_fragment_mine_refresh)
     SwipeRefreshLayout refreshLayout;
-    @BindView(R.id.mine_fragment_mine_level)
+
+    @BindView(R.id.mine_fragment_mine_level_number)
     TextView level;
+    @BindView(R.id.mine_fragment_mine_level_text)
+    TextView levelText;
+    @BindView(R.id.mine_fragment_mine_fight)
+    TextView fightNumber;
+    @BindView(R.id.mine_fragment_coin_number)
+    TextView coinNumber;
+    @BindView(R.id.mine_fragment_id_number)
+    TextView idNumber;
+
     @BindView(R.id.mine_fragment_mine_level_progress)
     NumberProgressBar levelProgress;
     @BindView(R.id.mine_fragment_mine_level_question_btn)
@@ -221,7 +224,7 @@ public class MineFragment extends BaseFragment {
                         @Override
                         public void onSuccess(UserDaySign userDaySign) {
                             daySignBtn.setText("已签到");
-                            coinNumber.setText("团子："+(Constants.userInfoData.getCoin()+1));
+                            coinNumber.setText(""+(Constants.userInfoData.getCoin()+1));
                             Constants.userInfoData.setCoin(Constants.userInfoData.getCoin()+1);
                             Constants.userInfoData.setDaySign(true);
                             //签到成功经验+2
@@ -253,14 +256,16 @@ public class MineFragment extends BaseFragment {
                 GlideUtils.setImageUrl(getContext(),userInfoData.getBanner(),GlideUtils.FULL_SCREEN),
                 userBanner);
         userName.setText(userInfoData.getNickname());
-        coinNumber.setText("团子："+userInfoData.getCoin());
+        coinNumber.setText(""+userInfoData.getCoin());
         idNumber.setText("邀请码："+userInfoData.getId());
         if (userInfoData.isDaySign()){
             daySignBtn.setText("已签到");
         }else {
             daySignBtn.setText("签到");
         }
-        level.setText("Lv"+userInfoData.getExp().getLevel()+" · 战斗力："+userInfoData.getPower());
+        level.setText(""+userInfoData.getExp().getLevel());
+        fightNumber.setText(""+userInfoData.getPower());
+        levelText.setText("Lv "+userInfoData.getExp().getLevel());
 
         levelProgress.setMax(userInfoData.getExp().getNext_level_exp());
         levelProgress.setProgress(userInfoData.getExp().getHave_exp());
@@ -315,12 +320,6 @@ public class MineFragment extends BaseFragment {
             }
         });
 
-        mineDraftLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ToastUtils.showShort(getContext(),"功能研发中，敬请期待");
-            }
-        });
         mineInviteLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -329,13 +328,7 @@ public class MineFragment extends BaseFragment {
                 startActivity(intent);
             }
         });
-        mineNoticeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), UserBulletinActivity.class);
-                startActivity(intent);
-            }
-        });
+
         mineBookMarksLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -455,7 +448,7 @@ public class MineFragment extends BaseFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            coinNumber.setText("团子："+(Constants.userInfoData.getCoin()));
+            coinNumber.setText(""+(Constants.userInfoData.getCoin()));
         }
     }
 

@@ -80,7 +80,7 @@ public class RouteUtils {
                         id2 = Integer.parseInt(params[2].replace("reply_id=",""));
                         break;
                     case browserBase:
-                        baseUrl = str[1].replace("uri=","");
+                        baseUrl = str[1].replace("url=","");
                         break;
 
                 }

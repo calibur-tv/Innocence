@@ -155,7 +155,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:layout_marginLeft="3dp"
+                    android:layout_marginLeft="5dp"
                     android:src="@mipmap/card_show_header_star_normal"
                     />
                 <TextView

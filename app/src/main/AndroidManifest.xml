@@ -226,10 +226,14 @@
             android:name=".ui.home.score.ScoreDetailActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".ui.home.comment.CommentDetailActivity" />
-        <activity android:name=".ui.home.marked.BookMarksActivity" />
-        <activity android:name=".ui.home.role.RoleDetailActivity" />
-        <activity android:name=".ui.home.user.UserTransactionsActivity"></activity>
+        <activity android:name=".ui.home.comment.CommentDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.home.marked.BookMarksActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.home.role.RoleDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.home.user.UserTransactionsActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

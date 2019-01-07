@@ -17,6 +17,8 @@ import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
+import com.riuir.calibur.ui.widget.SearchLayout;
+import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
 
 import butterknife.BindView;
@@ -37,6 +39,9 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
     SwipeRefreshLayout refreshLayout;
     @BindView(R.id.notification_list_fragment_web_view)
     AthenaWebView mWebView;
+    @BindView(R.id.notification_list_search_layout)
+    SearchLayout searchLayout;
+
     MainActivity mainActivity;
 
     public AbsJsBridge mJavaScriptNativeBridge;
@@ -66,6 +71,13 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
         setWeb();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        int stautsBarHeight = ActivityUtils.getStatusBarHeight(getContext());
+        rootView.setPadding(0,stautsBarHeight,0,0);
+    }
+
     @SuppressLint("JavascriptInterface")
     private void setWeb() {
         //点击底部“消息按钮之后加载”
@@ -83,12 +95,10 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
         mWebView.setListener(getActivity(), new AthenaWebView.Listener() {
             @Override
             public void onPageStarted(String url, Bitmap favicon) {
-                refreshLayout.setRefreshing(true);
             }
 
             @Override
             public void onPageFinished(String url) {
-                refreshLayout.setRefreshing(false);
             }
 
             @Override

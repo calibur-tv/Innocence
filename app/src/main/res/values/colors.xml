@@ -39,6 +39,10 @@
     <color name="silver">#ADADAD</color>
     <color name="copper">#BCA64C</color>
 
+    <color name="color_text_black">#14171A </color>
+    <color name="color_text_gray">#657786  </color>
+    <color name="color_mine_level_bg">#FFC83F</color>
+
     <color name="color_reward">#FFe6a23c</color>
     <color name="color_like">#FFf56c6c</color>
     <color name="color_mark">#FF67c23a</color>

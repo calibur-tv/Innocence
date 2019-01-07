@@ -49,7 +49,7 @@ public class UserSystem {
   }
 
   public boolean isLogin() {
-    return !TextUtils.isEmpty(getUserToken());
+    return !TextUtils.isEmpty(SharedPreferencesUtil.getString(ISharedPreferencesKeys.MOBILE_TOKEN));
   }
 
   public Observable<Object> getUserInfo(long userId) {

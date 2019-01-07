@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.web;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
@@ -9,22 +10,14 @@ import android.webkit.WebSettings;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
-import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.UserSystem;
-import calibur.core.templates.TemplateRenderEngine;
 import calibur.core.widget.webview.AthenaWebView;
-import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
-import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
+
 import com.riuir.calibur.ui.common.BaseActivity;
-import com.riuir.calibur.utils.Constants;
-
-
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,21 +69,38 @@ public class WebViewActivity extends BaseActivity {
         setWebView();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        webView.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        webView.onPause();
-    }
 
     private void setWebView() {
 
-        setClient();
+//        setClient();
+        setLoadingView(refreshLayout);
+        webView.setListener(this, new AthenaWebView.Listener() {
+            @Override
+            public void onPageStarted(String url, Bitmap favicon) {
+                showLoading();
+            }
+
+            @Override
+            public void onPageFinished(String url) {
+                hideLoading();
+            }
+
+            @Override
+            public void onPageError(int errorCode, String description, String failingUrl) {
+                LogUtils.d("notificationWeb","errorCode = "+errorCode+",description = "+description+",failingUrl ="+failingUrl);
+            }
+
+            @Override
+            public void onDownloadRequested(String url, String suggestedFilename, String mimeType, long contentLength, String contentDisposition, String userAgent) {
+
+            }
+
+            @Override
+            public void onExternalPageRequest(String url) {
+
+            }
+        });
+
         if (type.equals(TYPE_INVITE)){
             setInviteLoad();
         }else if (type.equals(TYPE_BROWSER_BASE)){
@@ -99,28 +109,6 @@ public class WebViewActivity extends BaseActivity {
             setRuleLoad();
         }
     }
-
-    private void setClient() {
-        client = new MyWebViewClient();
-        client.setOnPageStartedListener(new MyWebViewClient.OnPageStartedListener() {
-            @Override
-            public void onPageStart() {
-                if (refreshLayout!=null){
-                    refreshLayout.setRefreshing(true);
-                }
-            }
-        });
-        client.setOnPageFinishedListener(new MyWebViewClient.OnPageFinishedListener() {
-            @Override
-            public void onPageFinish() {
-                if (refreshLayout!=null){
-                    refreshLayout.setRefreshing(false);
-                }
-            }
-        });
-        webView.setWebViewClient(client);
-    }
-
 
     private void setInviteLoad() {
         Map<String,String> header = new HashMap<>();
@@ -139,6 +127,7 @@ public class WebViewActivity extends BaseActivity {
 
 
     private void setBrowserBase() {
+        LogUtils.d("notificationWeb","baseUrl = "+baseUrl);
         if (!TextUtils.isEmpty(baseUrl)){
             webView.loadUrl(baseUrl);
         }
