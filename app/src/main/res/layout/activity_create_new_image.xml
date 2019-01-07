@@ -13,7 +13,7 @@
         android:background="@color/theme_magic_sakura_primary">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="45dp">
             <TextView
                 android:id="@+id/create_new_image_activity_title"
                 android:layout_width="wrap_content"

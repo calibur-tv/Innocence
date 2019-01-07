@@ -20,7 +20,6 @@
           android:id="@+id/web_view_activity_back_btn"
           android:layout_width="45dp"
           android:layout_height="45dp"
-          android:layout_marginTop="2.5dp"
           android:padding="12dp"
           android:src="@mipmap/app_btn_back_white"
           />
