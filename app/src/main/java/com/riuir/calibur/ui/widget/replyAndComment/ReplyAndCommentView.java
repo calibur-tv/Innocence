@@ -284,47 +284,47 @@ public class ReplyAndCommentView extends LinearLayout{
         }
 
         if (liked){
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like_active));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_like_active));
         }else {
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_like));
         }
 
         if (marked){
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect_active));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_collect_active));
         }else {
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_collect));
         }
         if (rewarded){
-            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money_active));
+            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_money_active));
         }else {
-            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money));
+            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_money));
         }
     }
 
 
     private void setLFCChange() {
         if (liked){
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like_active));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_like_active));
             likeCount++;
         }else {
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_like));
             likeCount--;
         }
 
         if (marked){
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect_active));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_collect_active));
             markCount++;
         }else {
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_collect));
             markCount--;
         }
         likeNumber.setText(String.valueOf(likeCount));
         markNumber.setText(String.valueOf(markCount));
         if (rewarded){
-            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money_active));
+            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_money_active));
             rewardNumber.setText(String.valueOf(rewardCount+1));
         }else {
-            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money));
+            rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_money));
         }
     }
 
@@ -343,6 +343,8 @@ public class ReplyAndCommentView extends LinearLayout{
         this.fromUserName = fromUserName;
         if (targetUserId!=0&&!TextUtils.isEmpty(fromUserName)){
             setRequestFocus();
+        }else if (targetUserId==0||TextUtils.isEmpty(fromUserName)){
+            editRC.setHint("说点什么吧");
         }
     }
 
@@ -461,8 +463,8 @@ public class ReplyAndCommentView extends LinearLayout{
     }
 
     private void setView() {
-        editRC.setHint("说点什么吧...");
-        jumpBtnText.setHint("说点什么吧...");
+        editRC.setHint("说点什么吧");
+        jumpBtnText.setHint("说点什么吧");
 
         if (status == STATUS_MAIN_COMMENT){
             btnLayout.setVisibility(VISIBLE);
@@ -658,10 +660,10 @@ public class ReplyAndCommentView extends LinearLayout{
             onLFCNetFinish.onLikeFinish(isLiked);
         }
         if (isLiked){
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like_active));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_like_active));
             likeCount++;
         }else {
-            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_like));
+            zanIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_like));
             likeCount--;
         }
         likeNumber.setText(String.valueOf(likeCount));
@@ -671,10 +673,10 @@ public class ReplyAndCommentView extends LinearLayout{
             onLFCNetFinish.onMarkFinish(isMarked);
         }
         if (isMarked){
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect_active));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_collect_active));
             markCount++;
         }else {
-            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_collect));
+            markIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_collect));
             markCount--;
         }
         markNumber.setText(String.valueOf(markCount));
@@ -684,7 +686,7 @@ public class ReplyAndCommentView extends LinearLayout{
             onLFCNetFinish.onRewardFinish();
         }
         rewarded = true;
-        rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.icon_tabbar_money_active));
+        rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_money_active));
         rewardNumber.setText(String.valueOf(rewardCount+1));
 
     }
@@ -746,8 +748,10 @@ public class ReplyAndCommentView extends LinearLayout{
     }
 
     public void setSubCommentSuccessResult(ReplyCommentInfo info){
-        switch (type){
-            case TYPE_SUB_MESSAGE:
+        LogUtils.d("createSubComm","info = "+info.toString());
+        LogUtils.d("createSubComm","sub_type = "+subType);
+        switch (subType){
+            case TYPE_SUB_COMMENT:
                 CommentDetailActivity commentDetailActivity = CommentDetailActivity.getInstance();
                 if (commentDetailActivity!=null) commentDetailActivity.setCommentSuccessResult(info);
                 break;

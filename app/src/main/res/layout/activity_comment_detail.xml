@@ -60,10 +60,11 @@
         </com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView>
         <ImageView
             android:id="@+id/comment_detail_activity_loading_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_FFFFFFFF"
             android:scaleType="centerInside"
+            android:layout_below="@id/page_header"
             android:visibility="gone"/>
     </RelativeLayout>
 </android.support.v4.widget.DrawerLayout>

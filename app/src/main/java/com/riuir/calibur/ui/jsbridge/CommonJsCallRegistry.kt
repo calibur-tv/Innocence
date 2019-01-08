@@ -1,5 +1,6 @@
 package com.riuir.calibur.ui.jsbridge
 
+import android.content.Intent
 import android.os.Handler
 import calibur.core.http.models.jsbridge.H5RespModel
 import calibur.core.http.models.jsbridge.models.H5CallAppBusinessModel
@@ -14,6 +15,7 @@ import calibur.core.jsbridge.interfaces.IH5JsCallApp
 import calibur.foundation.utils.JSONUtil
 import com.riuir.calibur.assistUtils.LogUtils
 import com.riuir.calibur.assistUtils.activityUtils.PreviewImageUtils
+import com.riuir.calibur.ui.home.MineFragment
 import com.riuir.calibur.ui.route.RouteUtils
 import com.riuir.calibur.utils.Constants
 import com.riuir.calibur.utils.DialogHelper
@@ -29,7 +31,7 @@ import java.util.ArrayList
 class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallNativeFunsRegister(handler, absJsBridge) {
 
     override fun jsCallNative(funs: JsBridgeContract?, jsonString: String): String? {
-        LogUtils.d("toggleClick","jsonString = $jsonString")
+        LogUtils.d("routeLog","jsonString = $jsonString")
         val bridgeMessage = JSONUtil.fromJson(jsonString, H5RespModel::class.java)
         val func = bridgeMessage.func
         val jsFun = funs as IH5JsCallApp
@@ -112,6 +114,8 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
     private fun jsSetUserInfo(biz: Any?) {
         val bizData: MineUserInfo = biz as MineUserInfo
         Constants.userInfoData = bizData
+        val intent = Intent(MineFragment.COINCHANGE)
+        javaScriptNativeBridge.mContext?.sendBroadcast(intent)
     }
 
     private fun jsShowConfrim(params: Any?,callBackId:String) {

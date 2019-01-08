@@ -267,10 +267,10 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         addPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-                maintabAdd.setRotation(135);
-                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
-                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(maintabAdd, pvhR);
-                animation.start();
+//                maintabAdd.setRotation(135);
+                PropertyValuesHolder pvhRClose = PropertyValuesHolder.ofFloat(View.ROTATION, 135,0);
+                ObjectAnimator animationClose = ObjectAnimator.ofPropertyValuesHolder(maintabAdd, pvhRClose);
+                animationClose.start();
             }
         });
 
@@ -282,13 +282,13 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
 
         addPopupWindow.showAtLocation(activity.findViewById(android.R.id.content), Gravity.TOP,
                 0,0);
-        maintabAdd.setRotation(0);
-        PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 135);
-        ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(maintabAdd, pvhR);
-        animation.start();
-        closePopup.setRotation(0);
-        ObjectAnimator animation1 = ObjectAnimator.ofPropertyValuesHolder(closePopup, pvhR);
-        animation1.start();
+//        closePopup.setRotation(0);
+//        maintabAdd.setRotation(0);
+        PropertyValuesHolder pvhROpen = PropertyValuesHolder.ofFloat(View.ROTATION, 0,135);
+//        ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(maintabAdd, pvhROpen);
+//        animation.start();
+        ObjectAnimator animationOpen = ObjectAnimator.ofPropertyValuesHolder(closePopup, pvhROpen);
+        animationOpen.start();
 
     }
 

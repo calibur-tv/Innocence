@@ -627,8 +627,8 @@ public class AthenaWebView extends WebView {
       if (mCustomWebViewClient != null) {
         mCustomWebViewClient.onReceivedSslError(view, handler, error);
       } else {
-        handler.proceed();
-        super.onReceivedSslError(view, handler, error);
+        handler.proceed();//暂时忽略ssl错误 否则加载页面大几率失败
+//        super.onReceivedSslError(view, handler, error);
       }
     }
 

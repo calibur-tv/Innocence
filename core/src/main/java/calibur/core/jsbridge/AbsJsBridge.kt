@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.text.TextUtils
+import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import calibur.core.http.models.jsbridge.JsBridgeMessage
@@ -141,6 +142,7 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
           this.params = args
         }
         val param = JSONUtil.toJson(msg)
+        Log.d("roleLog", "param = $param")
         webView.loadUrl("javascript:M.invoker.JsCallAppCallback('$param')")
       } catch (r: Throwable) {
         r.printStackTrace()

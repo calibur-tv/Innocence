@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/theme_magic_sakura_primary"
     tools:context=".ui.home.NotificationListFragment">
     <com.riuir.calibur.ui.widget.SearchLayout
@@ -11,17 +10,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </com.riuir.calibur.ui.widget.SearchLayout>
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/notification_list_fragment_web_view_swipe_refresh"
+    <!--<android.support.v4.widget.SwipeRefreshLayout-->
+        <!--android:id="@+id/notification_list_fragment_web_view_swipe_refresh"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@color/color_FFFFFFFF">-->
+    <!--</android.support.v4.widget.SwipeRefreshLayout>-->
+    <calibur.core.widget.webview.AthenaWebView
+        android:id="@+id/notification_list_fragment_web_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/color_FFFFFFFF">
-        <calibur.core.widget.webview.AthenaWebView
-            android:id="@+id/notification_list_fragment_web_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
-        </calibur.core.widget.webview.AthenaWebView>
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-</LinearLayout>
+        android:layout_below="@id/notification_list_search_layout"
+        android:background="@color/color_FFFFFFFF"
+        />
+    <ImageView
+        android:id="@+id/notification_list_fragment_loading_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_FFFFFFFF"
+        android:scaleType="centerInside"
+        android:layout_below="@id/notification_list_search_layout"
+        android:visibility="gone"/>
+</RelativeLayout>

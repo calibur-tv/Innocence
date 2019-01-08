@@ -22,6 +22,7 @@ import calibur.foundation.utils.JSONUtil;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
+import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
@@ -146,13 +147,12 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
 
     private void initCommentView() {
         commentView.setStatus(ReplyAndCommentView.STATUS_SUB_COMMENT);
-        commentView.setSubType(ReplyAndCommentView.TYPE_SUB_MESSAGE);
-        commentView.setApiPost(apiPost);
+        commentView.setSubType(ReplyAndCommentView.TYPE_SUB_COMMENT);
         commentView.setFromUserName("");
         commentView.setMainCommentid(commentId);
         commentView.setType(type);
         commentView.setTargetUserId(0);
-        commentView.setTargetUserMainId(commentId);
+        commentView.setTargetUserMainId(commentItem.getFrom_user_id());
         commentView.setNetAndListener();
     }
 
@@ -243,6 +243,7 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
      * 将数据通过AppCallJS传递给模板
      */
     public void setCommentSuccessResult(ReplyCommentInfo info) {
+        LogUtils.d("createSubComm","info = "+info.toString());
         mJavaScriptNativeBridge.callJavascript(IH5JsCallApp.createSubComment, info, null);
     }
 }

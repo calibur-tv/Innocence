@@ -157,6 +157,7 @@ public class RoleDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @Override
     public void toggleClick(@Nullable Object params) {
+
     }
 
     @Override

@@ -90,11 +90,11 @@
     </LinearLayout>
     <ImageView
         android:id="@+id/main_add_popup_window_close"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="4.5dp"
+        android:layout_marginBottom="5dp"
         android:src="@mipmap/maintab_new_normal"
         />
 </RelativeLayout>

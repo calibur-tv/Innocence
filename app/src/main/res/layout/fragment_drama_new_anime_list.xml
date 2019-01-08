@@ -48,9 +48,9 @@
                     android:layout_height="43dp">
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="2dp"
+                        android:layout_height="1dp"
                         android:layout_alignParentBottom="true"
-                        android:background="@color/color_FFEEEEEE"
+                        android:background="@color/color_FFF3F3F3"
                         android:layout_marginBottom="5dp"
                         />
                     <com.riuir.calibur.ui.view.NewAnimePagerSlidingTabStrip

@@ -1,5 +1,7 @@
 package com.riuir.calibur.ui.route;
 
+import android.text.TextUtils;
+
 import com.alibaba.android.arouter.exception.HandlerException;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -28,6 +30,7 @@ public class RouteUtils {
 
     public static void toPage(String path){
         LogUtils.d("routeLog","path = "+path);
+        if (TextUtils.isEmpty(path)) return;
         if (path.contains("calibur:/")){
             path = path.replace("calibur:/","");
         }
@@ -88,8 +91,8 @@ public class RouteUtils {
         }else {
             uri = path;
         }
+        if (TextUtils.isEmpty(uri)) return;
         //根据zone和commentType判断是进入普通页面还是用户主页还是评论页面
-
         try {
             if (zone.length()!=0){
                 ARouter.getInstance().build(uri)

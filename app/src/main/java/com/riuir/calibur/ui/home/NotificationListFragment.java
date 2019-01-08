@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
@@ -20,6 +22,7 @@ import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.SearchLayout;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.GlideUtils;
 
 import butterknife.BindView;
 import calibur.core.http.models.jsbridge.models.H5ReadNotificationModel;
@@ -35,8 +38,8 @@ import calibur.core.widget.webview.AthenaWebView;
  */
 public class NotificationListFragment extends BaseFragment implements IH5JsCallApp {
 
-    @BindView(R.id.notification_list_fragment_web_view_swipe_refresh)
-    SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.notification_list_fragment_loading_view)
+    ImageView webPageLoadingView;
     @BindView(R.id.notification_list_fragment_web_view)
     AthenaWebView mWebView;
     @BindView(R.id.notification_list_search_layout)
@@ -66,8 +69,8 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
             Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(getContext());
         LogUtils.d("notificationWeb","userInfo = "+Constants.userInfoData.toString());
         mainActivity = (MainActivity) getActivity();
-        refreshLayout.setEnabled(false);
         TemplateRenderEngine.getInstance().checkNotificationTemplateForUpdate();
+        GlideUtils.loadImageViewStaticGif(getActivity(),R.mipmap.web_page_loading,webPageLoadingView);
         setWeb();
     }
 
@@ -95,10 +98,12 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
         mWebView.setListener(getActivity(), new AthenaWebView.Listener() {
             @Override
             public void onPageStarted(String url, Bitmap favicon) {
+                webPageLoadingView.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onPageFinished(String url) {
+                webPageLoadingView.setVisibility(View.GONE);
             }
 
             @Override

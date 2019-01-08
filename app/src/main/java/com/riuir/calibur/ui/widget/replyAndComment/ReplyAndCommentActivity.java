@@ -359,8 +359,8 @@ public class ReplyAndCommentActivity extends BaseActivity {
     private void setCheckUpLoad() {
 
         upLoadDialog = new SweetAlertDialog(ReplyAndCommentActivity.this,SweetAlertDialog.PROGRESS_TYPE);
-        upLoadDialog.setTitle("上传中...");
-        upLoadDialog.setContentText("您的评论正在上传中...");
+        upLoadDialog.setTitle("发送中...");
+        upLoadDialog.setContentText("您的评论正在发送中...");
         upLoadDialog.setCancelable(false);
         upLoadDialog.show();
 
@@ -449,8 +449,8 @@ public class ReplyAndCommentActivity extends BaseActivity {
                             }
                             editText.setText("");
                             editText.clearFocus();
-                            upLoadDialog.setTitleText("上传成功!")
-                                    .setContentText("您的评论上传成功!")
+                            upLoadDialog.setTitleText("发送成功!")
+                                    .setContentText("您的评论发送成功!")
                                     .setConfirmText("好的")
                                     .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                         @Override
