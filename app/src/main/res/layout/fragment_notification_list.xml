@@ -8,7 +8,8 @@
     <com.riuir.calibur.ui.widget.SearchLayout
         android:id="@+id/notification_list_search_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:elevation="1dp">
     </com.riuir.calibur.ui.widget.SearchLayout>
     <!--<android.support.v4.widget.SwipeRefreshLayout-->
         <!--android:id="@+id/notification_list_fragment_web_view_swipe_refresh"-->

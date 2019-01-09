@@ -57,12 +57,12 @@ public class SearchLayout extends RelativeLayout{
                 Intent toSearchActivityIntent = new Intent(getContext(), DramaSearchActivity.class);
 
                 //版本大于5.0的时候带有动画
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    context.startActivity(toSearchActivityIntent, ActivityOptions.makeSceneTransitionAnimation((Activity) context,
-                            view, "ToSearchDramaActivity").toBundle());
-                }else {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    context.startActivity(toSearchActivityIntent, ActivityOptions.makeSceneTransitionAnimation((Activity) context,
+//                            view, "ToSearchDramaActivity").toBundle());
+//                }else {
                     context.startActivity(toSearchActivityIntent);
-                }
+//                }
             }
         });
     }

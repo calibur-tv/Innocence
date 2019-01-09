@@ -40,11 +40,12 @@
                 android:hint="搜索二次元的一切"
                 android:textSize="14sp"
                 android:gravity="center_vertical"
-                android:transitionName="ToSearchDramaActivity"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:maxLines="1"
                 />
+            <!--android:transitionName="ToSearchDramaActivity"-->
+
             <ImageView
                 android:id="@+id/drama_search_activity_btn"
                 android:layout_width="36dp"

@@ -14,6 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="1dp"
         >
         <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
             android:id="@+id/main_card_pager_tab"

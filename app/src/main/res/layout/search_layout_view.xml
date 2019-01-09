@@ -21,8 +21,9 @@
             android:hint="搜索二次元的一切"
             android:textSize="15sp"
             android:gravity="center_vertical"
-            android:transitionName="ToSearchDramaActivity"
             />
+            <!--android:transitionName="ToSearchDramaActivity"-->
+
         <ImageView
             android:id="@+id/search_layout_search_btn"
             android:layout_width="19dp"

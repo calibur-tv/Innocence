@@ -523,7 +523,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/color_FFE2E2E2"
-                    android:elevation="2dp"
+                    android:elevation="1dp"
                     />
                 <TextView
                     android:id="@+id/mine_fragment_mine_user_log_off"

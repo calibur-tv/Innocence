@@ -85,7 +85,6 @@ public class RouteUtils {
                     case browserBase:
                         baseUrl = str[1].replace("url=","");
                         break;
-
                 }
             }
         }else {

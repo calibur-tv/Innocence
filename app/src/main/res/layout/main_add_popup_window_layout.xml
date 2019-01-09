@@ -95,6 +95,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="5dp"
-        android:src="@mipmap/maintab_new_normal"
+        android:src="@mipmap/maintab_new_active"
         />
 </RelativeLayout>

@@ -264,15 +264,15 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         // 设置PopupWindow是否能响应点击事件,具体是其中的item的响应事件
         addPopupWindow.setTouchable(true);
 
-        addPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-//                maintabAdd.setRotation(135);
-                PropertyValuesHolder pvhRClose = PropertyValuesHolder.ofFloat(View.ROTATION, 135,0);
-                ObjectAnimator animationClose = ObjectAnimator.ofPropertyValuesHolder(maintabAdd, pvhRClose);
-                animationClose.start();
-            }
-        });
+//        addPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+//            @Override
+//            public void onDismiss() {
+////                maintabAdd.setRotation(135);
+//                PropertyValuesHolder pvhRClose = PropertyValuesHolder.ofFloat(View.ROTATION, 135,0);
+//                ObjectAnimator animationClose = ObjectAnimator.ofPropertyValuesHolder(maintabAdd, pvhRClose);
+//                animationClose.start();
+//            }
+//        });
 
         setPopupClickListener();
 
@@ -284,12 +284,11 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
                 0,0);
 //        closePopup.setRotation(0);
 //        maintabAdd.setRotation(0);
-        PropertyValuesHolder pvhROpen = PropertyValuesHolder.ofFloat(View.ROTATION, 0,135);
+//        PropertyValuesHolder pvhROpen = PropertyValuesHolder.ofFloat(View.ROTATION, 0,135);
 //        ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(maintabAdd, pvhROpen);
 //        animation.start();
-        ObjectAnimator animationOpen = ObjectAnimator.ofPropertyValuesHolder(closePopup, pvhROpen);
-        animationOpen.start();
-
+//        ObjectAnimator animationOpen = ObjectAnimator.ofPropertyValuesHolder(closePopup, pvhROpen);
+//        animationOpen.start();
     }
 
     private void setPopupClickListener() {
