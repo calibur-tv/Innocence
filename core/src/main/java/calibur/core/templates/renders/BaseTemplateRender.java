@@ -2,7 +2,6 @@ package calibur.core.templates.renders;
 
 import android.annotation.SuppressLint;
 import android.util.Log;
-
 import calibur.core.http.OkHttpClientManager;
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
@@ -12,7 +11,6 @@ import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.templates.TemplateDownloadManager;
 import calibur.core.templates.TemplateRenderEngine;
 import calibur.foundation.FoundationContextHolder;
-import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.callback.CallBack1;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import calibur.foundation.rxjava.rxbus.RxBus2Consumer;
@@ -55,10 +53,10 @@ public abstract class BaseTemplateRender implements ITemplateRender{
     RetrofitManager.getInstance().getService(APIService.class).checkTemplateUpdate(businessName, 1)
         .compose(Rx2Schedulers.<Response<ResponseBean<TemplateModel>>>applyObservableAsync())
         .subscribe(new ObserverWrapper<TemplateModel>() {
-          @Override public void onSuccess(TemplateModel checkTemplateUpdateModel) {
+          @Override public void onSuccess(TemplateModel newTemplateModel) {
             TemplateModel oldModel = getTemplateModelFromLocal();
-            if (oldModel == null || (!oldModel.getUrl().equals(checkTemplateUpdateModel.getUrl()) && isTemplateFileNotExists())) {
-              downloadUpdateFile(checkTemplateUpdateModel);
+            if (oldModel == null || (!oldModel.getUrl().equals(newTemplateModel.getUrl()))) {
+              downloadUpdateFile(newTemplateModel);
             } else if (isTemplateFileNotExists()) {
               downloadUpdateFile(oldModel);
             } else {
