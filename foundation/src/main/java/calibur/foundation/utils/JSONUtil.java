@@ -32,10 +32,8 @@ public final class JSONUtil {
 
   /**
    * 将奇数个转义字符变为偶数个
-   * @param s
-   * @return
    */
-  public static String getDecodeJSONStr(String s){
+  public static String replaceChar(String s){
     StringBuilder sb = new StringBuilder();
     char c;
     for (int i = 0; i < s.length(); i++) {

@@ -108,7 +108,7 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
               this.params = args
             }
             val tempString = JSONUtil.toJson(message, JsBridgeMessage::class.java)
-            val param = JSONUtil.getDecodeJSONStr(tempString)
+            val param = JSONUtil.replaceChar(tempString)
             webView.loadUrl("javascript:M.invoker.appCallJs('$param')")
           } catch (r: Throwable) {
             r.printStackTrace()
@@ -143,7 +143,7 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
           this.params = args
         }
         val jsonStr = JSONUtil.toJson(msg)
-        val param = JSONUtil.getDecodeJSONStr(jsonStr)
+        val param = JSONUtil.replaceChar(jsonStr)
         Log.d("callbackErrorLog", "callback jsonstr = $param")
 
         webView.loadUrl("javascript:M.invoker.JsCallAppCallback('$param')")
