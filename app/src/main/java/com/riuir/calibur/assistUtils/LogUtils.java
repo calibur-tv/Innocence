@@ -1,6 +1,7 @@
 package com.riuir.calibur.assistUtils;
 
 import android.util.Log;
+import calibur.foundation.config.PackageTypeConfig;
 import com.tencent.bugly.crashreport.BuglyLog;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -16,7 +17,7 @@ public class LogUtils
         throw new UnsupportedOperationException("cannot be instantiated");
     }
 
-    public static boolean isDebug = true;// 是否需要打印bug，可以在application的onCreate函数里面初始化
+    public static boolean isDebug = PackageTypeConfig.isDebugEnv();
     private static final String TAG = "way";
 
     // 下面四个是默认tag的函数

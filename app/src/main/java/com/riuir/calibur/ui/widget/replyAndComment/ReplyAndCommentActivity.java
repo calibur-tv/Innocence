@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import calibur.foundation.utils.DeviceInfoUtil;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
@@ -34,6 +35,7 @@ import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.ui.home.message.MessageShowCommentActivity;
+import com.riuir.calibur.utils.AndroidBug5497Workaround;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.QiniuUtils;
 import com.riuir.calibur.utils.album.MyAlbumUtils;
@@ -55,8 +57,6 @@ import calibur.core.http.models.user.MineUserInfo;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ReplyAndCommentActivity extends BaseActivity {
@@ -126,7 +126,6 @@ public class ReplyAndCommentActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
-
         Intent intent = getIntent();
         type = intent.getStringExtra("type");
         subType = intent.getStringExtra("subType");
@@ -245,10 +244,14 @@ public class ReplyAndCommentActivity extends BaseActivity {
                 //获取当前界面可视部分
                 ReplyAndCommentActivity.this.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
                 //获取屏幕的高度
-                int screenHeight =  ScreenUtils.getScreenHeight(ReplyAndCommentActivity.this);
+                int realScreenHeight = DeviceInfoUtil.getScreenHeight();
+                int screenHeight =  ScreenUtils.getScreenHeight();
+                int diff = realScreenHeight - screenHeight;
+                LogUtils.d("JASON","realScreenHeight = " + realScreenHeight);
+                LogUtils.d("JASON","screenHeight = " + screenHeight);
                 //此处就是用来获取键盘的高度的， 在键盘没有弹出的时候 此高度为0 键盘弹出的时候为一个正数
-                int heightDifference = screenHeight - (r.bottom);
-                LogUtils.d("KeyboardSize", "Size: " + heightDifference+",sch = "+screenHeight+",bot = "+r.bottom+",top = "+r.top);
+                int heightDifference = realScreenHeight - diff - (r.bottom);
+                LogUtils.d("JASON", "Size: " + heightDifference+",screenHeight = "+screenHeight+",bottom = "+r.bottom+",top = "+r.top);
                 if (heightDifference!=0){
                     //键盘开启
                     bottomLayout.setTranslationY(-heightDifference);

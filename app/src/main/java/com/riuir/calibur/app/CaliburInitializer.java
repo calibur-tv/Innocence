@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import calibur.core.http.CaliburHttpContext;
 import calibur.core.http.OkHttpClientManager;
 import calibur.core.http.RetrofitManager;
-import calibur.foundation.bus.BusinessBus;
 import calibur.foundation.bus.BusinessBusManager;
 import calibur.foundation.config.PackageTypeConfig;
 
@@ -27,8 +26,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-
-import static com.riuir.calibur.assistUtils.LogUtils.isDebug;
 
 /**
  * author : J.Chou
@@ -56,7 +53,6 @@ public class CaliburInitializer {
   }
 
   private void initBase() {
-    isDebug = false;
     BusinessBusManager.init();
     initBugly();
     initAlbum();
@@ -121,7 +117,7 @@ public class CaliburInitializer {
     strategy.setUploadProcess(processName == null || processName.equals(packageName));
     // 初始化Bugly
     //        CrashReport.initCrashReport(context, "d07841a6e4", isDebug, strategy);
-    Bugly.init(context, "d07841a6e4", isDebug, strategy);
+    Bugly.init(context, "d07841a6e4", PackageTypeConfig.isDebugEnv(), strategy);
   }
 
   /**
@@ -158,7 +154,7 @@ public class CaliburInitializer {
 
 
   private void initARoute() {
-    if (isDebug){
+    if (PackageTypeConfig.isDebugEnv()){
       ARouter.openDebug();
       ARouter.openLog();
     }

@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
+import calibur.foundation.FoundationContextHolder;
 
 /**
  * 获得屏幕相关的辅助类
@@ -31,8 +32,7 @@ public class ScreenUtils
      */
     public static int getScreenWidth(Context context)
     {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(outMetrics);
         return outMetrics.widthPixels;
@@ -41,13 +41,11 @@ public class ScreenUtils
     /**
      * 获得屏幕高度
      *
-     * @param context
      * @return
      */
-    public static int getScreenHeight(Context context)
+    public static int getScreenHeight()
     {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) FoundationContextHolder.getContext().getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(outMetrics);
         return outMetrics.heightPixels;
@@ -90,7 +88,7 @@ public class ScreenUtils
         view.buildDrawingCache();
         Bitmap bmp = view.getDrawingCache();
         int width = getScreenWidth(activity);
-        int height = getScreenHeight(activity);
+        int height = getScreenHeight();
         Bitmap bp = null;
         bp = Bitmap.createBitmap(bmp, 0, 0, width, height);
         view.destroyDrawingCache();
@@ -115,7 +113,7 @@ public class ScreenUtils
         int statusBarHeight = frame.top;
 
         int width = getScreenWidth(activity);
-        int height = getScreenHeight(activity);
+        int height = getScreenHeight();
         Bitmap bp = null;
         bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height
                 - statusBarHeight);

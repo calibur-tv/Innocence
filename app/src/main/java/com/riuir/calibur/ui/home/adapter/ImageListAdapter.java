@@ -41,7 +41,7 @@ public class ImageListAdapter extends BaseQuickAdapter<MainTrendingInfo.MainTren
         imageCount.setVisibility(View.VISIBLE);
         ViewGroup.LayoutParams params = img.getLayoutParams();
 
-        double screenHeight =  ScreenUtils.getScreenHeight(context);
+        double screenHeight =  ScreenUtils.getScreenHeight();
         int minHeight = DensityUtils.dp2px(context,80);
         int height = GlideUtils.getImageHeightDp(context,item.getSource().getHeight(),item.getSource().getWidth(),21.0f,2);
         if (height>(screenHeight*0.75)){
