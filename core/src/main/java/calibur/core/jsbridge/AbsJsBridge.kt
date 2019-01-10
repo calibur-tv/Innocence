@@ -107,7 +107,8 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
               this.func = jsFName
               this.params = args
             }
-            val param = JSONUtil.toJson(message, JsBridgeMessage::class.java)
+            val tempString = JSONUtil.toJson(message, JsBridgeMessage::class.java)
+            val param = JSONUtil.getDecodeJSONStr(tempString)
             webView.loadUrl("javascript:M.invoker.appCallJs('$param')")
           } catch (r: Throwable) {
             r.printStackTrace()
