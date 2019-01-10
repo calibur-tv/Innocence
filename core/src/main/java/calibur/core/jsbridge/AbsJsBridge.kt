@@ -141,8 +141,10 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
           //取消 JSONUtil.tojson 否则JSCallAPP不通
           this.params = args
         }
-        val param = JSONUtil.toJson(msg)
-        Log.d("roleLog", "param = $param")
+        val jsonStr = JSONUtil.toJson(msg)
+        val param = JSONUtil.getDecodeJSONStr(jsonStr)
+        Log.d("callbackErrorLog", "callback jsonstr = $param")
+
         webView.loadUrl("javascript:M.invoker.JsCallAppCallback('$param')")
       } catch (r: Throwable) {
         r.printStackTrace()

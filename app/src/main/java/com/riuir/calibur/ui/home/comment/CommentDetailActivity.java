@@ -23,6 +23,7 @@ import calibur.foundation.utils.JSONUtil;
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
+import com.riuir.calibur.assistUtils.PhoneSystemUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
@@ -201,7 +202,7 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
     @Nullable
     @Override
     public String getDeviceInfo() {
-        return null;
+        return PhoneSystemUtils.getDeviceInfo();
     }
 
     @Nullable
