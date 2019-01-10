@@ -35,7 +35,6 @@ import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
 import com.riuir.calibur.ui.home.message.MessageShowCommentActivity;
-import com.riuir.calibur.utils.AndroidBug5497Workaround;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.QiniuUtils;
 import com.riuir.calibur.utils.album.MyAlbumUtils;
