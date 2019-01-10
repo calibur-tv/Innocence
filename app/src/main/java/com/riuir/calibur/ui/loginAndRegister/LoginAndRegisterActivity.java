@@ -41,7 +41,6 @@ public class LoginAndRegisterActivity extends BaseActivity {
 
     private void setViewPager() {
         viewPager.setAdapter(new LoginAndRegisterAdapter(getSupportFragmentManager()));
-        viewPager.setOffscreenPageLimit(5);
         tabStrip.setViewPager(viewPager);
         setTabs();
     }
