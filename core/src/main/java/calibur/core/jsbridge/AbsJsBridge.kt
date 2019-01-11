@@ -46,14 +46,18 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
    * }
    */
   @JavascriptInterface
-  fun handleCallbackFromJS(data: String) {
-    if (!TextUtils.isEmpty(data)) {
-      val msg = JSONUtil.fromJson(data, JsBridgeMessage::class.java)
-      val callbackId = msg.callbackId
-      val id = Integer.parseInt(callbackId)
-      if (id != -1) {
-        val callback = nativeCallJsFunsRegister.findCallbackById(id)
-        callback?.onResponse(webView, data)
+  fun handleCallbackFromJS(data: String?) {
+    data?.let {
+      try {
+        val msg = JSONUtil.fromJson(it, JsBridgeMessage::class.java)
+        val callbackId = msg.callbackId
+        val id = Integer.parseInt(callbackId)
+        if (id != -1) {
+          val callback = nativeCallJsFunsRegister.findCallbackById(id)
+          callback?.onResponse(webView, it)
+        }
+      } catch (e: Exception) {
+        e.printStackTrace()
       }
     }
   }
