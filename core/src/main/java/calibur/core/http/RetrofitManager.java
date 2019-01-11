@@ -22,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @SuppressWarnings({ "unchecked", "WeakerAccess", "unused" })
 public class RetrofitManager {
 
-  private OkHttpClient mOkHttpClient;
+  private static OkHttpClient mOkHttpClient;
   private Converter.Factory mGlobalConverterFactory;
   private static String BASE_URL = NetworkHost.PRO_HOST;
   private Hashtable<Integer, Object> mCache = new Hashtable<>();
@@ -89,6 +89,7 @@ public class RetrofitManager {
     }
     Retrofit.Builder builder = new Retrofit.Builder();
     String url = host == null ? BASE_URL : host;
+    if(mOkHttpClient == null) init();
     Retrofit retrofit = builder.client(mOkHttpClient)
         .baseUrl(url)
         .addConverterFactory(mGlobalConverterFactory == null ? GsonConverterFactory.create(JSONUtil.getDefaultGson())
