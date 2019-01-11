@@ -5,6 +5,6 @@ import java.io.Serializable
 
 class JsBridgeMessage : IBaseResponse, Serializable{
   var func: String? = null
-  var callbackId: String = ""
+  var callbackId: String? = ""
   var params: Any? = null
 }

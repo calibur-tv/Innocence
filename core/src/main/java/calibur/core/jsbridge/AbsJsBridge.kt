@@ -71,7 +71,7 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
    * }
    */
   @JavascriptInterface
-  fun handleMessageFromJS(data: String): String? {
+  fun handleMessageFromJS(data: String?): String? {
     if (!TextUtils.isEmpty(data)) {
       try {
         return jsCallNativeFunsRegister.handleJsCall(jsCallContract, data)
@@ -134,7 +134,7 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
    * }
    * }
    */
-  fun handleJsCallback(args: Any?, callbackId: String) {
+  fun handleJsCallback(args: Any?, callbackId: String?) {
     if (!TextUtils.isEmpty(webView.url) ) {
       try {
         val msg = JsBridgeMessage().apply {
@@ -157,20 +157,20 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
   /**
    * 通过callbackId异步执行js的回调
    */
-  fun executeJsCallbackByCallbackId(callbackId: String) {
+  fun executeJsCallbackByCallbackId(callbackId: String?) {
     executeJsCallbackByCallbackId("", callbackId)
   }
 
   /**
    * 通过callbackId异步执行js的回调
    */
-  fun executeJsCallbackByCallbackId(args: Any?, callbackId: String) {
+  fun executeJsCallbackByCallbackId(args: Any?, callbackId: String?) {
     val callback = jsCallNativeFunsRegister.getCallback(callbackId)
     callback?.onResponse(args, callbackId)
   }
 
   interface IJsCallNativeCallback {
-    fun onResponse(args: Any?, callbackId: String)
+    fun onResponse(args: Any?, callbackId: String?)
   }
 
   interface INativeCallJsCallback {

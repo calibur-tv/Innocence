@@ -21,13 +21,15 @@ abstract class JsCallNativeFunsRegister(protected var handler: Handler, absJsBri
   private var callbacksMap: MutableMap<String, AbsJsBridge.IJsCallNativeCallback> = HashMap()
   protected var javaScriptNativeBridge: AbsJsBridge = absJsBridge
 
-  abstract fun jsCallNative(funs: JsBridgeContract?, jsonString: String): String?
+  abstract fun jsCallNative(funs: JsBridgeContract?, jsonString: String?): String?
 
-  private fun putCallBack(callbackId: String, callback: AbsJsBridge.IJsCallNativeCallback) {
-    callbacksMap[callbackId] = callback
+  private fun putCallBack(callbackId: String?, callback: AbsJsBridge.IJsCallNativeCallback) {
+    callbackId?.let {
+      callbacksMap[it] = callback
+    }
   }
 
-  fun getCallback(callbackId: String): AbsJsBridge.IJsCallNativeCallback? {
+  fun getCallback(callbackId: String?): AbsJsBridge.IJsCallNativeCallback? {
     val callback = callbacksMap[callbackId]
     if (callback != null) {
       callbacksMap.remove(callbackId)
@@ -36,14 +38,14 @@ abstract class JsCallNativeFunsRegister(protected var handler: Handler, absJsBri
     return null
   }
 
-  fun handleJsCall(jsCallContract: JsBridgeContract?, data: String): String? {
+  fun handleJsCall(jsCallContract: JsBridgeContract?, data: String?): String? {
     if(jsCallContract == null) return ""
     val baseH5Obj = JSONUtil.fromJson(data, JsBridgeMessage::class.java) ?: return ""
 
     //如果这个 callbackId != ‘-1’，那么在 Native 执行完被调用的方法后，使用这个 callbackId 将结果回调给 Javascript，否则不用回调
     if (!TextUtils.isEmpty(baseH5Obj.callbackId) && baseH5Obj.callbackId != emptyCallbackId) {
       this.putCallBack(baseH5Obj.callbackId, object : AbsJsBridge.IJsCallNativeCallback {
-        override fun onResponse(args: Any?, callbackId: String) {
+        override fun onResponse(args: Any?, callbackId: String?) {
           javaScriptNativeBridge.handleJsCallback(args, callbackId)
           if (PackageTypeConfig.isDebugEnv()) {
             javaScriptNativeBridge.callJavascript(IBaseJsCallApp.logMsg, args, null)
