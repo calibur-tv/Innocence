@@ -169,8 +169,7 @@ abstract class AbsJsBridge(context: Context, handler: Handler,
    * 通过callbackId异步执行js的回调
    */
   fun executeJsCallbackByCallbackId(args: Any?, callbackId: String?) {
-    val callback = jsCallNativeFunsRegister.getCallback(callbackId)
-    callback?.onResponse(args, callbackId)
+    jsCallNativeFunsRegister.getCallback(callbackId)?.onResponse(args, callbackId)
   }
 
   interface IJsCallNativeCallback {
