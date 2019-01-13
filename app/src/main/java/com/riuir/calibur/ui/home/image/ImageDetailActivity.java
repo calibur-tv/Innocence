@@ -198,14 +198,14 @@ public class ImageDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     @Nullable
     @Override
-    public String getDeviceInfo() {
+    public Object getDeviceInfo() {
         return PhoneSystemUtils.getDeviceInfo();
     }
 
     @Nullable
     @Override
-    public String getUserInfo() {
-        return JSONUtil.toJson(Constants.userInfoData);
+    public Object getUserInfo() {
+        return Constants.userInfoData;
     }
 
     @Override

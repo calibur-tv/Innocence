@@ -30,116 +30,112 @@ import java.util.ArrayList
  */
 class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallNativeFunsRegister(handler, absJsBridge) {
 
-  override fun jsCallNative(funs: JsBridgeContract?, jsonString: String?): String? {
-    val bridgeMessage = JSONUtil.fromJson(jsonString, H5RespModel::class.java)
-    bridgeMessage?.let {
-      val func = bridgeMessage.func
-      val jsFun = funs as IH5JsCallApp
-      when (func) {
-        IBaseJsCallApp.getUserInfo -> {
-          handler.post {
-            javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.getUserInfo(), bridgeMessage.callbackId)
-          }
-        }
-        IBaseJsCallApp.getDeviceInfo -> {
-          handler.post {
-            javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.getDeviceInfo(), bridgeMessage.callbackId)
-          }
-        }
-        IH5JsCallApp.setUserInfo -> {
-          handler.post {
-            jsSetUserInfo(bridgeMessage.params)
-          }
-        }
-        IH5JsCallApp.toNativePage -> {
-          handler.post {
-            jsCallNativeBusiness(bridgeMessage.params)
-          }
-        }
-        IH5JsCallApp.previewImages -> { //跳转到大图浏览
-          handler.post {
-            val images: MutableList<String>? = it.imagesInfo.let {
-              val imageList: MutableList<String> = mutableListOf()
-              it.images?.forEach {
-                imageList.add(it.url)
-              }
-              imageList
+    override fun jsCallNative(funs: JsBridgeContract?, jsonString: String?): String? {
+        LogUtils.d("callbackErrorLog","jsonString = $jsonString")
+        val bridgeMessage = JSONUtil.fromJson(jsonString, H5RespModel::class.java)
+        val func = bridgeMessage.func
+        val jsFun = funs as IH5JsCallApp
+        when (func) {
+            IBaseJsCallApp.getUserInfo -> {
+                handler.post {
+                    javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.getUserInfo(), bridgeMessage.callbackId)
+                }
             }
-            val clickUrl = images?.get(bridgeMessage.imagesInfo.index)
-            images?.let {
-              PreviewImageUtils.startPreviewImage(javaScriptNativeBridge.mContext, images as ArrayList<String>?, clickUrl, null)
+            IBaseJsCallApp.getDeviceInfo -> {
+                handler.post {
+                    javaScriptNativeBridge.executeJsCallbackByCallbackId(jsFun.getDeviceInfo(), bridgeMessage.callbackId)
+                }
             }
-          }
+            IH5JsCallApp.setUserInfo -> {
+                handler.post {
+                    jsSetUserInfo(bridgeMessage.params)
+                }
+            }
+            IH5JsCallApp.toNativePage -> {
+                handler.post {
+                    jsCallNativeBusiness(bridgeMessage.params)
+                }
+            }
+            IH5JsCallApp.previewImages -> { //跳转到大图浏览
+                handler.post {
+                    bridgeMessage?.let {
+                        val images: MutableList<String>? = it.imagesInfo.let {
+                            val imageList: MutableList<String> = mutableListOf()
+                            it.images?.forEach {
+                                imageList.add(it.url)
+                            }
+                            imageList
+                        }
+                        val clickUrl = images?.get(bridgeMessage.imagesInfo.index)
+                        images?.let {
+                            PreviewImageUtils.startPreviewImage(javaScriptNativeBridge.mContext, images as ArrayList<String>?, clickUrl, null)
+                        }
+                    }
+                }
+            }
+            IH5JsCallApp.createMainComment -> {
+                handler.post {
+                    jsFun.createMainComment(bridgeMessage.params)
+                }
+            }
+            IH5JsCallApp.createSubComment -> {
+                handler.post {
+                    jsFun.createSubComment(bridgeMessage.params)
+                }
+            }
+            IH5JsCallApp.toggleClick -> {
+                handler.post {
+                    jsFun.toggleClick(bridgeMessage.params)
+                }
+            }
+            IH5JsCallApp.showConfirm -> {
+                handler.post {
+                    jsShowConfrim(bridgeMessage.params, bridgeMessage.callbackId)
+                }
+            }
+            IH5JsCallApp.readNotification -> {
+                handler.post {
+                    jsFun.readNotification(bridgeMessage.params)
+                }
+            }
         }
-        IH5JsCallApp.createMainComment -> {
-          handler.post {
-            jsFun.createMainComment(bridgeMessage.params)
-          }
-        }
-        IH5JsCallApp.createSubComment -> {
-          handler.post {
-            jsFun.createSubComment(bridgeMessage.params)
-          }
-        }
-        IH5JsCallApp.toggleClick -> {
-          handler.post {
-            jsFun.toggleClick(bridgeMessage.params)
-          }
-        }
-        IH5JsCallApp.showConfirm -> {
-          handler.post {
-            jsShowConfirm(bridgeMessage.params, bridgeMessage.callbackId)
-          }
-        }
-        IH5JsCallApp.readNotification -> {
-          handler.post {
-            jsFun.readNotification(bridgeMessage.params)
-          }
-        }
-        else -> {
-        }
-      }
+        return ""
     }
 
-    return ""
-  }
-
-  /**
-   * H5 调用ative的业务
-   * 页面跳转
-   */
-  private fun jsCallNativeBusiness(biz: Any?) {
-    biz?.let {
-      val bizName: H5CallAppBusinessModel = biz as H5CallAppBusinessModel
-      RouteUtils.toPage(bizName.uri)
+    /**
+     * H5 调用ative的业务
+     * 页面跳转
+     */
+    private fun jsCallNativeBusiness(biz: Any?) {
+        val bizName: H5CallAppBusinessModel = biz as H5CallAppBusinessModel
+        RouteUtils.toPage(bizName.uri)
     }
-  }
 
-  private fun jsSetUserInfo(biz: Any?) {
-    biz?.let {
-      val bizData: MineUserInfo = biz as MineUserInfo
-      Constants.userInfoData = bizData
-      val intent = Intent(MineFragment.COINCHANGE)
-      javaScriptNativeBridge.mContext?.sendBroadcast(intent)
+    private fun jsSetUserInfo(biz: Any?) {
+        LogUtils.d("callbackErrorLog","jsonString = $biz")
+        val bizData: MineUserInfo = biz as MineUserInfo
+        Constants.userInfoData = bizData
+        val intent = Intent(MineFragment.COINCHANGE)
+        javaScriptNativeBridge.mContext?.sendBroadcast(intent)
     }
-  }
 
-  private fun jsShowConfirm(params: Any?, callBackId: String?) {
-    if (params != null && params is H5ShowConfirmModel) {
-      DialogHelper.getConfirmDialog(javaScriptNativeBridge.mContext,
-          params.title,
-          params.message,
-          params.submitButtonText,
-          params.cancelButtonText,
-          false, { _, _ ->
-        val result = H5ShowConfirmResultModel()
-        result.isResult = true
-        javaScriptNativeBridge.executeJsCallbackByCallbackId(result, callBackId)
-      }, { _, _ ->
-        val result = H5ShowConfirmResultModel()
-        result.isResult = false
-        javaScriptNativeBridge.executeJsCallbackByCallbackId(result, callBackId)
-      }).show()
+    private fun jsShowConfrim(params: Any?,callBackId:String) {
+
+        if (params is H5ShowConfirmModel) {
+            DialogHelper.getConfirmDialog(javaScriptNativeBridge.mContext,
+                    (params as H5ShowConfirmModel).title,
+                    (params as H5ShowConfirmModel).message,
+                    (params as H5ShowConfirmModel).submitButtonText,
+                    (params as H5ShowConfirmModel).cancelButtonText,
+                    false, { _, _ ->
+                val result = H5ShowConfirmResultModel()
+                result.isResult = true
+                javaScriptNativeBridge.executeJsCallbackByCallbackId(result, callBackId)
+            }, { _, _ ->
+                val result = H5ShowConfirmResultModel()
+                result.isResult = false
+                javaScriptNativeBridge.executeJsCallbackByCallbackId(result, callBackId)
+            }).show()
+        }
     }
-  }
 }
