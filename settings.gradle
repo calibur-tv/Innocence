@@ -1,6 +1,7 @@
 include ':app'
 include ':core'
 include ':foundation'
+include ':login'
 
 
 
