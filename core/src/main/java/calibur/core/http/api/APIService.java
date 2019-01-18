@@ -190,6 +190,9 @@ public interface APIService {
     @GET("score/{id}/show")
     Observable<Response<ResponseBean<Object>>> getScoreDetailData(@Path("id")int id);
 
+    @GET("score/{id}/edit")
+    Observable<Response<ResponseBean<Object>>> getScoreEditData(@Path("id")int id);
+
     //消息列表页跳转评论
     @GET("comment/main/item")
     Observable<Response<ResponseBean<TrendingShowInfoCommentItem>>> getCallMainItemComment(@Query("comment_id")int comment_id, @Query("reply_id")int reply_id, @Query("type")String type);

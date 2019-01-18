@@ -108,19 +108,6 @@ public class UserBulletinActivity extends BaseActivity implements IH5JsCallApp {
 
     }
 
-
-    @Nullable
-    @Override
-    public Object getDeviceInfo() {
-        return PhoneSystemUtils.getDeviceInfo();
-    }
-
-    @Nullable
-    @Override
-    public Object getUserInfo() {
-        return Constants.userInfoData;
-    }
-
     @Override
     public void readNotification(@Nullable Object params) {
     }

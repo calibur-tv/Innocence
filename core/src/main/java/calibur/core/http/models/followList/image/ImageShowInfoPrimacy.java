@@ -3,6 +3,8 @@ package calibur.core.http.models.followList.image;
 import java.io.Serializable;
 import java.util.List;
 
+import calibur.core.http.models.share.ShareDataModel;
+
 public class ImageShowInfoPrimacy implements Serializable {
     private int id;
     private int user_id;
@@ -12,6 +14,7 @@ public class ImageShowInfoPrimacy implements Serializable {
     private List<ImageShowInfoPrimacyParts> parts;
     private List<ImageShowInfoPrimacyImages> images;
     private int image_count;
+    private ShareDataModel share_data;
     private ImageShowInfoPrimacyUser user;
     private ImageShowInfoPrimacyBangumi bangumi;
     private ImageShowInfoPrimacySource source;
@@ -63,7 +66,7 @@ public class ImageShowInfoPrimacy implements Serializable {
         return part;
     }
 
-    public void setPart(int part) {
+    public void setPart(float part) {
         this.part = part;
     }
 
@@ -89,6 +92,14 @@ public class ImageShowInfoPrimacy implements Serializable {
 
     public void setImage_count(int image_count) {
         this.image_count = image_count;
+    }
+
+    public ShareDataModel getShare_data() {
+        return share_data;
+    }
+
+    public void setShare_data(ShareDataModel share_data) {
+        this.share_data = share_data;
     }
 
     public ImageShowInfoPrimacyUser getUser() {
@@ -215,6 +226,7 @@ public class ImageShowInfoPrimacy implements Serializable {
                 ", parts=" + parts +
                 ", images=" + images +
                 ", image_count=" + image_count +
+                ", share_data="+share_data+
                 ", user=" + user +
                 ", bangumi=" + bangumi +
                 ", source=" + source +

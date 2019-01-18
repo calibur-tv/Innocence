@@ -542,7 +542,8 @@ public class ImageShowInfoActivity extends BaseActivity {
 
     private void setHeaderMore() {
         headerMore.setReportModelTag(AppHeaderPopupWindows.IMAGE,primacyData.getId());
-        headerMore.setShareLayout(primacyData.getName(),AppHeaderPopupWindows.IMAGE,primacyData.getId(),"");
+//        headerMore.setShareLayout(primacyData.getName(),AppHeaderPopupWindows.IMAGE,primacyData.getId(),"");
+        headerMore.setShareLayout(ImageShowInfoActivity.this,primacyData.getShare_data(),AppHeaderPopupWindows.IMAGE);
         headerMore.setDeleteLayout(AppHeaderPopupWindows.IMAGE,primacyData.getId(),
                 primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
         headerMore.initOnlySeeMaster(AppHeaderPopupWindows.IMAGE);

@@ -40,14 +40,6 @@
                 android:layout_marginTop="20dp"
                 app:layout_collapseMode="pin"
                 />
-            <com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows
-                android:id="@+id/drama_activity_more"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="right"
-                android:layout_marginTop="30dp"
-                android:visibility="gone">
-            </com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows>
             <ImageView
                 android:id="@+id/drama_activity_sliding_more"
                 android:layout_width="40dp"

@@ -576,7 +576,8 @@ public class CardShowInfoActivity extends BaseActivity {
 
     private void setHeaderMore() {
         headerCardMore.setReportModelTag(AppHeaderPopupWindows.POST,primacyData.getPost().getId());
-        headerCardMore.setShareLayout(primacyData.getPost().getTitle(),AppHeaderPopupWindows.POST,primacyData.getPost().getId(),"");
+//        headerCardMore.setShareLayout(primacyData.getPost().getTitle(),AppHeaderPopupWindows.POST,primacyData.getPost().getId(),"");
+        headerCardMore.setShareLayout(CardShowInfoActivity.this,primacyData.getShare_data(),AppHeaderPopupWindows.POST);
         headerCardMore.setDeleteLayout(AppHeaderPopupWindows.POST,primacyData.getPost().getId(),
                 primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
         headerCardMore.initOnlySeeMaster(AppHeaderPopupWindows.POST);

@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home.score;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -26,8 +27,11 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.PhoneSystemUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
+import com.riuir.calibur.ui.home.role.RolesShowInfoActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
+import com.riuir.calibur.ui.share.SharePopupActivity;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
@@ -48,7 +52,7 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
     @BindView(R.id.score_detail_back_btn)
     ImageView backBtn;
     @BindView(R.id.score_detail_header_more)
-    AppHeaderPopupWindows headerMore;
+    ImageView headerMore;
 
     @BindView(R.id.comment_view)
     ReplyAndCommentView commentView;
@@ -180,29 +184,19 @@ public class ScoreDetailActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     private void setHeaderMore() {
-        headerMore.setReportModelTag(AppHeaderPopupWindows.SCORE,primacyData.getId());
-        headerMore.setShareLayout(primacyData.getTitle(),AppHeaderPopupWindows.SCORE,primacyData.getId(),"");
-        headerMore.setDeleteLayout(AppHeaderPopupWindows.SCORE,primacyData.getId(),
-                primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
-        headerMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+        headerMore.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void deleteFinish() {
-                finish();
+            public void onClick(View view) {
+                Intent intent = new Intent(ScoreDetailActivity.this,SharePopupActivity.class);
+                intent.putExtra("share_data",primacyData.getShare_data());
+                intent.putExtra("targetTag",SharePopupActivity.SCORE);
+                intent.putExtra("targetId",primacyData.getId());
+                intent.putExtra("targetUserId",primacyData.getUser().getId());
+                startActivityForResult(intent,SharePopupActivity.SHARE_POPUP_REQUEST_CODE);
             }
         });
     }
 
-    @Nullable
-    @Override
-    public Object getDeviceInfo() {
-        return PhoneSystemUtils.getDeviceInfo();
-    }
-
-    @Nullable
-    @Override
-    public Object getUserInfo() {
-        return Constants.userInfoData;
-    }
 
     @Override
     public void createMainComment(@Nullable Object params) {

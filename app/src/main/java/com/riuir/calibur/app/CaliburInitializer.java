@@ -19,7 +19,10 @@ import com.riuir.calibur.BuildConfig;
 import com.riuir.calibur.utils.album.MyAlbumLoader;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.tencent.smtt.sdk.QbSdk;
+import com.tencent.tauth.Tencent;
 import com.yanzhenjie.album.Album;
 import com.yanzhenjie.album.AlbumConfig;
 import java.io.BufferedReader;
@@ -39,6 +42,12 @@ public class CaliburInitializer {
   private static final String MAIN_PROCESS_NAME = BuildConfig.APPLICATION_ID;
   private App mApp;
 
+  private static Tencent mTencent;
+  private static final String QQ_APP_ID = "1107909078";
+  private static final String WX_APP_ID = "wx88888888";
+
+  private static IWXAPI iwxApi;
+
   public CaliburInitializer(App app) {
     this.mApp = app;
   }
@@ -57,7 +66,9 @@ public class CaliburInitializer {
     initBugly();
     initAlbum();
     initARoute();
+    initQQShare();
   }
+
 
 
   private void mainProcessInit() {
@@ -161,6 +172,11 @@ public class CaliburInitializer {
     ARouter.init(App.instance());
   }
 
+
+  private void initQQShare() {
+    mTencent = Tencent.createInstance(QQ_APP_ID, App.instance());
+  }
+
   /**
    * 获取进程号对应的进程名
    *
@@ -189,4 +205,12 @@ public class CaliburInitializer {
     }
     return null;
   }
+
+  public static Tencent getmTencent() {
+    if (mTencent == null){
+      mTencent = Tencent.createInstance(QQ_APP_ID, App.instance());
+    }
+    return mTencent;
+  }
+
 }

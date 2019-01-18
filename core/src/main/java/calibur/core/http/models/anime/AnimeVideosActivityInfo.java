@@ -3,6 +3,7 @@ package calibur.core.http.models.anime;
 import java.util.Arrays;
 
 import calibur.core.http.models.followList.post.CardShowInfoPrimacy;
+import calibur.core.http.models.share.ShareDataModel;
 
 public class AnimeVideosActivityInfo {
     private AnimeVideosActivityInfoInfo info;
@@ -12,6 +13,7 @@ public class AnimeVideosActivityInfo {
     private boolean ip_blocked;
     private boolean must_reward;
     private int need_min_level;
+    private ShareDataModel share_data;
 
     public AnimeVideosActivityInfoInfo getInfo() {
         return info;
@@ -69,6 +71,14 @@ public class AnimeVideosActivityInfo {
         this.need_min_level = need_min_level;
     }
 
+    public ShareDataModel getShare_data() {
+        return share_data;
+    }
+
+    public void setShare_data(ShareDataModel share_data) {
+        this.share_data = share_data;
+    }
+
     @Override
     public String toString() {
         return "AnimeVideosActivityInfoData{" +
@@ -79,6 +89,7 @@ public class AnimeVideosActivityInfo {
                 ", ip_blocked=" + ip_blocked +
                 ", must_reward=" + must_reward +
                 ", need_min_level=" + need_min_level +
+                ", share_data=" + share_data +
                 '}';
     }
 

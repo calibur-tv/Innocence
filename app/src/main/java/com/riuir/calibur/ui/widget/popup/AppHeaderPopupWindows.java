@@ -29,6 +29,8 @@ import com.riuir.calibur.data.Event;
 import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterConfigActivity;
 import com.riuir.calibur.ui.home.MineFragment;
+import com.riuir.calibur.ui.share.QQShareUtils;
+import com.riuir.calibur.ui.share.SharePopupActivity;
 import com.riuir.calibur.ui.web.WebViewActivity;
 import com.riuir.calibur.utils.Constants;
 
@@ -39,6 +41,7 @@ import calibur.core.http.api.APIService;
 import calibur.core.http.models.anime.AnimeShowInfo;
 import calibur.core.http.models.base.ResponseBean;
 import calibur.core.http.models.delete.DeleteInfo;
+import calibur.core.http.models.share.ShareDataModel;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
@@ -236,6 +239,7 @@ public class AppHeaderPopupWindows extends RelativeLayout {
     }
 
     //设置分享和复制链接
+    //暂时作废
     public void setShareLayout(String title,String modelTag,int id,String zone){
         shareLayout.setVisibility(VISIBLE);
         if (modelTag.equals(POST)||modelTag.equals(IMAGE)||modelTag.equals(SCORE)){
@@ -291,7 +295,39 @@ public class AppHeaderPopupWindows extends RelativeLayout {
                 popupWindow.dismiss();
             }
         });
+    }
 
+    //设置分享和复制链接
+    public void setShareLayout(Activity activity,ShareDataModel shareData,String modelTag){
+        shareLayout.setVisibility(VISIBLE);
+        shareBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(activity,SharePopupActivity.class);
+                intent.putExtra("share_data",shareData);
+                activity.startActivity(intent);
+                popupWindow.dismiss();
+            }
+        });
+
+        //复制链接迁移到SharePopupActivity中
+//        if (modelTag.equals(POST)||modelTag.equals(IMAGE)||modelTag.equals(SCORE)){
+//            urlLayout.setVisibility(VISIBLE);
+//        }
+//        String url = shareData.getLink();
+//        // 获取系统剪贴板
+//        final ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+//        final ClipData clipUrl = ClipData.newPlainText("calibur", url);
+//        //设置复制链接
+//        urlBtn.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // 把数据集设置（复制）到剪贴板
+//                clipboard.setPrimaryClip(clipUrl);
+//                ToastUtils.showLong(context,"内容链接已复制到粘贴板");
+//                popupWindow.dismiss();
+//            }
+//        });
     }
 
     public void setOnlySeeMasterClick(OnClickListener onClickListener){

@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginRight="45dp"
-            android:visibility="invisible"
+            android:visibility="visible"
             >
             <ImageView
                 android:id="@+id/main_add_popup_window_add_score"

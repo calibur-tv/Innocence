@@ -21,6 +21,7 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.ui.home.card.CardCreateNewActivity;
 import com.riuir.calibur.ui.home.image.CreateNewImageActivity;
+import com.riuir.calibur.ui.home.score.CreateNewScoreActivity;
 
 import calibur.core.manager.UserSystem;
 
@@ -319,8 +320,13 @@ public class MainBottomBar extends RelativeLayout implements View.OnClickListene
         addScore.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                ToastUtils.showShort(context,"开发中，敬请期待3");
-                addPopupWindow.dismiss();
+                if (UserSystem.getInstance().isLogin()){
+                    addPopupWindow.dismiss();
+                    Intent intent = new Intent(context, CreateNewScoreActivity.class);
+                    context.startActivity(intent);
+                }else {
+                    ToastUtils.showShort(context,"登录状态才能写漫评哦");
+                }
             }
         });
         closePopup.setOnClickListener(new OnClickListener() {

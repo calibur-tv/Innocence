@@ -3,11 +3,13 @@ package calibur.core.http.models.followList.post;
 import java.util.List;
 
 import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.models.share.ShareDataModel;
 
 public class CardShowInfoPrimacy {
     private CardShowInfoPrimacyBangumi bangumi;
     private CardShowInfoPrimacyPost post;
     private CardShowInfoPrimacyUser user;
+    private ShareDataModel share_data;
 
     public CardShowInfoPrimacyBangumi getBangumi() {
         return bangumi;
@@ -33,12 +35,21 @@ public class CardShowInfoPrimacy {
         this.user = user;
     }
 
+    public ShareDataModel getShare_data() {
+        return share_data;
+    }
+
+    public void setShare_data(ShareDataModel share_data) {
+        this.share_data = share_data;
+    }
+
     @Override
     public String toString() {
         return "CardShowInfoPrimacyData{" +
                 "bangumi=" + bangumi +
                 ", post=" + post +
                 ", user=" + user +
+                ", share_data="+share_data+
                 '}';
     }
 

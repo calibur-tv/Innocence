@@ -1,6 +1,8 @@
 package com.riuir.calibur.ui.splash;
 
 import android.os.Message;
+import android.util.Log;
+
 import calibur.core.http.models.user.MineUserInfo;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.UserSystem;

@@ -299,7 +299,8 @@ public class RolesShowInfoActivity extends BaseActivity {
         headerMineHasStar = headerLayout.findViewById(R.id.role_show_info_header_role_mine_has_star);
 
         headerMore.setReportModelTag(AppHeaderPopupWindows.ROLE,primacyData.getData().getId());
-        headerMore.setShareLayout(primacyData.getData().getName(),AppHeaderPopupWindows.ROLE,primacyData.getData().getId(),"");
+//        headerMore.setShareLayout(primacyData.getData().getName(),AppHeaderPopupWindows.ROLE,primacyData.getData().getId(),"");
+        headerMore.setShareLayout(RolesShowInfoActivity.this,primacyData.getShare_data(),AppHeaderPopupWindows.ROLE);
 
         bangumi = headerLayout.findViewById(R.id.role_show_info_header_bangmui);
         bangumi.setName(primacyData.getBangumi().getName());

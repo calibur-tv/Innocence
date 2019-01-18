@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home.card;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -26,8 +27,10 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.PhoneSystemUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.report.ReportActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
+import com.riuir.calibur.ui.share.SharePopupActivity;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
@@ -51,7 +54,7 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     @BindView(R.id.comment_view)
     ReplyAndCommentView commentView;
     @BindView(R.id.post_detail_header_more)
-    AppHeaderPopupWindows headerCardMore;
+    ImageView headerCardMore;
     @BindView(R.id.post_detail_activity_loading_view)
     ImageView webPageLoadingView;
 
@@ -143,14 +146,26 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     private void setHeaderMore() {
-        headerCardMore.setReportModelTag(AppHeaderPopupWindows.POST,primacyData.getPost().getId());
-        headerCardMore.setShareLayout(primacyData.getPost().getTitle(),AppHeaderPopupWindows.POST,primacyData.getPost().getId(),"");
-        headerCardMore.setDeleteLayout(AppHeaderPopupWindows.POST,primacyData.getPost().getId(),
-                primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
-        headerCardMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+//        headerCardMore.setReportModelTag(AppHeaderPopupWindows.POST,primacyData.getPost().getId());
+////        headerCardMore.setShareLayout(primacyData.getPost().getTitle(),AppHeaderPopupWindows.POST,primacyData.getPost().getId(),"");
+//        headerCardMore.setShareLayout(PostDetailActivity.this,primacyData.getShare_data(),AppHeaderPopupWindows.POST);
+//        headerCardMore.setDeleteLayout(AppHeaderPopupWindows.POST,primacyData.getPost().getId(),
+//                primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
+//        headerCardMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+//            @Override
+//            public void deleteFinish() {
+//                finish();
+//            }
+//        });
+        headerCardMore.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void deleteFinish() {
-                finish();
+            public void onClick(View view) {
+                Intent intent = new Intent(PostDetailActivity.this,SharePopupActivity.class);
+                intent.putExtra("share_data",primacyData.getShare_data());
+                intent.putExtra("targetTag",SharePopupActivity.POST);
+                intent.putExtra("targetId",primacyData.getPost().getId());
+                intent.putExtra("targetUserId",primacyData.getUser().getId());
+                startActivityForResult(intent,SharePopupActivity.SHARE_POPUP_REQUEST_CODE);
             }
         });
     }
@@ -201,15 +216,15 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @android.support.annotation.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SharePopupActivity.SHARE_POPUP_REQUEST_CODE&&resultCode == SharePopupActivity.SHARE_POPUP_DELETE_RESULT_CODE){
+            finish();
+        }
+    }
+
+    @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
-    }
-
-    @Override public Object getDeviceInfo() {
-        return PhoneSystemUtils.getDeviceInfo();
-    }
-
-    @Override public Object getUserInfo() {
-        return Constants.userInfoData;
     }
 
     @Override

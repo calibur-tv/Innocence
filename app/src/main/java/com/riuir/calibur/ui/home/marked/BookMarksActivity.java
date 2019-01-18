@@ -102,16 +102,6 @@ public class BookMarksActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     @Override
-    public Object getDeviceInfo() {
-        return PhoneSystemUtils.getDeviceInfo();
-    }
-
-    @Override
-    public Object getUserInfo() {
-        return Constants.userInfoData;
-    }
-
-    @Override
     public void createMainComment(@Nullable Object params) {
     }
 

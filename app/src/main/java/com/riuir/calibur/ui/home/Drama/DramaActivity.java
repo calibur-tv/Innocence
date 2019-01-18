@@ -32,6 +32,7 @@ import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterAnimeSettingActivity;
 import com.riuir.calibur.ui.home.Drama.dramaInfo.DramaInfoActivity;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
@@ -67,8 +68,6 @@ public class DramaActivity extends BaseActivity {
     TextView animeFollowCount;
     @BindView(R.id.drama_activity_anime_power_count)
     TextView animePowerCount;
-    @BindView(R.id.drama_activity_more)
-    AppHeaderPopupWindows moreBtn;
 
     @BindView(R.id.drama_activity_anime_follow_btn)
     LinearLayout animeFollowBtn;
@@ -212,11 +211,6 @@ public class DramaActivity extends BaseActivity {
             animeFollowBtnIcon.setImageResource(R.mipmap.card_show_header_star_normal);
             animeFollowBtnText.setText("关注");
         }
-
-        moreBtn.setReportModelTag(AppHeaderPopupWindows.BANGUMI,animeID);
-        moreBtn.setShareLayout(animeShowInfoData.getName(),AppHeaderPopupWindows.BANGUMI,animeID,"");
-
-        moreBtn.setMasterLayout(animeShowInfoData.isIs_master(),5,animeID,animeShowInfoData);
 
         setViewPager();
     }

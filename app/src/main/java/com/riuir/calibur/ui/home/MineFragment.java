@@ -235,8 +235,12 @@ public class MineFragment extends BaseFragment {
                         public void onFailure(int code, String errorMsg) {
                             super.onFailure(code, errorMsg);
                             if (daySignBtn!=null){
-                                daySignBtn.setText("签到");
-                                daySignBtn.setClickable(true);
+                                if (errorMsg.contains("已签到")){
+                                    daySignBtn.setText("已签到");
+                                }else {
+                                    daySignBtn.setText("签到");
+                                    daySignBtn.setClickable(true);
+                                }
                             }
                         }
                     });

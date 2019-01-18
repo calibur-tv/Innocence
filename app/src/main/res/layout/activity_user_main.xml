@@ -34,13 +34,15 @@
                     android:layout_height="match_parent"
                     android:background="@color/color_48000000"
                     />
-                <com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows
+                <ImageView
                     android:id="@+id/user_main_info_more"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_alignParentRight="true"
-                    android:layout_marginTop="30dp"
-                    ></com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows>
+                    android:layout_marginTop="20dp"
+                    android:padding="@dimen/spacing_12dp"
+                    android:src="@mipmap/app_btn_more_white"
+                    />
                 <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/user_main_activity_user_icon"
                     android:layout_width="70dp"
