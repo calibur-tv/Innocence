@@ -3,9 +3,6 @@ package calibur.share.util;
 import android.app.Activity;
 import android.os.Bundle;
 
-import calibur.foundation.utils.AppUtil;
-import calibur.login.qq.QQOAuth20Activity;
-
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
 import com.tencent.tauth.Tencent;
@@ -23,22 +20,18 @@ public class QQShareUtils {
      * 否则接收不到回调QQBaseUiListener
      */
     public static void toShareQQ(Activity activity, ShareDataModel shareData){
-        if (AppUtil.isPkgInstalled(AppUtil.QQ_PACKAGE_NAME)) {
-            try {
-                Tencent qqShare = Tencent.createInstance(QQ_APP_ID, activity);
-                Bundle params = new Bundle();
-                params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);//分享的类型
-                params.putString(QQShare.SHARE_TO_QQ_TITLE, shareData.getTitle());//分享标题
-                params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareData.getDesc());//要分享的内容摘要
-                params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareData.getLink());//内容地址
-                params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, shareData.getImage());//分享的图片URL
-                params.putString(QQShare.SHARE_TO_QQ_APP_NAME, "calibur");//应用名称
-                qqShare.shareToQQ(activity, params, new QQBaseUiListener());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            QQOAuth20Activity.call(activity);
+        try {
+            Tencent qqShare = Tencent.createInstance(QQ_APP_ID, activity);
+            Bundle params = new Bundle();
+            params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);//分享的类型
+            params.putString(QQShare.SHARE_TO_QQ_TITLE, shareData.getTitle());//分享标题
+            params.putString(QQShare.SHARE_TO_QQ_SUMMARY, shareData.getDesc());//要分享的内容摘要
+            params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, shareData.getLink());//内容地址
+            params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL, shareData.getImage());//分享的图片URL
+            params.putString(QQShare.SHARE_TO_QQ_APP_NAME, "calibur");//应用名称
+            qqShare.shareToQQ(activity, params, new QQBaseUiListener());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
