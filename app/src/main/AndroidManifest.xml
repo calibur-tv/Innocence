@@ -262,12 +262,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.share.SharePopupActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/replyAndComment"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".wxapi.WXEntryActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Fullscreen.Translucent"
             />
     </application>

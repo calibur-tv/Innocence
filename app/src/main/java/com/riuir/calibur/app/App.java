@@ -14,7 +14,6 @@ public class App extends Application  {
     @Override
     protected void attachBaseContext(android.content.Context base) {
         super.attachBaseContext(base);
-        MultiDex.install(this);
         FoundationContextHolder.setContext(this);
         instance = this;
     }

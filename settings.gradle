@@ -2,8 +2,7 @@ include ':app'
 include ':core'
 include ':foundation'
 include ':login'
-
-
+include ':share'
 
 
 File localProperties = new File('local.properties')
