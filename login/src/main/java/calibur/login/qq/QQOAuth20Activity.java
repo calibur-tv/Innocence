@@ -40,7 +40,7 @@ import okhttp3.ResponseBody;
  */
 public class QQOAuth20Activity extends AppCompatActivity {
 
-  public static final String QQ_API_ID = "1107909078";
+  public static final String QQ_API_ID = "101524534";
   public static final String QQ_SCOPE = "get_user_info";
   public static final String QQ_REDIRECT_URL = "http://www.jianshu.com/users/auth/qq_connect/callback";
   public static final String QQ_URL_OAUTH2_AUTHORIZATION_CODE =
