@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="calibur.login">
-
+  <application>
+    <activity android:name=".qq.QQOAuth20Activity"/>
+  </application>
 </manifest>

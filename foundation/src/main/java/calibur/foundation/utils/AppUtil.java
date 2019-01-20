@@ -13,7 +13,7 @@ import calibur.foundation.FoundationContextHolder;
  * description:
  */
 public class AppUtil {
-
+  public static final String QQ_PACKAGE_NAME = "com.tencent.mobileqq";
   private static String versionName;
   public static String getAppVersionName() {
     if (TextUtils.isEmpty(versionName)) {
@@ -28,4 +28,15 @@ public class AppUtil {
     }
     return versionName;
   }
+
+  public static boolean isPkgInstalled(String pkgName) {
+    if (TextUtils.isEmpty(pkgName)) return false;
+    try {
+      PackageManager pm = FoundationContextHolder.getContext().getPackageManager();
+      return pm.getApplicationInfo(pkgName, 0).enabled;
+    } catch (PackageManager.NameNotFoundException e) {
+      return false;
+    }
+  }
+
 }

@@ -1,7 +1,8 @@
-package calibur.login;
+package calibur.share;
 
 import android.content.Context;
 import calibur.foundation.bus.BusinessBusObject;
+import com.tencent.tauth.Tencent;
 
 /**
  * author : J.Chou
@@ -11,13 +12,16 @@ import calibur.foundation.bus.BusinessBusObject;
  * description: 登录块事件总线
  */
 public class ShareModuleBusAcceptor extends BusinessBusObject {
-
+  private static final String QQ_APP_ID = "1107909078";
+  private static final String WX_APP_ID = "wx88888888";
   public ShareModuleBusAcceptor(String host) {
     super(host);
   }
 
   @Override public Object doBusinessJob(final Context context, String bizName, Object... param) {
-
+    if (bizName.equalsIgnoreCase("shareModule/init")) {
+      Tencent.createInstance(QQ_APP_ID, context);
+    }
     return null;
   }
 

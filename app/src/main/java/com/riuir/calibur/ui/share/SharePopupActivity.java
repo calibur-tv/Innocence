@@ -12,16 +12,17 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import calibur.share.util.QQBaseUiListener;
+import calibur.share.util.QQShareUtils;
+import calibur.share.util.WXShareUtils;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
-import com.riuir.calibur.app.CaliburInitializer;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.report.ReportActivity;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.DialogHelper;
-import com.tencent.tauth.Tencent;
 
 import butterknife.BindView;
 import calibur.core.http.models.base.ResponseBean;
@@ -29,6 +30,7 @@ import calibur.core.http.models.delete.DeleteInfo;
 import calibur.core.http.models.share.ShareDataModel;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
+import com.tencent.tauth.Tencent;
 import io.reactivex.Observable;
 import retrofit2.Response;
 
@@ -89,7 +91,6 @@ public class SharePopupActivity extends BaseActivity {
     private int targetId;
     private int targetUserId;
 
-    Tencent mTencent;
     WXShareUtils wxShareUtils;
 
     AlertDialog deleteDialog;
@@ -103,7 +104,6 @@ public class SharePopupActivity extends BaseActivity {
 
     @Override
     protected void onInit() {
-        mTencent = CaliburInitializer.getmTencent();
         wxShareUtils = new WXShareUtils(this);
         wxShareUtils.register();
         Intent intent = getIntent();

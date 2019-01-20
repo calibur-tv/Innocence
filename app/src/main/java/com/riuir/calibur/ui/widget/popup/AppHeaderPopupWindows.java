@@ -20,21 +20,15 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
 
-import com.riuir.calibur.data.Event;
 import com.riuir.calibur.net.ApiPost;
-import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterConfigActivity;
 import com.riuir.calibur.ui.home.MineFragment;
-import com.riuir.calibur.ui.share.QQShareUtils;
 import com.riuir.calibur.ui.share.SharePopupActivity;
 import com.riuir.calibur.ui.web.WebViewActivity;
 import com.riuir.calibur.utils.Constants;
-
-import java.io.IOException;
 
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
@@ -46,8 +40,6 @@ import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.UserSystem;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import io.reactivex.Observable;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AppHeaderPopupWindows extends RelativeLayout {

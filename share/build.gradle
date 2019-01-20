@@ -13,6 +13,10 @@ android{
 
 dependencies {
 
-  implementation fileTree(dir: 'libs', include: ['*.jar'])
+  api fileTree(dir: 'libs', include: ['*.jar'])
+  implementation project(':login')
   implementation project(':core')
+  implementation project(':commonui')
+  //QQ WX SDK
+  api 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
 }

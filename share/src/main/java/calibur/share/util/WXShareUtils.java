@@ -1,4 +1,4 @@
-package com.riuir.calibur.ui.share;
+package calibur.share.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,8 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 
-import com.riuir.calibur.R;
-import com.riuir.calibur.app.App;
+import calibur.foundation.FoundationContextHolder;
+import calibur.share.R;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
@@ -121,7 +121,7 @@ public class WXShareUtils {
                 thumbBmp = Bitmap.createScaledBitmap(thumb,120,120,true);
             } catch (IOException e) {
                 e.printStackTrace();
-                thumbBmp = BitmapFactory.decodeResource(App.instance().getResources(), R.mipmap.calibur_launcher);
+                thumbBmp = BitmapFactory.decodeResource(FoundationContextHolder.getContext().getResources(), R.drawable.calibur_launcher);
             }
             msg.thumbData =bmpToByteArray(thumbBmp,false);
 
