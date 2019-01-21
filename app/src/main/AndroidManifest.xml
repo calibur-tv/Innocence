@@ -212,7 +212,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.widget.replyAndComment.ReplyAndCommentActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/replyAndComment"
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity

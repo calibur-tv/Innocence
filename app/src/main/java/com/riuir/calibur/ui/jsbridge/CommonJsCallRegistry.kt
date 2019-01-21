@@ -37,7 +37,7 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
         val bridgeMessage = JSONUtil.fromJson(jsonString, H5RespModel::class.java)
         val func = bridgeMessage.func
         if (funs is IH5JsCallApp){
-            val jsFun = funs as IH5JsCallApp
+            val jsFun = funs
             when (func) {
                 IBaseJsCallApp.getUserInfo -> {
                     handler.post {
@@ -107,7 +107,7 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
             }
         }
         if (funs is IH5EditJsCallApp){
-            val jsEditFun = funs as IH5EditJsCallApp
+            val jsEditFun = funs
             when(func) {
                 IBaseJsCallApp.getUserInfo -> {
                     handler.post {
@@ -173,10 +173,10 @@ class CommonJsCallRegistry(handler: Handler, absJsBridge: AbsJsBridge) : JsCallN
 
         if (params is H5ShowConfirmModel) {
             DialogHelper.getConfirmDialog(javaScriptNativeBridge.mContext,
-                    (params as H5ShowConfirmModel).title,
-                    (params as H5ShowConfirmModel).message,
-                    (params as H5ShowConfirmModel).submitButtonText,
-                    (params as H5ShowConfirmModel).cancelButtonText,
+                    params.title,
+                    params.message,
+                    params.submitButtonText,
+                    params.cancelButtonText,
                     false, { _, _ ->
                 val result = H5ShowConfirmResultModel()
                 result.isResult = true
