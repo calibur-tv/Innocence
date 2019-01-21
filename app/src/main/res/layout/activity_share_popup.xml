@@ -150,6 +150,52 @@
             android:layout_marginRight="@dimen/spacing_15dp"
             android:layout_marginBottom="@dimen/spacing_25dp">
             <RelativeLayout
+                android:id="@+id/share_popup_nice_btn"
+                android:layout_width="@dimen/spacing_50dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/spacing_25dp"
+                android:background="@drawable/app_bg_item_white_gray"
+                android:visibility="gone">
+                <ImageView
+                    android:id="@+id/share_popup_nice_icon"
+                    android:layout_width="@dimen/album_dp_50"
+                    android:layout_height="@dimen/album_dp_50"
+                    android:src="@mipmap/share_icon_star"/>
+                <TextView
+                    android:id="@+id/share_popup_nice_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:textSize="11sp"
+                    android:gravity="center"
+                    android:textColor="@color/color_text_gray"
+                    android:text="加精"
+                    />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/share_popup_top_btn"
+                android:layout_width="@dimen/spacing_50dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/spacing_25dp"
+                android:background="@drawable/app_bg_item_white_gray"
+                android:visibility="gone">
+                <ImageView
+                    android:id="@+id/share_popup_top_icon"
+                    android:layout_width="@dimen/album_dp_50"
+                    android:layout_height="@dimen/album_dp_50"
+                    android:src="@mipmap/share_icon_up"/>
+                <TextView
+                    android:id="@+id/share_popup_top_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:textSize="11sp"
+                    android:gravity="center"
+                    android:textColor="@color/color_text_gray"
+                    android:text="置顶"
+                    />
+            </RelativeLayout>
+            <RelativeLayout
                 android:id="@+id/share_popup_report_btn"
                 android:layout_width="@dimen/spacing_50dp"
                 android:layout_height="match_parent"

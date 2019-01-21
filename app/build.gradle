@@ -18,8 +18,8 @@ android {
     applicationId "com.riuir.calibur"
     minSdkVersion 16
     targetSdkVersion 28
-    versionCode 7
-    versionName "1.0.1"
+    versionCode 8
+    versionName "1.1.0"
 
     packagingOptions {
       exclude 'META-INF/rxjava.properties'
@@ -34,14 +34,16 @@ android {
     }
     multiDexEnabled true
   }
-  //    signingConfigs {
-  //        debug {
-  //            keyAlias 'calibur'
-  //            keyPassword 'shiwen,rukeshizhaohuanwuzhimaster'
-  //            storeFile file('../calibur_key.jks')
-  //            storePassword 'shiwen,rukeshizhaohuanwuzhimaster'
-  //        }
-  //    }
+
+  signingConfigs {
+    config {
+      keyAlias 'calibur'
+      keyPassword 'shiwen,rukeshizhaohuanwuzhimaster'
+      storeFile file('../calibur_key.jks')
+      storePassword 'shiwen,rukeshizhaohuanwuzhimaster'
+    }
+  }
+
   buildTypes {
     release {
       debuggable false

@@ -58,7 +58,7 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     @BindView(R.id.post_detail_activity_loading_view)
     ImageView webPageLoadingView;
 
-    CardShowInfoPrimacy primacyData;
+    private CardShowInfoPrimacy primacyData;
 
 
     private static PostDetailActivity instance;
@@ -165,6 +165,7 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
                 intent.putExtra("targetTag",SharePopupActivity.POST);
                 intent.putExtra("targetId",primacyData.getPost().getId());
                 intent.putExtra("targetUserId",primacyData.getUser().getId());
+                intent.putExtra("postData",primacyData);
                 startActivityForResult(intent,SharePopupActivity.SHARE_POPUP_REQUEST_CODE);
             }
         });
@@ -218,8 +219,13 @@ public class PostDetailActivity extends BaseActivity implements IH5JsCallApp {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @android.support.annotation.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SharePopupActivity.SHARE_POPUP_REQUEST_CODE&&resultCode == SharePopupActivity.SHARE_POPUP_DELETE_RESULT_CODE){
-            finish();
+        if (requestCode == SharePopupActivity.SHARE_POPUP_REQUEST_CODE){
+            if (resultCode == SharePopupActivity.SHARE_POPUP_DELETE_RESULT_CODE) finish();
+            if (resultCode == SharePopupActivity.SHARE_POPUP_POST_SETTING_RESULT_CODE){
+                if (data!=null&&data.getSerializableExtra("postData")!=null){
+                    primacyData = (CardShowInfoPrimacy) data.getSerializableExtra("postData");
+                }
+            }
         }
     }
 

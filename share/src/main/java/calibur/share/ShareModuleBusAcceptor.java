@@ -13,7 +13,7 @@ import com.tencent.tauth.Tencent;
  */
 public class ShareModuleBusAcceptor extends BusinessBusObject {
   private static final String QQ_APP_ID = "1107909078";
-  private static final String WX_APP_ID = "wx88888888";
+  private static final String WX_APP_ID = "wx938caba780eb9fd1";
   public ShareModuleBusAcceptor(String host) {
     super(host);
   }

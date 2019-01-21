@@ -17,6 +17,7 @@ public class MineUserInfo extends Object implements Serializable {
     private boolean daySign;
     private int coin;
     private int coin_from_sign;
+    private MineUserInfoBanlance banlance;
     private boolean faker;
     private boolean is_admin;
     private int notification;
@@ -127,6 +128,14 @@ public class MineUserInfo extends Object implements Serializable {
         this.coin = coin;
     }
 
+    public MineUserInfoBanlance getBanlance() {
+        return banlance;
+    }
+
+    public void setBanlance(MineUserInfoBanlance banlance) {
+        this.banlance = banlance;
+    }
+
     public boolean isFaker() {
         return faker;
     }
@@ -192,6 +201,7 @@ public class MineUserInfo extends Object implements Serializable {
                 ", daySign=" + daySign +
                 ", coin=" + coin +
                 ", coin_from_sign=" + coin_from_sign +
+                ", banlance=" + banlance +
                 ", faker=" + faker +
                 ", is_admin=" + is_admin +
                 ", notification=" + notification +
@@ -264,6 +274,35 @@ public class MineUserInfo extends Object implements Serializable {
                     "level=" + level +
                     ", next_level_exp=" + next_level_exp +
                     ", have_exp=" + have_exp +
+                    '}';
+        }
+    }
+
+    public class MineUserInfoBanlance implements Serializable{
+        private int coin_count;
+        private int light_count;
+
+        public int getCoin_count() {
+            return coin_count;
+        }
+
+        public void setCoin_count(int coin_count) {
+            this.coin_count = coin_count;
+        }
+
+        public int getLight_count() {
+            return light_count;
+        }
+
+        public void setLight_count(int light_count) {
+            this.light_count = light_count;
+        }
+
+        @Override
+        public String toString() {
+            return "MineUserInfoBanlance{" +
+                    "coin_count=" + coin_count +
+                    ", light_count=" + light_count +
                     '}';
         }
     }

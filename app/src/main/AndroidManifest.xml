@@ -27,6 +27,11 @@
         android:theme="@style/AppTheme"
         tools:replace="android:icon"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <meta-data
             android:name="com.riuir.calibur.utils.CustomGlideModule"
             android:value="GlideModule" />
@@ -137,7 +142,6 @@
         <activity
             android:name=".ui.home.Drama.DramaVideoPlayActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".ui.home.mine.MineInfoSettingActivity"
@@ -212,7 +216,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.widget.replyAndComment.ReplyAndCommentActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/replyAndComment"
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity

@@ -221,12 +221,14 @@ public class RolesShowInfoActivity extends BaseActivity {
         headerRoleFans.setText("粉丝：共有"+fansCount
                 +"名粉丝，收获了"+starCount+"枚团子");
         headerMineHasStar.setText("我的应援次数："+hasstar);
-        LogUtils.d("testCoin","coin role 1 = "+Constants.userInfoData.getCoin());
 
-        Constants.userInfoData.setCoin(Constants.userInfoData.getCoin()-1);
+        if (Constants.userInfoData.getBanlance().getCoin_count()>0){
+            Constants.userInfoData.getBanlance().setCoin_count(Constants.userInfoData.getBanlance().getCoin_count()-1);
+        }else if (Constants.userInfoData.getBanlance().getLight_count()>0){
+            Constants.userInfoData.getBanlance().setLight_count(Constants.userInfoData.getBanlance().getLight_count()-1);
+        }
         Intent intent = new Intent(MineFragment.COINCHANGE);
         sendBroadcast(intent);
-        LogUtils.d("testCoin","coin role 2 = "+Constants.userInfoData.getCoin());
 
     }
 

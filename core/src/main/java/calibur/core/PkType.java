@@ -7,7 +7,7 @@ public class PkType {
      * 构建包类型
      * P: product D: debug B: beta
      */
-    private String mtype = "D";
+    private String mtype = "P";
     public String getType() {
         return mtype;
     }
