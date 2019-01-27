@@ -69,8 +69,7 @@
             android:maxHeight="180dp"
             android:maxLength="5000"
             android:textColorHint="@color/color_text_gray"
-            android:textSize="14sp"
-            android:transitionName="ToReplyAndCommentActivity" />
+            android:textSize="14sp" />
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
