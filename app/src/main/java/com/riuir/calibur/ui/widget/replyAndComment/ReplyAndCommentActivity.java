@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -67,8 +68,6 @@ public class ReplyAndCommentActivity extends BaseActivity {
     RelativeLayout emptyLayout;
     @BindView(R.id.reply_and_comment_activity_edit_layout)
     RelativeLayout editLayout;
-    @BindView(R.id.reply_and_comment_activity_bottom_layout)
-    LinearLayout bottomLayout;
     @BindView(R.id.reply_and_comment_activity_edit)
     EditText editText;
     @BindView(R.id.reply_and_comment_activity_button_layout)
@@ -235,31 +234,58 @@ public class ReplyAndCommentActivity extends BaseActivity {
     }
 
     private void setViewChangedListener() {
-        editText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
-            //当键盘弹出隐藏的时候会 调用此方法。
+//        editText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+//            //当键盘弹出隐藏的时候会 调用此方法。
+//            @Override
+//            public void onGlobalLayout() {
+//                Rect r = new Rect();
+//                //获取当前界面可视部分
+//                ReplyAndCommentActivity.this.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+//                //获取屏幕的高度
+//                int realScreenHeight = DeviceInfoUtil.getScreenHeight();
+//                int screenHeight =  ScreenUtils.getScreenHeight();
+//                int diff = realScreenHeight - screenHeight;
+//                LogUtils.d("JASON","realScreenHeight = " + realScreenHeight);
+//                LogUtils.d("JASON","screenHeight = " + screenHeight);
+//                //此处就是用来获取键盘的高度的， 在键盘没有弹出的时候 此高度为0 键盘弹出的时候为一个正数
+//                int heightDifference = realScreenHeight - diff - (r.bottom);
+//                LogUtils.d("JASON", "Size: " + heightDifference+",screenHeight = "+screenHeight+",bottom = "+r.bottom+",top = "+r.top);
+//                if (heightDifference!=0){
+//                    //键盘开启
+//                    bottomLayout.setTranslationY(-heightDifference);
+//                }else {
+//                    //键盘关闭 高度为0
+//                    bottomLayout.setTranslationY(0);
+//                }
+//            }
+//        });
+
+//        View decorView = this.getWindow().getDecorView();
+//        View contentView = this.findViewById(Window.ID_ANDROID_CONTENT);
+//        decorView.getViewTreeObserver().addOnGlobalLayoutListener(getGlobalLayoutListener(decorView, contentView));
+    }
+
+    private ViewTreeObserver.OnGlobalLayoutListener getGlobalLayoutListener(final View decorView, final View contentView) {
+        return new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 Rect r = new Rect();
-                //获取当前界面可视部分
-                ReplyAndCommentActivity.this.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
-                //获取屏幕的高度
-                int realScreenHeight = DeviceInfoUtil.getScreenHeight();
-                int screenHeight =  ScreenUtils.getScreenHeight();
-                int diff = realScreenHeight - screenHeight;
-                LogUtils.d("JASON","realScreenHeight = " + realScreenHeight);
-                LogUtils.d("JASON","screenHeight = " + screenHeight);
-                //此处就是用来获取键盘的高度的， 在键盘没有弹出的时候 此高度为0 键盘弹出的时候为一个正数
-                int heightDifference = realScreenHeight - diff - (r.bottom);
-                LogUtils.d("JASON", "Size: " + heightDifference+",screenHeight = "+screenHeight+",bottom = "+r.bottom+",top = "+r.top);
-                if (heightDifference!=0){
-                    //键盘开启
-                    bottomLayout.setTranslationY(-heightDifference);
-                }else {
-                    //键盘关闭 高度为0
-                    bottomLayout.setTranslationY(0);
+                decorView.getWindowVisibleDisplayFrame(r);
+
+                int height = decorView.getContext().getResources().getDisplayMetrics().heightPixels;
+                int diff = height - r.bottom;
+
+                if (diff != 0) {
+                    if (contentView.getPaddingBottom() != diff) {
+                        contentView.setPadding(0, 0, 0, diff);
+                    }
+                } else {
+                    if (contentView.getPaddingBottom() != 0) {
+                        contentView.setPadding(0, 0, 0, 0);
+                    }
                 }
             }
-        });
+        };
     }
 
     private void setListener() {
