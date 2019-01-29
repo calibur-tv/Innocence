@@ -410,9 +410,11 @@ public class DramaVideoPlayActivity extends BaseActivity {
                 if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
                     LogUtils.d("videoPlayerAct","退出全屏");
                     recyclerView.setVisibility(View.VISIBLE);
+                    showNavigation();
                 }else {
                     LogUtils.d("videoPlayerAct","进入全屏");
                     recyclerView.setVisibility(View.GONE);
+                    hideNavigation();
                 }
                 orientationUtils.resolveByClick();
             }
@@ -434,6 +436,33 @@ public class DramaVideoPlayActivity extends BaseActivity {
         GSYVideoType.enableMediaCodecTexture();
 
     }
+    private void showNavigation(){
+        //显示虚拟按键
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            //低版本sdk
+            View v = getWindow().getDecorView();
+            v.setSystemUiVisibility(View.VISIBLE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+    private void hideNavigation(){
+        //隐藏虚拟按键
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            View v = getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+
     private void  initVideoUrl(){
         Map<String,String> videoHeader = new HashMap<>();
         videoHeader.put("Referer","https://android.calibur.tv");
@@ -451,11 +480,13 @@ public class DramaVideoPlayActivity extends BaseActivity {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             recyclerView.setVisibility(View.VISIBLE);
             commentView.setVisibility(View.VISIBLE);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            showNavigation();
         }else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
             recyclerView.setVisibility(View.GONE);
             commentView.setVisibility(View.GONE);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            hideNavigation();
         }
     }
 

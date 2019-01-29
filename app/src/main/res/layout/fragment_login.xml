@@ -6,80 +6,66 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".ui.loginAndRegister.LoginFragment">
-    <LinearLayout
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:layout_marginLeft="26dp"
-        android:layout_marginRight="26dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:background="@drawable/bg_sign_register_edit"
+        android:layout_marginLeft="@dimen/spacing_35dp"
+        android:layout_marginRight="@dimen/spacing_35dp"
+        app:counterEnabled="true"
+        app:counterMaxLength="11"
         >
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_login_register_phone"
-            android:layout_gravity="center_vertical"
-            />
-        <EditText
+        <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:src="@mipmap/ic_login_register_phone"-->
+            <!--android:layout_gravity="center_vertical"-->
+            <!--android:visibility="gone"-->
+            <!--/>-->
+        <android.support.design.widget.TextInputEditText
             android:hint="账号（手机号）"
             android:maxLength="11"
             android:textSize="14sp"
             android:inputType="phone"
-            android:layout_marginLeft="5dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/login_fragment_username_edit"
-            android:background="@color/color_00FFFFFF"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="26dp"
-        android:layout_marginRight="26dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:background="@drawable/bg_sign_register_edit"
-        >
-        <ImageView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_login_register_password"
-            android:layout_gravity="center_vertical"
-            />
-        <EditText
-            android:layout_marginLeft="5dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="48dp"
+            android:id="@+id/login_fragment_username_edit" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="@dimen/spacing_35dp"
+        android:layout_marginRight="@dimen/spacing_35dp"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleDrawable="@drawable/icon_login_password"
+        >
+        <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@mipmap/ic_login_register_password"-->
+        <!--android:layout_gravity="center_vertical"-->
+        <!--android:visibility="gone"-->
+        <!--/>-->
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="密码(长度6-16位)"
             android:maxLength="16"
             android:textSize="14sp"
             android:inputType="textPassword"
             android:id="@+id/login_fragment_password_edit"
-            android:background="@color/color_00FFFFFF"/>
-        <ImageView
-            android:id="@+id/login_fragment_password_visibility"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginLeft="5dp"
-            android:src="@mipmap/ic_login_register_password_visibility"
-            android:layout_gravity="center_vertical"
             />
-    </LinearLayout>
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/login_fragment_login_btn"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginRight="26dp"
+        android:layout_height="36dp"
+        android:layout_marginRight="@dimen/spacing_35dp"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="26dp"
+        android:layout_marginLeft="@dimen/spacing_35dp"
         android:background="@drawable/bg_login_button_normal"
         android:text="登录"
         android:textSize="16sp"
@@ -95,9 +81,9 @@
             android:id="@+id/login_fragment_start_activity_forget_password_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="忘记密码"
+            android:text="忘记密码?"
             android:layout_centerInParent="true"
-            android:textColor="@color/color_FF9B9B9B"
+            android:textColor="@color/color_text_gray"
             android:textSize="12sp"
             />
     </RelativeLayout>

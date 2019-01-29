@@ -9,6 +9,8 @@ import android.os.AsyncTask;
 
 import calibur.foundation.FoundationContextHolder;
 import calibur.share.R;
+
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
@@ -26,6 +28,7 @@ import calibur.core.http.models.share.ShareDataModel;
 public class WXShareUtils {
     private IWXAPI api;
     public static String APP_ID = "wx938caba780eb9fd1";
+    public static String APP_SECRET = "96ac59c154cb81e22193e03929844a1d";
 
     private int scene = 0;
     private LoadBitmapTask loadBitmapTask;
@@ -61,6 +64,13 @@ public class WXShareUtils {
         scene = SendMessageToWX.Req.WXSceneTimeline;
         loadBitmapTask = new LoadBitmapTask();
         loadBitmapTask.execute(shareData);
+    }
+
+    public void login(){
+        SendAuth.Req req = new SendAuth.Req();
+        req.scope = "snsapi_userinfo";
+        req.state = "wechat_sdk_demo_test";
+        api.sendReq(req);
     }
 
     public static byte[] getBytesByBitmap(Bitmap bitmap) {

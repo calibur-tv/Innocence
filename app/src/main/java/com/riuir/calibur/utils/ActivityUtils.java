@@ -9,10 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
-
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.activityUtils.LoginUtils;
 
 /**
  * ************************************

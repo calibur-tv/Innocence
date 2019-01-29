@@ -15,8 +15,9 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="153dp"
-            android:scaleType="fitXY"
-            android:src="@mipmap/img_sign_bg"
+            android:scaleType="centerInside"
+            android:background="@color/theme_magic_sakura_primary"
+            android:src="@mipmap/img_login_bg"
             />
         <TextView
             android:layout_marginTop="22dp"

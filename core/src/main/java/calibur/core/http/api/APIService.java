@@ -366,4 +366,14 @@ public interface APIService {
     //获取评论详情数据
     @GET("comment/main/item")
     Observable<Response<ResponseBean<Object>>> getCommentItem(@Query("type")String type,@Query("comment_id")int comment_id,@Query("reply_id")int reply_id);
+
+    /**
+     * qq注册/登录
+     * @param access_token 获取到的qq/wechat access_token
+     * @param from 注册或绑定 sign/bind
+     */
+    @POST("door/oauth2/qq")
+    Observable<Response<ResponseBean<String>>> doorQQLogin(@Query("access_token")String access_token,@Query("from")String from);
+    @POST("door/oauth2/wechat")
+    Observable<Response<ResponseBean<String>>> doorWXLogin(@Query("access_token")String access_token,@Query("from")String from,@Query("openid")String openid);
 }

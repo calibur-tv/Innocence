@@ -55,8 +55,8 @@ public class RegisterFragment extends BaseFragment {
     EditText nicknameEdit;
     @BindView(R.id.register_fragment_invite_code_edit)
     EditText inviteCodeEdit;
-    @BindView(R.id.register_fragment_password_visibility)
-    ImageView passwordVisibilityBtn;
+//    @BindView(R.id.register_fragment_password_visibility)
+//    ImageView passwordVisibilityBtn;
 
     @BindView(R.id.register_fragment_register_btn)
     Button registerBtn;
@@ -170,20 +170,20 @@ public class RegisterFragment extends BaseFragment {
                 }
             }
         });
-        passwordVisibilityBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (passwordIsVisibility){
-                    passwordIsVisibility = false;
-                    passWordEdit.setTransformationMethod(PasswordTransformationMethod
-                            .getInstance());  //以密文显示，以.代替
-                }else {
-                    passwordIsVisibility = true;
-                    passWordEdit.setTransformationMethod(HideReturnsTransformationMethod
-                            .getInstance());  //密码以明文显示
-                }
-            }
-        });
+//        passwordVisibilityBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (passwordIsVisibility){
+//                    passwordIsVisibility = false;
+//                    passWordEdit.setTransformationMethod(PasswordTransformationMethod
+//                            .getInstance());  //以密文显示，以.代替
+//                }else {
+//                    passwordIsVisibility = true;
+//                    passWordEdit.setTransformationMethod(HideReturnsTransformationMethod
+//                            .getInstance());  //密码以明文显示
+//                }
+//            }
+//        });
 
     }
 
