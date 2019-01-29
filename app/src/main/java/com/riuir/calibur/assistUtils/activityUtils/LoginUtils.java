@@ -10,6 +10,7 @@ import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.ui.loginAndRegister.LoginAndRegisterActivity;
 import com.riuir.calibur.ui.splash.SplashActivity;
 import com.riuir.calibur.utils.Constants;
+import com.umeng.analytics.MobclickAgent;
 
 import calibur.core.http.RetrofitManager;
 import calibur.core.http.api.APIService;
@@ -52,6 +53,8 @@ public class LoginUtils {
                         Constants.userInfoData = mineUserInfo;
                         SharedPreferencesUtils.putUserInfoData(App.instance(), Constants.userInfoData);
                         BangumiAllListUtils.setBangumiAllList(context);
+                        // umeng登录操作
+                        MobclickAgent.onProfileSignIn(mineUserInfo.getId()+"");
                     }
 
                     @Override

@@ -228,3 +228,15 @@
 -keep class com.newrelic.** { *; }
 -dontwarn com.newrelic.**
 -keepattributes Exceptions, Signature, InnerClasses, LineNumberTable
+
+#umeng
+-keep class com.umeng.** {*;}
+
+-keepclassmembers class * {
+   public <init> (org.json.JSONObject);
+}
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}

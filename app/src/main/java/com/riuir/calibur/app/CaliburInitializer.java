@@ -21,6 +21,7 @@ import com.riuir.calibur.utils.album.MyAlbumLoader;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.smtt.sdk.QbSdk;
+import com.umeng.commonsdk.UMConfigure;
 import com.yanzhenjie.album.Album;
 import com.yanzhenjie.album.AlbumConfig;
 import java.io.BufferedReader;
@@ -58,6 +59,7 @@ public class CaliburInitializer {
     initBugly();
     initAlbum();
     initARoute();
+    initUmeng();
     BusinessBus.post(mApp, "shareModule/init");
   }
 
@@ -162,6 +164,13 @@ public class CaliburInitializer {
       ARouter.openLog();
     }
     ARouter.init(App.instance());
+  }
+
+  private void initUmeng(){
+    /**
+     * 注意：如果您已经在AndroidManifest.xml中配置过appkey和channel值，可以调用此版本初始化函数。
+     */
+    UMConfigure.init(mApp, 1, null);
   }
 
 

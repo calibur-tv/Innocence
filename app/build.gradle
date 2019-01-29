@@ -157,6 +157,9 @@ dependencies {
   implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
   implementation 'com.alibaba:arouter-api:1.4.1'
   annotationProcessor 'com.alibaba:arouter-compiler:1.2.2'
+  // umeng统计
+  implementation  'com.umeng.umsdk:analytics:8.0.0'
+  implementation  'com.umeng.umsdk:common:2.0.0'
 }
 
 task configPackageType {

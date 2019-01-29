@@ -40,6 +40,7 @@ import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.umeng.analytics.MobclickAgent;
 
 import org.w3c.dom.Text;
 
@@ -207,6 +208,8 @@ public class MineFragment extends BaseFragment {
                         @Override
                         public void onSuccess(String s) {
                             LoginUtils.CancelLogin(App.instance(),getActivity());
+                            // umeng登出操作
+                            MobclickAgent.onProfileSignOff();
                         }
 
                         @Override
