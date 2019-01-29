@@ -36,10 +36,10 @@ android {
   }
 
   signingConfigs {
-    config {
+    debug {
       keyAlias 'calibur'
       keyPassword 'shiwen,rukeshizhaohuanwuzhimaster'
-      storeFile file('../calibur_key.jks')
+      storeFile file('D:/android/CaliburKey/calibur_key.jks')
       storePassword 'shiwen,rukeshizhaohuanwuzhimaster'
     }
   }

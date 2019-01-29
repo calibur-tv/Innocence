@@ -46,7 +46,6 @@ public class BannerLoopView extends RelativeLayout {
     ViewPager viewPager;
     SpringIndicator indicator;
     BannerLoopAdapter adapter;
-    ApiGet apiGet;
     List<BannerLoopInfo> bannerLoopList;
     List<String> titles = new ArrayList<>();
     View view;
@@ -79,8 +78,8 @@ public class BannerLoopView extends RelativeLayout {
 
 
     }
-    public void setApiGet(ApiGet apiGet){
-        this.apiGet = apiGet;
+    public void init(){
+        handler.removeMessages(0);
         setNet();
     }
 
@@ -216,8 +215,7 @@ public class BannerLoopView extends RelativeLayout {
         });
     }
 
-    private int loopTime = 3;
-    private int timePosition = 0;
+    private int loopTime = 4;
     private void handler(Message msg){
         switch (msg.what){
             case 0:

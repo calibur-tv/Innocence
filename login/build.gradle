@@ -12,8 +12,8 @@ android{
 }
 
 dependencies {
-
-  implementation fileTree(dir: 'libs', include: ['*.jar'])
-  implementation project(':core')
-  implementation project(':commonui')
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':core')
+    implementation project(':commonui')
+    api 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
 }

@@ -75,7 +75,7 @@ public class MainPostListFragment extends BaseFragment {
     protected void onInit(@Nullable Bundle savedInstanceState) {
         isFirstLoad = true;
         setListAdapter();
-        bannerLoopView.setApiGet(apiGet);
+        bannerLoopView.init();
         mainCardHotRefreshLayout.setRefreshing(true);
         setNet();
     }
@@ -284,7 +284,7 @@ public class MainPostListFragment extends BaseFragment {
             public void onRefresh() {
                 isRefresh = true;
                 setNet();
-                bannerLoopView.setApiGet(apiGet);
+                bannerLoopView.init();
             }
         });
     }

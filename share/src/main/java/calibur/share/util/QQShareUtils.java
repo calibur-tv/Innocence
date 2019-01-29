@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzoneShare;
+import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import java.util.ArrayList;
 
@@ -60,5 +61,12 @@ public class QQShareUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void login(Activity activity, IUiListener iUiListener){
+        Tencent login = Tencent.createInstance(QQ_APP_ID, activity);
+//        login.setAccessToken();
+//        login.setOpenId();
+        login.login(activity,"get_simple_userinfo",iUiListener);
     }
 }
