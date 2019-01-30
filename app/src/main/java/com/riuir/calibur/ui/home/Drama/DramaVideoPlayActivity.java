@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,6 +40,8 @@ import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.Constants;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
+import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack;
+import com.shuyu.gsyvideoplayer.utils.CommonUtil;
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
@@ -402,21 +405,39 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
         //隐藏非弹出的底部进度条
         videoPlayer.setBottomProgressBarDrawable(null);
+        videoPlayer.setShowFullAnimation(false);
 
         //设置全屏按键功能,这是使用的是选择屏幕，而不是全屏
         videoPlayer.getFullscreenButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
-                    LogUtils.d("videoPlayerAct","退出全屏");
-                    recyclerView.setVisibility(View.VISIBLE);
-                    showNavigation();
-                }else {
-                    LogUtils.d("videoPlayerAct","进入全屏");
-                    recyclerView.setVisibility(View.GONE);
-                    hideNavigation();
-                }
+//                if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
+//                    LogUtils.d("videoPlayerAct","退出全屏");
+//                    recyclerView.setVisibility(View.VISIBLE);
+////                    showNavigation();
+////                    videoPlayer.onBackFullscreen();
+//                }else {
+//                    LogUtils.d("videoPlayerAct","进入全屏");
+//                    recyclerView.setVisibility(View.GONE);
+////                    hideNavigation();
+//                }
+                videoPlayer.startWindowFullscreen(DramaVideoPlayActivity.this,true,true);
                 orientationUtils.resolveByClick();
+            }
+        });
+        videoPlayer.setVideoAllCallBack(new GSYSampleCallBack(){
+            @Override
+            public void onEnterFullscreen(String url, Object... objects) {
+                super.onEnterFullscreen(url, objects);
+                LogUtils.d("videoPlayerAct","进入全屏");
+                recyclerView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onQuitFullscreen(String url, Object... objects) {
+                super.onQuitFullscreen(url, objects);
+                LogUtils.d("videoPlayerAct","退出全屏");
+                recyclerView.setVisibility(View.VISIBLE);
             }
         });
         //是否可以滑动调整
@@ -437,29 +458,31 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     }
     private void showNavigation(){
+        CommonUtil.showNavKey(this, videoPlayer.getSystemUiVisibility());
         //显示虚拟按键
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            //低版本sdk
-            View v = getWindow().getDecorView();
-            v.setSystemUiVisibility(View.VISIBLE);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            View decorView = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-            decorView.setSystemUiVisibility(uiOptions);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+//            //低版本sdk
+//            View v = getWindow().getDecorView();
+//            v.setSystemUiVisibility(View.VISIBLE);
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            View decorView = getWindow().getDecorView();
+//            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+//            decorView.setSystemUiVisibility(uiOptions);
+//        }
     }
 
     private void hideNavigation(){
+        CommonUtil.hideNavKey(this);
         //隐藏虚拟按键
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            View v = getWindow().getDecorView();
-            v.setSystemUiVisibility(View.GONE);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            View decorView = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN;
-            decorView.setSystemUiVisibility(uiOptions);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+//            View v = getWindow().getDecorView();
+//            v.setSystemUiVisibility(View.GONE);
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            View decorView = getWindow().getDecorView();
+//            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                    | View.SYSTEM_UI_FLAG_FULLSCREEN;
+//            decorView.setSystemUiVisibility(uiOptions);
+//        }
     }
 
 
@@ -477,17 +500,18 @@ public class DramaVideoPlayActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            recyclerView.setVisibility(View.VISIBLE);
-            commentView.setVisibility(View.VISIBLE);
-//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            showNavigation();
-        }else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            recyclerView.setVisibility(View.GONE);
-            commentView.setVisibility(View.GONE);
-//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            hideNavigation();
-        }
+        videoPlayer.onConfigurationChanged(this, newConfig, orientationUtils);
+//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+//            recyclerView.setVisibility(View.VISIBLE);
+//            commentView.setVisibility(View.VISIBLE);
+////            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            showNavigation();
+//        }else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+//            recyclerView.setVisibility(View.GONE);
+//            commentView.setVisibility(View.GONE);
+////            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            hideNavigation();
+//        }
     }
 
     private void setListener() {
@@ -642,12 +666,12 @@ public class DramaVideoPlayActivity extends BaseActivity {
     public void onBackPressed() {
         //先返回正常状态
         if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            videoPlayer.getFullscreenButton().performClick();
+            orientationUtils.backToProtVideo();
             recyclerView.setVisibility(View.VISIBLE);
+//            videoPlayer.getFullscreenButton().performClick();
+//            recyclerView.setVisibility(View.VISIBLE);
             return;
         }
-        //释放所有
-        videoPlayer.setVideoAllCallBack(null);
         super.onBackPressed();
     }
 
