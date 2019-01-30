@@ -421,8 +421,8 @@ public class DramaVideoPlayActivity extends BaseActivity {
 //                    recyclerView.setVisibility(View.GONE);
 ////                    hideNavigation();
 //                }
-                videoPlayer.startWindowFullscreen(DramaVideoPlayActivity.this,true,true);
                 orientationUtils.resolveByClick();
+                videoPlayer.startWindowFullscreen(DramaVideoPlayActivity.this,true,true);
             }
         });
         videoPlayer.setVideoAllCallBack(new GSYSampleCallBack(){
@@ -438,6 +438,9 @@ public class DramaVideoPlayActivity extends BaseActivity {
                 super.onQuitFullscreen(url, objects);
                 LogUtils.d("videoPlayerAct","退出全屏");
                 recyclerView.setVisibility(View.VISIBLE);
+                if (orientationUtils != null) {
+                    orientationUtils.backToProtVideo();
+                }
             }
         });
         //是否可以滑动调整
