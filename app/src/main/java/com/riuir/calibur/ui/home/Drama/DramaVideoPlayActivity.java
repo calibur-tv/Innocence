@@ -668,12 +668,14 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     public void onBackPressed() {
         //先返回正常状态
-        if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            orientationUtils.backToProtVideo();
-            recyclerView.setVisibility(View.VISIBLE);
-//            videoPlayer.getFullscreenButton().performClick();
-//            recyclerView.setVisibility(View.VISIBLE);
-            return;
+        try {
+            if (videoPlayer.getCurrentPlayer().isIfCurrentIsFullscreen()) {
+                orientationUtils.backToProtVideo();
+                recyclerView.setVisibility(View.VISIBLE);
+                return;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         super.onBackPressed();
     }
