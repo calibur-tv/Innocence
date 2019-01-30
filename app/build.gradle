@@ -7,179 +7,185 @@ apply plugin: 'newrelic'
 apply plugin: 'bugly'
 //符号表
 bugly {
-  appId = 'd07841a6e4' // 注册时分配的App ID
-  appKey = '7d2003f7-9ede-4d8b-90d3-bc385ad5518a' // 注册时分配的App Key
-  debug = true
+    appId = 'd07841a6e4' // 注册时分配的App ID
+    appKey = '7d2003f7-9ede-4d8b-90d3-bc385ad5518a' // 注册时分配的App Key
+    debug = true
 }
 
 android {
-  compileSdkVersion 28
-  defaultConfig {
-    applicationId "com.riuir.calibur"
-    minSdkVersion 16
-    targetSdkVersion 28
-    versionCode 8
-    versionName "1.1.0"
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.riuir.calibur"
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 8
+        versionName "1.1.0"
 
-    packagingOptions {
-      exclude 'META-INF/rxjava.properties'
-    }
-    ndk {
-      abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
-    }
-    javaCompileOptions {
-      annotationProcessorOptions {
-        arguments = [AROUTER_MODULE_NAME: project.getName()]
-      }
-    }
-    multiDexEnabled true
-  }
-
-  signingConfigs {
-    debug {
-      keyAlias 'calibur'
-      keyPassword 'shiwen,rukeshizhaohuanwuzhimaster'
-      storeFile file('D:/android/CaliburKey/calibur_key.jks')
-      storePassword 'shiwen,rukeshizhaohuanwuzhimaster'
-    }
-  }
-
-  buildTypes {
-    release {
-      debuggable false
-      minifyEnabled true
-      shrinkResources true
-      zipAlignEnabled true
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        packagingOptions {
+            exclude 'META-INF/rxjava.properties'
+        }
+        ndk {
+            abiFilters 'armeabi' //, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+        multiDexEnabled true
     }
 
-    debug {
-      debuggable true
-      zipAlignEnabled true
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    signingConfigs {
+        release {
+            keyAlias 'calibur'
+            keyPassword 'shiwen,rukeshizhaohuanwuzhimaster'
+            storeFile file('../calibur_key.jks')
+            storePassword 'shiwen,rukeshizhaohuanwuzhimaster'
+        }
+        debug {
+            keyAlias 'calibur'
+            keyPassword 'shiwen,rukeshizhaohuanwuzhimaster'
+            storeFile file('../calibur_key.jks')
+            storePassword 'shiwen,rukeshizhaohuanwuzhimaster'
+        }
     }
-  }
-  repositories {
-    flatDir {
-      dirs 'libs'
-    }
-    jcenter()
-    mavenCentral()
-  }
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
+    buildTypes {
+        release {
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            debuggable true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+        jcenter()
+        mavenCentral()
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 configurations.all {
-  resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-    def requested = details.requested
-    if (requested.group == 'com.android.support') {
-      if (!requested.name.startsWith("multidex")) {
-        details.useVersion '28.0.0'
-      }
-    }
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '28.0.0'
+            }
+        }
 
-  }
+    }
 }
 
 dependencies {
-  implementation fileTree(include: ['*.jar'], dir: 'libs')
-  implementation project(':core')
-  implementation project(':commonui')
-  implementation project(':login')
-  implementation project(':share')
-  //    if ("$appPackageType".contains("debug")) {
-  //        implementation project(':debug')
-  //    }
-  // butterKnife
-  implementation 'com.jakewharton:butterknife:8.8.1'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-  implementation 'org.greenrobot:eventbus:3.0.0'
-  //腾讯 bugly
-  //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
-  implementation 'com.tencent.bugly:nativecrashreport:latest.release'
-  //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
-  implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
-  //glide 加载图片
-  implementation 'com.github.bumptech.glide:glide:4.8.0'
-  annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
-  implementation 'jp.wasabeef:glide-transformations:3.3.0'
-  //recycleview
-  implementation 'com.kaopiz:kprogresshud:1.1.0'
-  //geetest
-  implementation(name: 'geetest_sensebot_android_v3.5.7.4', ext: 'aar')
-  //pagerslidingtabstrip
-  implementation 'com.astuetz:pagerslidingtabstrip:1.0.1'
-  //CircularFloatingActionMenu 点击扇形展开按钮
-  implementation 'com.oguzdev:CircularFloatingActionMenu:1.0.2'
-  //photo 预览图片
-  implementation 'com.github.chrisbanes:PhotoView:2.0.0'
-  //magic sakura
-  implementation 'com.bilibili:magicasakura:0.1.8@aar'
-  //七牛
-  implementation 'com.qiniu:qiniu-android-sdk:7.3.+'
-  //ratingbar 评分
-  implementation 'com.hedgehog.ratingbar:app:1.1.2'
-  //MPAndroidChart 图表
-  implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
-  implementation 'com.shuyu:gsyVideoPlayer-java:6.0.0-beta'
-  //是否需要ExoPlayer模式
-  implementation 'com.shuyu:GSYVideoPlayer-exo2:6.0.0-beta'
-  //根据你的需求ijk模式的so
-  implementation 'com.shuyu:gsyVideoPlayer-armv5:6.0.0-beta'
-  implementation 'com.shuyu:gsyVideoPlayer-armv7a:6.0.0-beta'
-  implementation 'com.shuyu:gsyVideoPlayer-arm64:6.0.0-beta'
-  implementation 'com.shuyu:gsyVideoPlayer-x64:6.0.0-beta'
-  implementation 'com.shuyu:gsyVideoPlayer-x86:6.0.0-beta'
-  //带边框的imageview
-  implementation 'com.makeramen:roundedimageview:2.3.0'
-  //progressbar
-  implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
-  implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
-  //dialog
-  implementation 'com.github.f0ris.sweetalert:library:1.5.1'
-  //UCrop
-  implementation 'com.github.yalantis:ucrop:2.2.2'
-  //switch
-  implementation 'com.github.zcweng:switch-button:0.0.3@aar'
-  //环形按钮进度条
-  implementation 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
-  //album
-  implementation 'com.yanzhenjie:album:2.1.2'
-  //banner轮播的标签
-  implementation 'com.github.chenupt.android:springindicator:1.0.2@aar'
-  //软键盘隐藏监听
-  implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0'
-  implementation 'com.newrelic.agent.android:android-agent:5.21.2'
-  implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
-  implementation 'com.alibaba:arouter-api:1.4.1'
-  annotationProcessor 'com.alibaba:arouter-compiler:1.2.2'
-  // umeng统计
-  implementation  'com.umeng.umsdk:analytics:8.0.0'
-  implementation  'com.umeng.umsdk:common:2.0.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':core')
+    implementation project(':commonui')
+    implementation project(':login')
+    implementation project(':share')
+    //    if ("$appPackageType".contains("debug")) {
+    //        implementation project(':debug')
+    //    }
+    // butterKnife
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'org.greenrobot:eventbus:3.0.0'
+    //腾讯 bugly
+    //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
+    implementation 'com.tencent.bugly:nativecrashreport:latest.release'
+    //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
+    implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
+    //glide 加载图片
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation 'jp.wasabeef:glide-transformations:3.3.0'
+    //recycleview
+    implementation 'com.kaopiz:kprogresshud:1.1.0'
+    //geetest
+    implementation(name: 'geetest_sensebot_android_v3.5.7.4', ext: 'aar')
+    //pagerslidingtabstrip
+    implementation 'com.astuetz:pagerslidingtabstrip:1.0.1'
+    //CircularFloatingActionMenu 点击扇形展开按钮
+    implementation 'com.oguzdev:CircularFloatingActionMenu:1.0.2'
+    //photo 预览图片
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    //magic sakura
+    implementation 'com.bilibili:magicasakura:0.1.8@aar'
+    //七牛
+    implementation 'com.qiniu:qiniu-android-sdk:7.3.+'
+    //ratingbar 评分
+    implementation 'com.hedgehog.ratingbar:app:1.1.2'
+    //MPAndroidChart 图表
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation 'com.shuyu:gsyVideoPlayer-java:6.0.0-beta'
+    //是否需要ExoPlayer模式
+    implementation 'com.shuyu:GSYVideoPlayer-exo2:6.0.0-beta'
+    //根据你的需求ijk模式的so
+    implementation 'com.shuyu:gsyVideoPlayer-armv5:6.0.0-beta'
+    implementation 'com.shuyu:gsyVideoPlayer-armv7a:6.0.0-beta'
+    implementation 'com.shuyu:gsyVideoPlayer-arm64:6.0.0-beta'
+    implementation 'com.shuyu:gsyVideoPlayer-x64:6.0.0-beta'
+    implementation 'com.shuyu:gsyVideoPlayer-x86:6.0.0-beta'
+    //带边框的imageview
+    implementation 'com.makeramen:roundedimageview:2.3.0'
+    //progressbar
+    implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
+    implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
+    //dialog
+    implementation 'com.github.f0ris.sweetalert:library:1.5.1'
+    //UCrop
+    implementation 'com.github.yalantis:ucrop:2.2.2'
+    //switch
+    implementation 'com.github.zcweng:switch-button:0.0.3@aar'
+    //环形按钮进度条
+    implementation 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
+    //album
+    implementation 'com.yanzhenjie:album:2.1.2'
+    //banner轮播的标签
+    implementation 'com.github.chenupt.android:springindicator:1.0.2@aar'
+    //软键盘隐藏监听
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0'
+    implementation 'com.newrelic.agent.android:android-agent:5.21.2'
+    implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
+    implementation 'com.alibaba:arouter-api:1.4.1'
+    annotationProcessor 'com.alibaba:arouter-compiler:1.2.2'
+    // umeng统计
+    implementation 'com.umeng.umsdk:analytics:8.0.0'
+    implementation 'com.umeng.umsdk:common:2.0.0'
 }
 
 task configPackageType {
-  File valuesFile = file("$rootDir/core/src/main/java/calibur/core/PkType.java")
-  String content = valuesFile.getText('UTF-8')
-  def pattern
-  if ("$appPackageType".contains("debug")) {
-    pattern = Pattern.compile("(mtype)\\s+=\\s+\"(\\w+)\"", Pattern.CASE_INSENSITIVE)
-    content = pattern.matcher(content).replaceAll("mtype = \"D\"")
-  } else if ("$appPackageType".contains("beta")) {
-    pattern = Pattern.compile("(mtype)\\s+=\\s+\"(\\w+)\"", Pattern.CASE_INSENSITIVE)
-    content = pattern.matcher(content).replaceAll("mtype = \"B\"")
-  } else if ("$appPackageType".contains("product")) {
-    pattern = Pattern.compile("(mtype)\\s+=\\s+\"(\\w+)\"", Pattern.CASE_INSENSITIVE)
-    content = pattern.matcher(content).replaceAll("mtype = \"P\"")
-  }
-  println "App config... \n" + content
-  valuesFile.write(content, 'UTF-8')
+    File valuesFile = file("$rootDir/core/src/main/java/calibur/core/PkType.java")
+    String content = valuesFile.getText('UTF-8')
+    def pattern
+    if ("$appPackageType".contains("debug")) {
+        pattern = Pattern.compile("(mtype)\\s+=\\s+\"(\\w+)\"", Pattern.CASE_INSENSITIVE)
+        content = pattern.matcher(content).replaceAll("mtype = \"D\"")
+    } else if ("$appPackageType".contains("beta")) {
+        pattern = Pattern.compile("(mtype)\\s+=\\s+\"(\\w+)\"", Pattern.CASE_INSENSITIVE)
+        content = pattern.matcher(content).replaceAll("mtype = \"B\"")
+    } else if ("$appPackageType".contains("product")) {
+        pattern = Pattern.compile("(mtype)\\s+=\\s+\"(\\w+)\"", Pattern.CASE_INSENSITIVE)
+        content = pattern.matcher(content).replaceAll("mtype = \"P\"")
+    }
+    println "App config... \n" + content
+    valuesFile.write(content, 'UTF-8')
 }
 
 preBuild << {
-  configPackageType.execute()
+    configPackageType.execute()
 }
