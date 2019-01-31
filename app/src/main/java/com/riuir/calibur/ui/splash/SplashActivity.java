@@ -2,6 +2,7 @@ package com.riuir.calibur.ui.splash;
 
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 import calibur.core.http.models.user.MineUserInfo;
 import calibur.core.http.observer.ObserverWrapper;
@@ -46,6 +47,10 @@ public class SplashActivity extends BaseActivity {
     AUTH_TOKEN = UserSystem.getInstance().getUserToken();
     isLogin = UserSystem.getInstance().isLogin();
     LogUtils.d("Bearer", "token = " + AUTH_TOKEN);
+    View decorView = getWindow().getDecorView();
+    int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+    decorView.setSystemUiVisibility(uiOptions);
   }
 
   @Override

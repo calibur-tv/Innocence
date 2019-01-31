@@ -62,8 +62,6 @@ public class LoginFragment extends BaseFragment {
     GT3GeetestBindListener bindListenerLogin;
     GeetestUtils geetestUtils;
 
-
-
 //    private LoginBroadCastReceiver loginBroadCastReceiver;
 //    private IntentFilter intentFilter;
 

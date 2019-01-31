@@ -13,7 +13,7 @@
         >
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="165dp"
+            android:layout_height="155dp"
             android:background="@color/theme_magic_sakura_primary">
             <ImageView
                 android:layout_width="wrap_content"
@@ -43,7 +43,7 @@
                 />
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/spacing_100dp"
+                android:layout_height="@dimen/spacing_90dp"
                 android:layout_alignParentBottom="true">
                 <View
                     android:layout_width="match_parent"
@@ -69,19 +69,21 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/spacing_30dp">
+                    android:layout_marginTop="@dimen/spacing_25dp">
                     <ImageView
                         android:id="@+id/login_and_register_wx_login"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@mipmap/icon_login_wechat"
-                        android:layout_marginRight="@dimen/spacing_60dp"
+
                         />
                     <ImageView
                         android:id="@+id/login_and_register_qq_login"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@mipmap/icon_login_qq"
+                        android:layout_marginLeft="@dimen/spacing_60dp"
+                        android:visibility="gone"
                         />
                 </LinearLayout>
             </RelativeLayout>

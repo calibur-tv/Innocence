@@ -265,7 +265,6 @@ public class DramaActivity extends BaseActivity {
     }
 
     private void setNet() {
-        LogUtils.d("animeId","animeId = "+animeID);
 
         apiService.getCallAnimeShow(animeID)
                 .compose(Rx2Schedulers.applyObservableAsync())
@@ -280,6 +279,20 @@ public class DramaActivity extends BaseActivity {
                         super.onFailure(code, errorMsg);
                     }
                 });
+        //腾讯渠道服打包的时候使用该接口代替上面的接口：getCallAnimeShow
+//        apiService.getCallAnimeShowTencent(animeID,"tencent")
+//                .compose(Rx2Schedulers.applyObservableAsync())
+//                .subscribe(new ObserverWrapper<AnimeShowInfo>(){
+//                    @Override
+//                    public void onSuccess(AnimeShowInfo info) {
+//                        animeShowInfoData = info;
+//                        setView();
+//                    }
+//                    @Override
+//                    public void onFailure(int code, String errorMsg) {
+//                        super.onFailure(code, errorMsg);
+//                    }
+//                });
     }
 
     private void setViewPager() {

@@ -64,9 +64,9 @@ public class QQShareUtils {
     }
 
     public static void login(Activity activity, IUiListener iUiListener){
-        Tencent login = Tencent.createInstance(QQ_APP_ID, activity);
 //        login.setAccessToken();
 //        login.setOpenId();
+        Tencent login = Tencent.createInstance(QQ_APP_ID, activity);
         login.login(activity,"get_simple_userinfo",iUiListener);
     }
 }

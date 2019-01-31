@@ -44,10 +44,6 @@
             android:name="com.riuir.calibur.utils.CustomGlideModule"
             android:value="GlideModule" />
 
-        <!-- 多渠道打包 -->
-        <meta-data
-            android:name="channel"
-            android:value="calibur" />
         <!-- bugly升级 -->
         <activity
             android:name="com.tencent.bugly.beta.ui.BetaActivity"

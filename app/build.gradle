@@ -13,13 +13,13 @@ bugly {
 }
 
 android {
-    compileSdkVersion 28
-    defaultConfig {
-        applicationId "com.riuir.calibur"
-        minSdkVersion 16
-        targetSdkVersion 28
-        versionCode 8
-        versionName "1.1.0"
+  compileSdkVersion 28
+  defaultConfig {
+    applicationId "com.riuir.calibur"
+    minSdkVersion 16
+    targetSdkVersion 28
+    versionCode 10
+    versionName "1.2.0"
 
         packagingOptions {
             exclude 'META-INF/rxjava.properties'

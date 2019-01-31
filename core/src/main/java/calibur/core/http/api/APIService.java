@@ -126,6 +126,13 @@ public interface APIService {
     @GET("bangumi/{bangumiId}/show")
     Observable<Response<ResponseBean<AnimeShowInfo>>> getCallAnimeShow(@Path("bangumiId") int bangumiId);
 
+    /**
+     * 获取动漫详情(如果是腾讯的渠道包，需要使用该接口代替getCallAnimeShow)
+     * @param from 内容类型，目前只有 tencent
+     */
+    @GET("bangumi/{bangumiId}/show")
+    Observable<Response<ResponseBean<AnimeShowInfo>>> getCallAnimeShowTencent(@Path("bangumiId") int bangumiId,@Query("from")String from);
+
     //获取动漫标签
     @GET("bangumi/tags")
     Observable<Response<ResponseBean<List<AnimeShowInfo.AnimeShowInfoTags>>>> getCallDramaTags();
