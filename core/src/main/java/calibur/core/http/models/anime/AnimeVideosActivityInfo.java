@@ -13,6 +13,9 @@ public class AnimeVideosActivityInfo {
     private boolean ip_blocked;
     private boolean must_reward;
     private int need_min_level;
+    private boolean buyed;
+    private int buy_price;
+    private String season_id;
     private ShareDataModel share_data;
 
     public AnimeVideosActivityInfoInfo getInfo() {
@@ -71,6 +74,30 @@ public class AnimeVideosActivityInfo {
         this.need_min_level = need_min_level;
     }
 
+    public boolean isBuyed() {
+        return buyed;
+    }
+
+    public void setBuyed(boolean buyed) {
+        this.buyed = buyed;
+    }
+
+    public int getBuy_price() {
+        return buy_price;
+    }
+
+    public void setBuy_price(int buy_price) {
+        this.buy_price = buy_price;
+    }
+
+    public String getSeason_id() {
+        return season_id;
+    }
+
+    public void setSeason_id(String season_id) {
+        this.season_id = season_id;
+    }
+
     public ShareDataModel getShare_data() {
         return share_data;
     }
@@ -90,6 +117,9 @@ public class AnimeVideosActivityInfo {
                 ", must_reward=" + must_reward +
                 ", need_min_level=" + need_min_level +
                 ", share_data=" + share_data +
+                ", season_id=" + season_id +
+                ", buyed=" + buyed +
+                ", buy_price=" + buy_price +
                 '}';
     }
 

@@ -239,7 +239,7 @@ public class MineFragment extends BaseFragment {
                         public void onFailure(int code, String errorMsg) {
                             super.onFailure(code, errorMsg);
                             if (daySignBtn!=null){
-                                if (errorMsg.contains("已签到")){
+                                if (errorMsg.contains("已签到")||errorMsg.contains("签到成功")){
                                     daySignBtn.setText("已签到");
                                     daySignBtn.setBackgroundResource(R.drawable.day_sign_btn_bg_normal);
                                 }else {

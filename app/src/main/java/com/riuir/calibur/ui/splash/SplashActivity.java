@@ -30,6 +30,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.loginAndRegister.LoginAndRegisterActivity;
 import com.riuir.calibur.utils.Constants;
+import com.shuyu.gsyvideoplayer.utils.CommonUtil;
 
 public class SplashActivity extends BaseActivity {
 
@@ -47,10 +48,7 @@ public class SplashActivity extends BaseActivity {
     AUTH_TOKEN = UserSystem.getInstance().getUserToken();
     isLogin = UserSystem.getInstance().isLogin();
     LogUtils.d("Bearer", "token = " + AUTH_TOKEN);
-    View decorView = getWindow().getDecorView();
-    int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
-    decorView.setSystemUiVisibility(uiOptions);
+    CommonUtil.hideNavKey(this);
   }
 
   @Override

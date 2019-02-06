@@ -18,8 +18,8 @@ android {
     applicationId "com.riuir.calibur"
     minSdkVersion 16
     targetSdkVersion 28
-    versionCode 10
-    versionName "1.2.0"
+    versionCode 11
+    versionName "1.2.1"
 
         packagingOptions {
             exclude 'META-INF/rxjava.properties'

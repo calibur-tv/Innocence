@@ -295,7 +295,7 @@ public class RegisterFragment extends BaseFragment {
             parmas.put("secret",passWordStr);
             parmas.put("authCode",verificationCodeStr);
             if (inviteCodeStr!=null&&inviteCodeStr.length()!=0){
-                parmas.put("inviteCode",nicknameStr);
+                parmas.put("inviteCode",inviteCodeStr);
             }
             apiService.getCallRegister(parmas)
                     .compose(Rx2Schedulers.applyObservableAsync())

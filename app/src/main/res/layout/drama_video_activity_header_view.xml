@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
     <com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView
         android:id="@+id/drama_video_play_trending_LFC"
@@ -13,5 +13,17 @@
     <com.riuir.calibur.ui.widget.BangumiForShowView
         android:id="@+id/drama_video_activity_header_bangumi_view"
         android:layout_width="match_parent"
-        android:layout_height="150dp"></com.riuir.calibur.ui.widget.BangumiForShowView>
+        android:layout_height="100dp"/>
+    <TextView
+        android:id="@+id/drama_video_activity_header_buy_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp"
+        android:gravity="center"
+        android:background="@drawable/bg_card_show_header_reward"
+        android:text="我要承包"
+        android:textColor="@color/color_FFFFFFFF"
+        android:layout_marginBottom="50dp"
+        />
 </LinearLayout>

@@ -173,6 +173,10 @@ public interface APIService {
     @GET("video/{videoId}/show")
     Observable<Response<ResponseBean<AnimeVideosActivityInfo>>> getCallAnimeVideo(@Path("videoId")int videoId);
 
+    //承包该季动漫
+    @POST("video/buy")
+    Observable<Response<ResponseBean<Integer>>> getBuyVideo(@Query("season_id")String season_id);
+
     //获取帖子详情
     @GET("post/{id}/show")
     Observable<Response<ResponseBean<CardShowInfoPrimacy>>> getCallCardShowPrimacy(@Path("id")int id);

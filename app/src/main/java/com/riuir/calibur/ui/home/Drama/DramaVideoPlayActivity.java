@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home.Drama;
 
 import android.app.ActivityOptions;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -28,6 +30,7 @@ import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
@@ -39,6 +42,7 @@ import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.DialogHelper;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
 import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack;
 import com.shuyu.gsyvideoplayer.utils.CommonUtil;
@@ -74,8 +78,6 @@ public class DramaVideoPlayActivity extends BaseActivity {
     @BindView(R.id.drama_video_play_player)
     StandardGSYVideoPlayer videoPlayer;
 
-    TrendingLikeFollowCollectionView videoLFCView;
-
     OrientationUtils orientationUtils;
 
     @BindView(R.id.drama_video_play_comment_view)
@@ -105,6 +107,9 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     LinearLayout headerLayout;
     BangumiForShowView headerBangumiView;
+    TrendingLikeFollowCollectionView videoLFCView;
+    TextView buyBangumiBtn;
+    AlertDialog buyBangumiDialog;
 
     int fetchId = 0;
     boolean isLoadMore = false;
@@ -225,6 +230,7 @@ public class DramaVideoPlayActivity extends BaseActivity {
         //所属番剧操作
         headerBangumiView = headerLayout.findViewById(R.id.drama_video_activity_header_bangumi_view);
         videoLFCView = headerLayout.findViewById(R.id.drama_video_play_trending_LFC);
+        buyBangumiBtn = headerLayout.findViewById(R.id.drama_video_activity_header_buy_btn);
         LogUtils.d("cardShowHeader","header Data = "+videoData.toString());
         headerBangumiView.setName(videoData.getBangumi().getName());
         headerBangumiView.setSummary(videoData.getBangumi().getSummary());
@@ -239,6 +245,23 @@ public class DramaVideoPlayActivity extends BaseActivity {
             }
         });
 
+        if (videoData.isBuyed()){
+            buyBangumiBtn.setText("已承包");
+        }else {
+            buyBangumiBtn.setText("我要承包");
+        }
+        setBuyDialog();
+        buyBangumiBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (videoData.isBuyed()){
+                    ToastUtils.showShort(DramaVideoPlayActivity.this,"您已承包该季番剧~");
+                }else {
+                    buyBangumiDialog.show();
+                }
+            }
+        });
+
         initLFCView();
         commentAdapter.addHeaderView(headerLayout);
         otherSite = videoData.getInfo().isOther_site();
@@ -246,6 +269,67 @@ public class DramaVideoPlayActivity extends BaseActivity {
         checkVideo();
         setCommentView();
         setListener();
+    }
+
+    private void setBuyDialog() {
+        buyBangumiDialog = DialogHelper.getConfirmDialog(this,
+                "承包本季番剧",
+                "确定承包吗？\n 该操作将消耗您"+videoData.getBuy_price()+"个团子。\n承包后解锁本季全部视频。",
+                "確定",
+                "取消",
+                false,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        buyBangumiBtn.setClickable(false);
+                        buyBangumiBtn.setText("承包中");
+                        buyBangumi();
+                        buyBangumiDialog.dismiss();
+                    }
+                },
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        buyBangumiDialog.dismiss();
+                    }
+                }
+        ).create();
+    }
+
+    private void buyBangumi() {
+        apiService.getBuyVideo(videoData.getSeason_id())
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<Integer>(){
+
+                    @Override
+                    public void onSuccess(Integer spend) {
+                        LogUtils.d("bugBangmi","s = "+spend);
+                        videoData.setBuyed(true);
+                        checkVideo();
+                        buyBangumiBtn.setClickable(true);
+                        buyBangumiBtn.setText("已承包");
+
+                        if (Constants.userInfoData.getBanlance().getCoin_count()>=spend){
+                            Constants.userInfoData.getBanlance().setCoin_count(Constants.userInfoData.getBanlance().getCoin_count()-spend);
+                        }else if (Constants.userInfoData.getBanlance().getCoin_count()!=0&&
+                                Constants.userInfoData.getBanlance().getLight_count()>=(spend-Constants.userInfoData.getBanlance().getCoin_count())){
+                            Constants.userInfoData.getBanlance().setCoin_count(0);
+                            Constants.userInfoData.getBanlance().setLight_count(Constants.userInfoData.getBanlance().getLight_count()-
+                                    (spend-Constants.userInfoData.getBanlance().getCoin_count()));
+                        }else if (Constants.userInfoData.getBanlance().getCoin_count()==0&&
+                                Constants.userInfoData.getBanlance().getLight_count()>= spend){
+                            Constants.userInfoData.getBanlance().setLight_count(Constants.userInfoData.getBanlance().getLight_count()- spend);
+                        }
+                        Intent intent = new Intent(MineFragment.COINCHANGE);
+                        sendBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        LogUtils.d("bugBangmi","code = "+code+",errorMsg = "+errorMsg);
+                        super.onFailure(code, errorMsg);
+                    }
+                });
     }
 
     private void initLFCView() {
@@ -336,15 +420,15 @@ public class DramaVideoPlayActivity extends BaseActivity {
         if (UserSystem.getInstance().isLogin()&&Constants.userInfoData!=null){
             if (!otherSite){
                 if (!videoData.isIp_blocked()){
-                    //是否必须投食
+                    //是否必须投食或承包
                     if (videoData.isMust_reward()){
-                        if (videoData.getInfo().isRewarded()){
+                        if (videoData.getInfo().isRewarded()||videoData.isBuyed()){
                             initVideoUrl();
                             otherSiteInfo.setVisibility(View.GONE);
                             whyRewardLevel.setVisibility(View.GONE);
                         }else {
                             otherSiteInfo.setVisibility(View.VISIBLE);
-                            otherSiteInfo.setText("该视频需要投食之后才能进行观看");
+                            otherSiteInfo.setText("该视频需要投食或承包才能进行观看");
                             whyRewardLevel.setVisibility(View.VISIBLE);
                             whyRewardLevel.setText("为什么要投食");
                             whyRewardLevel.setOnClickListener(new View.OnClickListener() {
