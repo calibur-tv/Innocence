@@ -136,6 +136,9 @@ public class AnimeVideosActivityInfo {
         private boolean liked;
         private boolean marked;
         private boolean rewarded;
+        private boolean is_baidu_cloud;
+        private String baidu_cloud_src;
+        private String baidu_cloud_pwd;
 
         private CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser like_users;
         private CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser reward_users;
@@ -261,6 +264,30 @@ public class AnimeVideosActivityInfo {
             this.mark_users = mark_users;
         }
 
+        public boolean isIs_baidu_cloud() {
+            return is_baidu_cloud;
+        }
+
+        public void setIs_baidu_cloud(boolean is_baidu_cloud) {
+            this.is_baidu_cloud = is_baidu_cloud;
+        }
+
+        public String getBaidu_cloud_src() {
+            return baidu_cloud_src;
+        }
+
+        public void setBaidu_cloud_src(String baidu_cloud_src) {
+            this.baidu_cloud_src = baidu_cloud_src;
+        }
+
+        public String getBaidu_cloud_pwd() {
+            return baidu_cloud_pwd;
+        }
+
+        public void setBaidu_cloud_pwd(String baidu_cloud_pwd) {
+            this.baidu_cloud_pwd = baidu_cloud_pwd;
+        }
+
         @Override
         public String toString() {
             return "AnimeVideosActivityInfoInfo{" +
@@ -276,6 +303,9 @@ public class AnimeVideosActivityInfo {
                     ", liked=" + liked +
                     ", marked=" + marked +
                     ", rewarded=" + rewarded +
+                    ", is_baidu_cloud=" + is_baidu_cloud +
+                    ", baidu_cloud_src='" + baidu_cloud_src + '\'' +
+                    ", baidu_cloud_pwd='" + baidu_cloud_pwd + '\'' +
                     ", like_users=" + like_users +
                     ", reward_users=" + reward_users +
                     ", mark_users=" + mark_users +

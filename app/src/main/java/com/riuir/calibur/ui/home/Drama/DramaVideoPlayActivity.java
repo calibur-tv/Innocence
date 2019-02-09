@@ -1,6 +1,9 @@
 package com.riuir.calibur.ui.home.Drama;
 
 import android.app.ActivityOptions;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -106,6 +109,9 @@ public class DramaVideoPlayActivity extends BaseActivity {
     private static final int NET_STATUS_MAIN_COMMENT = 1;
 
     LinearLayout headerLayout;
+    LinearLayout baiduCloudLayout;
+    TextView baiduCloudSrc;
+    TextView baiduCloudPsd;
     BangumiForShowView headerBangumiView;
     TrendingLikeFollowCollectionView videoLFCView;
     TextView buyBangumiBtn;
@@ -229,9 +235,11 @@ public class DramaVideoPlayActivity extends BaseActivity {
         headerLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.drama_video_activity_header_view,null);
         //所属番剧操作
         headerBangumiView = headerLayout.findViewById(R.id.drama_video_activity_header_bangumi_view);
+        baiduCloudLayout = headerLayout.findViewById(R.id.drama_video_play_baidu_cloud_layout);
+        baiduCloudSrc = headerLayout.findViewById(R.id.drama_video_play_baidu_cloud_src);
+        baiduCloudPsd = headerLayout.findViewById(R.id.drama_video_play_baidu_cloud_psd);
         videoLFCView = headerLayout.findViewById(R.id.drama_video_play_trending_LFC);
         buyBangumiBtn = headerLayout.findViewById(R.id.drama_video_activity_header_buy_btn);
-        LogUtils.d("cardShowHeader","header Data = "+videoData.toString());
         headerBangumiView.setName(videoData.getBangumi().getName());
         headerBangumiView.setSummary(videoData.getBangumi().getSummary());
         headerBangumiView.setImageView(DramaVideoPlayActivity.this,videoData.getBangumi().getAvatar());
@@ -244,6 +252,23 @@ public class DramaVideoPlayActivity extends BaseActivity {
                 startActivity(intent);
             }
         });
+
+        if (videoData.getInfo().isIs_baidu_cloud()){
+            baiduCloudLayout.setVisibility(View.VISIBLE);
+            baiduCloudSrc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String url = videoData.getInfo().getSrc();
+                    // 获取系统剪贴板
+                    final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    final ClipData clipUrl = ClipData.newPlainText("calibur", url);
+                    //把数据集设置（复制）到剪贴板
+                    clipboard.setPrimaryClip(clipUrl);
+                    ToastUtils.showLong(DramaVideoPlayActivity.this,"内容链接已复制到粘贴板");
+                }
+            });
+            baiduCloudPsd.setText("密码："+videoData.getInfo().getBaidu_cloud_pwd());
+        }
 
         if (videoData.isBuyed()){
             buyBangumiBtn.setText("已承包");
@@ -469,9 +494,15 @@ public class DramaVideoPlayActivity extends BaseActivity {
                     whyRewardLevel.setVisibility(View.GONE);
                 }
             }else {
-                otherSiteInfo.setVisibility(View.VISIBLE);
-                otherSiteInfo.setText("因版权等相关问题，该视频无法播放");
-                whyRewardLevel.setVisibility(View.GONE);
+                if (videoData.getInfo().isIs_baidu_cloud()){
+                    otherSiteInfo.setVisibility(View.VISIBLE);
+                    otherSiteInfo.setText("该视频只提供百度云资源");
+                    whyRewardLevel.setVisibility(View.GONE);
+                }else {
+                    otherSiteInfo.setVisibility(View.VISIBLE);
+                    otherSiteInfo.setText("因版权等相关问题，该视频无法播放");
+                    whyRewardLevel.setVisibility(View.GONE);
+                }
             }
         }else {
             otherSiteInfo.setVisibility(View.VISIBLE);

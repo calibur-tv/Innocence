@@ -51,6 +51,7 @@
     <color name="color_mark">#FF67c23a</color>
 
     <color name="theme_magic_sakura_blue">#23ADE5</color>
+    <color name="theme_magic_sakura_blue_dark">#1390CC</color>
     <color name="theme_magic_sakura_primary">#fb7784</color>
     <color name="theme_magic_sakura_primary_dark">#b85671</color>
     <color name="theme_magic_sakura_primary_trans">#99f0486c</color>

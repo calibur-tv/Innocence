@@ -3,6 +3,39 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/drama_video_play_baidu_cloud_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/drama_video_play_baidu_cloud_src"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:background="@drawable/bg_video_baidu_cloud_btn"
+            android:text="点击复制链接"
+            android:textSize="11sp"
+            android:textColor="@color/color_FFFFFFFF"
+            />
+        <TextView
+            android:id="@+id/drama_video_play_baidu_cloud_psd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:gravity="center"
+            android:background="@drawable/bg_video_baidu_cloud_btn"
+            android:layout_marginLeft="@dimen/spacing_15dp"
+            android:text="密码：000000"
+            android:textSize="11sp"
+            android:textColor="@color/color_FFFFFFFF"
+            />
+    </LinearLayout>
     <com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView
         android:id="@+id/drama_video_play_trending_LFC"
         android:layout_width="match_parent"
