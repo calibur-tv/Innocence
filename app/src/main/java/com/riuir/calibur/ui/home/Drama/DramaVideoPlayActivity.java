@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
@@ -260,11 +261,14 @@ public class DramaVideoPlayActivity extends BaseActivity {
                 public void onClick(View view) {
                     String url = videoData.getInfo().getSrc();
                     // 获取系统剪贴板
-                    final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    final ClipData clipUrl = ClipData.newPlainText("calibur", url);
-                    //把数据集设置（复制）到剪贴板
-                    clipboard.setPrimaryClip(clipUrl);
-                    ToastUtils.showLong(DramaVideoPlayActivity.this,"内容链接已复制到粘贴板");
+                    Uri uri = Uri.parse(url);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+//                    final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+//                    final ClipData clipUrl = ClipData.newPlainText("calibur", url);
+//                    //把数据集设置（复制）到剪贴板
+//                    clipboard.setPrimaryClip(clipUrl);
+//                    ToastUtils.showLong(DramaVideoPlayActivity.this,"内容链接已复制到粘贴板");
                 }
             });
             baiduCloudPsd.setText("密码："+videoData.getInfo().getBaidu_cloud_pwd());

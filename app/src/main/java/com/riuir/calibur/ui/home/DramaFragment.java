@@ -124,7 +124,7 @@ public class DramaFragment extends BaseFragment {
             super(fm);
         }
 
-        private final String[] titles = { "新番","标签", "时间轴","角色榜" };
+        private final String[] titles = { "偶像","新番","标签", "时间轴" };
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -140,25 +140,25 @@ public class DramaFragment extends BaseFragment {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    if (dramaNewAnimeListFragment == null) {
-                        dramaNewAnimeListFragment = new DramaNewAnimeListFragment();
-                    }
-                    return dramaNewAnimeListFragment;
-                case 1:
-                    if (dramaTagsFragment == null) {
-                        dramaTagsFragment = new DramaTagsFragment();
-                    }
-                    return dramaTagsFragment;
-                case 2:
-                    if (dramaTimelineFragment == null) {
-                        dramaTimelineFragment = new DramaTimelineFragment();
-                    }
-                    return dramaTimelineFragment;
-                case 3:
                     if (dramaRolesListFragment == null) {
                         dramaRolesListFragment = new DramaRolesListFragment();
                     }
                     return dramaRolesListFragment;
+                case 1:
+                    if (dramaNewAnimeListFragment == null) {
+                        dramaNewAnimeListFragment = new DramaNewAnimeListFragment();
+                    }
+                    return dramaNewAnimeListFragment;
+                case 2:
+                    if (dramaTagsFragment == null) {
+                        dramaTagsFragment = new DramaTagsFragment();
+                    }
+                    return dramaTagsFragment;
+                case 3:
+                    if (dramaTimelineFragment == null) {
+                        dramaTimelineFragment = new DramaTimelineFragment();
+                    }
+                    return dramaTimelineFragment;
                 default:
                     return null;
             }

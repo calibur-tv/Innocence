@@ -19,7 +19,7 @@
             android:padding="10dp"
             android:gravity="center"
             android:background="@drawable/bg_video_baidu_cloud_btn"
-            android:text="点击复制链接"
+            android:text="点击跳转链接"
             android:textSize="11sp"
             android:textColor="@color/color_FFFFFFFF"
             />

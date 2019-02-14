@@ -41,7 +41,7 @@
                 >
                 <RelativeLayout
                     android:id="@+id/share_popup_share_wechat_btn"
-                    android:layout_width="@dimen/spacing_50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginRight="@dimen/spacing_25dp"
                     android:background="@drawable/app_bg_item_white_gray">
@@ -50,9 +50,11 @@
                         android:layout_height="@dimen/album_dp_50"
                         android:src="@mipmap/share_icon_wechat"/>
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:lines="1"
                         android:textSize="11sp"
                         android:gravity="center"
                         android:textColor="@color/color_text_gray"
@@ -62,7 +64,7 @@
 
                 <RelativeLayout
                     android:id="@+id/share_popup_share_timeline_btn"
-                    android:layout_width="@dimen/spacing_50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginRight="@dimen/spacing_25dp"
                     android:background="@drawable/app_bg_item_white_gray">
@@ -71,9 +73,11 @@
                         android:layout_height="@dimen/album_dp_50"
                         android:src="@mipmap/share_icon_timeline"/>
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:lines="1"
                         android:textSize="11sp"
                         android:gravity="center"
                         android:textColor="@color/color_text_gray"
@@ -82,7 +86,7 @@
                 </RelativeLayout>
                 <RelativeLayout
                     android:id="@+id/share_popup_share_qq_btn"
-                    android:layout_width="@dimen/spacing_50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginRight="@dimen/spacing_25dp"
                     android:background="@drawable/app_bg_item_white_gray">
@@ -91,9 +95,11 @@
                         android:layout_height="@dimen/album_dp_50"
                         android:src="@mipmap/share_icon_qq"/>
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:lines="1"
                         android:textSize="11sp"
                         android:gravity="center"
                         android:textColor="@color/color_text_gray"
@@ -102,7 +108,7 @@
                 </RelativeLayout>
                 <RelativeLayout
                     android:id="@+id/share_popup_share_zone_btn"
-                    android:layout_width="@dimen/spacing_50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginRight="@dimen/spacing_25dp"
                     android:background="@drawable/app_bg_item_white_gray">
@@ -111,9 +117,11 @@
                         android:layout_height="@dimen/album_dp_50"
                         android:src="@mipmap/share_icon_zone"/>
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:lines="1"
                         android:textSize="11sp"
                         android:gravity="center"
                         android:textColor="@color/color_text_gray"
@@ -122,7 +130,7 @@
                 </RelativeLayout>
                 <RelativeLayout
                     android:id="@+id/share_popup_share_link_btn"
-                    android:layout_width="@dimen/spacing_50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="@drawable/app_bg_item_white_gray">
                     <ImageView
@@ -130,9 +138,11 @@
                         android:layout_height="@dimen/album_dp_50"
                         android:src="@mipmap/share_icon_link"/>
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:lines="1"
                         android:textSize="11sp"
                         android:gravity="center"
                         android:textColor="@color/color_text_gray"
@@ -151,7 +161,7 @@
             android:layout_marginBottom="@dimen/spacing_25dp">
             <RelativeLayout
                 android:id="@+id/share_popup_nice_btn"
-                android:layout_width="@dimen/spacing_50dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginRight="@dimen/spacing_25dp"
                 android:background="@drawable/app_bg_item_white_gray"
@@ -163,9 +173,11 @@
                     android:src="@mipmap/share_icon_star"/>
                 <TextView
                     android:id="@+id/share_popup_nice_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:lines="1"
                     android:textSize="11sp"
                     android:gravity="center"
                     android:textColor="@color/color_text_gray"
@@ -174,7 +186,7 @@
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/share_popup_top_btn"
-                android:layout_width="@dimen/spacing_50dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginRight="@dimen/spacing_25dp"
                 android:background="@drawable/app_bg_item_white_gray"
@@ -186,9 +198,11 @@
                     android:src="@mipmap/share_icon_up"/>
                 <TextView
                     android:id="@+id/share_popup_top_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:lines="1"
                     android:textSize="11sp"
                     android:gravity="center"
                     android:textColor="@color/color_text_gray"
@@ -197,7 +211,7 @@
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/share_popup_report_btn"
-                android:layout_width="@dimen/spacing_50dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginRight="@dimen/spacing_25dp"
                 android:background="@drawable/app_bg_item_white_gray">
@@ -206,9 +220,11 @@
                     android:layout_height="@dimen/album_dp_50"
                     android:src="@mipmap/share_icon_error"/>
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:lines="1"
                     android:textSize="11sp"
                     android:gravity="center"
                     android:textColor="@color/color_text_gray"
@@ -217,7 +233,7 @@
             </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/share_popup_delete_btn"
-                android:layout_width="@dimen/spacing_50dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/app_bg_item_white_gray"
                 android:visibility="gone">
@@ -227,9 +243,11 @@
                     android:src="@mipmap/share_icon_del"/>
                 <TextView
                     android:id="@+id/share_popup_delete_btn_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:lines="1"
                     android:textSize="11sp"
                     android:gravity="center"
                     android:textColor="@color/color_text_gray"

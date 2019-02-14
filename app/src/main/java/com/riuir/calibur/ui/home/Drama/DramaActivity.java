@@ -279,7 +279,7 @@ public class DramaActivity extends BaseActivity {
                         super.onFailure(code, errorMsg);
                     }
                 });
-        //腾讯渠道服打包的时候使用该接口代替上面的接口：getCallAnimeShow
+        //腾讯渠道服打包的时候使用该请求代替上面的请求：getCallAnimeShow
 //        apiService.getCallAnimeShowTencent(animeID,"tencent")
 //                .compose(Rx2Schedulers.applyObservableAsync())
 //                .subscribe(new ObserverWrapper<AnimeShowInfo>(){
