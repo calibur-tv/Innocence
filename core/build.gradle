@@ -25,6 +25,5 @@ dependencies {
   api 'com.qiniu:happy-dns:0.2.13'
   //已改成源码依赖-2019.01.09
   //api 'com.samskivert:jmustache:1.14'
-
-  api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.40'
+  implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.40'
 }

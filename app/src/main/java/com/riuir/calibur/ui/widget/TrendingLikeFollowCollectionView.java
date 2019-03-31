@@ -281,11 +281,15 @@ public class TrendingLikeFollowCollectionView extends RelativeLayout {
                                 ToastUtils.showShort(context, "投食成功，消耗1团子");
                                 rewarded = true;
                                 rewardedBtn.setCompoundDrawables(leftDrawLightLike,null,null,null);
-                                LogUtils.d("testCoin","coin reward 1 = "+Constants.userInfoData.getCoin());
-                                Constants.userInfoData.setCoin(Constants.userInfoData.getCoin()-1);
+
+                                if (Constants.userInfoData.getBanlance().getCoin_count()>0){
+                                    Constants.userInfoData.getBanlance().setCoin_count(Constants.userInfoData.getBanlance().getCoin_count()-1);
+                                }else if (Constants.userInfoData.getBanlance().getLight_count()>0){
+                                    Constants.userInfoData.getBanlance().setLight_count(Constants.userInfoData.getBanlance().getLight_count()-1);
+                                }
                                 Intent intent = new Intent(MineFragment.COINCHANGE);
                                 context.sendBroadcast(intent);
-                                LogUtils.d("testCoin","coin reward 2 = "+Constants.userInfoData.getCoin());
+
                                 if (onLFCNetFinish!=null){
                                     onLFCNetFinish.onRewardFinish();
                                 }

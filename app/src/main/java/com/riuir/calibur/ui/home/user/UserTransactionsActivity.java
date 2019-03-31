@@ -132,18 +132,6 @@ public class UserTransactionsActivity extends BaseActivity implements IH5JsCallA
 
     }
 
-    @Nullable
-    @Override
-    public Object getDeviceInfo() {
-        return PhoneSystemUtils.getDeviceInfo();
-    }
-
-    @Nullable
-    @Override
-    public Object getUserInfo() {
-        return Constants.userInfoData;
-    }
-
     @Override
     public void readNotification(@Nullable Object params) {
     }

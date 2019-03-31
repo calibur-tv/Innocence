@@ -545,10 +545,7 @@ public class ReplyAndCommentView extends LinearLayout{
                         public void onSuccess(Boolean isRewarded) {
                             if (isRewarded){
                                 ToastUtils.showShort(context, "投食成功，消耗1团子");
-                                rewarded = true;
-                                Constants.userInfoData.setCoin(Constants.userInfoData.getCoin()-1);
-                                Intent intent = new Intent(MineFragment.COINCHANGE);
-                                context.sendBroadcast(intent);
+
                                 setRewardSuccess();
                                 rewardIcon.setClickable(true);
                             }else {
@@ -688,6 +685,13 @@ public class ReplyAndCommentView extends LinearLayout{
         rewarded = true;
         rewardIcon.setImageDrawable(getResources().getDrawable(R.mipmap.recommend_icon_money_active));
         rewardNumber.setText(String.valueOf(rewardCount+1));
+        if (Constants.userInfoData.getBanlance().getCoin_count()>0){
+            Constants.userInfoData.getBanlance().setCoin_count(Constants.userInfoData.getBanlance().getCoin_count()-1);
+        }else if (Constants.userInfoData.getBanlance().getLight_count()>0){
+            Constants.userInfoData.getBanlance().setLight_count(Constants.userInfoData.getBanlance().getLight_count()-1);
+        }
+        Intent intent = new Intent(MineFragment.COINCHANGE);
+        context.sendBroadcast(intent);
 
     }
     private void setLikeFail() {

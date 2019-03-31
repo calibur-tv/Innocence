@@ -1,13 +1,16 @@
 package calibur.core.http.models.followList.post;
 
+import java.io.Serializable;
 import java.util.List;
 
 import calibur.core.http.models.anime.AnimeShowInfo;
+import calibur.core.http.models.share.ShareDataModel;
 
-public class CardShowInfoPrimacy {
+public class CardShowInfoPrimacy implements Serializable {
     private CardShowInfoPrimacyBangumi bangumi;
     private CardShowInfoPrimacyPost post;
     private CardShowInfoPrimacyUser user;
+    private ShareDataModel share_data;
 
     public CardShowInfoPrimacyBangumi getBangumi() {
         return bangumi;
@@ -33,16 +36,25 @@ public class CardShowInfoPrimacy {
         this.user = user;
     }
 
+    public ShareDataModel getShare_data() {
+        return share_data;
+    }
+
+    public void setShare_data(ShareDataModel share_data) {
+        this.share_data = share_data;
+    }
+
     @Override
     public String toString() {
         return "CardShowInfoPrimacyData{" +
                 "bangumi=" + bangumi +
                 ", post=" + post +
                 ", user=" + user +
+                ", share_data="+share_data+
                 '}';
     }
 
-    public class CardShowInfoPrimacyBangumi{
+    public class CardShowInfoPrimacyBangumi implements Serializable{
         private int id;
         private String name;
         private String avatar;
@@ -110,7 +122,7 @@ public class CardShowInfoPrimacy {
                     '}';
         }
     }
-    public class CardShowInfoPrimacyPost{
+    public class CardShowInfoPrimacyPost implements Serializable{
         private int id;
         private int comment_count;
         private int view_count;
@@ -132,6 +144,7 @@ public class CardShowInfoPrimacy {
         private List<AnimeShowInfo.AnimeShowInfoTags> tags;
 
         private boolean is_nice;
+        private boolean is_top;
         private boolean is_creator;
 
 
@@ -286,6 +299,14 @@ public class CardShowInfoPrimacy {
             this.is_nice = is_nice;
         }
 
+        public boolean isIs_top() {
+            return is_top;
+        }
+
+        public void setIs_top(boolean is_top) {
+            this.is_top = is_top;
+        }
+
         public boolean isIs_creator() {
             return is_creator;
         }
@@ -324,11 +345,12 @@ public class CardShowInfoPrimacy {
                     ", mark_users=" + mark_users +
                     ", tags=" + tags +
                     ", is_nice=" + is_nice +
+                    ", is_top=" + is_top +
                     ", is_creator=" + is_creator +
                     '}';
         }
     }
-    public class CardShowInfoPrimacyUser{
+    public class CardShowInfoPrimacyUser implements Serializable{
         private int id;
         private String zone;
         private String avatar;
@@ -377,7 +399,7 @@ public class CardShowInfoPrimacy {
         }
     }
 
-    public class CardShowInfoPrimacyImages{
+    public class CardShowInfoPrimacyImages implements Serializable{
         private String url;
         private String width;
         private String height;
@@ -436,7 +458,7 @@ public class CardShowInfoPrimacy {
         }
     }
 
-    public class CardShowInfoPrimacyPreviewImages {
+    public class CardShowInfoPrimacyPreviewImages implements Serializable{
         private String url;
         private String width;
         private String height;
@@ -495,7 +517,7 @@ public class CardShowInfoPrimacy {
         }
     }
 
-    public class CardShowInfoPrimacyLikeUser{
+    public class CardShowInfoPrimacyLikeUser implements Serializable{
         private int total;
         private boolean noMore;
         private List<CardShowInfoPrimacyLikeUserList> list;
@@ -534,7 +556,7 @@ public class CardShowInfoPrimacy {
         }
     }
 
-    public class CardShowInfoPrimacyLikeUserList{
+    public class CardShowInfoPrimacyLikeUserList implements Serializable{
         private int id;
         private String zone;
         private String avatar;

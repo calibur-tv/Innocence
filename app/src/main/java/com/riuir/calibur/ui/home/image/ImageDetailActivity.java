@@ -1,6 +1,7 @@
 package com.riuir.calibur.ui.home.image;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -25,8 +26,11 @@ import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.PhoneSystemUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.Drama.dramaInfo.DramaInfoActivity;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
+import com.riuir.calibur.ui.share.SharePopupActivity;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.ui.widget.replyAndComment.ReplyAndCommentView;
@@ -47,7 +51,7 @@ public class ImageDetailActivity extends BaseActivity implements IH5JsCallApp {
     @BindView(R.id.image_detail_back_btn)
     ImageView backBtn;
     @BindView(R.id.image_detail_header_more)
-    AppHeaderPopupWindows headerMore;
+    ImageView headerMore;
 
     @BindView(R.id.comment_view)
     ReplyAndCommentView commentView;
@@ -178,14 +182,15 @@ public class ImageDetailActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     private void setHeaderMore() {
-        headerMore.setReportModelTag(AppHeaderPopupWindows.IMAGE,primacyData.getId());
-        headerMore.setShareLayout(primacyData.getName(),AppHeaderPopupWindows.IMAGE,primacyData.getId(),"");
-        headerMore.setDeleteLayout(AppHeaderPopupWindows.IMAGE,primacyData.getId(),
-                primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);
-        headerMore.setOnDeleteFinish(new AppHeaderPopupWindows.OnDeleteFinish() {
+        headerMore.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void deleteFinish() {
-                finish();
+            public void onClick(View view) {
+                Intent intent = new Intent(ImageDetailActivity.this,SharePopupActivity.class);
+                intent.putExtra("share_data",primacyData.getShare_data());
+                intent.putExtra("targetTag",SharePopupActivity.IMAGE);
+                intent.putExtra("targetId",primacyData.getId());
+                intent.putExtra("targetUserId",primacyData.getUser().getId());
+                startActivityForResult(intent,SharePopupActivity.SHARE_POPUP_REQUEST_CODE);
             }
         });
     }
@@ -194,18 +199,6 @@ public class ImageDetailActivity extends BaseActivity implements IH5JsCallApp {
     public void onDestroy() {
         instance = null;
         super.onDestroy();
-    }
-
-    @Nullable
-    @Override
-    public Object getDeviceInfo() {
-        return PhoneSystemUtils.getDeviceInfo();
-    }
-
-    @Nullable
-    @Override
-    public Object getUserInfo() {
-        return Constants.userInfoData;
     }
 
     @Override

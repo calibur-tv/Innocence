@@ -1,0 +1,21 @@
+apply plugin: 'com.android.library'
+apply from: '../common_build.gradle'
+
+android{
+    defaultConfig{
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+}
+
+dependencies {
+
+  api fileTree(dir: 'libs', include: ['*.jar'])
+  implementation project(':login')
+  implementation project(':core')
+  implementation project(':commonui')
+  api 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+}

@@ -27,7 +27,9 @@ import com.riuir.calibur.ui.home.Drama.DramaTagsSearchActivity;
 import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterAnimeSettingActivity;
 import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterConfigActivity;
 import com.riuir.calibur.ui.home.DramaTagsFragment;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
 import com.riuir.calibur.ui.home.user.UserMainActivity;
+import com.riuir.calibur.ui.share.SharePopupActivity;
 import com.riuir.calibur.ui.web.WebViewActivity;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.GlideUtils;
@@ -64,7 +66,7 @@ public class DramaInfoActivity extends BaseActivity {
     @BindView(R.id.drama_info_master_setting_btn)
     Button masterSettingBtn;
     @BindView(R.id.drama_info_activity_more)
-    AppHeaderPopupWindows headerMore;
+    ImageView headerMore;
 
     DramaTagsAdapter dramaTagsAdapter;
     DramaMasterAdapter dramaMasterAdapter;
@@ -138,11 +140,16 @@ public class DramaInfoActivity extends BaseActivity {
             masterSettingBtn.setVisibility(View.GONE);
         }
 
-
-        headerMore.setReportModelTag(AppHeaderPopupWindows.BANGUMI,animeShowInfoData.getId());
-        headerMore.setShareLayout(animeShowInfoData.getName(),AppHeaderPopupWindows.BANGUMI,animeShowInfoData.getId(),"");
-
-        headerMore.setMasterLayout(animeShowInfoData.isIs_master(),5,animeShowInfoData.getId(),animeShowInfoData);
+        headerMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DramaInfoActivity.this,SharePopupActivity.class);
+                intent.putExtra("share_data",animeShowInfoData.getShare_data());
+                intent.putExtra("targetTag",SharePopupActivity.BANGUMI);
+                intent.putExtra("targetId",animeShowInfoData.getId());
+                startActivityForResult(intent,SharePopupActivity.SHARE_POPUP_REQUEST_CODE);
+            }
+        });
 
         setAdapter();
 

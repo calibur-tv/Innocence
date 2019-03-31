@@ -13,7 +13,7 @@
         <RelativeLayout
             android:id="@+id/page_header"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:background="@color/theme_magic_sakura_primary"
             >
             <ImageView
@@ -34,10 +34,12 @@
                 android:textSize="18sp"
                 tools:ignore="HardcodedText"
                 />
-            <com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows
+            <ImageView
                 android:id="@+id/score_detail_header_more"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/spacing_40dp"
+                android:layout_height="@dimen/spacing_40dp"
+                android:padding="@dimen/spacing_12dp"
+                android:src="@mipmap/app_btn_more_white"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 />

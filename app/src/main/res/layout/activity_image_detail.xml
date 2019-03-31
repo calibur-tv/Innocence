@@ -35,10 +35,12 @@
                 android:textSize="18sp"
                 tools:ignore="HardcodedText"
                 />
-            <com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows
+            <ImageView
                 android:id="@+id/image_detail_header_more"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:padding="@dimen/spacing_12dp"
+                android:src="@mipmap/app_btn_more_white"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 />

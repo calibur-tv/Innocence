@@ -624,7 +624,8 @@ public class ScoreShowInfoActivity extends BaseActivity {
 
     private void setHeaderMore() {
         headerMore.setReportModelTag(AppHeaderPopupWindows.SCORE,primacyData.getId());
-        headerMore.setShareLayout(primacyData.getTitle(),AppHeaderPopupWindows.SCORE,primacyData.getId(),"");
+//        headerMore.setShareLayout(primacyData.getTitle(),AppHeaderPopupWindows.SCORE,primacyData.getId(),"");
+        headerMore.setShareLayout(ScoreShowInfoActivity.this,primacyData.getShare_data(),AppHeaderPopupWindows.SCORE);
 
         headerMore.setDeleteLayout(AppHeaderPopupWindows.SCORE,primacyData.getId(),
                 primacyData.getUser().getId(),primacyData.getUser().getId(),apiPost);

@@ -3,6 +3,8 @@ package calibur.core.http.models.anime;
 import java.io.Serializable;
 import java.util.List;
 
+import calibur.core.http.models.share.ShareDataModel;
+
 public class AnimeShowInfo implements Serializable{
     private int id;
     private String name;
@@ -11,6 +13,7 @@ public class AnimeShowInfo implements Serializable{
     private String summary;
     private double score;
     private int count_score;
+    private ShareDataModel share_data;
     private int count_like;
     private String alias;
     private boolean followed;
@@ -77,6 +80,14 @@ public class AnimeShowInfo implements Serializable{
 
     public void setCount_score(int count_score) {
         this.count_score = count_score;
+    }
+
+    public ShareDataModel getShare_data() {
+        return share_data;
+    }
+
+    public void setShare_data(ShareDataModel share_data) {
+        this.share_data = share_data;
     }
 
     public int getCount_like() {
@@ -179,6 +190,7 @@ public class AnimeShowInfo implements Serializable{
                 ", summary='" + summary + '\'' +
                 ", score=" + score +
                 ", count_score=" + count_score +
+                ", share_data=" + share_data +
                 ", count_like=" + count_like +
                 ", alias='" + alias + '\'' +
                 ", followed=" + followed +

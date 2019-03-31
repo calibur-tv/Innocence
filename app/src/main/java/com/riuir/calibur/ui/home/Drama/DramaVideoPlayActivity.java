@@ -1,12 +1,19 @@
 package com.riuir.calibur.ui.home.Drama;
 
 import android.app.ActivityOptions;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -27,6 +34,7 @@ import com.riuir.calibur.data.Event;
 
 import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.MineFragment;
 import com.riuir.calibur.ui.home.adapter.CommentAdapter;
 import com.riuir.calibur.ui.home.adapter.MyLoadMoreView;
 import com.riuir.calibur.ui.home.card.CardChildCommentActivity;
@@ -38,7 +46,10 @@ import com.riuir.calibur.ui.widget.TrendingLikeFollowCollectionView;
 import com.riuir.calibur.ui.widget.emptyView.AppListEmptyView;
 import com.riuir.calibur.ui.widget.emptyView.AppListFailedView;
 import com.riuir.calibur.utils.Constants;
+import com.riuir.calibur.utils.DialogHelper;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
+import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack;
+import com.shuyu.gsyvideoplayer.utils.CommonUtil;
 import com.shuyu.gsyvideoplayer.utils.GSYVideoType;
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
@@ -71,8 +82,6 @@ public class DramaVideoPlayActivity extends BaseActivity {
     @BindView(R.id.drama_video_play_player)
     StandardGSYVideoPlayer videoPlayer;
 
-    TrendingLikeFollowCollectionView videoLFCView;
-
     OrientationUtils orientationUtils;
 
     @BindView(R.id.drama_video_play_comment_view)
@@ -101,7 +110,13 @@ public class DramaVideoPlayActivity extends BaseActivity {
     private static final int NET_STATUS_MAIN_COMMENT = 1;
 
     LinearLayout headerLayout;
+    LinearLayout baiduCloudLayout;
+    TextView baiduCloudSrc;
+    TextView baiduCloudPsd;
     BangumiForShowView headerBangumiView;
+    TrendingLikeFollowCollectionView videoLFCView;
+    TextView buyBangumiBtn;
+    AlertDialog buyBangumiDialog;
 
     int fetchId = 0;
     boolean isLoadMore = false;
@@ -221,8 +236,11 @@ public class DramaVideoPlayActivity extends BaseActivity {
         headerLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.drama_video_activity_header_view,null);
         //所属番剧操作
         headerBangumiView = headerLayout.findViewById(R.id.drama_video_activity_header_bangumi_view);
+        baiduCloudLayout = headerLayout.findViewById(R.id.drama_video_play_baidu_cloud_layout);
+        baiduCloudSrc = headerLayout.findViewById(R.id.drama_video_play_baidu_cloud_src);
+        baiduCloudPsd = headerLayout.findViewById(R.id.drama_video_play_baidu_cloud_psd);
         videoLFCView = headerLayout.findViewById(R.id.drama_video_play_trending_LFC);
-        LogUtils.d("cardShowHeader","header Data = "+videoData.toString());
+        buyBangumiBtn = headerLayout.findViewById(R.id.drama_video_activity_header_buy_btn);
         headerBangumiView.setName(videoData.getBangumi().getName());
         headerBangumiView.setSummary(videoData.getBangumi().getSummary());
         headerBangumiView.setImageView(DramaVideoPlayActivity.this,videoData.getBangumi().getAvatar());
@@ -236,6 +254,43 @@ public class DramaVideoPlayActivity extends BaseActivity {
             }
         });
 
+        if (videoData.getInfo().isIs_baidu_cloud()){
+            baiduCloudLayout.setVisibility(View.VISIBLE);
+            baiduCloudSrc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String url = videoData.getInfo().getSrc();
+                    // 获取系统剪贴板
+                    Uri uri = Uri.parse(url);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+//                    final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+//                    final ClipData clipUrl = ClipData.newPlainText("calibur", url);
+//                    //把数据集设置（复制）到剪贴板
+//                    clipboard.setPrimaryClip(clipUrl);
+//                    ToastUtils.showLong(DramaVideoPlayActivity.this,"内容链接已复制到粘贴板");
+                }
+            });
+            baiduCloudPsd.setText("密码："+videoData.getInfo().getBaidu_cloud_pwd());
+        }
+
+        if (videoData.isBuyed()){
+            buyBangumiBtn.setText("已承包");
+        }else {
+            buyBangumiBtn.setText("我要承包");
+        }
+        setBuyDialog();
+        buyBangumiBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (videoData.isBuyed()){
+                    ToastUtils.showShort(DramaVideoPlayActivity.this,"您已承包该季番剧~");
+                }else {
+                    buyBangumiDialog.show();
+                }
+            }
+        });
+
         initLFCView();
         commentAdapter.addHeaderView(headerLayout);
         otherSite = videoData.getInfo().isOther_site();
@@ -243,6 +298,67 @@ public class DramaVideoPlayActivity extends BaseActivity {
         checkVideo();
         setCommentView();
         setListener();
+    }
+
+    private void setBuyDialog() {
+        buyBangumiDialog = DialogHelper.getConfirmDialog(this,
+                "承包本季番剧",
+                "确定承包吗？\n 该操作将消耗您"+videoData.getBuy_price()+"个团子。\n承包后解锁本季全部视频。",
+                "確定",
+                "取消",
+                false,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        buyBangumiBtn.setClickable(false);
+                        buyBangumiBtn.setText("承包中");
+                        buyBangumi();
+                        buyBangumiDialog.dismiss();
+                    }
+                },
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        buyBangumiDialog.dismiss();
+                    }
+                }
+        ).create();
+    }
+
+    private void buyBangumi() {
+        apiService.getBuyVideo(videoData.getSeason_id())
+                .compose(Rx2Schedulers.applyObservableAsync())
+                .subscribe(new ObserverWrapper<Integer>(){
+
+                    @Override
+                    public void onSuccess(Integer spend) {
+                        LogUtils.d("bugBangmi","s = "+spend);
+                        videoData.setBuyed(true);
+                        checkVideo();
+                        buyBangumiBtn.setClickable(true);
+                        buyBangumiBtn.setText("已承包");
+
+                        if (Constants.userInfoData.getBanlance().getCoin_count()>=spend){
+                            Constants.userInfoData.getBanlance().setCoin_count(Constants.userInfoData.getBanlance().getCoin_count()-spend);
+                        }else if (Constants.userInfoData.getBanlance().getCoin_count()!=0&&
+                                Constants.userInfoData.getBanlance().getLight_count()>=(spend-Constants.userInfoData.getBanlance().getCoin_count())){
+                            Constants.userInfoData.getBanlance().setCoin_count(0);
+                            Constants.userInfoData.getBanlance().setLight_count(Constants.userInfoData.getBanlance().getLight_count()-
+                                    (spend-Constants.userInfoData.getBanlance().getCoin_count()));
+                        }else if (Constants.userInfoData.getBanlance().getCoin_count()==0&&
+                                Constants.userInfoData.getBanlance().getLight_count()>= spend){
+                            Constants.userInfoData.getBanlance().setLight_count(Constants.userInfoData.getBanlance().getLight_count()- spend);
+                        }
+                        Intent intent = new Intent(MineFragment.COINCHANGE);
+                        sendBroadcast(intent);
+                    }
+
+                    @Override
+                    public void onFailure(int code, String errorMsg) {
+                        LogUtils.d("bugBangmi","code = "+code+",errorMsg = "+errorMsg);
+                        super.onFailure(code, errorMsg);
+                    }
+                });
     }
 
     private void initLFCView() {
@@ -333,15 +449,15 @@ public class DramaVideoPlayActivity extends BaseActivity {
         if (UserSystem.getInstance().isLogin()&&Constants.userInfoData!=null){
             if (!otherSite){
                 if (!videoData.isIp_blocked()){
-                    //是否必须投食
+                    //是否必须投食或承包
                     if (videoData.isMust_reward()){
-                        if (videoData.getInfo().isRewarded()){
+                        if (videoData.getInfo().isRewarded()||videoData.isBuyed()){
                             initVideoUrl();
                             otherSiteInfo.setVisibility(View.GONE);
                             whyRewardLevel.setVisibility(View.GONE);
                         }else {
                             otherSiteInfo.setVisibility(View.VISIBLE);
-                            otherSiteInfo.setText("该视频需要投食之后才能进行观看");
+                            otherSiteInfo.setText("该视频需要投食或承包才能进行观看");
                             whyRewardLevel.setVisibility(View.VISIBLE);
                             whyRewardLevel.setText("为什么要投食");
                             whyRewardLevel.setOnClickListener(new View.OnClickListener() {
@@ -382,9 +498,15 @@ public class DramaVideoPlayActivity extends BaseActivity {
                     whyRewardLevel.setVisibility(View.GONE);
                 }
             }else {
-                otherSiteInfo.setVisibility(View.VISIBLE);
-                otherSiteInfo.setText("因版权等相关问题，该视频无法播放");
-                whyRewardLevel.setVisibility(View.GONE);
+                if (videoData.getInfo().isIs_baidu_cloud()){
+                    otherSiteInfo.setVisibility(View.VISIBLE);
+                    otherSiteInfo.setText("该视频只提供百度云资源");
+                    whyRewardLevel.setVisibility(View.GONE);
+                }else {
+                    otherSiteInfo.setVisibility(View.VISIBLE);
+                    otherSiteInfo.setText("因版权等相关问题，该视频无法播放");
+                    whyRewardLevel.setVisibility(View.GONE);
+                }
             }
         }else {
             otherSiteInfo.setVisibility(View.VISIBLE);
@@ -402,19 +524,42 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
         //隐藏非弹出的底部进度条
         videoPlayer.setBottomProgressBarDrawable(null);
+        videoPlayer.setShowFullAnimation(false);
 
         //设置全屏按键功能,这是使用的是选择屏幕，而不是全屏
         videoPlayer.getFullscreenButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
-                    LogUtils.d("videoPlayerAct","退出全屏");
-                    recyclerView.setVisibility(View.VISIBLE);
-                }else {
-                    LogUtils.d("videoPlayerAct","进入全屏");
-                    recyclerView.setVisibility(View.GONE);
-                }
+//                if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
+//                    LogUtils.d("videoPlayerAct","退出全屏");
+//                    recyclerView.setVisibility(View.VISIBLE);
+////                    showNavigation();
+////                    videoPlayer.onBackFullscreen();
+//                }else {
+//                    LogUtils.d("videoPlayerAct","进入全屏");
+//                    recyclerView.setVisibility(View.GONE);
+////                    hideNavigation();
+//                }
                 orientationUtils.resolveByClick();
+                videoPlayer.startWindowFullscreen(DramaVideoPlayActivity.this,true,true);
+            }
+        });
+        videoPlayer.setVideoAllCallBack(new GSYSampleCallBack(){
+            @Override
+            public void onEnterFullscreen(String url, Object... objects) {
+                super.onEnterFullscreen(url, objects);
+                LogUtils.d("videoPlayerAct","进入全屏");
+                recyclerView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onQuitFullscreen(String url, Object... objects) {
+                super.onQuitFullscreen(url, objects);
+                LogUtils.d("videoPlayerAct","退出全屏");
+                recyclerView.setVisibility(View.VISIBLE);
+                if (orientationUtils != null) {
+                    orientationUtils.backToProtVideo();
+                }
             }
         });
         //是否可以滑动调整
@@ -434,6 +579,35 @@ public class DramaVideoPlayActivity extends BaseActivity {
         GSYVideoType.enableMediaCodecTexture();
 
     }
+    private void showNavigation(){
+        CommonUtil.showNavKey(this, videoPlayer.getSystemUiVisibility());
+        //显示虚拟按键
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+//            //低版本sdk
+//            View v = getWindow().getDecorView();
+//            v.setSystemUiVisibility(View.VISIBLE);
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            View decorView = getWindow().getDecorView();
+//            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+//            decorView.setSystemUiVisibility(uiOptions);
+//        }
+    }
+
+    private void hideNavigation(){
+        CommonUtil.hideNavKey(this);
+        //隐藏虚拟按键
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+//            View v = getWindow().getDecorView();
+//            v.setSystemUiVisibility(View.GONE);
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            View decorView = getWindow().getDecorView();
+//            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                    | View.SYSTEM_UI_FLAG_FULLSCREEN;
+//            decorView.setSystemUiVisibility(uiOptions);
+//        }
+    }
+
+
     private void  initVideoUrl(){
         Map<String,String> videoHeader = new HashMap<>();
         videoHeader.put("Referer","https://android.calibur.tv");
@@ -448,15 +622,18 @@ public class DramaVideoPlayActivity extends BaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            recyclerView.setVisibility(View.VISIBLE);
-            commentView.setVisibility(View.VISIBLE);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            recyclerView.setVisibility(View.GONE);
-            commentView.setVisibility(View.GONE);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
+        videoPlayer.onConfigurationChanged(this, newConfig, orientationUtils);
+//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+//            recyclerView.setVisibility(View.VISIBLE);
+//            commentView.setVisibility(View.VISIBLE);
+////            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            showNavigation();
+//        }else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+//            recyclerView.setVisibility(View.GONE);
+//            commentView.setVisibility(View.GONE);
+////            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            hideNavigation();
+//        }
     }
 
     private void setListener() {
@@ -610,13 +787,15 @@ public class DramaVideoPlayActivity extends BaseActivity {
 
     public void onBackPressed() {
         //先返回正常状态
-        if (orientationUtils.getScreenType() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            videoPlayer.getFullscreenButton().performClick();
-            recyclerView.setVisibility(View.VISIBLE);
-            return;
+        try {
+            if (videoPlayer.getCurrentPlayer().isIfCurrentIsFullscreen()) {
+                orientationUtils.backToProtVideo();
+                recyclerView.setVisibility(View.VISIBLE);
+                return;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        //释放所有
-        videoPlayer.setVideoAllCallBack(null);
         super.onBackPressed();
     }
 

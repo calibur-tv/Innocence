@@ -32,6 +32,7 @@ import com.riuir.calibur.net.ApiGet;
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.dramaConfig.DramaMasterAnimeSettingActivity;
 import com.riuir.calibur.ui.home.Drama.dramaInfo.DramaInfoActivity;
+import com.riuir.calibur.ui.home.card.CardShowInfoActivity;
 import com.riuir.calibur.ui.route.RouteUtils;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
@@ -67,8 +68,6 @@ public class DramaActivity extends BaseActivity {
     TextView animeFollowCount;
     @BindView(R.id.drama_activity_anime_power_count)
     TextView animePowerCount;
-    @BindView(R.id.drama_activity_more)
-    AppHeaderPopupWindows moreBtn;
 
     @BindView(R.id.drama_activity_anime_follow_btn)
     LinearLayout animeFollowBtn;
@@ -213,11 +212,6 @@ public class DramaActivity extends BaseActivity {
             animeFollowBtnText.setText("关注");
         }
 
-        moreBtn.setReportModelTag(AppHeaderPopupWindows.BANGUMI,animeID);
-        moreBtn.setShareLayout(animeShowInfoData.getName(),AppHeaderPopupWindows.BANGUMI,animeID,"");
-
-        moreBtn.setMasterLayout(animeShowInfoData.isIs_master(),5,animeID,animeShowInfoData);
-
         setViewPager();
     }
 
@@ -271,7 +265,6 @@ public class DramaActivity extends BaseActivity {
     }
 
     private void setNet() {
-        LogUtils.d("animeId","animeId = "+animeID);
 
         apiService.getCallAnimeShow(animeID)
                 .compose(Rx2Schedulers.applyObservableAsync())
@@ -286,6 +279,20 @@ public class DramaActivity extends BaseActivity {
                         super.onFailure(code, errorMsg);
                     }
                 });
+        //腾讯渠道服打包的时候使用该请求代替上面的请求：getCallAnimeShow
+//        apiService.getCallAnimeShowTencent(animeID,"tencent")
+//                .compose(Rx2Schedulers.applyObservableAsync())
+//                .subscribe(new ObserverWrapper<AnimeShowInfo>(){
+//                    @Override
+//                    public void onSuccess(AnimeShowInfo info) {
+//                        animeShowInfoData = info;
+//                        setView();
+//                    }
+//                    @Override
+//                    public void onFailure(int code, String errorMsg) {
+//                        super.onFailure(code, errorMsg);
+//                    }
+//                });
     }
 
     private void setViewPager() {

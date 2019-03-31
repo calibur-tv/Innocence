@@ -2,9 +2,12 @@ package calibur.core.http.models.followList.score;
 
 import java.util.List;
 
+import calibur.core.http.models.share.ShareDataModel;
+
 public class ScoreShowInfoPrimacy {
     private int id;
     private ScoreShowInfoPrimacyUser user;
+    private ShareDataModel share_data;
     private String title;
     private ScoreShowInfoPrimacyBangumi bangumi;
     private String total;
@@ -48,6 +51,14 @@ public class ScoreShowInfoPrimacy {
 
     public void setUser(ScoreShowInfoPrimacyUser user) {
         this.user = user;
+    }
+
+    public ShareDataModel getShare_data() {
+        return share_data;
+    }
+
+    public void setShare_data(ShareDataModel share_data) {
+        this.share_data = share_data;
     }
 
     public String getTitle() {
@@ -274,6 +285,7 @@ public class ScoreShowInfoPrimacy {
         return "ScoreShowInfoPrimacyData{" +
                 "id=" + id +
                 ", user=" + user +
+                ", share_data=" + share_data +
                 ", title='" + title + '\'' +
                 ", bangumi=" + bangumi +
                 ", total='" + total + '\'' +

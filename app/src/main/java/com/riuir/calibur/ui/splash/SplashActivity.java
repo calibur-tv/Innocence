@@ -1,6 +1,9 @@
 package com.riuir.calibur.ui.splash;
 
 import android.os.Message;
+import android.util.Log;
+import android.view.View;
+
 import calibur.core.http.models.user.MineUserInfo;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.core.manager.UserSystem;
@@ -27,6 +30,7 @@ import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.MainActivity;
 import com.riuir.calibur.ui.loginAndRegister.LoginAndRegisterActivity;
 import com.riuir.calibur.utils.Constants;
+import com.shuyu.gsyvideoplayer.utils.CommonUtil;
 
 public class SplashActivity extends BaseActivity {
 
@@ -44,6 +48,7 @@ public class SplashActivity extends BaseActivity {
     AUTH_TOKEN = UserSystem.getInstance().getUserToken();
     isLogin = UserSystem.getInstance().isLogin();
     LogUtils.d("Bearer", "token = " + AUTH_TOKEN);
+    CommonUtil.hideNavKey(this);
   }
 
   @Override

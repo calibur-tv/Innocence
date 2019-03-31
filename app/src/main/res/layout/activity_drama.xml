@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,164 +10,155 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="260dp"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
+
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/drama_activity_content_scrim"
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:minHeight="60dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            >
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
             <ImageView
                 android:id="@+id/drama_activity_anime_banner"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                />
+                android:scaleType="centerCrop" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_48000000"
-                />
+                android:background="@color/color_48000000" />
+
             <ImageView
                 android:id="@+id/drama_activity_back_btn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@mipmap/app_btn_back_white"
-                android:padding="10dp"
                 android:layout_marginTop="20dp"
-                app:layout_collapseMode="pin"
-                />
-            <com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows
-                android:id="@+id/drama_activity_more"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="right"
-                android:layout_marginTop="30dp"
-                android:visibility="gone">
-            </com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows>
+                android:padding="10dp"
+                android:src="@mipmap/app_btn_back_white"
+                app:layout_collapseMode="pin" />
+
             <ImageView
                 android:id="@+id/drama_activity_sliding_more"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="right"
                 android:layout_marginTop="20dp"
-                android:src="@mipmap/app_btn_white_sliding_more"
                 android:padding="8dp"
-                />
+                android:src="@mipmap/app_btn_white_sliding_more" />
+
             <RelativeLayout
                 android:id="@+id/drama_activity_anime_icon_layout"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_gravity="bottom"
-                android:gravity="center"
-                android:layout_marginBottom="60dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                >
+                android:layout_marginBottom="60dp"
+                android:gravity="center">
+
                 <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/drama_activity_anime_icon"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
                     android:scaleType="centerCrop"
-                    app:riv_corner_radius="5dp"
-                    app:riv_border_width="2dp"
                     app:riv_border_color="@color/color_FFFFFFFF"
-                    />
+                    app:riv_border_width="2dp"
+                    app:riv_corner_radius="5dp" />
             </RelativeLayout>
+
             <TextView
                 android:id="@+id/drama_activity_anime_name"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
-                android:text="番剧名字"
-                android:textSize="15sp"
-                android:textColor="@color/color_FFFFFFFF"
-                android:gravity="center_vertical"
                 android:layout_gravity="bottom"
-                android:layout_marginBottom="110dp"
                 android:layout_marginLeft="115dp"
-                />
+                android:layout_marginBottom="110dp"
+                android:gravity="center_vertical"
+                android:text="番剧名字"
+                android:textColor="@color/color_FFFFFFFF"
+                android:textSize="15sp" />
+
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_marginBottom="60dp"
-                android:layout_marginLeft="115dp">
+                android:layout_marginLeft="115dp"
+                android:layout_marginBottom="60dp">
+
                 <TextView
                     android:id="@+id/drama_activity_anime_follow"
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
+                    android:gravity="center_vertical"
                     android:text="关注"
                     android:textColor="@color/color_FFFFFFFF"
-                    android:textSize="13sp"
-                    android:gravity="center_vertical"
-                    />
+                    android:textSize="13sp" />
+
                 <TextView
                     android:id="@+id/drama_activity_anime_follow_count"
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
-                    android:text="110"
-                    android:textColor="@color/color_FFFFFFFF"
-                    android:textSize="13sp"
-                    android:gravity="center_vertical"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@id/drama_activity_anime_follow"
-                    />
+                    android:gravity="center_vertical"
+                    android:text="110"
+                    android:textColor="@color/color_FFFFFFFF"
+                    android:textSize="13sp" />
+
                 <TextView
                     android:id="@+id/drama_activity_anime_power"
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
-                    android:text="活跃度"
-                    android:textColor="@color/color_FFFFFFFF"
-                    android:textSize="13sp"
                     android:layout_below="@id/drama_activity_anime_follow"
                     android:gravity="center_vertical"
-                    />
+                    android:text="活跃度"
+                    android:textColor="@color/color_FFFFFFFF"
+                    android:textSize="13sp" />
+
                 <TextView
                     android:id="@+id/drama_activity_anime_power_count"
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
-                    android:text="110"
-                    android:textColor="@color/color_FFFFFFFF"
-                    android:textSize="13sp"
                     android:layout_below="@id/drama_activity_anime_follow"
-                    android:gravity="center_vertical"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@id/drama_activity_anime_power"
-                    />
+                    android:gravity="center_vertical"
+                    android:text="110"
+                    android:textColor="@color/color_FFFFFFFF"
+                    android:textSize="13sp" />
             </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/drama_activity_anime_follow_btn"
-                android:layout_marginBottom="60dp"
-                android:layout_marginRight="25dp"
-                android:layout_gravity="bottom|right"
                 android:layout_width="80dp"
                 android:layout_height="30dp"
-                android:padding="3dp"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="60dp"
                 android:background="@drawable/bg_follow_anime_btn"
                 android:orientation="horizontal"
-                >
+                android:padding="3dp">
+
                 <ImageView
                     android:id="@+id/drama_activity_anime_follow_btn_icon"
-                    android:layout_gravity="center_vertical"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginLeft="5dp"
-                    android:src="@mipmap/card_show_header_star_normal"
-                    />
+                    android:src="@mipmap/card_show_header_star_normal" />
+
                 <TextView
                     android:id="@+id/drama_activity_anime_follow_btn_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textSize="12sp"
-                    android:textColor="@color/color_FFFFFFFF"
-                    android:text="关注"
-                    android:layout_marginRight="3dp"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginRight="3dp"
                     android:gravity="center"
-                    />
+                    android:text="关注"
+                    android:textColor="@color/color_FFFFFFFF"
+                    android:textSize="12sp" />
             </LinearLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -176,28 +166,16 @@
         <com.riuir.calibur.ui.view.MyPagerSlidingTabStrip
             android:id="@+id/drama_activity_pager_tab"
             android:layout_width="match_parent"
-            android:background="@color/color_FFFFFFFF"
-            android:layout_height="40dp">
-        </com.riuir.calibur.ui.view.MyPagerSlidingTabStrip>
+            android:layout_height="40dp"
+            android:background="@color/color_FFFFFFFF"/>
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <android.support.v4.view.ViewPager
+        android:id="@+id/drama_activity_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        >
-        <android.support.v4.view.ViewPager
-            android:id="@+id/drama_activity_view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/color_FFFFFFFF"
-            >
-        </android.support.v4.view.ViewPager>
-
-    </android.support.v4.widget.NestedScrollView>
-
-
+        android:background="@color/color_FFFFFFFF"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

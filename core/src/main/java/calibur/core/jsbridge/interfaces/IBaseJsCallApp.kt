@@ -15,7 +15,4 @@ interface IBaseJsCallApp: JsBridgeContract {
     const val getUserInfo = "getUserInfo"
     const val logMsg = "log"
   }
-
-  fun getDeviceInfo(): Any?
-  fun getUserInfo(): Any?
 }

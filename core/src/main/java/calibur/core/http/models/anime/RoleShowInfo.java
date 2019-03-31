@@ -1,7 +1,10 @@
 package calibur.core.http.models.anime;
 
+import calibur.core.http.models.share.ShareDataModel;
+
 public class RoleShowInfo {
     private RoleShowInfoDataBangumi bangumi;
+    private ShareDataModel share_data;
     private RoleShowInfoDataData data;
 
     public RoleShowInfoDataBangumi getBangumi() {
@@ -20,11 +23,20 @@ public class RoleShowInfo {
         this.data = data;
     }
 
+    public ShareDataModel getShare_data() {
+        return share_data;
+    }
+
+    public void setShare_data(ShareDataModel share_data) {
+        this.share_data = share_data;
+    }
+
     @Override
     public String toString() {
         return "RoleShowInfoData{" +
                 "bangumi=" + bangumi +
                 ", data=" + data +
+                ", share_data=" + share_data +
                 '}';
     }
 

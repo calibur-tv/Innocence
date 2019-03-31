@@ -3,6 +3,7 @@ package calibur.core.http.models.anime;
 import java.util.Arrays;
 
 import calibur.core.http.models.followList.post.CardShowInfoPrimacy;
+import calibur.core.http.models.share.ShareDataModel;
 
 public class AnimeVideosActivityInfo {
     private AnimeVideosActivityInfoInfo info;
@@ -12,6 +13,10 @@ public class AnimeVideosActivityInfo {
     private boolean ip_blocked;
     private boolean must_reward;
     private int need_min_level;
+    private boolean buyed;
+    private int buy_price;
+    private String season_id;
+    private ShareDataModel share_data;
 
     public AnimeVideosActivityInfoInfo getInfo() {
         return info;
@@ -69,6 +74,38 @@ public class AnimeVideosActivityInfo {
         this.need_min_level = need_min_level;
     }
 
+    public boolean isBuyed() {
+        return buyed;
+    }
+
+    public void setBuyed(boolean buyed) {
+        this.buyed = buyed;
+    }
+
+    public int getBuy_price() {
+        return buy_price;
+    }
+
+    public void setBuy_price(int buy_price) {
+        this.buy_price = buy_price;
+    }
+
+    public String getSeason_id() {
+        return season_id;
+    }
+
+    public void setSeason_id(String season_id) {
+        this.season_id = season_id;
+    }
+
+    public ShareDataModel getShare_data() {
+        return share_data;
+    }
+
+    public void setShare_data(ShareDataModel share_data) {
+        this.share_data = share_data;
+    }
+
     @Override
     public String toString() {
         return "AnimeVideosActivityInfoData{" +
@@ -79,6 +116,10 @@ public class AnimeVideosActivityInfo {
                 ", ip_blocked=" + ip_blocked +
                 ", must_reward=" + must_reward +
                 ", need_min_level=" + need_min_level +
+                ", share_data=" + share_data +
+                ", season_id=" + season_id +
+                ", buyed=" + buyed +
+                ", buy_price=" + buy_price +
                 '}';
     }
 
@@ -95,6 +136,9 @@ public class AnimeVideosActivityInfo {
         private boolean liked;
         private boolean marked;
         private boolean rewarded;
+        private boolean is_baidu_cloud;
+        private String baidu_cloud_src;
+        private String baidu_cloud_pwd;
 
         private CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser like_users;
         private CardShowInfoPrimacy.CardShowInfoPrimacyLikeUser reward_users;
@@ -220,6 +264,30 @@ public class AnimeVideosActivityInfo {
             this.mark_users = mark_users;
         }
 
+        public boolean isIs_baidu_cloud() {
+            return is_baidu_cloud;
+        }
+
+        public void setIs_baidu_cloud(boolean is_baidu_cloud) {
+            this.is_baidu_cloud = is_baidu_cloud;
+        }
+
+        public String getBaidu_cloud_src() {
+            return baidu_cloud_src;
+        }
+
+        public void setBaidu_cloud_src(String baidu_cloud_src) {
+            this.baidu_cloud_src = baidu_cloud_src;
+        }
+
+        public String getBaidu_cloud_pwd() {
+            return baidu_cloud_pwd;
+        }
+
+        public void setBaidu_cloud_pwd(String baidu_cloud_pwd) {
+            this.baidu_cloud_pwd = baidu_cloud_pwd;
+        }
+
         @Override
         public String toString() {
             return "AnimeVideosActivityInfoInfo{" +
@@ -235,6 +303,9 @@ public class AnimeVideosActivityInfo {
                     ", liked=" + liked +
                     ", marked=" + marked +
                     ", rewarded=" + rewarded +
+                    ", is_baidu_cloud=" + is_baidu_cloud +
+                    ", baidu_cloud_src='" + baidu_cloud_src + '\'' +
+                    ", baidu_cloud_pwd='" + baidu_cloud_pwd + '\'' +
                     ", like_users=" + like_users +
                     ", reward_users=" + reward_users +
                     ", mark_users=" + mark_users +

@@ -126,6 +126,13 @@ public interface APIService {
     @GET("bangumi/{bangumiId}/show")
     Observable<Response<ResponseBean<AnimeShowInfo>>> getCallAnimeShow(@Path("bangumiId") int bangumiId);
 
+    /**
+     * 获取动漫详情(如果是腾讯的渠道包，需要使用该接口代替getCallAnimeShow)
+     * @param from 内容类型，目前只有 tencent
+     */
+    @GET("bangumi/{bangumiId}/show")
+    Observable<Response<ResponseBean<AnimeShowInfo>>> getCallAnimeShowTencent(@Path("bangumiId") int bangumiId,@Query("from")String from);
+
     //获取动漫标签
     @GET("bangumi/tags")
     Observable<Response<ResponseBean<List<AnimeShowInfo.AnimeShowInfoTags>>>> getCallDramaTags();
@@ -166,6 +173,10 @@ public interface APIService {
     @GET("video/{videoId}/show")
     Observable<Response<ResponseBean<AnimeVideosActivityInfo>>> getCallAnimeVideo(@Path("videoId")int videoId);
 
+    //承包该季动漫
+    @POST("video/buy")
+    Observable<Response<ResponseBean<Integer>>> getBuyVideo(@Query("season_id")String season_id);
+
     //获取帖子详情
     @GET("post/{id}/show")
     Observable<Response<ResponseBean<CardShowInfoPrimacy>>> getCallCardShowPrimacy(@Path("id")int id);
@@ -189,6 +200,9 @@ public interface APIService {
     //获取漫评详情
     @GET("score/{id}/show")
     Observable<Response<ResponseBean<Object>>> getScoreDetailData(@Path("id")int id);
+
+    @GET("score/{id}/edit")
+    Observable<Response<ResponseBean<Object>>> getScoreEditData(@Path("id")int id);
 
     //消息列表页跳转评论
     @GET("comment/main/item")
@@ -363,4 +377,14 @@ public interface APIService {
     //获取评论详情数据
     @GET("comment/main/item")
     Observable<Response<ResponseBean<Object>>> getCommentItem(@Query("type")String type,@Query("comment_id")int comment_id,@Query("reply_id")int reply_id);
+
+    /**
+     * qq注册/登录
+     * @param access_token 获取到的qq/wechat access_token
+     * @param from 注册或绑定 sign/bind
+     */
+    @POST("door/oauth2/qq")
+    Observable<Response<ResponseBean<String>>> doorQQLogin(@Query("access_token")String access_token,@Query("from")String from);
+    @POST("door/oauth2/wechat")
+    Observable<Response<ResponseBean<String>>> doorWXLogin(@Query("access_token")String access_token,@Query("from")String from,@Query("openid")String openid);
 }

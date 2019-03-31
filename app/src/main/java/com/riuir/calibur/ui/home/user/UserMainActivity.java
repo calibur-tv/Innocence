@@ -20,7 +20,10 @@ import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.ToastUtils;
 import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
+import com.riuir.calibur.ui.home.score.ScoreDetailActivity;
 import com.riuir.calibur.ui.route.RouteUtils;
+import com.riuir.calibur.ui.share.SharePopupActivity;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.GlideUtils;
@@ -60,7 +63,7 @@ public class UserMainActivity extends BaseActivity {
     @BindView(R.id.user_main_info_back_btn)
     ImageView backBtn;
     @BindView(R.id.user_main_info_more)
-    AppHeaderPopupWindows moreBtn;
+    ImageView moreBtn;
 
     int userId;
     String zone;
@@ -163,8 +166,16 @@ public class UserMainActivity extends BaseActivity {
         userLevel.setText("Lv"+userData.getLevel()+" · 战斗力："+userData.getPower());
         userSignature.setText(userData.getSignature());
 
-        moreBtn.setReportModelTag(AppHeaderPopupWindows.USER,userId);
-        moreBtn.setShareLayout(userData.getNickname(),AppHeaderPopupWindows.USER,userId,userData.getZone());
+        moreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UserMainActivity.this,SharePopupActivity.class);
+                intent.putExtra("share_data",userData.getShare_data());
+                intent.putExtra("targetTag",SharePopupActivity.USER);
+                intent.putExtra("targetId",userData.getId());
+                startActivityForResult(intent,SharePopupActivity.SHARE_POPUP_REQUEST_CODE);
+            }
+        });
 
         setViewPager();
     }

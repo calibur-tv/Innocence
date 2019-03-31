@@ -199,18 +199,6 @@ public class CommentDetailActivity extends BaseActivity implements IH5JsCallApp 
         }
     }
 
-    @Nullable
-    @Override
-    public String getDeviceInfo() {
-        return PhoneSystemUtils.getDeviceInfo();
-    }
-
-    @Nullable
-    @Override
-    public Object getUserInfo() {
-        return Constants.userInfoData;
-    }
-
     @Override
     public void createMainComment(@Nullable Object params) {
 

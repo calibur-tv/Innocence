@@ -14,7 +14,7 @@ public class App extends Application  {
     @Override
     protected void attachBaseContext(android.content.Context base) {
         super.attachBaseContext(base);
-        MultiDex.install(this);
+        MultiDex.install(this);//删除的话启动会崩溃
         FoundationContextHolder.setContext(this);
         instance = this;
     }
@@ -45,4 +45,5 @@ public class App extends Application  {
                 break;
         }
     }
+
 }

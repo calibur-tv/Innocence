@@ -21,6 +21,8 @@ public class BusinessBusManager {
     hasInit.set(true);
     moduleConfigMap.put("mainModule", "com.riuir.calibur.MainModuleBusAcceptor");
     moduleConfigMap.put("debugModule", "calibur.debug.DebugModuleBusAcceptor");
+    moduleConfigMap.put("loginModule", "calibur.login.LoginModuleBusAcceptor");
+    moduleConfigMap.put("shareModule", "calibur.share.ShareModuleBusAcceptor");
   }
 
   @SuppressWarnings("unchecked")

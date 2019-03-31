@@ -1,5 +1,7 @@
 package calibur.core.http.models.user;
 
+import calibur.core.http.models.share.ShareDataModel;
+
 public class UserMainInfo {
     private int id;
     private String zone;
@@ -11,6 +13,7 @@ public class UserMainInfo {
     private int power;
     private String sex;
     private boolean sexSecret;
+    private ShareDataModel share_data;
     private boolean faker;
 
     public int getId() {
@@ -101,6 +104,14 @@ public class UserMainInfo {
         this.power = power;
     }
 
+    public ShareDataModel getShare_data() {
+        return share_data;
+    }
+
+    public void setShare_data(ShareDataModel share_data) {
+        this.share_data = share_data;
+    }
+
     @Override
     public String toString() {
         return "UserMainInfoData{" +
@@ -115,6 +126,7 @@ public class UserMainInfo {
                 ", sex='" + sex + '\'' +
                 ", sexSecret=" + sexSecret +
                 ", faker=" + faker +
+                ", share_data=" + share_data +
                 '}';
     }
 }

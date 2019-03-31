@@ -27,6 +27,7 @@ public class RouteUtils {
     public static final String userBulletinPath = "/user/bulletin";
     public static final String userTrasactionRecordPath = "/user/trasaction/record";
     public static final String browserBase = "/browser/base";
+    public static final String scoreCreatePath = "/score/create";
 
     public static void toPage(String path){
         LogUtils.d("routeLog","path = "+path);

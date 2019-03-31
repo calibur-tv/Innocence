@@ -19,6 +19,7 @@ import com.riuir.calibur.net.ApiPost;
 import com.riuir.calibur.net.NetService;
 import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.EventBusUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -86,7 +87,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         apiService = RetrofitManager.getInstance().getService(APIService.class);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     private void setHandler() {

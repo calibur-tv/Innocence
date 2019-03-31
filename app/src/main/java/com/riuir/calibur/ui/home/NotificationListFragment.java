@@ -138,20 +138,6 @@ public class NotificationListFragment extends BaseFragment implements IH5JsCallA
 
     }
 
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public Object getDeviceInfo() {
-        return PhoneSystemUtils.getDeviceInfo();
-    }
-
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public Object getUserInfo() {
-        LogUtils.d("notificationWeb","userInfo = "+Constants.userInfoData.toString());
-        LogUtils.d("notificationWeb","token = "+UserSystem.getInstance().getUserToken());
-        return Constants.userInfoData;
-    }
-
     @Override
     public void readNotification(@org.jetbrains.annotations.Nullable Object params) {
         if (params instanceof H5ReadNotificationModel){

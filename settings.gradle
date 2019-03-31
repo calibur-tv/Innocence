@@ -1,8 +1,9 @@
 include ':app'
 include ':core'
 include ':foundation'
-
-
+include ':commonui'
+include ':login'
+include ':share'
 
 
 File localProperties = new File('local.properties')

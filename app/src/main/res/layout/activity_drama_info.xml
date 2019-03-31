@@ -86,15 +86,23 @@
                     android:layout_alignBottom="@id/drama_info_avatar"
                     android:layout_marginLeft="5dp"
                     />
-                <com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows
+                <!--<com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows-->
+                    <!--android:id="@+id/drama_info_activity_more"-->
+                    <!--android:layout_width="40dp"-->
+                    <!--android:layout_height="40dp"-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:layout_marginTop="30dp"-->
+                    <!--&gt;-->
+                <!--</com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows>-->
+                <ImageView
                     android:id="@+id/drama_info_activity_more"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="@dimen/spacing_40dp"
+                    android:layout_height="@dimen/spacing_40dp"
+                    android:padding="@dimen/spacing_12dp"
+                    android:src="@mipmap/app_btn_more_white"
                     android:layout_alignParentRight="true"
-                    android:layout_marginTop="30dp"
-                    >
-                </com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows>
-
+                    android:layout_marginTop="20dp"
+                    />
             </RelativeLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>

@@ -98,6 +98,10 @@
 -keep public class com.alibaba.android.arouter.routes.**{*;}
 -keep public class com.alibaba.android.arouter.facade.**{*;}
 -keep class * implements com.alibaba.android.arouter.facade.template.ISyringe{*;}
+#WX
+-keep class com.tencent.mm.opensdk.** {*;}
+-keep class com.tencent.wxop.** {*;}
+-keep class com.tencent.mm.sdk.** {*;}
 
 
 #-------------------------3.工具类------------------------
@@ -224,3 +228,15 @@
 -keep class com.newrelic.** { *; }
 -dontwarn com.newrelic.**
 -keepattributes Exceptions, Signature, InnerClasses, LineNumberTable
+
+#umeng
+-keep class com.umeng.** {*;}
+
+-keepclassmembers class * {
+   public <init> (org.json.JSONObject);
+}
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}

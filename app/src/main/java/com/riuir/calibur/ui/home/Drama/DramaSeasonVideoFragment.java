@@ -3,13 +3,10 @@ package com.riuir.calibur.ui.home.Drama;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.DisplayMetrics;
@@ -19,17 +16,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.riuir.calibur.R;
-import com.riuir.calibur.assistUtils.LogUtils;
-import com.riuir.calibur.assistUtils.ToastUtils;
-
-import com.riuir.calibur.data.Event;
 import com.riuir.calibur.ui.common.BaseFragment;
 import com.riuir.calibur.ui.view.MyPagerSlidingTabStrip;
-import com.tencent.bugly.crashreport.CrashReport;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,14 +28,11 @@ import calibur.core.http.models.anime.AnimeShowVideosInfo;
 import calibur.core.http.observer.ObserverWrapper;
 import calibur.foundation.rxjava.rxbus.Rx2Schedulers;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class DramaSeasonVideoFragment extends BaseFragment {
-
 
     @BindView(R.id.drama_video_pager_tab)
     MyPagerSlidingTabStrip dramaVideoPagerTab;
@@ -84,7 +71,7 @@ public class DramaSeasonVideoFragment extends BaseFragment {
      */
     private DisplayMetrics dm;
 
-    private  Call<AnimeShowVideosInfo> videosInfoCall;
+    private Call<AnimeShowVideosInfo> videosInfoCall;
 
     @Override
     protected int getContentViewID() {
@@ -97,7 +84,7 @@ public class DramaSeasonVideoFragment extends BaseFragment {
         DramaActivity dramaActivity = (DramaActivity) getActivity();
         animeID = dramaActivity.getAnimeID();
         refreshLayout.setRefreshing(true);
-        if(animeShowVideosInfoVideos!=null){
+        if (animeShowVideosInfoVideos != null) {
             animeShowVideosInfoVideos.clear();
         }
         setNet();
@@ -115,7 +102,7 @@ public class DramaSeasonVideoFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        if (videosInfoCall!=null){
+        if (videosInfoCall != null) {
             videosInfoCall.cancel();
         }
         super.onDestroy();
@@ -125,13 +112,13 @@ public class DramaSeasonVideoFragment extends BaseFragment {
 
         apiService.getCallAnimeShowVideos(animeID)
                 .compose(Rx2Schedulers.applyObservableAsync())
-                .subscribe(new ObserverWrapper<AnimeShowVideosInfo>(){
+                .subscribe(new ObserverWrapper<AnimeShowVideosInfo>() {
 
                     @Override
                     public void onSuccess(AnimeShowVideosInfo animeShowVideosInfo) {
                         animeShowVideosInfoVideos = animeShowVideosInfo.getVideos();
 
-                        if (dramaVideoViewPager!=null&&refreshLayout!=null){
+                        if (dramaVideoViewPager != null && refreshLayout != null) {
                             setViewPager();
                             refreshLayout.setRefreshing(false);
                             refreshLayout.setEnabled(false);
@@ -142,7 +129,7 @@ public class DramaSeasonVideoFragment extends BaseFragment {
                     @Override
                     public void onFailure(int code, String errorMsg) {
                         super.onFailure(code, errorMsg);
-                        if (refreshLayout!=null){
+                        if (refreshLayout != null) {
                             refreshLayout.setRefreshing(false);
                             setFailedView();
                         }
@@ -150,20 +137,22 @@ public class DramaSeasonVideoFragment extends BaseFragment {
                 });
     }
 
-    private void setEmptyView(){
-        if (animeShowVideosInfoVideos.size()==0){
+    private void setEmptyView() {
+        if (animeShowVideosInfoVideos.size() == 0) {
             emptyLayout.setVisibility(View.VISIBLE);
             emptyIcon.setImageResource(R.mipmap.ic_no_content_empty_view);
             emptyText.setText("这里空空如也");
         }
     }
-    private void setFailedView(){
+
+    private void setFailedView() {
         emptyLayout.setVisibility(View.VISIBLE);
         emptyIcon.setImageResource(R.mipmap.ic_failed_empty_view);
         emptyText.setText("加载失败，下拉重试");
     }
-    private void setHideEmptyView(){
-        if (animeShowVideosInfoVideos.size()!=0){
+
+    private void setHideEmptyView() {
+        if (animeShowVideosInfoVideos.size() != 0) {
             emptyLayout.setVisibility(View.GONE);
         }
     }
@@ -173,10 +162,10 @@ public class DramaSeasonVideoFragment extends BaseFragment {
 
         titles.clear();
 
-        if (animeShowVideosInfoVideos.size() == 1){
+        if (animeShowVideosInfoVideos.size() == 1) {
             titles.add("番剧列表");
-        }else {
-            for (AnimeShowVideosInfo.AnimeShowVideosInfoVideos videos:animeShowVideosInfoVideos){
+        } else {
+            for (AnimeShowVideosInfo.AnimeShowVideosInfoVideos videos : animeShowVideosInfoVideos) {
                 titles.add(videos.getName());
             }
         }
@@ -238,61 +227,61 @@ public class DramaSeasonVideoFragment extends BaseFragment {
                 case 0:
                     if (episodesFragment1 == null) {
                         episodesFragment1 = new DramaVideoEpisodesFragment();
-                        episodesFragment1.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment1.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment1;
                 case 1:
                     if (episodesFragment2 == null) {
                         episodesFragment2 = new DramaVideoEpisodesFragment();
-                        episodesFragment2.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment2.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment2;
                 case 2:
                     if (episodesFragment3 == null) {
                         episodesFragment3 = new DramaVideoEpisodesFragment();
-                        episodesFragment3.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment3.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment3;
                 case 3:
                     if (episodesFragment4 == null) {
                         episodesFragment4 = new DramaVideoEpisodesFragment();
-                        episodesFragment4.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment4.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment4;
                 case 4:
                     if (episodesFragment5 == null) {
                         episodesFragment5 = new DramaVideoEpisodesFragment();
-                        episodesFragment5.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment5.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment5;
                 case 5:
                     if (episodesFragment6 == null) {
                         episodesFragment6 = new DramaVideoEpisodesFragment();
-                        episodesFragment6.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment6.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment6;
                 case 6:
                     if (episodesFragment7 == null) {
                         episodesFragment7 = new DramaVideoEpisodesFragment();
-                        episodesFragment7.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment7.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment7;
                 case 7:
                     if (episodesFragment8 == null) {
                         episodesFragment8 = new DramaVideoEpisodesFragment();
-                        episodesFragment8.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment8.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment8;
                 case 8:
                     if (episodesFragment9 == null) {
                         episodesFragment9 = new DramaVideoEpisodesFragment();
-                        episodesFragment9.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment9.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment9;
                 case 9:
                     if (episodesFragment10 == null) {
                         episodesFragment10 = new DramaVideoEpisodesFragment();
-                        episodesFragment10.setData(animeShowVideosInfoVideos,position);
+                        episodesFragment10.setData(animeShowVideosInfoVideos, position);
                     }
                     return episodesFragment10;
                 default:

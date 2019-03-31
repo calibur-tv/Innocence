@@ -2,32 +2,26 @@ package com.riuir.calibur.ui.widget.replyAndComment;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
+import android.os.Build;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import calibur.foundation.utils.DeviceInfoUtil;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.riuir.calibur.R;
 import com.riuir.calibur.app.App;
 import com.riuir.calibur.assistUtils.KeyBoardUtils;
-import com.riuir.calibur.assistUtils.LogUtils;
 import com.riuir.calibur.assistUtils.PermissionUtils;
-import com.riuir.calibur.assistUtils.ScreenUtils;
 import com.riuir.calibur.assistUtils.SharedPreferencesUtils;
 import com.riuir.calibur.assistUtils.ToastUtils;
-
 import com.riuir.calibur.ui.common.BaseActivity;
 import com.riuir.calibur.ui.home.Drama.DramaCartoonCommentActivity;
 import com.riuir.calibur.ui.home.Drama.DramaVideoPlayActivity;
@@ -67,8 +61,6 @@ public class ReplyAndCommentActivity extends BaseActivity {
     RelativeLayout emptyLayout;
     @BindView(R.id.reply_and_comment_activity_edit_layout)
     RelativeLayout editLayout;
-    @BindView(R.id.reply_and_comment_activity_bottom_layout)
-    LinearLayout bottomLayout;
     @BindView(R.id.reply_and_comment_activity_edit)
     EditText editText;
     @BindView(R.id.reply_and_comment_activity_button_layout)
@@ -128,20 +120,20 @@ public class ReplyAndCommentActivity extends BaseActivity {
         Intent intent = getIntent();
         type = intent.getStringExtra("type");
         subType = intent.getStringExtra("subType");
-        status = intent.getIntExtra("status",0);
-        id = intent.getIntExtra("id",0);
-        titleId = intent.getIntExtra("titleId",0);
-        mainCommentid = intent.getIntExtra("mainCommentid",0);
-        targetUserId = intent.getIntExtra("targetUserId",0);
-        targetUserMainId = intent.getIntExtra("targetUserMainId",0);
+        status = intent.getIntExtra("status", 0);
+        id = intent.getIntExtra("id", 0);
+        titleId = intent.getIntExtra("titleId", 0);
+        mainCommentid = intent.getIntExtra("mainCommentid", 0);
+        targetUserId = intent.getIntExtra("targetUserId", 0);
+        targetUserMainId = intent.getIntExtra("targetUserMainId", 0);
         fromUserName = intent.getStringExtra("fromUserName");
         content = intent.getStringExtra("content");
         myAlbumUtils = new MyAlbumUtils();
         qiniuUtils = new QiniuUtils();
 
-        if (Constants.userInfoData!=null){
+        if (Constants.userInfoData != null) {
             userInfoData = Constants.userInfoData;
-        }else {
+        } else {
             Constants.userInfoData = SharedPreferencesUtils.getUserInfoData(App.instance());
             userInfoData = Constants.userInfoData;
         }
@@ -153,36 +145,46 @@ public class ReplyAndCommentActivity extends BaseActivity {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                editText.setTransitionName("ToReplyAndCommentActivity");
+            }
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
     }
 
     private void setView() {
         RCView = ReplyAndCommentView.getInstance();
-        if (status == ReplyAndCommentView.STATUS_MAIN_COMMENT){
+        if (status == ReplyAndCommentView.STATUS_MAIN_COMMENT) {
             //主评论
             getCommentAdapter();
-        }else if (status == ReplyAndCommentView.STATUS_SUB_COMMENT){
+        } else if (status == ReplyAndCommentView.STATUS_SUB_COMMENT) {
             //子评论
             getChildCommentAdapter();
         }
 
-        if (type.equals(ReplyAndCommentView.TYPE_POST)){
+        if (type.equals(ReplyAndCommentView.TYPE_POST)) {
             imgBtn.setVisibility(View.VISIBLE);
             editText.setMaxLines(1000);
-        }else {
+        } else {
             imgBtn.setVisibility(View.GONE);
             editText.setMaxLines(200);
         }
 
-        if (content!=null&&content.length()!=0){
+        if (content != null && content.length() != 0) {
             editText.setText(content);
             editText.setSelection(editText.getText().toString().length());
         }
     }
 
     private void getCommentAdapter() {
-        switch (type){
+        switch (type) {
             case ReplyAndCommentView.TYPE_POST:
 //                CardShowInfoActivity card = CardShowInfoActivity.getInstance();
 //                commentAdapter = card.getCommentAdapter();
@@ -209,7 +211,7 @@ public class ReplyAndCommentActivity extends BaseActivity {
     }
 
     private void getChildCommentAdapter() {
-        switch (subType){
+        switch (subType) {
             case ReplyAndCommentView.TYPE_SUB_COMMENT:
                 CardChildCommentActivity childComment = CardChildCommentActivity.getInstance();
                 childCommentAdapter = childComment.getCommentAdapter();
@@ -226,7 +228,7 @@ public class ReplyAndCommentActivity extends BaseActivity {
     private void setChoosedImgAdapter() {
 
         imageChoosedAdapter = new ReplyAndCommentImageChoosedAdapter(R.layout.reply_and_comment_choosed_image_list_item,
-                baseChoosedImgList,ReplyAndCommentActivity.this);
+                baseChoosedImgList, ReplyAndCommentActivity.this);
         LinearLayoutManager lm = new LinearLayoutManager(ReplyAndCommentActivity.this);
         lm.setOrientation(LinearLayoutManager.HORIZONTAL);
         imageRecycler.setLayoutManager(lm);
@@ -235,31 +237,31 @@ public class ReplyAndCommentActivity extends BaseActivity {
     }
 
     private void setViewChangedListener() {
-        editText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
-            //当键盘弹出隐藏的时候会 调用此方法。
-            @Override
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                //获取当前界面可视部分
-                ReplyAndCommentActivity.this.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
-                //获取屏幕的高度
-                int realScreenHeight = DeviceInfoUtil.getScreenHeight();
-                int screenHeight =  ScreenUtils.getScreenHeight();
-                int diff = realScreenHeight - screenHeight;
-                LogUtils.d("JASON","realScreenHeight = " + realScreenHeight);
-                LogUtils.d("JASON","screenHeight = " + screenHeight);
-                //此处就是用来获取键盘的高度的， 在键盘没有弹出的时候 此高度为0 键盘弹出的时候为一个正数
-                int heightDifference = realScreenHeight - diff - (r.bottom);
-                LogUtils.d("JASON", "Size: " + heightDifference+",screenHeight = "+screenHeight+",bottom = "+r.bottom+",top = "+r.top);
-                if (heightDifference!=0){
-                    //键盘开启
-                    bottomLayout.setTranslationY(-heightDifference);
-                }else {
-                    //键盘关闭 高度为0
-                    bottomLayout.setTranslationY(0);
-                }
-            }
-        });
+//        editText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener(){
+//            //当键盘弹出隐藏的时候会 调用此方法。
+//            @Override
+//            public void onGlobalLayout() {
+//                Rect r = new Rect();
+//                //获取当前界面可视部分
+//                ReplyAndCommentActivity.this.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+//                //获取屏幕的高度
+//                int realScreenHeight = DeviceInfoUtil.getScreenHeight();
+//                int screenHeight =  ScreenUtils.getScreenHeight();
+//                int diff = realScreenHeight - screenHeight;
+//                LogUtils.d("JASON","realScreenHeight = " + realScreenHeight);
+//                LogUtils.d("JASON","screenHeight = " + screenHeight);
+//                //此处就是用来获取键盘的高度的， 在键盘没有弹出的时候 此高度为0 键盘弹出的时候为一个正数
+//                int heightDifference = realScreenHeight - diff - (r.bottom);
+//                LogUtils.d("JASON", "Size: " + heightDifference+",screenHeight = "+screenHeight+",bottom = "+r.bottom+",top = "+r.top);
+//                if (heightDifference!=0){
+//                    //键盘开启
+//                    bottomLayout.setTranslationY(-heightDifference);
+//                }else {
+//                    //键盘关闭 高度为0
+//                    bottomLayout.setTranslationY(0);
+//                }
+//            }
+//        });
     }
 
     private void setListener() {
@@ -270,9 +272,9 @@ public class ReplyAndCommentActivity extends BaseActivity {
                     @Override
                     public void onVisibilityChanged(boolean isOpen) {
                         // some code depending on keyboard visiblity status
-                        if (isOpen){
+                        if (isOpen) {
                             imageRecycler.setVisibility(View.GONE);
-                            imageVisibility=false;
+                            imageVisibility = false;
                         }
                     }
                 });
@@ -280,16 +282,17 @@ public class ReplyAndCommentActivity extends BaseActivity {
         emptyLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                KeyBoardUtils.closeKeybord(editText, ReplyAndCommentActivity.this);
                 onBackPressed();
             }
         });
-                sendBtn.setOnClickListener(new View.OnClickListener() {
+        sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String content = editText.getText().toString();
-                if (TextUtils.isEmpty(content)){
-                }else {
-                    KeyBoardUtils.closeKeybord(editText,ReplyAndCommentActivity.this);
+                if (TextUtils.isEmpty(content)) {
+                } else {
+                    KeyBoardUtils.closeKeybord(editText, ReplyAndCommentActivity.this);
                     sendBtn.setClickable(false);
                     setCheckUpLoad();
                 }
@@ -297,11 +300,11 @@ public class ReplyAndCommentActivity extends BaseActivity {
         });
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int actionId , KeyEvent keyEvent) {
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 String content = editText.getText().toString();
-                if (actionId  == EditorInfo.IME_ACTION_SEND){
-                    KeyBoardUtils.closeKeybord(editText,ReplyAndCommentActivity.this);
-                    if (TextUtils.isEmpty(content)){
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    KeyBoardUtils.closeKeybord(editText, ReplyAndCommentActivity.this);
+                    if (TextUtils.isEmpty(content)) {
                         return true;
                     }
                     setCheckUpLoad();
@@ -315,14 +318,14 @@ public class ReplyAndCommentActivity extends BaseActivity {
         imgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (imageVisibility){
+                if (imageVisibility) {
                     imageRecycler.setVisibility(View.GONE);
-                    imageVisibility=false;
-                }else {
+                    imageVisibility = false;
+                } else {
                     PermissionUtils.chekReadAndWritePermission(ReplyAndCommentActivity.this);
-                    KeyBoardUtils.closeKeybord(editText,ReplyAndCommentActivity.this);
+                    KeyBoardUtils.closeKeybord(editText, ReplyAndCommentActivity.this);
                     imageRecycler.setVisibility(View.VISIBLE);
-                    imageVisibility=true;
+                    imageVisibility = true;
                 }
 
             }
@@ -332,11 +335,11 @@ public class ReplyAndCommentActivity extends BaseActivity {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
 
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.reply_and_comment_choosed_image_add_image_btn:
-                        if (picturePermission){
+                        if (picturePermission) {
                             //相册
-                            myAlbumUtils.setChooseImage(ReplyAndCommentActivity.this,9);
+                            myAlbumUtils.setChooseImage(ReplyAndCommentActivity.this, 9);
                             myAlbumUtils.setOnChooseImageFinishListener(new MyAlbumUtils.OnChooseImageFinishListener() {
                                 @Override
                                 public void onFinish(ArrayList<AlbumFile> albumFiles) {
@@ -360,7 +363,7 @@ public class ReplyAndCommentActivity extends BaseActivity {
 
     private void setCheckUpLoad() {
 
-        upLoadDialog = new SweetAlertDialog(ReplyAndCommentActivity.this,SweetAlertDialog.PROGRESS_TYPE);
+        upLoadDialog = new SweetAlertDialog(ReplyAndCommentActivity.this, SweetAlertDialog.PROGRESS_TYPE);
         upLoadDialog.setTitle("发送中...");
         upLoadDialog.setContentText("您的评论正在发送中...");
         upLoadDialog.setCancelable(false);
@@ -368,17 +371,17 @@ public class ReplyAndCommentActivity extends BaseActivity {
 
         uploadUmgUrlList = imageChoosedAdapter.getData();
         uploadUmgUrlList.remove("add");
-        if (uploadUmgUrlList.size()>0){
+        if (uploadUmgUrlList.size() > 0) {
 //            new ArrayList<QiniuImageParams.QiniuImageParamsData>()
             setQiniuUpLoad();
-        }else {
+        } else {
             qiniuImgList = new ArrayList<>();
             sendNet();
         }
     }
 
     private void setQiniuUpLoad() {
-        qiniuUtils.getQiniuUpToken(ReplyAndCommentActivity.this,uploadUmgUrlList,userInfoData.getId(),"all");
+        qiniuUtils.getQiniuUpToken(ReplyAndCommentActivity.this, uploadUmgUrlList, userInfoData.getId(), "all");
         qiniuUtils.setOnQiniuUploadFailedListnener(new QiniuUtils.OnQiniuUploadFailedListnener() {
             @Override
             public void onFailed(String fialMessage) {
@@ -394,13 +397,13 @@ public class ReplyAndCommentActivity extends BaseActivity {
         });
     }
 
-    private void setChooseFinishImageLoad(ArrayList<AlbumFile> albumFiles){
-        if (choosedImgList == null){
+    private void setChooseFinishImageLoad(ArrayList<AlbumFile> albumFiles) {
+        if (choosedImgList == null) {
             choosedImgList = new ArrayList<>();
         }
-        imageChoosedAdapter.remove(imageChoosedAdapter.getData().size()-1);
-        if ((albumFiles.size()+choosedImgList.size())>9){
-            ToastUtils.showShort(ReplyAndCommentActivity.this,"所选图片超出9张，自动保存本次所选");
+        imageChoosedAdapter.remove(imageChoosedAdapter.getData().size() - 1);
+        if ((albumFiles.size() + choosedImgList.size()) > 9) {
+            ToastUtils.showShort(ReplyAndCommentActivity.this, "所选图片超出9张，自动保存本次所选");
             choosedImgList.clear();
         }
         for (int i = 0; i < albumFiles.size(); i++) {
@@ -414,12 +417,12 @@ public class ReplyAndCommentActivity extends BaseActivity {
     private void sendNet() {
 
         String upType;
-        if (type.equals(ReplyAndCommentView.TYPE_CARTOON)){
+        if (type.equals(ReplyAndCommentView.TYPE_CARTOON)) {
             upType = "image";
-        }else {
+        } else {
             upType = type;
         }
-        if (status == ReplyAndCommentView.STATUS_MAIN_COMMENT){
+        if (status == ReplyAndCommentView.STATUS_MAIN_COMMENT) {
 
             CreateMainComment createMainComment = new CreateMainComment();
             createMainComment.setContent(editText.getText().toString());
@@ -432,22 +435,22 @@ public class ReplyAndCommentActivity extends BaseActivity {
                         @Override
                         public void onSuccess(CreateMainCommentInfo info) {
                             createMainCommentInfo = info;
-                            if (commentAdapter!=null){
-                                if (type.equals(ReplyAndCommentView.TYPE_POST)){
+                            if (commentAdapter != null) {
+                                if (type.equals(ReplyAndCommentView.TYPE_POST)) {
                                     commentAdapter.addData(info.getData());
-                                }else {
-                                    commentAdapter.addData(0,info.getData());
+                                } else {
+                                    commentAdapter.addData(0, info.getData());
                                 }
                             }
                             RCView.setMainCommentSuccessResult(info);
 
-                            if (Constants.userInfoData!=null&&Constants.userInfoData.getId()!=titleId){
-                                ToastUtils.showShort(ReplyAndCommentActivity.this,info.getMessage());
+                            if (Constants.userInfoData != null && Constants.userInfoData.getId() != titleId) {
+                                ToastUtils.showShort(ReplyAndCommentActivity.this, info.getMessage());
                                 Intent intent = new Intent(MineFragment.EXPCHANGE);
-                                intent.putExtra("expChangeNum",info.getExp());
+                                intent.putExtra("expChangeNum", info.getExp());
                                 sendBroadcast(intent);
-                            }else {
-                                ToastUtils.showShort(ReplyAndCommentActivity.this,"评论成功！");
+                            } else {
+                                ToastUtils.showShort(ReplyAndCommentActivity.this, "评论成功！");
                             }
                             editText.setText("");
                             editText.clearFocus();
@@ -472,24 +475,24 @@ public class ReplyAndCommentActivity extends BaseActivity {
                             sendBtn.setClickable(true);
                         }
                     });
-        }else if (status == ReplyAndCommentView.STATUS_SUB_COMMENT){
+        } else if (status == ReplyAndCommentView.STATUS_SUB_COMMENT) {
             //如果回复的是父评论 设置父评论的用户ID，否则使用子评论用户ID
             if (targetUserId == 0)
                 targetUserId = targetUserMainId;
-            apiService.getReplyComment(editText.getText().toString(),upType,mainCommentid,targetUserId)
+            apiService.getReplyComment(editText.getText().toString(), upType, mainCommentid, targetUserId)
                     .compose(Rx2Schedulers.applyObservableAsync())
-                    .subscribe(new ObserverWrapper<ReplyCommentInfo>(){
+                    .subscribe(new ObserverWrapper<ReplyCommentInfo>() {
                         @Override
                         public void onSuccess(ReplyCommentInfo info) {
                             replyCommentInfo = info;
                             childCommentAdapter.addData(info.getData());
-                            if (Constants.userInfoData!=null&&Constants.userInfoData.getId()!=targetUserId){
-                                ToastUtils.showShort(ReplyAndCommentActivity.this,info.getMessage());
+                            if (Constants.userInfoData != null && Constants.userInfoData.getId() != targetUserId) {
+                                ToastUtils.showShort(ReplyAndCommentActivity.this, info.getMessage());
                                 Intent intent = new Intent(MineFragment.EXPCHANGE);
-                                intent.putExtra("expChangeNum",info.getExp());
+                                intent.putExtra("expChangeNum", info.getExp());
                                 sendBroadcast(intent);
-                            }else {
-                                ToastUtils.showShort(ReplyAndCommentActivity.this,"回复成功！");
+                            } else {
+                                ToastUtils.showShort(ReplyAndCommentActivity.this, "回复成功！");
                             }
                             editText.setText("");
                             editText.clearFocus();
@@ -499,7 +502,7 @@ public class ReplyAndCommentActivity extends BaseActivity {
                         @Override
                         public void onFailure(int code, String errorMsg) {
                             super.onFailure(code, errorMsg);
-                            if (sendBtn!=null){
+                            if (sendBtn != null) {
                                 setUpLoadDiaLogFail("");
                                 sendBtn.setClickable(true);
                             }
@@ -511,7 +514,7 @@ public class ReplyAndCommentActivity extends BaseActivity {
 
     private void setUpLoadDiaLogFail(String fialMessage) {
 
-        if (fialMessage.equals("")){
+        if (fialMessage.equals("")) {
             fialMessage = "网络异常";
         }
         upLoadDialog.setTitleText("上传失败!")
@@ -528,7 +531,7 @@ public class ReplyAndCommentActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (RCView!=null){
+        if (RCView != null) {
             RCView.setResultContent(editText.getText().toString());
         }
         super.onBackPressed();
@@ -552,7 +555,7 @@ public class ReplyAndCommentActivity extends BaseActivity {
                     ToastUtils.showShort(ReplyAndCommentActivity.this, "未取得授权，无法选择图片");
                     picturePermission = false;
                     imageRecycler.setVisibility(View.GONE);
-                    imageVisibility=false;
+                    imageVisibility = false;
                 }
                 return;
             }

@@ -159,7 +159,7 @@
                         android:layout_alignLeft="@id/mine_fragment_mine_fight"
                         />
                     <TextView
-                        android:id="@+id/mine_fragment_mine_level_number"
+                        android:id="@+id/mine_fragment_coin_number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/mine_fragment_mine_icon"
@@ -181,17 +181,17 @@
                         android:layout_height="wrap_content"
                         android:textSize="13sp"
                         android:textColor="@color/color_FFFFFFFF"
-                        android:text="等级"
+                        android:text="团子"
                         android:shadowColor="@color/color_FF333333"
                         android:shadowDx="0.5"
                         android:shadowDy="0.5"
                         android:shadowRadius="2"
-                        android:layout_below="@id/mine_fragment_mine_level_number"
-                        android:layout_alignLeft="@id/mine_fragment_mine_level_number"
+                        android:layout_below="@id/mine_fragment_coin_number"
+                        android:layout_alignLeft="@id/mine_fragment_coin_number"
                         />
 
                     <TextView
-                        android:id="@+id/mine_fragment_coin_number"
+                        android:id="@+id/mine_fragment_light_number"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="180dp"
@@ -211,13 +211,13 @@
                         android:layout_height="wrap_content"
                         android:textSize="13sp"
                         android:textColor="@color/color_FFFFFFFF"
-                        android:text="团子"
+                        android:text="光玉"
                         android:shadowColor="@color/color_FF333333"
                         android:shadowDx="0.5"
                         android:shadowDy="0.5"
                         android:shadowRadius="2"
-                        android:layout_below="@id/mine_fragment_coin_number"
-                        android:layout_alignLeft="@id/mine_fragment_coin_number"
+                        android:layout_below="@id/mine_fragment_light_number"
+                        android:layout_alignLeft="@id/mine_fragment_light_number"
                         />
 
                     <TextView
@@ -234,7 +234,7 @@
                         android:shadowDx="0.5"
                         android:shadowDy="0.5"
                         android:shadowRadius="2"
-                        android:background="@drawable/bg_follow_anime_btn"
+                        android:background="@drawable/day_sign_btn_bg_active"
                         android:textSize="14sp"
                         android:textColor="@color/color_FFFFFFFF"
                         />

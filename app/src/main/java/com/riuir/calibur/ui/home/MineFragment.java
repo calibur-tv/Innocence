@@ -40,6 +40,7 @@ import com.riuir.calibur.utils.ActivityUtils;
 import com.riuir.calibur.utils.Constants;
 import com.riuir.calibur.utils.GlideUtils;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.umeng.analytics.MobclickAgent;
 
 import org.w3c.dom.Text;
 
@@ -95,8 +96,8 @@ public class MineFragment extends BaseFragment {
     @BindView(R.id.mine_fragment_mine_refresh)
     SwipeRefreshLayout refreshLayout;
 
-    @BindView(R.id.mine_fragment_mine_level_number)
-    TextView level;
+    @BindView(R.id.mine_fragment_light_number)
+    TextView lightNumber;
     @BindView(R.id.mine_fragment_mine_level_text)
     TextView levelText;
     @BindView(R.id.mine_fragment_mine_fight)
@@ -207,6 +208,8 @@ public class MineFragment extends BaseFragment {
                         @Override
                         public void onSuccess(String s) {
                             LoginUtils.CancelLogin(App.instance(),getActivity());
+                            // umeng登出操作
+                            MobclickAgent.onProfileSignOff();
                         }
 
                         @Override
@@ -223,8 +226,9 @@ public class MineFragment extends BaseFragment {
                         @Override
                         public void onSuccess(UserDaySign userDaySign) {
                             daySignBtn.setText("已签到");
-                            coinNumber.setText(""+(Constants.userInfoData.getCoin()+1));
-                            Constants.userInfoData.setCoin(Constants.userInfoData.getCoin()+1);
+                            daySignBtn.setBackgroundResource(R.drawable.day_sign_btn_bg_normal);
+                            coinNumber.setText(""+(Constants.userInfoData.getBanlance().getCoin_count()+1));
+                            Constants.userInfoData.getBanlance().setCoin_count(Constants.userInfoData.getBanlance().getCoin_count()+1);
                             Constants.userInfoData.setDaySign(true);
                             //签到成功经验+2
                             setUserExpChanged(userDaySign.getExp());
@@ -235,8 +239,14 @@ public class MineFragment extends BaseFragment {
                         public void onFailure(int code, String errorMsg) {
                             super.onFailure(code, errorMsg);
                             if (daySignBtn!=null){
-                                daySignBtn.setText("签到");
-                                daySignBtn.setClickable(true);
+                                if (errorMsg.contains("已签到")||errorMsg.contains("签到成功")){
+                                    daySignBtn.setText("已签到");
+                                    daySignBtn.setBackgroundResource(R.drawable.day_sign_btn_bg_normal);
+                                }else {
+                                    daySignBtn.setText("签到");
+                                    daySignBtn.setBackgroundResource(R.drawable.day_sign_btn_bg_active);
+                                    daySignBtn.setClickable(true);
+                                }
                             }
                         }
                     });
@@ -255,14 +265,17 @@ public class MineFragment extends BaseFragment {
                 GlideUtils.setImageUrl(getContext(),userInfoData.getBanner(),GlideUtils.FULL_SCREEN),
                 userBanner);
         userName.setText(userInfoData.getNickname());
-        coinNumber.setText(""+userInfoData.getCoin());
+
         idNumber.setText("邀请码："+userInfoData.getId());
         if (userInfoData.isDaySign()){
             daySignBtn.setText("已签到");
+            daySignBtn.setBackgroundResource(R.drawable.day_sign_btn_bg_normal);
         }else {
             daySignBtn.setText("签到");
+            daySignBtn.setBackgroundResource(R.drawable.day_sign_btn_bg_active);
         }
-        level.setText(""+userInfoData.getExp().getLevel());
+        lightNumber.setText(""+userInfoData.getBanlance().getLight_count());
+        coinNumber.setText(""+userInfoData.getBanlance().getCoin_count());
         fightNumber.setText(""+userInfoData.getPower());
         levelText.setText("Lv "+userInfoData.getExp().getLevel());
 
@@ -447,7 +460,8 @@ public class MineFragment extends BaseFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            coinNumber.setText(""+(Constants.userInfoData.getCoin()));
+            coinNumber.setText(String.valueOf(Constants.userInfoData.getBanlance().getCoin_count()));
+            lightNumber.setText(String.valueOf(Constants.userInfoData.getBanlance().getLight_count()));
         }
     }
 

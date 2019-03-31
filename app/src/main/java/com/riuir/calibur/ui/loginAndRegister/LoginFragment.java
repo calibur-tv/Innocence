@@ -45,8 +45,8 @@ public class LoginFragment extends BaseFragment {
     EditText userNameEdit;
     @BindView(R.id.login_fragment_password_edit)
     EditText passWordEdit;
-    @BindView(R.id.login_fragment_password_visibility)
-    ImageView passwordVisibilityBtn;
+//    @BindView(R.id.login_fragment_password_visibility)
+//    ImageView passwordVisibilityBtn;
 
     boolean passwordIsVisibility = false;
 
@@ -61,8 +61,6 @@ public class LoginFragment extends BaseFragment {
     GT3GeetestUtilsBind gt3GeetestUtilsBindLogin;
     GT3GeetestBindListener bindListenerLogin;
     GeetestUtils geetestUtils;
-
-
 
 //    private LoginBroadCastReceiver loginBroadCastReceiver;
 //    private IntentFilter intentFilter;
@@ -144,20 +142,20 @@ public class LoginFragment extends BaseFragment {
                 startActivity(intent);
             }
         });
-        passwordVisibilityBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (passwordIsVisibility){
-                    passwordIsVisibility = false;
-                    passWordEdit.setTransformationMethod(PasswordTransformationMethod
-                            .getInstance());  //以密文显示，以.代替
-                }else {
-                    passwordIsVisibility = true;
-                    passWordEdit.setTransformationMethod(HideReturnsTransformationMethod
-                            .getInstance());  //密码以明文显示
-                }
-            }
-        });
+//        passwordVisibilityBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (passwordIsVisibility){
+//                    passwordIsVisibility = false;
+//                    passWordEdit.setTransformationMethod(PasswordTransformationMethod
+//                            .getInstance());  //以密文显示，以.代替
+//                }else {
+//                    passwordIsVisibility = true;
+//                    passWordEdit.setTransformationMethod(HideReturnsTransformationMethod
+//                            .getInstance());  //密码以明文显示
+//                }
+//            }
+//        });
 
     }
 

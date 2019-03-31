@@ -2,6 +2,7 @@ package com.riuir.calibur.ui.home.role;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -23,8 +24,11 @@ import com.alibaba.android.arouter.facade.annotation.Route;
 import com.riuir.calibur.R;
 import com.riuir.calibur.assistUtils.PhoneSystemUtils;
 import com.riuir.calibur.ui.common.BaseActivity;
+import com.riuir.calibur.ui.home.card.PostDetailActivity;
+import com.riuir.calibur.ui.home.image.ImageDetailActivity;
 import com.riuir.calibur.ui.jsbridge.CommonJsBridgeImpl;
 import com.riuir.calibur.ui.route.RouteUtils;
+import com.riuir.calibur.ui.share.SharePopupActivity;
 import com.riuir.calibur.ui.web.WebTemplatesUtils;
 import com.riuir.calibur.ui.widget.popup.AppHeaderPopupWindows;
 import com.riuir.calibur.utils.Constants;
@@ -48,7 +52,7 @@ public class RoleDetailActivity extends BaseActivity implements IH5JsCallApp {
 
     RoleShowInfo roleShowInfo;
     @BindView(R.id.role_detail_header_more)
-    AppHeaderPopupWindows headerMore;
+    ImageView headerMore;
 
     @Override
     protected int getContentViewId() {
@@ -131,21 +135,19 @@ public class RoleDetailActivity extends BaseActivity implements IH5JsCallApp {
     }
 
     private void setHeaderMore() {
-        headerMore.setReportModelTag(AppHeaderPopupWindows.ROLE,roleShowInfo.getData().getId());
-        headerMore.setShareLayout(roleShowInfo.getData().getName(),AppHeaderPopupWindows.ROLE,roleShowInfo.getData().getId(),"");
+
+        headerMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RoleDetailActivity.this,SharePopupActivity.class);
+                intent.putExtra("share_data",roleShowInfo.getShare_data());
+                intent.putExtra("targetTag",SharePopupActivity.ROLE);
+                intent.putExtra("targetId",roleShowInfo.getData().getId());
+                startActivityForResult(intent,SharePopupActivity.SHARE_POPUP_REQUEST_CODE);
+            }
+        });
     }
 
-    @Nullable
-    @Override
-    public Object getDeviceInfo() {
-        return PhoneSystemUtils.getDeviceInfo();
-    }
-
-    @Nullable
-    @Override
-    public Object getUserInfo() {
-        return Constants.userInfoData;
-    }
 
     @Override
     public void createMainComment(@Nullable Object params) {
